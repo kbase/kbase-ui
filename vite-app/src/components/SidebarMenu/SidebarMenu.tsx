@@ -1,7 +1,7 @@
-import { Component, createRef } from 'react';
-import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
-import { Nav } from 'react-bootstrap';
 import { changeHash2 } from 'lib/navigation';
+import { Component, createRef } from 'react';
+import { Nav } from 'react-bootstrap';
+import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
 import './SidebarMenu.css';
 import styles from './SidebarMenu.module.css';
 
@@ -24,7 +24,6 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     SidebarMenuState> {
     ref: React.RefObject<HTMLDivElement>;
 
-    hashListener: () => void;
     constructor(props: SidebarMenuProps) {
         super(props);
 
@@ -33,23 +32,6 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         this.state = {
             activeKey: null,
         };
-        this.hashListener = this.onHashChange.bind(this);
-    }
-
-    componentDidMount() {
-        this.updateActiveKey();
-
-        window.addEventListener("hashchange", this.hashListener);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener("hashchange", this.hashListener);
-    }
-
-    onHashChange() {
-        // In order to highlight the correct menu item.
-        // Perhaps hook into a context for this instead?
-        this.updateActiveKey();
     }
 
     updateActiveKey() {

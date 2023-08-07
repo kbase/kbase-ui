@@ -1,0 +1,125 @@
+.Profile {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.Profile-control-area {
+    flex: 0 0 auto;
+}
+
+.Profile-content-area {
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+
+.ProfileAvatar {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+.ProfileAvatar-Realname {
+    font-weight: bold;
+}
+
+.ProfileAvatar-Username {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.ProfileAvatar-ORCIDId {
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.ProfileAvatar-Avatar {
+    display: flex;
+    flex-direction: column;
+}
+
+.Profile-label {
+    font-weight: bold;
+    color: rgb(150, 150, 150);
+    margin-right: 0.5rem;
+}
+
+.AffiliationsRow {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 0.5rem;
+}
+
+.AffiliationsRow:last-child {
+    margin-bottom: 0;
+}
+
+.AffiliationsCol {
+    flex: 1 1 0px;
+}
+
+.AffiliationsCol+.AffiliationsCol {
+    margin-left: 10px;
+}
+
+.AffiliationsCol:nth-child(1) {
+    flex: 1.5 0 0;
+}
+
+.AffiliationsCol:nth-child(2) {
+    flex: 2 0 0;
+}
+
+.AffiliationsCol:nth-child(3) {
+    flex: 0 0 4rem;
+}
+
+.AffiliationsCol:nth-child(4) {
+    flex: 0 0 4rem;
+}
+
+.AffiliationsCol:nth-child(5) {
+    flex: 0 0 2em;
+}
+
+.compact-text p {
+    margin: 0;
+}
+
+.compact-text p+p {
+    margin-top: 1rem;
+}
+
+.Profile-field-force-inline .ant-form-item {
+    margin-bottom: 0;
+}
+
+.Profile-field-force-inline .ant-form-item>.ant-row {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.Profile-field-force-inline .ant-form-item>.ant-row>.ant-col {
+    flex: 0 0 auto;
+    width: fit-content;
+}
+
+.Profile-field-force-inline .ant-form-item>.ant-row>.ant-col.ant-form-item-label {
+    margin-right: 0.25rem;
+}
+
+.Profile-section {}
+
+.Profile-section-title {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.Profile-section-body {}
+
+.Profile-section+.Profile-section {
+    margin-top: 1rem;
+}

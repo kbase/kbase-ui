@@ -18,6 +18,7 @@ import NarrativeManagerStart from '../apps/NarrativeManager/Start';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
 import ORCIDLinkDemos from '../apps/demos/Demos';
 // import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
+import UserProfile from 'apps/UserProfile';
 import Gallery from 'apps/gallery';
 import RouterWrapper, { RouterContext } from '../contexts/RouterContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess2';
@@ -27,6 +28,14 @@ import ErrorMessage from './ErrorMessage';
 import Loading from './Loading';
 import { RouteProps, Router } from './Router2';
 
+// import {
+//     createBrowserRouter,
+//     RouterProvider
+// } from 'react-router-dom';
+// import RouteError from './RouteError';
+// import AboutKBaseUI from 'applets/about/AboutKBaseUI/AboutKBaseUI';
+// import AboutBuild from 'applets/about/AboutBuild/AboutBuild';
+
 export interface BodyProps {
     config: Config;
     pluginsInfo: Array<PluginInfo>;
@@ -35,6 +44,26 @@ export interface BodyProps {
 }
 
 interface BodyState { }
+
+// const router = createBrowserRouter([
+//     {
+//         path: "/",
+//         element: <div>FOO</div>,
+//         errorElement:  <RouteError />,
+//         children: [{
+//             path: "/about",
+//             element: <AboutKBaseUI />,
+//             children: [{
+//                 path: "/about/build",
+//                 element: <AboutBuild />
+//             }]
+//         }]
+
+//         // new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
+//         //     return <About {...this.props} {...props} />;
+//         // }),
+//     }
+// ])
 
 export default class Body extends Component<BodyProps, BodyState> {
     routes: Array<Route>;
@@ -61,17 +90,17 @@ export default class Body extends Component<BodyProps, BodyState> {
                     return <Catalog {...props} {...this.props} />;
                 }
             ),
-            // new Route('feeds', { authenticationRequired: true }, (props: RouteProps) => {
-            //     return (
-            //         <PluginWrapper2
-            //             {...props}
-            //             {...this.props}
-            //             name="feeds"
-            //             view="feeds"
-            //             syncHash={false}
-            //         />
-            //     );
-            // }),
+            new Route('feeds', { authenticationRequired: true }, (props: RouteProps) => {
+                return (
+                    <PluginWrapper2
+                        {...props}
+                        {...this.props}
+                        name="feeds"
+                        view="feeds"
+                        syncHash={false}
+                    />
+                );
+            }),
             new Route('jobbrowser', { authenticationRequired: true }, (props: RouteProps) => {
                 return (
                     <PluginWrapper2
@@ -83,17 +112,38 @@ export default class Body extends Component<BodyProps, BodyState> {
                     />
                 );
             }),
+            // new Route(
+            //     '^(people|user)$/:username?',
+            //     { authenticationRequired: true },
+            //     (props: RouteProps) => {
+            //         return (
+            //             <PluginWrapper2
+            //                 {...props}
+            //                 {...this.props}
+            //                 name="react-profile-view"
+            //                 view="user-profile"
+            //                 syncHash={false}
+            //             />
+            //         );
+            //     }
+            // ),
+
             new Route(
                 '^(people|user)$/:username?',
                 { authenticationRequired: true },
                 (props: RouteProps) => {
+                    if (this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
+                        // this should not be possible ... actually this should be enforced
+                        // by the router...
+                        return <div>impossible!</div>;
+                    }
                     return (
-                        <PluginWrapper2
+                        <UserProfile
                             {...props}
-                            {...this.props}
-                            name="react-profile-view"
-                            view="user-profile"
-                            syncHash={false}
+                            config={this.props.config}
+                            authState={this.props.authState}
+                            setTitle={this.props.setTitle}
+                            username={props.params.get('username')!}
                         />
                     );
                 }
@@ -498,6 +548,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 <RouterWrapper>
                     <RouterContext.Consumer>
                         {(value) => {
+                            console.log('interesting', value);
                             switch (value.status) {
                                 case AsyncProcessStatus.NONE:
                                     return <div />;

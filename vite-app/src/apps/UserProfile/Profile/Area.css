@@ -1,0 +1,24 @@
+.Area {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid silver;
+    border-radius: 0.5rem;
+}
+
+.Area-title {
+    flex: 0 0 auto;
+    font-weight: bold;
+    font-size: 100%;
+    text-align: center; 
+    color: rgba(0, 0, 0, 0.65);
+    padding: 8px;
+    /* margin-bottom: 10px; */
+    border-bottom: 1px solid rgba(100, 100, 100, 0.2);
+    background-color: rgba(200, 200, 200, 0.2);
+}
+
+.Area-body {
+    flex: 1 1 0;
+    padding: 8px;
+}

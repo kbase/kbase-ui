@@ -41,7 +41,7 @@ export default class NarrativeManagerStart extends Component<
     }
 
     async componentDidMount() {
-        this.props.setTitle('Creating and Opening New Narrative...');
+        this.props.setTitle('Creating and Opening Narrative...');
         this.setState({
             status: AsyncProcessStatus.PENDING
         });

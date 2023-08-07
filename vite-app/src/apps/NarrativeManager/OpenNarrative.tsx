@@ -1,3 +1,4 @@
+import Well from "components/Well";
 import { Component } from "react";
 
 export interface OpenNarrativeProps {
@@ -19,11 +20,11 @@ export default class OpenNarrative extends Component<OpenNarrativeProps, {}> {
 
     render() {
         const url = this.makeNarrativePath();
-        return <div className="well">
-            <div className="well-header">
+        return <Well variant="info">
+            <Well.Header>
                 Opening your Narrative...
-            </div>
-            <div className="well-body">
+            </Well.Header>
+            <Well.Body>
                 <p>
                     If the Narrative does not open within a few seconds, use the following link to open it directly:
                 </p>
@@ -32,7 +33,7 @@ export default class OpenNarrative extends Component<OpenNarrativeProps, {}> {
                         Open your Narrative: {url}
                     </a>
                 </p>
-            </div>
-        </div>
+            </Well.Body>
+        </Well>
     }
 }

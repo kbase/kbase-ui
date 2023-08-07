@@ -22,18 +22,13 @@ export interface JSONObjectOf<T extends JSONValue> {
 export interface JSONArrayOf<T extends JSONValue> extends Array<T> {
 }
 
+
 export function isJSONObject(value: any): value is JSONObject {
-    if (value instanceof {}.constructor) {
-        return true;
-    }
-    return false;
+    return isJSONValue(value) && isPlainObject(value);
 }
 
 export function isJSONArray(value: any): value is JSONArray {
-    if (Array.isArray(value)) {
-        return true;
-    }
-    return false;
+    return isJSONValue(value) && Array.isArray(value);
 }
 
 export function isJSONValue(value: unknown): value is JSONValue {
@@ -62,6 +57,64 @@ export function isJSONValue(value: unknown): value is JSONValue {
 
     return false;
 }
+
+
+export function isPlainObject(value: unknown): boolean {
+    if (typeof value !== "object" || value === null) {
+        return false;
+    }
+    return Object.getPrototypeOf(value) === Object.prototype;
+}
+
+export function assertJSONObject(value: unknown, errorMessage?: string): asserts value is JSONObject {
+    try {
+        assertJSONValue(value);
+    } catch (ex) {
+        throw new Error(`${errorMessage ? errorMessage + ':' : ''}${ex instanceof Error ? ex.message : 'Unknown error'}`)
+    }
+    if (!isPlainObject(value)) {
+        throw new Error(errorMessage || 'json value is not an object');
+    }
+}
+
+export function assertJSONArray(value: unknown): asserts value is JSONArray {
+    assertJSONValue(value);
+    if (!Array.isArray(value)) {
+        throw new Error('json value is not an array');
+    }
+}
+
+export function assertJSONValue(value: unknown): asserts value is JSONValue {
+    const typeOf = typeof value;
+    if (['string', 'number', 'boolean'].indexOf(typeOf) >= 0) {
+        return;
+    }
+
+    if (typeof value !== 'object') {
+        throw new Error('not a valid JSON Value (not scalar, not object)')
+    }
+    if (value === null) {
+        return;
+    }
+    if (Array.isArray(value)) {
+        if (value.some((subvalue) => {
+            return !isJSONValue(subvalue);
+        })) {
+            throw new Error('array does not contain valid JSON values');
+        }
+    }
+    if (isPlainObject(value)) {
+        const value2 = value as unknown as { [key: string]: unknown };
+        if (Object.keys(value).some((key) => {
+            return !isJSONValue(value2[key]);
+        })) {
+            throw new Error('object dos not contain valid JSON values');
+        }
+    }
+
+    // throw new Error('not a valid JSON value');
+}
+
 
 export type PropPath = Array<string | number>
 

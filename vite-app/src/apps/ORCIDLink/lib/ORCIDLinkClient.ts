@@ -6,6 +6,7 @@ import { LinkingSessionComplete } from "./Model";
 const WORKS_PATH = 'orcid/works';
 const GET_PROFILE_PATH = 'orcid/profile';
 const GET_LINK_PATH = 'link';
+const GET_LINK_SHARE_PATH = 'link/share';
 const LINKING_SESSIONS_PATH = 'linking-sessions';
 const LINK_PATH = 'link';
 
@@ -327,6 +328,10 @@ export interface LinkRecord {
     orcid_auth: ORCIDAuth
 }
 
+export interface LinkShareRecord {
+    orcidId: string;
+}
+
 export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
 
@@ -357,6 +362,11 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
     async getLink(): Promise<LinkRecord> {
         return await this.get<LinkRecord>(`${GET_LINK_PATH}`)
+    }
+
+
+    async getLinkShare(username: string): Promise<LinkShareRecord> {
+        return await this.get<LinkShareRecord>(`${GET_LINK_SHARE_PATH}/${username}`)
     }
 
     async deleteLink(): Promise<void> {

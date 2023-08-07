@@ -114,43 +114,18 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     hashListener: () => void;
     constructor(props: SidebarProps) {
         super(props);
-
-        // this.menuService = this.props.runtime.service('menu');
         const path = document.location.hash.substring(1).replace(/^\/+/, '');
         this.state = {
-            // path: null,
-            // menu: this.computeMenu(),
-            // feedStatus: null,
             path,
         };
 
-        // this.menuService.onChange(() => {
-        //     this.setState({
-        //         menu: this.computeMenu(this.state.path)
-        //     });
-        // });
         this.hashListener = this.onHashChange.bind(this);
     }
 
     componentDidMount() {
-        //     this.props.runtime.receive('session', 'change', () => {
-        //         this.setState({
-        //             menu: this.computeMenu(this.state.path)
-        //         });
-        //     });
-
-        //     this.props.runtime.receive('route', 'routing', (route) => {
-        //         const path = routeToPath(route);
-        //         this.setState({
-        //             path,
-        //             menu: this.computeMenu(path)
-        //         });
-        //     });
-
         // catch hash change in order to update the sidebar menu props, 
         // which will then higlight the current menu item.
         // TODO: base this on a context.
-
         window.addEventListener('hashchange', this.hashListener);
     }
 
@@ -166,48 +141,6 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
     componentWillUnmount() {
         window.removeEventListener('hashchange', this.hashListener);
     }
-
-    // computeMenu(selectedItemPath) {
-    //     const allowedTags = this.props.runtime.config('ui.allow', []);
-    //     const isLoggedIn = this.props.runtime.service('session').isLoggedIn();
-    //     const userRoles = this.props.runtime.service('session').getRoles().map((role) => {
-    //         return role.id;
-    //     });
-
-    //     const sidebarMenu = this.menuService.getSidebarMenu();
-
-    //     const filterMenu = (menu) => {
-    //         return menu.filter((item) => {
-    //             if (!isLoggedIn && item.auth) {
-    //                 return false;
-    //             }
-    //             if (item.allow) {
-    //                 return arraysIntersect(item.allow, allowedTags);
-    //             }
-    //             if (item.allowRoles) {
-    //                 return arraysIntersect(item.allowRoles, userRoles);
-    //             }
-    //             return true;
-    //         });
-    //     };
-
-    //     return filterMenu(sidebarMenu.main)
-    //         .map((menuItem) => {
-    //             const isActive = (selectedItemPath && selectedItemPath === menuItem.path) ? true : false;
-    //             return {
-    //                 id: menuItem.name,
-    //                 name: menuItem.name,
-    //                 label: menuItem.label,
-    //                 tooltip: menuItem.tooltip,
-    //                 icon: menuItem.icon,
-    //                 path: menuItem.path,
-    //                 authRequired: menuItem.authRequired ? true : false,
-    //                 isActive,
-    //                 allow: menuItem.allow,
-    //                 beta: menuItem.beta
-    //             };
-    //         });
-    // }
 
     renderAuthenticated(authState: AuthenticationStateAuthenticated) {
         const userRoles: Array<string> = authState.authInfo.account.roles.map(
