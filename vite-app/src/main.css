@@ -187,3 +187,34 @@ p:last-child {
     margin-left: 0.5rem;
     padding-left: 0.5rem;
 }
+
+
+
+
+.LayoutTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.LayoutTable th,
+.LayoutTable td {
+    text-align: left;
+    padding: 4px;
+    vertical-align: top;
+}
+
+.LayoutTable th {
+    color: rgba(0, 0, 0, 0.3);
+    font-style: italic;
+    border-bottom: 1px solid rgba(100, 100, 100, 0.5);
+}
+
+.LayoutTable td {
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+
+.LayoutTable tr:last-child>td {
+    /* border-bottom: 1px solid rgba(100, 100, 100, 0.5); */
+    border-bottom: none;
+}
