@@ -156,9 +156,6 @@ export default class Poller {
                     this.timestamp() + ': Error while running task',
                     err
                 );
-            })
-            .finally(() => {
-                // console.log(timestamp() + ': ran task in ' + (new Date().getTime() - start) + 'ms');
             });
     }
 

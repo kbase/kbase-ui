@@ -196,11 +196,6 @@ export default class PermissionsController extends Component<PermissionsControll
 
             this.fetchPreferences();
 
-            // const { profile: { preferences: { showORCIDId } } } = profile;
-            // const preferences: ORCIDLinkPreferences = {
-            //     showInProfile: (showORCIDId as unknown as boolean)
-            // }
-            // console.log('profile', profile);
             this.setState({
                 updatePreferencesState: {
                     status: AsyncProcessStatus.SUCCESS,

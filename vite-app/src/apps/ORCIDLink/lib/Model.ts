@@ -1,5 +1,4 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import GenericClient from "lib/kb_lib/comm/JSONRPC11/GenericClient";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { Config } from "types/config";
 // import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
@@ -107,7 +106,7 @@ export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string
             tooltip: `Allow ${SCOPE_USER} to add information about your research activites \
             (for example, works, affiliations) that is stored in the ${SCOPE_USER} system(s) to your \
             ORCID record. ${SCOPE_USER} will also be able to update this and any other information \
-            ${SCOPE_USER} have added, but will not be able to edit information added by you or \
+            ${SCOPE_USER} has added, but will not be able to edit information added by you or \
             any other trusted organization.`
         },
         help: [
@@ -233,20 +232,6 @@ export class Model {
         });
     }
 
-
-    async serviceURL(): Promise<string> {
-        const serviceWizard = new GenericClient({
-            module: 'ServiceWizard',
-            timeout: 1000,
-            url: this.config.services.ServiceWizard.url
-        });
-        const [result] = await serviceWizard.callFunc('get_service_status', [{
-            module_name: 'ORCIDLink',
-            version: 'dev'
-        }]) as unknown as [GetServiceStatusResult];
-        return result.url;
-    }
-
     async getInfo(): Promise<InfoResponse> {
         return this.orcidLinkClient.getInfo();
     }
@@ -310,12 +295,10 @@ export class Model {
     //     return this.orcidLinkClient.deleteWork(putCode);
     // }
 
-
     async getName(): Promise<GetNameResult> {
         const { lastName, firstName } = await this.orcidLinkClient.getProfile();
         return { lastName, firstName };
     }
-
 
     async fetchLinkingSession(sessionId: string) {
         return this.orcidLinkClient.getLinkingSession(sessionId);

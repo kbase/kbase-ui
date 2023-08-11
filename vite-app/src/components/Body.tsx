@@ -548,7 +548,6 @@ export default class Body extends Component<BodyProps, BodyState> {
                 <RouterWrapper>
                     <RouterContext.Consumer>
                         {(value) => {
-                            console.log('interesting', value);
                             switch (value.status) {
                                 case AsyncProcessStatus.NONE:
                                     return <div />;

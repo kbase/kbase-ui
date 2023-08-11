@@ -1,3 +1,4 @@
+import { UserPermission, assertUserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { PERM_MAPPING } from './Definitions';
@@ -6,11 +7,11 @@ import { PERM_MAPPING } from './Definitions';
 interface ShareUserProps {
     username: string;
     realname: string;
-    permission: string;
-    currentUserPermission: string;
+    permission: UserPermission;
+    currentUserPermission: UserPermission;
     key: string;
 
-    updatePermission: (username: string, newPerm: string) => void;
+    updatePermission: (username: string, newPerm: UserPermission) => void;
     removeAccess: (username: string) => void;
 }
 
@@ -19,7 +20,9 @@ export default class ShareUser extends Component<ShareUserProps> {
         this.props.removeAccess(this.props.username);
     }
     handlePermissionChange(ev: React.ChangeEvent<HTMLSelectElement>) {
-        this.props.updatePermission(this.props.username, ev.target.value);
+        const newPermission = ev.target.value;
+        assertUserPermission(newPermission);
+        this.props.updatePermission(this.props.username, newPermission);
     }
     render() {
         let permDropdown = null;
@@ -28,15 +31,14 @@ export default class ShareUser extends Component<ShareUserProps> {
                 <div>
                     <Form.Select
                         onChange={this.handlePermissionChange.bind(this)}
+                        defaultValue={this.props.permission}
                     >
                         {['r', 'w', 'a'].map((permissionCode) => {
                             return (
                                 <option
                                     value={permissionCode}
                                     key={permissionCode}
-                                    selected={
-                                        permissionCode === this.props.permission
-                                    }
+
                                 >
                                     {PERM_MAPPING[permissionCode]}
                                 </option>

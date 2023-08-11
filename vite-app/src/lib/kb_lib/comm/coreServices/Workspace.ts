@@ -3,42 +3,35 @@ import {
     JSONObjectOf,
     JSONValue,
     objectToJSONObject
-} from '@kbase/ui-lib/lib/json';
+} from 'lib/json';
 import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 import { EpochTimeMS, Mapping, SDKBoolean } from '../types';
-// import {
-//     JSONLikeArrayOf,
-//     JSONLikeObject,
-//     JSONObject,
-//     JSONObjectOf,
-//     JSONValue,
-//     objectToJSONObject,
-//     toJSON,
-//     toJSONLike,
-// } from '../../json.ts';
+
+export type WorkspaceId = number;
+export type ObjectId = number;
 
 export interface ObjectIdentity extends JSONLikeObject {
     workspace?: string;
-    wsid?: number;
+    wsid?: WorkspaceId;
     name?: string;
-    objid?: string;
+    objid?: ObjectId;
     ver?: number;
     ref?: string;
 }
 
 export interface WorkspaceIdentity extends JSONLikeObject {
     workspace?: string;
-    id?: number;
+    id?: WorkspaceId;
 }
 
 // TODO: either improve or get rid of JSONLikeObject usage ... it allows any key through! 
 // That sort of messes up strict typing in the IDE and compiler ...
 export interface ObjectSpecification extends JSONLikeObject {
     workspace?: string;
-    wsid?: number;
+    wsid?: WorkspaceId;
     name?: string;
-    objid?: number;
+    objid?: ObjectId;
     ver?: number;
     ref?: string;
     obj_path?: Array<ObjectIdentity>;
@@ -78,7 +71,7 @@ export interface ObjectInfo {
     save_date: string;
     version: number;
     saved_by: string;
-    wsid: number;
+    wsid: WorkspaceId;
     ws: string;
     checksum: string;
     size: number;
@@ -198,7 +191,7 @@ export interface ObjectData extends JSONLikeObject {
     path: Array<ObjectRef>;
     provenance: Array<ProvenanceAction>;
     creator: Username;
-    orig_wsid: number;
+    orig_wsid: WorkspaceId;
     created: Timestamp;
     epoch: EpochTimeMS;
     refs: Array<ObjectRef>;
@@ -271,10 +264,26 @@ export interface GetPermissionsMassParams extends JSONLikeObject {
     workspaces: Array<WorkspaceIdentity>;
 }
 
-export type Perm = 'a' | 'w' | 'r' | 'n';
+// This almost works, but is more copmlicated and gets weird in the assertion 
+// function...
+// export const userPermissionValues = ['a', 'w', 'r', 'n'] as const;
+// // export type UserPermission = 'a' | 'w' | 'r' | 'n';
+// type UserPermissionTuple = typeof userPermissionValues;
+// export type UserPermission = UserPermissionTuple[number];
+
+
+export const userPermissionValues = ['a', 'w', 'r', 'n'];
+export type UserPermission = 'a' | 'w' | 'r' | 'n';
+export function assertUserPermission(value: string): asserts value is UserPermission {
+    if (!userPermissionValues.includes(value)) {
+        throw new TypeError(`"${value}" is not an expected user permission value (${userPermissionValues.join(', ')})`)
+    }
+}
+
+export type GlobalPermission = 'n' | 'r'
 
 export interface UserPerm {
-    [x: string]: Perm
+    [x: string]: UserPermission
 }
 
 export interface GetPermissionsMassResult extends JSONLikeObject {
@@ -286,6 +295,22 @@ export interface AlterWorkspaceMetadataParams extends JSONLikeObject {
     new?: Metadata;
     remove?: Array<string>;
 }
+
+export type DeleteWorkspaceParams = WorkspaceIdentity;
+
+export interface SetGlobalPermissionParams extends JSONLikeObject {
+    id?: WorkspaceId
+    workspace?: string;
+    new_permission: GlobalPermission
+}
+
+export interface SetPermissionsParams extends JSONLikeObject {
+    id?: WorkspaceId
+    workspace?: string;
+    new_permission: UserPermission;
+    users: Array<string>
+}
+
 
 export default class WorkspaceClient extends ServiceClient {
     module = 'Workspace';
@@ -353,6 +378,48 @@ export default class WorkspaceClient extends ServiceClient {
     async alter_workspace_metadata(params: AlterWorkspaceMetadataParams): Promise<void> {
         await this.callFuncEmptyResult<[JSONValue]>(
             'alter_workspace_metadata',
+            [toJSON(params)]
+        );
+    }
+
+    async alter_workspace_metadata2(params: AlterWorkspaceMetadataParams): Promise<void> {
+        await this.callFuncEmptyResult<[JSONValue]>(
+            'alter_workspace_metadata',
+            [toJSON(params)]
+        );
+    }
+
+    async delete_workspace(params: DeleteWorkspaceParams): Promise<void> {
+        await this.callFuncEmptyResult<[JSONValue]>(
+            'delete_workspace',
+            [toJSON(params)]
+        );
+    }
+
+    async set_global_permission(params: SetGlobalPermissionParams): Promise<void> {
+        // Hmm, should we be defensive here, or just let the workspace provide the error?
+        if (typeof params.id === 'undefined' && typeof params.workspace === 'undefined') {
+            throw new TypeError('One of "id" or "workspace" must be provided; neither were');
+        }
+        if (typeof params.id === 'number' && typeof params.workspace === 'string') {
+            throw new TypeError('One of "id" or "workspace" must be provided; both were');
+        }
+        await this.callFuncEmptyResult<[JSONValue]>(
+            'set_global_permission',
+            [toJSON(params)]
+        );
+    }
+
+    async set_permissions(params: SetPermissionsParams): Promise<void> {
+        // Hmm, should we be defensive here, or just let the workspace provide the error?
+        if (typeof params.id === 'undefined' && typeof params.workspace === 'undefined') {
+            throw new TypeError('One of "id" or "workspace" must be provided; neither were');
+        }
+        if (typeof params.id === 'number' && typeof params.workspace === 'string') {
+            throw new TypeError('One of "id" or "workspace" must be provided; both were');
+        }
+        await this.callFuncEmptyResult<[JSONValue]>(
+            'set_permissions',
             [toJSON(params)]
         );
     }

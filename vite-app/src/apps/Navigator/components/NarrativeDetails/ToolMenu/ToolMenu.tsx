@@ -8,7 +8,7 @@ import DeleteNarrative from './DeleteNarrative';
 import LinkOrgItem from './LinkOrgItem';
 import RenameItem from './RenameItem';
 import './ToolMenu.css';
-import { UserPermission } from './ToolMenuWrapper';
+import { Permission } from './ToolMenuWrapper';
 import SharingItem from './sharing/SharingItem';
 
 interface MenuItem {
@@ -98,7 +98,7 @@ interface ToolMenuState {
 
 interface ToolMenuProps {
     narrative: NarrativeSearchDoc;
-    permission: UserPermission;
+    permission: Permission;
     authInfo: AuthInfo;
     config: Config;
     cancelFn?: () => void;

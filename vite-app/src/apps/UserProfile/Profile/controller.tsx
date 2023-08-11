@@ -1,4 +1,4 @@
-import { ORCIDLinkServiceClient } from "apps/ORCIDLink/lib/ORCIDLinkClient";
+import { ErrorCode, ORCIDLinkServiceClient } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { ClientError } from "apps/ORCIDLink/lib/ServiceClient";
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
@@ -294,7 +294,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
             })
         } catch (ex) {
             if (ex instanceof ClientError) {
-                if (ex.code === "notFound") {
+                if (ex.code === ErrorCode.not_found) {
                     this.setState({
                         orcidState: {
                             status: AsyncProcessStatus.SUCCESS,
@@ -413,6 +413,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
     }
 
     render() {
+        const baseURL = this.props.config;
         switch (this.state.profileState.status) {
             case AsyncFetchStatus.NONE:
                 return <Loading message="Initializing..." />
@@ -422,13 +423,12 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 return <ErrorMessage message={this.state.profileState.error.message} />
             case AsyncFetchStatus.REFETCHING:
             case AsyncFetchStatus.SUCCESS:
-                console.log('here...');
                 if (this.state.isEditing) {
                     return <ProfileEditor
                         orgsState={this.state.orgsState}
                         profileView={this.state.profileState.value.profileView}
                         orcidState={this.state.orcidState}
-                        baseUrl="https://ci.kbase.us"
+                        uiOrigin={this.props.config.deploy.ui.origin}
                         updateProfile={this.updateProfile.bind(this)}
                         checkORCID={this.checkORCID.bind(this)}
                         fetchProfile={this.fetchProfile.bind(this)}
@@ -439,7 +439,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
                         orgsState={this.state.orgsState}
                         profileView={this.state.profileState.value.profileView}
                         orcidState={this.state.orcidState}
-                        baseUrl="https://ci.kbase.us"
+                        uiOrigin={this.props.config.deploy.ui.origin}
                         checkORCID={this.checkORCID.bind(this)}
                         fetchProfile={this.fetchProfile.bind(this)}
                         toggleEditing={this.toggleEditing.bind(this)}

@@ -27,7 +27,7 @@ export type SearchParams2 = Array<[string, string]>
  */
 
 export interface ServiceErrorResponse {
-    code: string,
+    code: number,
     title?: string,
     message: string,
     data?: JSONObject
@@ -35,7 +35,7 @@ export interface ServiceErrorResponse {
 
 export class ServiceError extends Error {
     responseCode: number;
-    code: string;
+    code: number;
     title?: string;
     data?: JSONObject;
     constructor(responseCode: number, response: ServiceErrorResponse) {

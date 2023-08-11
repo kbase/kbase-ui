@@ -10,6 +10,28 @@ const GET_LINK_SHARE_PATH = 'link/share';
 const LINKING_SESSIONS_PATH = 'linking-sessions';
 const LINK_PATH = 'link';
 
+// Errors
+
+export enum ErrorCode {
+    unknown = 0,       // unknown or unclassified error
+    already_linked = 1000,
+    authorization_required = 1010,
+    not_authorized = 1011,
+    not_found = 1020,  // something was not found
+    internal_server_error = 1030,
+    json_decode_error = 1040,
+    content_type_error = 1041,
+    upstream_error = 1050,
+    upstream_jsonrpc_error = 1051,
+    upstream_orcid_error = 1052,
+    fastapi_error = 1060,
+    request_validation_error = 1070,
+    linking_session_continue_invalid_param = 1080,
+    linking_session_error = 1081,
+    impossible_error = 10099
+
+}
+
 // ORCID User Profile (our version)
 
 export interface Affiliation {
@@ -384,7 +406,6 @@ export class ORCIDLinkServiceClient extends ServiceClient {
     }
 
     async saveWork(work: WorkUpdate): Promise<Work> {
-        console.log('saveWork', toJSON(work), work);
         return await this.put<Work>(`${WORKS_PATH}`, toJSON(work))
     }
 
@@ -417,8 +438,6 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         if (uiOptions) {
             startURL.searchParams.set('ui_options', uiOptions);
         }
-
-        console.log('ui options?', uiOptions);
 
         // Add the 'return from window' if provided
         // if (returnFromWindow) {

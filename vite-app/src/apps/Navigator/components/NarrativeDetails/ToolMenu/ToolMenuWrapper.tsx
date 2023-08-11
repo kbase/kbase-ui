@@ -1,5 +1,5 @@
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
-import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
+import WorkspaceClient, { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import ErrorMessage from '../../../../../components/ErrorMessage';
 import { AuthInfo } from '../../../../../contexts/Auth';
@@ -9,10 +9,10 @@ import {
 } from '../../../../../lib/AsyncProcess';
 import { Config } from '../../../../../types/config';
 import ToolMenu from './ToolMenu';
-import { PermissionLevel } from './sharing/Definitions';
+// import { PermissionLevel } from './sharing/Definitions';
 
-export interface UserPermission {
-    permission: PermissionLevel;
+export interface Permission {
+    permission: UserPermission;
     isGlobal: boolean;
     isOwner: boolean;
 }
@@ -25,7 +25,7 @@ export interface ToolMenuWrapperProps {
     cancelFn?: () => void;
 }
 
-type ToolMenuWrapperState = AsyncProcess<UserPermission, string>;
+type ToolMenuWrapperState = AsyncProcess<Permission, string>;
 
 export default class ToolMenUWrapper extends Component<
     ToolMenuWrapperProps,
@@ -56,7 +56,7 @@ export default class ToolMenUWrapper extends Component<
         }
     }
 
-    async fetchPermission(): Promise<UserPermission> {
+    async fetchPermission(): Promise<Permission> {
         const workspaceId = this.props.narrative.access_group;
 
         // get shared perms from workspace

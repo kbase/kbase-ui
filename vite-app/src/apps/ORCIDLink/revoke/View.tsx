@@ -4,7 +4,7 @@ import Well from "components/Well";
 import { AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Button, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
-import { LinkState, RevokeState } from "./Controller";
+import { LinkState, RevokeState, RevokeStatus } from "./Controller";
 import Revoker from "./Revoker";
 
 export interface ViewProps {
@@ -34,10 +34,22 @@ export default class View extends Component<ViewProps, ViewState> {
                 this.props.setTitle('ORCID® Link - Revoke - Loading...');
                 break;
             case AsyncProcessStatus.ERROR:
-                this.props.setTitle('ORCID® Link - Revoke - Error');
+                if (this.props.revokeState.status === RevokeStatus.REVOKED) {
+                    this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked');
+                } else {
+                    this.props.setTitle('ORCID® Link - Revoke - Error');
+                }
                 break;
             case AsyncProcessStatus.SUCCESS:
-                this.props.setTitle('ORCID® Link - Revoke - Confirm Link Revocation');
+                if (this.props.revokeState.status === RevokeStatus.REVOKED) {
+                    // TODO: this is a falacy - when revoked, there will no longer be
+                    // a link, so we should technically be in an ERROR state.
+                    // But we should just change the link status to be:
+                    // NONE, PENDING, LINKED, NOTLINKED, ERROR
+                    this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked');
+                } else {
+                    this.props.setTitle('ORCID® Link - Revoke - Confirm Link Revocation');
+                }
                 break;
         }
     }
@@ -123,13 +135,38 @@ export default class View extends Component<ViewProps, ViewState> {
         </Well>;
     }
 
+    renderRevoked() {
+        return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
+            <Well.Header>
+                Success!
+            </Well.Header>
+            <Well.Body>
+                <p>
+                    The ORCID Link has been successfully removed.
+                </p>
+            </Well.Body>
+            <Well.Footer style={{ justifyContent: 'center' }}>
+                <ButtonToolbar>
+                    <Button variant="primary" onClick={this.props.cancel}>
+                        <span className="fa fa-mail-reply" /> Done
+                    </Button>
+                </ButtonToolbar>
+            </Well.Footer>
+        </Well>
+    }
+
     renderState() {
         switch (this.props.linkState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
                 return this.renderLoading();
             case AsyncProcessStatus.ERROR:
-                return this.renderError(this.props.linkState.error);
+                if (this.props.revokeState.status === RevokeStatus.REVOKED) {
+                    return this.renderRevoked();
+                } else {
+                    return this.renderError(this.props.linkState.error);
+                }
+
             case AsyncProcessStatus.SUCCESS:
                 return <Revoker
                     revokeState={this.props.revokeState}

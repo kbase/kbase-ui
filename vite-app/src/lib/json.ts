@@ -116,27 +116,75 @@ export function assertJSONValue(value: unknown): asserts value is JSONValue {
 }
 
 
-export type PropPath = Array<string | number>
+// export type PropPath = Array<string | number>
 
-export function digJSON(
-    value: JSONValue,
-    propPath: PropPath,
-    defaultValue?: JSONValue
-): JSONValue {
-    if (propPath.length === 0) {
-        return value;
+// export function digJSON(
+//     value: JSONValue,
+//     propPath: PropPath,
+//     defaultValue?: JSONValue
+// ): JSONValue {
+//     if (propPath.length === 0) {
+//         return value;
+//     }
+//     const [prop, ...rest] = propPath;
+//     switch (typeof prop) {
+//         case 'string':
+//             if (!(isJSONObject(value))) {
+//                 throw new TypeError('Not an object');
+//             }
+//             return digJSON(value[prop], rest, defaultValue)
+//         case 'number':
+//             if (!(isJSONArray(value))) {
+//                 throw new TypeError(`Not an array`);
+//             }
+//             return digJSON(value[prop], rest, defaultValue);
+//     }
+// }
+export type PropsPath = string | Array<string>;
+
+export function normalizePropPath(propPath: PropsPath): Array<string> {
+    if (typeof propPath === 'string') {
+        return propPath.split('.');
+    } else if (Array.isArray(propPath)) {
+        return propPath;
     }
-    const [prop, ...rest] = propPath;
-    switch (typeof prop) {
-        case 'string':
-            if (!(isJSONObject(value))) {
-                throw new TypeError('Not an object');
+    throw new TypeError('Invalid type for key: ' + (typeof propPath));
+}
+
+export function traverse(obj: JSONObject, path: PropsPath, defaultValue?: JSONValue): JSONValue {
+    const propPath = normalizePropPath(path);
+    let current = obj;
+    const currentPath = [];
+    for (const [index, pathElement] of propPath.entries()) {
+        currentPath.push(pathElement);
+        if (pathElement in current) {
+            const prop = current[pathElement];
+            if (index === propPath.length - 1) {
+                return prop;
             }
-            return digJSON(value[prop], rest, defaultValue)
-        case 'number':
-            if (!(isJSONArray(value))) {
-                throw new TypeError(`Not an array`);
+            if (isJSONObject(prop)) {
+                current = prop;
+            } else {
+                throw new Error(`Cannot navigate into type "${typeof prop}" on path "${currentPath.join('.')}"`)
             }
-            return digJSON(value[prop], rest, defaultValue);
+        } else {
+            if (typeof defaultValue === 'undefined') {
+                throw new Error(`Cannot find path ${propPath.join('.')} in object`)
+            } else {
+                return defaultValue;
+            }
+        }
     }
+    return current;
+}
+
+export function objectToJSONObject(obj: {}): JSONObject {
+    const x: JSONObject = {};
+    for (const [k, v] of Object.entries(obj)) {
+        if (typeof k !== undefined) {
+            // TODO: Ensure json value
+            x[k] = v as JSONValue;
+        }
+    }
+    return x;
 }

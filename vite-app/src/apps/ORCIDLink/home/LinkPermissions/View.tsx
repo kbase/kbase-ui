@@ -22,7 +22,7 @@ export default class PermissionsView extends Component<PermissionsViewProps> {
         return <Form>
             <Well variant="primary">
                 <Well.Header icon="cog">
-                    Permissions
+                    Settings
                 </Well.Header>
                 <Well.Body>
                     <Container fluid>

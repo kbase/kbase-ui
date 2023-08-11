@@ -200,7 +200,6 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     goBack() {
-        console.log('going back?', window.history.length)
         window.history.go(-1);
     }
 

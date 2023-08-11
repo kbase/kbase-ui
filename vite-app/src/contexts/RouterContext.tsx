@@ -88,9 +88,6 @@ export default class RouterWrapper extends React.Component<
     componentDidMount() {
         this.hashListener = () => {
             const hashPath = this.getHashPath();
-            console.log('hashschange', hashPath, this.state.routerState.status,
-                this.state.routerState.status === 'SUCCESS' ? this.state.routerState.value.hashPath : 'n/a'
-            );
             if (this.state.routerState.status === 'SUCCESS' &&
                 hashPath === this.state.routerState.value.hashPath) {
                 return;
@@ -106,7 +103,6 @@ export default class RouterWrapper extends React.Component<
         }
         window.addEventListener('hashchange', this.hashListener);
         this.pageShowListener = (ev: PageTransitionEvent) => {
-            console.log('pageshow', ev);
             if (ev.persisted) {
                 window.location.reload();
             }

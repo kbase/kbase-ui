@@ -44,7 +44,7 @@ export interface ProfileProps {
     profileView: ProfileView;
     orcidState: ORCIDState;
     orgsState: OrgsState;
-    baseUrl: string;
+    uiOrigin: string;
     updateProfile: (profile: UserProfileUpdate) => void;
     checkORCID: (username: string) => void;
     fetchProfile: (username: string) => void;
@@ -853,7 +853,7 @@ function Profile(props: ProfileProps) {
     }
 
     function makeUIURL(path: string) {
-        const url = new URL(props.baseUrl);
+        const url = new URL(props.uiOrigin);
         url.hash = `${path}`;
         return url.toString();
     }
@@ -897,7 +897,7 @@ function Profile(props: ProfileProps) {
         }
 
         const alertMessage = <div>
-            Have an ORCID account? Create an <a href={`${props.baseUrl}/#orcidlink`} target="_blank">ORCID Link</a> to
+            Have an ORCID account? Create an <a href={`${props.uiOrigin}/#orcidlink`} target="_blank">ORCID Link</a> to
             show your ORCID Id in your profile.
         </div>
         return <Alert message={alertMessage} />

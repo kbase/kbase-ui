@@ -2,12 +2,6 @@
 import { JSONArray, JSONObject, JSONValue } from '@kbase/ui-lib/lib/json';
 import * as uuid from 'uuid';
 
-export interface JSONRPCRequestOptions {
-    func: string;
-    params: any;
-    timeout?: number;
-    token?: string;
-}
 
 // The entire JSON RPC request object
 export interface JSONRPCRequest {

@@ -4,12 +4,12 @@ import { UserPerms } from './Definitions';
 import PermSearch from './PermSearch';
 import ShareUser from './ShareUser';
 
-import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
+import AlertMessage from 'components/AlertMessage';
+import Loading from 'components/Loading';
+import Well from 'components/Well';
+import { UserPermission, default as Workspace, default as WorkspaceClient } from 'lib/kb_lib/comm/coreServices/Workspace';
 import React from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
-import AlertMessage from '../../../../../../components/AlertMessage';
-import Loading from '../../../../../../components/Loading';
-import GenericClient from '../../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import { ControlMenuItemProps } from '../ToolMenu';
 import GlobalPerms from './GlobalPerms';
 
@@ -28,13 +28,12 @@ export default class SharingItem extends Component<
     ControlMenuItemProps,
     State
 > {
-    private workspaceClient: GenericClient;
+    private workspaceClient: Workspace;
 
     constructor(props: ControlMenuItemProps) {
         super(props);
 
-        this.workspaceClient = new GenericClient({
-            module: 'Workspace',
+        this.workspaceClient = new Workspace({
             url: this.props.config.services.Workspace.url,
             timeout: 1000,
             token: this.props.authInfo.token,
@@ -80,7 +79,11 @@ export default class SharingItem extends Component<
             { workspaces: [{ id: wsId }] },
         )
         const perms = result.perms[0];
+
+        // Global permissions are represented as the user "*", with permissions
+        // restricted to 'r' and 'n'.
         const isGlobal = '*' in perms && perms['*'] !== 'n';
+
         const narrativePerms: NarrativePerms = {
             isGlobal: isGlobal,
             allUserPerms: [],
@@ -128,14 +131,11 @@ export default class SharingItem extends Component<
         // this.setState({ isLoading: true });
         const isGlobal = this.state.perms.isGlobal;
         try {
-            await this.workspaceClient.callFuncEmptyResult(
-                'set_global_permission',
-                [
-                    {
-                        id: this.props.narrative.access_group,
-                        new_permission: isGlobal ? 'n' : 'r',
-                    },
-                ]
+            await this.workspaceClient.set_global_permission(
+                {
+                    id: this.props.narrative.access_group,
+                    new_permission: isGlobal ? 'n' : 'r',
+                },
             );
 
             this.setState((prevState) => ({
@@ -165,15 +165,15 @@ export default class SharingItem extends Component<
         }
     }
 
-    async updatePermission(username: string, newPermission: string) {
+    async updatePermission(username: string, newPermission: UserPermission) {
         try {
-            await this.workspaceClient.callFuncEmptyResult('set_permissions', [
+            await this.workspaceClient.set_permissions(
                 {
                     id: this.props.narrative.access_group,
                     users: [username],
                     new_permission: newPermission,
                 },
-            ]);
+            );
 
             await this.updateSharedUserInfo();
         } catch (ex) {
@@ -181,15 +181,15 @@ export default class SharingItem extends Component<
         }
     }
 
-    async updatePermissions(usernames: Array<string>, newPermission: string) {
+    async updatePermissions(usernames: Array<string>, newPermission: UserPermission) {
         try {
-            await this.workspaceClient.callFuncEmptyResult('set_permissions', [
+            await this.workspaceClient.set_permissions(
                 {
                     id: this.props.narrative.access_group,
                     users: usernames,
                     new_permission: newPermission,
                 },
-            ]);
+            );
 
             await this.updateSharedUserInfo();
         } catch (ex) {
@@ -300,32 +300,30 @@ export default class SharingItem extends Component<
                 <p>
                     {this.makePermissionText(this.state.perms.curUserPerm.perm)}
                 </p>
-                <div className="well">
-                    <div className="well-header">
-                        <span className="fa fa-globe"></span> Global Access
-                    </div>
-                    <div className="well-body">
+                <Well variant="light">
+                    <Well.Header icon="globe">
+                        Global Access
+                    </Well.Header>
+                    <Well.Body>
                         <GlobalPerms
                             isGlobal={this.state.perms.isGlobal}
                             isAdmin={curPerm === 'a'}
                             togglePublic={this.togglePublic.bind(this)}
                         />
-                    </div>
-                </div>
-                <div className="well mt-3">
-                    <div className="well-header">
-                        <span className="fa fa-share-alt"></span> Sharing with
-                        Other Users
-                    </div>
+                    </Well.Body>
+                </Well>
+                <Well className="mt-3" variant="light">
+                    <Well.Header icon="share-alt">
+                        Sharing with Other Users
+                    </Well.Header>
 
-                    <div className="well-section">
+                    <Well.Body>
+                        <div className="fs-6 fw-bold text-secondary">Share with 1 or more users</div>
                         {this.renderPermSearch()}
-                    </div>
-                    <div className="well-title">Users Shared With</div>
-                    <div className="well-section">
+                        <div className="fs-6 fw-bold text-secondary mt-2">Already shared with</div>
                         {this.renderSharedUsers()}
-                    </div>
-                </div>
+                    </Well.Body>
+                </Well>
             </div>
         );
     }

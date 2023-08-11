@@ -54,15 +54,15 @@ export default class ErrorView extends Component<ErrorViewProps> {
         switch (returnInstruction.type) {
             case 'link':
                 return (
-                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-                        After creating the link, your browser will be returned to{' '}
+                    <AlertMessage variant="info" style={{ marginTop: '1em' }}>
+                        After closing this error message, your browser will be returned to{' '}
                         <b>{returnInstruction.label}</b>.
                     </AlertMessage>
                 );
             case 'window':
                 return (
-                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-                        After creating the link, this window will be closed, and you should be returned to{' '}
+                    <AlertMessage variant="info" style={{ marginTop: '1em' }}>
+                        After closing this error message, this window will be closed, and you should be returned to{' '}
                         <b>{returnInstruction.label}</b>.
                     </AlertMessage>
                 );
@@ -79,6 +79,10 @@ export default class ErrorView extends Component<ErrorViewProps> {
                     <p>Conversely, an ORCID account may be linked to only one KBase account.</p>
                 </div>
             case ErrorType.FETCH_LINK_SESSION_ERROR:
+                return <div>
+                    {this.props.error.message}
+                    {this.renderReturnInstruction()}
+                </div>
                 return this.props.error.message;
         }
     }
@@ -86,7 +90,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
     render() {
         return (
             <Well variant="danger">
-                <Well.Header>Error</Well.Header>
+                <Well.Header>Link Confirmation Error</Well.Header>
                 <Well.Body>
                     {this.renderError()}
                 </Well.Body>
@@ -99,7 +103,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                     >
 
                         <Button variant="danger" onClick={this.props.cancelLink}>
-                            <span className="fa fa-lg fa-mail-reply" /> Cancel
+                            <span className="fa fa-lg fa-mail-reply" /> Done
                         </Button>
                     </Stack>
                 </Well.Footer>

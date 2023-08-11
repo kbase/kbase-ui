@@ -34,7 +34,7 @@ export interface ProfileProps {
     profileView: ProfileView;
     orcidState: ORCIDState;
     orgsState: OrgsState;
-    baseUrl: string;
+    uiOrigin: string;
     checkORCID: (username: string) => void;
     fetchProfile: (username: string) => void;
     toggleEditing: () => void;
@@ -359,7 +359,7 @@ function ProfileViewer(props: ProfileProps) {
         // TODO: for better ergonomics in development, should be able to get the
         // kbase environment host from the config...
 
-        const url = new URL(props.baseUrl);
+        const url = new URL(props.uiOrigin);
         // const url = new URL(window.location.href);
         url.hash = '#orcidlink/link';
 
@@ -403,7 +403,7 @@ function ProfileViewer(props: ProfileProps) {
     }
 
     function getLinkingLink() {
-        const linkingURL = new URL(`${props.baseUrl}/#orcidlink/link`);
+        const linkingURL = new URL(`${props.uiOrigin}/#orcidlink/link`);
         const returnURL = (() => {
             if (window.parent) {
                 return new URL(window.parent.location.href);
@@ -430,8 +430,8 @@ function ProfileViewer(props: ProfileProps) {
             onOk,
             content: <>
                 <p>
-                    In order to create your ORCID Link, you'll leave this page, but if all goes
-                    well, return here after the linking process.
+                    In order to create your ORCID Link, your browser will leave this page, but return
+                    to it automatically when the linking process has completed.
                 </p>
             </>
         });

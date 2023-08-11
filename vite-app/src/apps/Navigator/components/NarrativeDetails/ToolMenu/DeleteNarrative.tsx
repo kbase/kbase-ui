@@ -1,9 +1,9 @@
 import NarrativeModel from 'lib/clients/NarrativeModel';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import React, { Component } from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import AlertMessage from '../../../../../components/AlertMessage';
 import Loading from '../../../../../components/Loading';
-import GenericClient from '../../../../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import { ControlMenuItemProps } from './ToolMenu';
 
 export enum DeleteNarrativeStatus {
@@ -112,16 +112,15 @@ export default class DeleteNarrative extends Component<
             status: DeleteNarrativeStatus.DELETING,
         });
 
-        const workspaceClient = new GenericClient({
-            module: 'Workspace',
+        const workspaceClient = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
             token: this.props.authInfo.token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
-            await workspaceClient.callFuncEmptyResult('delete_workspace', [
-                { id: this.props.narrative.access_group },
-            ]);
+            await workspaceClient.delete_workspace(
+                { id: this.props.narrative.access_group }
+            );
             this.setState({
                 status: DeleteNarrativeStatus.SUCCESS,
             });

@@ -4,7 +4,7 @@ import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import { Config } from "types/config";
 import { LinkingSessionComplete, Model } from "../lib/Model";
-import { LinkRecord, ReturnInstruction } from "../lib/ORCIDLinkClient";
+import { ErrorCode, LinkRecord, ReturnInstruction } from "../lib/ORCIDLinkClient";
 import { ClientError } from "../lib/ServiceClient";
 import Continue from "./Continue";
 import ErrorView from "./Error";
@@ -108,7 +108,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             }
         } catch (ex) {
             if (ex instanceof ClientError) {
-                if (ex.responseCode === 404) {
+                if (ex.code === ErrorCode.not_found) {
                     // Strangely enough, this is the happy path!
                 } else {
                     this.setState({
@@ -176,7 +176,31 @@ export default class ContinueController extends Component<ContinueControllerProp
             });
         } catch (ex) {
             console.error('ERROR', ex);
-            if (ex instanceof Error) {
+            if (ex instanceof ClientError) {
+                if (ex.code === ErrorCode.not_found) {
+                    this.setState({
+                        continueState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                type: ErrorType.FETCH_LINK_SESSION_ERROR,
+                                message: "There is no current linking session."
+                            }
+                        }
+                    });
+                    return;
+                } else {
+                    this.setState({
+                        continueState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                type: ErrorType.FETCH_LINK_SESSION_ERROR,
+                                message: ex.message
+                            }
+                        }
+                    });
+                    return;
+                }
+            } else if (ex instanceof Error) {
                 this.setState({
                     continueState: {
                         status: AsyncProcessStatus.ERROR,
@@ -255,11 +279,10 @@ export default class ContinueController extends Component<ContinueControllerProp
                         window.opener.postMessage({ id }, origin);
                     }
                 }
-
             } else {
                 // TODO: what is this use case? Is it real?
                 // TODO: get from config, this is for rapid dev.
-                window.open('https://ci.kbase.us/#orcidlink', '_parent');
+                window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
             }
             this.setState({
                 createLinkState: {
@@ -291,6 +314,25 @@ export default class ContinueController extends Component<ContinueControllerProp
         }
     }
 
+    handleReturnLink() {
+        const returnInstruction = this.props.returnInstruction;
+        if (typeof returnInstruction !== 'undefined') {
+            switch (returnInstruction.type) {
+                case 'link':
+                    window.open(returnInstruction.url, '_parent');
+                    return;
+                case 'window': {
+                    const { id, origin } = returnInstruction;
+                    window.opener.postMessage({ id }, origin);
+                }
+            }
+        } else {
+            // TODO: what is this use case? Is it real?
+            // TODO: get from config, this is for rapid dev.
+            window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
+        }
+    }
+
     async cancelLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         try {
@@ -307,8 +349,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             console.warn(`Linking session could not be canceled: ${message}`)
         }
 
-        // TODO: handle error.
-        window.open('/#orcidlink', '_parent');
+        this.handleReturnLink();
     }
 
     renderSuccess(linkingSession: LinkingSessionComplete) {

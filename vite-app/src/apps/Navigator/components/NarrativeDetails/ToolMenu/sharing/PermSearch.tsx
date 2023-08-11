@@ -1,3 +1,4 @@
+import { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import { Button, Col, Row } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
@@ -10,14 +11,14 @@ import { PERM_MAPPING } from './Definitions';
 /* The main user input search bar */
 interface PermSearchProps {
     authInfo: AuthInfo;
-    addPermissions: (usernames: string[], permission: string) => void;
+    addPermissions: (usernames: string[], permission: UserPermission) => void;
     currentUsername: string;
     config: Config;
 }
 
 interface PermSearchState {
     selectedUsers: MultiValue<{ value: string; label: string }>; // user ids
-    perm: string;
+    perm: UserPermission;
 }
 
 export interface PermOption {

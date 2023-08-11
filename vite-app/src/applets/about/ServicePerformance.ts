@@ -54,7 +54,7 @@ export default class ServicePerformance {
                     total: this.sum(measures),
                     average: this.sum(measures) / measures.length,
                 };
-            } 
+            }
             const start = new Date().getTime();
             try {
                 await call();
@@ -84,7 +84,7 @@ export default class ServicePerformance {
             timeout: this.params.config.ui.constants.clientTimeout,
         });
         return async () => {
-            const [result] = await client.callFunc(service.method, []);
+            const [result] = await client.func(service.method, []);
 
             if (service.versionKey) {
                 if (isJSONObject(result)) {
@@ -184,7 +184,7 @@ export default class ServicePerformance {
         }
     }
 
-    async measure () {
+    async measure() {
         const ver = this.getAPICall();
         return await Promise.all([ver(), this.measurePerformance(ver)]);
     }

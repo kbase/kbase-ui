@@ -9,7 +9,7 @@ import Well from 'components/Well';
 import { changeHash2 } from 'lib/navigation';
 import { Button } from 'react-bootstrap';
 import { Model } from '../lib/Model';
-import { ReturnInstruction } from '../lib/ORCIDLinkClient';
+import { ErrorCode, ReturnInstruction } from '../lib/ORCIDLinkClient';
 import { ServiceError } from '../lib/ServiceClient';
 import View from './View';
 
@@ -146,7 +146,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 linkState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        code: 'error',
+                        code: ErrorCode.unknown,
                         message: ex.message,
                         title: 'Error'
                     }
@@ -157,7 +157,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 linkState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        code: 'unknown',
+                        code: ErrorCode.unknown,
                         message: `Unknown error: ${String(ex)}`,
                         title: 'Error'
                     }
@@ -203,7 +203,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     renderError(error: StandardError) {
         switch (error.code) {
-            case 'orcidInvalidToken':
+            case ErrorCode.authorization_required:
                 return <Well variant="danger">
                     <Well.Header>
                         Error

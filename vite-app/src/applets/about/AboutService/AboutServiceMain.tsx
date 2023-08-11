@@ -1,4 +1,4 @@
-import { isJSONObject, traverse } from '@kbase/ui-lib/lib/json';
+import { isJSONObject, traverse } from 'lib/json';
 import { Component } from 'react';
 import ErrorAlert from '../../../components/ErrorAlert';
 import Loading from '../../../components/Loading';
@@ -115,7 +115,7 @@ export default class AboutServiceMain extends Component<
             timeout: this.props.config.ui.constants.clientTimeout,
         });
         return async () => {
-            const [result] = await client.callFunc(service.method, []);
+            const [result] = await client.func(service.method, []);
 
             if (service.versionKey) {
                 if (isJSONObject(result)) {

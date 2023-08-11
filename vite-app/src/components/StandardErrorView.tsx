@@ -6,7 +6,7 @@ import './StandardErrorView.css';
 import Well from './Well';
 
 export interface StandardError {
-    code: string;
+    code: number;
     message: string;
     title?: string;
     data?: JSONObject;

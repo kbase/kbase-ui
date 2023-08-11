@@ -15,7 +15,7 @@ export default class GlobalPerms extends Component<GlobalPermsProps> {
                 <span>
                     This Narrative is
                     <span className={styles['status-public']}>
-                        <span className="fa fa-unlock"></span> Public
+                        <span className="fa fa-globe"></span> Public
                     </span>
                 </span>
             );
