@@ -413,7 +413,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
     }
 
     render() {
-        const baseURL = this.props.config;
         switch (this.state.profileState.status) {
             case AsyncFetchStatus.NONE:
                 return <Loading message="Initializing..." />
