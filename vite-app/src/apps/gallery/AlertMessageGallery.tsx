@@ -1,4 +1,4 @@
-import AlertMessage from "components/AlertMessage";
+import AlertMessage, { Variant } from "components/AlertMessage";
 import Well from "components/Well";
 import { Component } from "react";
 import { Col, Form, Stack } from "react-bootstrap";
@@ -9,22 +9,64 @@ export interface AlertMessageGalleryProps {
 
 }
 
+type MessageVariant = 'prop' | 'render' | 'body';
+
 interface AlertMessageGalleryState {
-    showIcon?: boolean;
-    showTitle?: boolean;
-    title?: string;
-    message?: string;
+    showIcon: boolean;
+    showTitle: boolean;
+    title: string;
+    message: string;
+    messageVariant: MessageVariant;
 }
 
 export default class AlertMessageGallery extends Component<AlertMessageGalleryProps, AlertMessageGalleryState> {
     constructor(props: AlertMessageGalleryProps) {
         super(props);
         this.state = {
-            showIcon: undefined,
-            showTitle: undefined,
-            title: undefined,
-            message: undefined
+            showIcon: false,
+            showTitle: false,
+            title: 'title here',
+            message: '',
+            messageVariant: 'prop'
         }
+    }
+
+    renderUsage() {
+        const showTitleProp = this.state.showTitle ? " showTitle" : "";
+        const showIconProp = this.state.showIcon ? " showIcon" : "";
+        const iconProp = this.state.title !== '' ? ` title="${this.state.title}"` : "";
+        const messageProp = this.state.messageVariant === 'prop' && this.state.message !== '' ? ` message="${this.state.message}"` : ""
+        const messageRender = this.state.messageVariant === 'render' && this.state.message !== '' ? ` render={renderMessage}` : '';
+        const messageBody = this.state.messageVariant === 'body' && this.state.message !== '' ? this.state.message : ""
+
+        const usage = `
+            <AlertMessage variant="info"
+                ${showTitleProp} ${showIconProp} ${iconProp} ${messageProp} ${messageRender}>${messageBody}</AlertMessage>
+        `
+        return usage;
+    }
+
+    renderAlertMessage(variant: Variant) {
+        const placeholderMessage = `This is an "${variant}" AlertMessage; enter text into the "Message" input above to replace it.`
+        // const message = this.state.message === '' ? defaultMessage : this.state.message;
+        const html = (content: string) => {
+            return <div dangerouslySetInnerHTML={{ __html: content }} />
+        }
+        const propMessage = this.state.message !== '' && this.state.messageVariant === 'prop' ? this.state.message : '';
+        const bodyMessage = this.state.message !== '' && this.state.messageVariant === 'body' ? html(this.state.message) : null;
+        const renderMessage = this.state.message !== '' && this.state.messageVariant === 'render' ? () => html(this.state.message) : undefined;
+        const bodyContent = bodyMessage || propMessage || renderMessage ? bodyMessage : placeholderMessage;
+
+        return <AlertMessage
+            variant={variant}
+            showTitle={this.state.showTitle}
+            showIcon={this.state.showIcon}
+            title={this.state.title}
+            message={propMessage}
+            render={renderMessage}
+        >
+            {bodyContent}
+        </AlertMessage>
     }
 
     render() {
@@ -39,35 +81,21 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
             </CollapsibleHelp>
 
             <Well variant="primary">
-                <Well.Header>
-                    <span className="fa fa-arrow-right" /> Props
+                <Well.Header icon="arrow-right">
+                    Props
                 </Well.Header>
                 <Well.Body>
                     <Stack gap={1}>
                         <Row className="align-items-center">
-                            <Col md={2}>Show Title?</Col>
-                            <Col md={3}>
-                                <Form.Select
-                                    value={typeof this.state.showTitle === 'undefined' ? '' : (this.state.showTitle === true ? 't' : 'f')}
-                                    onChange={(ev) => {
-                                        const showTitle = (() => {
-                                            switch (ev.currentTarget.value) {
-                                                case "": return undefined;
-                                                case "t": return true;
-                                                case "f": return false;
-                                            }
-                                        })();
-                                        this.setState({
-                                            showTitle
-                                        })
-                                    }}
-                                >
-                                    <option value="">undefined</option>
-                                    <option value="t">true</option>
-                                    <option value="f">false</option>
-                                </Form.Select>
+                            <Col style={{ flex: '0 0 10rem' }}>Show Title?</Col>
+                            <Col style={{ flex: '1 1 0' }}>
+                                <Form.Check type="checkbox" checked={this.state.showTitle} onChange={() => {
+                                    this.setState({
+                                        showTitle: !this.state.showTitle
+                                    })
+                                }} />
                             </Col>
-                            <Col>
+                            <Col style={{ flex: '2 1 0' }}>
                                 <CollapsibleHelp title="Titles are not show by default">
                                     <p>
                                         A default title will be displayed if the <code>showTitle</code>
@@ -82,29 +110,15 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
                             </Col>
                         </Row>
                         <Row className="align-items-center">
-                            <Col md={2}>Show Icon?</Col>
-                            <Col md={3}>
-                                <Form.Select
-                                    value={typeof this.state.showIcon === 'undefined' ? '' : (this.state.showIcon === true ? 't' : 'f')}
-                                    onChange={(ev) => {
-                                        const showIcon = (() => {
-                                            switch (ev.currentTarget.value) {
-                                                case "": return undefined;
-                                                case "t": return true;
-                                                case "f": return false;
-                                            }
-                                        })();
-                                        this.setState({
-                                            showIcon
-                                        })
-                                    }}
-                                >
-                                    <option value="" >undefined</option>
-                                    <option value="t">true</option>
-                                    <option value="f">false</option>
-                                </Form.Select>
+                            <Col style={{ flex: '0 0 10rem' }}>Show Icon?</Col>
+                            <Col style={{ flex: '1 1 0' }}>
+                                <Form.Check type="checkbox" checked={this.state.showIcon} onChange={() => {
+                                    this.setState({
+                                        showIcon: !this.state.showIcon
+                                    })
+                                }} />
                             </Col>
-                            <Col>
+                            <Col style={{ flex: '2 1 0' }}>
                                 <CollapsibleHelp title="Icons are not shown by default">
                                     <p>
                                         Setting the <code>showIcon</code> prop to true will cause a default
@@ -116,18 +130,18 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
                             </Col>
                         </Row>
                         <Row className="align-items-center">
-                            <Col md={2}>Title</Col>
-                            <Col md={3}>
+                            <Col style={{ flex: '0 0 10rem' }}>Tilte</Col>
+                            <Col style={{ flex: '1 1 0' }}>
                                 <Form.Control type="text"
                                     value={this.state.title}
                                     onChange={(ev) => {
                                         this.setState({
-                                            title: ev.currentTarget.value.length > 0 ? ev.currentTarget.value : undefined
+                                            title: ev.currentTarget.value.length > 0 ? ev.currentTarget.value : ''
                                         })
                                     }}
                                 />
                             </Col>
-                            <Col>
+                            <Col style={{ flex: '2 1 0' }}>
                                 <CollapsibleHelp title="Providing a title overrides showTitle prop">
                                     <p>
                                         Setting the <code>title</code> prop will show a title, in bold font,
@@ -138,30 +152,70 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
                             </Col>
                         </Row>
                         <Row className="align-items-center">
-                            <Col md={2}>Message</Col>
-                            <Col md={3}>
+                            <Col style={{ flex: '0 0 10rem' }}>Message</Col>
+                            <Col style={{ flex: '1 1 0' }}>
                                 <Form.Control type="text"
                                     value={this.state.message}
                                     onChange={(ev) => {
                                         this.setState({
-                                            message: ev.currentTarget.value.length > 0 ? ev.currentTarget.value : undefined
+                                            message: ev.currentTarget.value.length > 0 ? ev.currentTarget.value : ''
                                         })
                                     }}
                                 />
                             </Col>
-                            <Col>
-                                <CollapsibleHelp title="Set the message prop to control the alert message as text">
+                            <Col style={{ flex: '2 1 0' }}>
+                                <CollapsibleHelp title="Messages">
                                     <p>
                                         The alert message may be provided by a <code>message</code> property, by setting children of the
-                                        component, or a <code>render: () =&gt; JSX.Element</code> prop.
+                                        component, or a <code>render: () =&gt; ReactNode</code> prop.
                                     </p>
+                                    <p>You can which message content variant is used by selecting the appropriate radio button below.</p>
                                     <p>
-                                        Note that the <code>message</code> prop sets the alert message as "text" only.
-                                        If you need to set styled text (html), set the message as <i>children</i> or use
-                                        the <code>render</code> prop.
+                                        Note that each variant (message prop, render prop, body) takes <code>ReactNode</code>, which by definition
+                                        supports strings, which are rendered safely as text,  <code>DOM.Element</code>, and other types. Consult
+                                        the React documentation for full details; but generally anything you can supply in JSX you can supply to them.
                                     </p>
                                 </CollapsibleHelp>
+                            </Col>
+                        </Row>
+                        <Row className="align-items-center">
+                            <Col style={{ flex: '0 0 10rem' }}>Message variants</Col>
+                            <Col style={{ flex: '1 1 0' }}>
+                                <Form.Check inline type="radio" label="message=" value="prop" checked={this.state.messageVariant === 'prop'} name="message-variant" onChange={(ev) => {
+                                    const messageVariant: MessageVariant = ev.target.value as unknown as MessageVariant;
+                                    this.setState({
+                                        messageVariant
+                                    })
+                                }} />
+                                <Form.Check inline type="radio" label="render=" value="render" checked={this.state.messageVariant === 'render'} name="message-variant" onChange={(ev) => {
+                                    const messageVariant: MessageVariant = ev.target.value as unknown as MessageVariant;
+                                    this.setState({
+                                        messageVariant
+                                    })
+                                }} />
+                                <Form.Check inline type="radio" label="body" value="body" checked={this.state.messageVariant === 'body'} name="message-variant" onChange={(ev) => {
+                                    const messageVariant: MessageVariant = ev.target.value as unknown as MessageVariant;
+                                    this.setState({
+                                        messageVariant
+                                    })
+                                }} />
+                            </Col>
+                            <Col style={{ flex: '2 1 0' }}>
+                                <CollapsibleHelp title="Set the message prop to control the alert message as text">
+                                    <dl>
+                                        <dt>message</dt>
+                                        <dd>The message prop takes a ReactNode, and is appropriate for precomputed content.</dd>
 
+                                        <dt>render</dt>
+                                        <dd>The render prop takes a function producing a ReactNode, and is appropriate for dynamically rendered content or when you want
+                                            a quick calculation without setting it up before hand (e.g. in a big clump of JSX).
+                                        </dd>
+
+                                        <dt>body</dt>
+                                        <dd>Supplying a message as the body, or children, is suitable for times when you'd like to compose content in-situ.</dd>
+
+                                    </dl>
+                                </CollapsibleHelp>
                             </Col>
                         </Row>
                     </Stack>
@@ -169,105 +223,38 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
             </Well>
 
             <Well variant="secondary">
-                <Well.Header>
-                    <span className="fa fa-code" /> Usage
+                <Well.Header icon="code">
+                    Usage
                 </Well.Header>
                 <Well.Body>
                     <code>
-                        &lt;AlertMessage variant="info"
-                        {this.state.showTitle ? " showTitle" : ""}
-                        {this.state.showIcon ? " showIcon" : ""}
-                        {this.state.title ? ` title="${this.state.title}"` : ""}
-                        {this.state.message ? ` title="${this.state.message}"` : ""}
-                        &gt;
-                        {this.state.message ? "" : "Whatever you set as children"}
-                        &lt;/AlertMessage&gt;
+                        {this.renderUsage()}
                     </code>
                 </Well.Body>
             </Well>
 
             <Well variant="success">
-                <Well.Header>
-                    <span className="fa fa-arrow-left" /> Renderings
+                <Well.Header icon="arrow-left">
+                    Renderings
                 </Well.Header>
                 <Well.Body>
                     <Row>
                         <Col>
                             <Stack gap={1}>
-                                <AlertMessage variant="info"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is an "info" AlertMessage
-                                </AlertMessage>
-
-                                <AlertMessage variant="primary"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "primary" AlertMessage
-                                </AlertMessage>
-
-                                <AlertMessage variant="secondary"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "secondary" AlertMessage
-                                </AlertMessage>
-
-                                <AlertMessage variant="success"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "success" AlertMessage
-                                </AlertMessage>
+                                {this.renderAlertMessage("info")}
+                                {this.renderAlertMessage("primary")}
+                                {this.renderAlertMessage("secondary")}
+                                {this.renderAlertMessage("success")}
                             </Stack>
                         </Col>
                         <Col>
                             <Stack gap={1}>
-                                <AlertMessage variant="light"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "light" AlertMessage
-                                </AlertMessage>
+                                {this.renderAlertMessage("light")}
+                                {this.renderAlertMessage("dark")}
+                                {this.renderAlertMessage("warning")}
+                                {this.renderAlertMessage("danger")}
 
-                                <AlertMessage variant="dark"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "dark" AlertMessage
-                                </AlertMessage>
 
-                                <AlertMessage variant="warning"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "warning" AlertMessage
-                                </AlertMessage>
-
-                                <AlertMessage variant="danger"
-                                    showTitle={this.state.showTitle}
-                                    showIcon={this.state.showIcon}
-                                    title={this.state.title}
-                                    message={this.state.message}
-                                >
-                                    This is a "danger" AlertMessage
-                                </AlertMessage>
                             </Stack>
                         </Col>
                     </Row>

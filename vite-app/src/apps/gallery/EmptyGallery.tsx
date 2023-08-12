@@ -32,15 +32,25 @@ export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGall
         return <Stack gap={2}>
             <h2>Empty</h2>
 
-            <CollapsibleHelp title="about...">
+            <CollapsibleHelp title="About the Empty Component">
                 <p>
                     The <code>Empty</code> component can be used to indicate that no data is present.
                 </p>
+                <p>
+                    This is a useful component, first used in Ant Design (antd) projects. As with many
+                    other components which may seem superfluous, much of the utility comes from
+                    semantics and familiarity. Although an alert could suffice, the component provides:
+                </p>
+                <ul>
+                    <li>Consistent icon representing lack of data</li>
+                    <li>Consistent layout</li>
+                    <li>Multiple layouts: inline and block</li>
+                </ul>
             </CollapsibleHelp>
 
             <Well variant="primary">
-                <Well.Header>
-                    <span className="fa fa-arrow-right" /> Props
+                <Well.Header icon="arrow-right">
+                    Props
                 </Well.Header>
                 <Well.Body>
                     <Stack gap={1}>
@@ -99,8 +109,8 @@ export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGall
             </Well>
 
             <Well variant="secondary" >
-                <Well.Header>
-                    <span className="fa fa-code" /> Usage
+                <Well.Header icon="code">
+                    Usage
                 </Well.Header>
                 <Well.Body>
                     <code>
@@ -114,8 +124,8 @@ export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGall
             </Well>
 
             <Well variant="success">
-                <Well.Header>
-                    <span className="fa fa-arrow-left" /> Renderings
+                <Well.Header icon="arrow-left">
+                    Renderings
                 </Well.Header>
                 <Well.Body>
                     <Empty message={this.state.message}>
