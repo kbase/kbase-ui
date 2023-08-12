@@ -28,6 +28,7 @@ export enum ErrorCode {
     request_validation_error = 1070,
     linking_session_continue_invalid_param = 1080,
     linking_session_error = 1081,
+    linking_session_already_linked_orcid = 1082,
     impossible_error = 10099
 
 }
@@ -350,8 +351,29 @@ export interface LinkRecord {
     orcid_auth: ORCIDAuth
 }
 
+export interface ORCIDAuthPublicNonOwner {
+    orcid: string;
+    name: string;
+}
+
+export interface LinkRecordPublicNonOwner {
+    username: string;
+    orcid_auth: ORCIDAuthPublicNonOwner
+}
+
 export interface LinkShareRecord {
     orcidId: string;
+}
+
+export interface ErrorInfo {
+    code: number;
+    title: string;
+    description: string;
+    status_code: number;
+}
+
+export interface ErrorInfoResponse {
+    error_info: ErrorInfo
 }
 
 export class ORCIDLinkServiceClient extends ServiceClient {
@@ -367,6 +389,10 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         return await this.get<InfoResponse>("info")
     }
 
+    async getErrorInfo(errorCode: number): Promise<ErrorInfoResponse> {
+        return await this.get<ErrorInfoResponse>(`error-info/${errorCode}`)
+    }
+
     //
 
     async getProfile(): Promise<ORCIDProfile> {
@@ -375,6 +401,10 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
     async isLinked(): Promise<boolean> {
         return this.get<boolean>(`${GET_LINK_PATH}/is_linked`)
+    }
+
+    async isORCIDLinked(orcidId: string): Promise<boolean> {
+        return this.get<boolean>(`${GET_LINK_PATH}/is_orcid_linked/${orcidId}`);
     }
 
     async getDocURL(): Promise<string> {
@@ -386,6 +416,9 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         return await this.get<LinkRecord>(`${GET_LINK_PATH}`)
     }
 
+    async getLinkForORCIDId(orcidId: string): Promise<LinkRecordPublicNonOwner> {
+        return await this.get<LinkRecordPublicNonOwner>(`${GET_LINK_PATH}/for_orcid/${orcidId}`)
+    }
 
     async getLinkShare(username: string): Promise<LinkShareRecord> {
         return await this.get<LinkShareRecord>(`${GET_LINK_SHARE_PATH}/${username}`)

@@ -5,8 +5,9 @@ import { Config } from "types/config";
 import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
 import { hasOwnProperty } from "lib/utils";
 import {
+    ErrorInfo,
     GetNameResult,
-    InfoResponse, LinkRecord, ORCIDAuth,
+    InfoResponse, LinkRecord, LinkRecordPublicNonOwner, ORCIDAuth,
     ORCIDLinkServiceClient, ORCIDProfile, ReturnInstruction, Work
 } from "./ORCIDLinkClient";
 import { SCOPE } from "./constants";
@@ -236,6 +237,11 @@ export class Model {
         return this.orcidLinkClient.getInfo();
     }
 
+    async getErrorInfo(errorCode: number): Promise<ErrorInfo> {
+        const { error_info } = await this.orcidLinkClient.getErrorInfo(errorCode);
+        return error_info;
+    }
+
     async getProfile(): Promise<ORCIDProfile> {
         return this.orcidLinkClient.getProfile();
     }
@@ -252,8 +258,16 @@ export class Model {
         return this.orcidLinkClient.getLink();
     }
 
+    async getLinkForORCIDId(orcidId: string): Promise<LinkRecordPublicNonOwner> {
+        return this.orcidLinkClient.getLinkForORCIDId(orcidId);
+    }
+
     async deleteLink() {
         return this.orcidLinkClient.deleteLink();
+    }
+
+    async isORCIDLinked(orcidId: string): Promise<boolean> {
+        return this.orcidLinkClient.isORCIDLinked(orcidId);
     }
 
     /**

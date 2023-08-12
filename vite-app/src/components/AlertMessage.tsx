@@ -1,4 +1,4 @@
-import React, { Component, PropsWithChildren } from 'react';
+import React, { Component, PropsWithChildren, ReactNode } from 'react';
 import { Alert } from 'react-bootstrap';
 
 // For some reason, react-bootstrap also adds "string" to the union, which pretty much
@@ -17,7 +17,7 @@ export type AlertMessageProps = PropsWithChildren<{
     message?: string;
     style?: React.CSSProperties;
     className?: string;
-    render?: () => JSX.Element;
+    render?: () => ReactNode;
 }>;
 
 export default class AlertMessage extends Component<AlertMessageProps> {

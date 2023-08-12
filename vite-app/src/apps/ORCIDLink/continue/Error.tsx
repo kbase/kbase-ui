@@ -1,11 +1,11 @@
 import AlertMessage from 'components/AlertMessage';
 import Well from 'components/Well';
+import { UserProfile } from 'lib/kb_lib/comm/coreServices/UserProfile';
 import { Component } from 'react';
-import { Button, Stack } from 'react-bootstrap';
+import { Button, Col, Container, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon } from '../common';
-import { LinkRecord, ReturnInstruction } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import { ORCID_URL } from '../lib/constants';
-import styles from './Continue.module.css';
 import { ContinueLinkingError, ErrorType } from './ContinueController';
 
 export interface ErrorViewProps {
@@ -15,32 +15,29 @@ export interface ErrorViewProps {
 }
 
 export default class ErrorView extends Component<ErrorViewProps> {
-    renderORCIDUserRecord(link: LinkRecord) {
-        const {
-            orcid_auth: { orcid, name }
-        } = link;
+    renderORCIDUserRecord({ orcid, name }: { orcid: string, name: string }) {
         return (
             <Well variant="light">
                 <Well.Body>
-                    <div className="flex-table">
-                        <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>ORCID® Account ID</div>
-                            <div className="flex-col -col2">
+                    <Container fluid>
+                        <Row>
+                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">ORCID® Account ID</Col>
+                            <Col md="auto">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
                                     <a href={`${ORCID_URL}/${orcid}`} target="_blank">
                                         {renderORCIDIcon()}
                                         {orcid}
                                     </a>
                                 </div>
-                            </div>
-                        </div>
-                        <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>Name on Account</div>
-                            <div className="flex-col">
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">Name on Account</Col>
+                            <Col md="auto">
                                 {name}
-                            </div>
-                        </div>
-                    </div>
+                            </Col>
+                        </Row>
+                    </Container>
                 </Well.Body>
             </Well>
         );
@@ -69,21 +66,59 @@ export default class ErrorView extends Component<ErrorViewProps> {
         }
     }
 
+    renderMiniUserProfile(userProfile: UserProfile) {
+        return (
+            <Well variant="light">
+                <Well.Body>
+                    <Container fluid>
+                        <Row>
+                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">Username</Col>
+                            <Col md="auto">
+                                <div className="flex-row" style={{ alignItems: 'center' }}>
+                                    <a href={`/#people/${userProfile.user.username}`} target="_blank">
+                                        {userProfile.user.username}
+                                    </a>
+                                </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">Display Name</Col>
+                            <Col md="auto">
+                                {userProfile.user.realname}
+                            </Col>
+                        </Row>
+                    </Container>
+                </Well.Body>
+            </Well>
+        );
+    }
+
     renderError() {
         switch (this.props.error.type) {
             case ErrorType.ALREADY_LINKED:
                 return <div>
                     <p>Your KBase account is already linked to the following ORCID account:</p>
-                    {this.renderORCIDUserRecord(this.props.error.link)}
+                    {this.renderORCIDUserRecord(this.props.error.link.orcid_auth)}
                     <p style={{ marginTop: '1em' }}>Each KBase account may only be linked to a single ORCID account.</p>
                     <p>Conversely, an ORCID account may be linked to only one KBase account.</p>
+                </div>
+            case ErrorType.ORCID_ALREADY_LINKED:
+                return <div>
+                    <p>A KBase account is already linked to the ORCID Link you have selected.</p>
+
+                    <p>The ORCID Account is:</p>
+                    {this.renderORCIDUserRecord(this.props.error.info.orcid)}
+
+                    <p className="mt-3">The KBase account is:</p>
+                    {this.renderMiniUserProfile(this.props.error.info.kbase.userProfile)}
+                    <p style={{ marginTop: '1em' }}>An ORCID account may be linked to only a single KBase account.</p>
+                    <p>Conversely, a KBase account may only be linked to a single ORCID Account.</p>
                 </div>
             case ErrorType.FETCH_LINK_SESSION_ERROR:
                 return <div>
                     {this.props.error.message}
                     {this.renderReturnInstruction()}
                 </div>
-                return this.props.error.message;
         }
     }
 

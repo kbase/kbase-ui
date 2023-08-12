@@ -5,7 +5,7 @@ import { RouteProps, Router } from '../../components/Router2';
 import { AuthContext, AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
 import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
-import Error from './Error';
+import Error from './Error/Controller';
 import Help from './Help';
 import Continue from './continue/ContinueController';
 import HomeController from './home/HomeController';
@@ -170,11 +170,25 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             }),
 
             new Route('orcidlink/error', { authenticationRequired: true }, (props: RouteProps) => {
-                return <Error
-                    code={props.hashPath.query.get("code")!}
-                    title={props.hashPath.query.get("title")!}
-                    message={props.hashPath.query.get("message")!}
-                />;
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+                        return <Error
+                            auth={authValue.value}
+                            config={this.props.config}
+                            errorCode={parseInt(props.hashPath.query.get("code")!, 10)}
+                            title={props.hashPath.query.get("title")!}
+                            message={props.hashPath.query.get("message")!}
+                            setTitle={this.props.setTitle}
+                        />;
+                    }}
+                </AuthContext.Consumer>
+
             }),
             new Route('orcidlink/help', { authenticationRequired: true }, () => {
                 return <Help />;
