@@ -67,7 +67,7 @@ export default class Organization extends React.Component<OrganizationProps, Org
             label={this.props.label}
             required={this.props.required}
             rules={[
-                { required: true, message: 'an organization is required' },
+                { required: false, message: 'an organization is required' },
                 {
                     validator: async (_, value: string) => {
                         noScriptTag(value);

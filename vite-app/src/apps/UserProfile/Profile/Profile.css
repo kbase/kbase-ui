@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
+    margin-bottom: 0.5rem;
 }
 
 .Profile-control-area {

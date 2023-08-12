@@ -133,7 +133,7 @@ function Profile(props: ProfileProps) {
     function renderJobTitleOtherField() {
         return <Form.Item
             name="jobTitleOther"
-            required={true}
+            required={false}
             label="Position (Other)"
             // hasFeedback
             rules={[
@@ -322,17 +322,20 @@ function Profile(props: ProfileProps) {
 
     function renderUserNutshellEditor() {
         function renderJobTitle() {
-            if (jobTitleWatched === 'Other') {
-                return <Row gutter={8}>
-                    <Col span={6}>
-                        {renderJobTitleField()}
-                    </Col>
-                    <Col span={18}>
-                        {renderJobTitleOtherField()}
-                    </Col>
-                </Row>
-            }
-            return renderJobTitleField()
+            // if (jobTitleWatched === 'Other') {
+            //     return <Row gutter={8}>
+            //         <Col span={6}>
+            //             {renderJobTitleField()}
+            //         </Col>
+            //         <Col span={18}>
+            //             {renderJobTitleOtherField()}
+            //         </Col>
+            //     </Row>
+            // }
+            return <>
+                {renderJobTitleField()}
+                {jobTitleWatched === 'Other' ? renderJobTitleOtherField() : ''}
+            </>
         }
         return (
             <>
@@ -478,7 +481,7 @@ function Profile(props: ProfileProps) {
                                     </Form.Item>
                                 </div>
                                 <div className='AffiliationsCol Profile-field-force-inline'>
-                                    <OrganizationField name={[index, "organization"]} required={true} />
+                                    <OrganizationField name={[index, "organization"]} required={false} />
                                 </div>
                                 <div className='AffiliationsCol Profile-field-force-inline'>
                                     <Form.Item
