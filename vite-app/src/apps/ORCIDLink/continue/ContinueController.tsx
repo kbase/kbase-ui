@@ -32,7 +32,8 @@ export interface ErrorBase {
 export enum ErrorType {
     ALREADY_LINKED = "ALREADY LINKED",
     ORCID_ALREADY_LINKED = "ORCID ALREADY LINKED",
-    FETCH_LINK_SESSION_ERROR = "FETCH LINK SESSION ERROR"
+    FETCH_LINK_SESSION_ERROR = "FETCH LINK SESSION ERROR",
+    SESSION_EXPIRED = "SESSION_EXPIRED"
 }
 
 export interface AlreadyLinkedError extends ErrorBase {
@@ -62,10 +63,15 @@ export interface FetchLinkSessionError extends ErrorBase {
     type: ErrorType.FETCH_LINK_SESSION_ERROR
 }
 
+export interface SessionExpiredError extends ErrorBase {
+    type: ErrorType.SESSION_EXPIRED
+}
+
 export type ContinueLinkingError =
     AlreadyLinkedError |
     ORCIDAlreadyLinkedError |
-    FetchLinkSessionError;
+    FetchLinkSessionError |
+    SessionExpiredError;
 
 export type ContinueLinkingState = AsyncProcess<LinkingSessionComplete, ContinueLinkingError>;
 
@@ -292,6 +298,18 @@ export default class ContinueController extends Component<ContinueControllerProp
         />;
     }
 
+    onExpired() {
+        this.setState({
+            continueState: {
+                status: AsyncProcessStatus.ERROR,
+                error: {
+                    type: ErrorType.SESSION_EXPIRED,
+                    message: 'The linking session has expired'
+                }
+            }
+        });
+    }
+
     setShowInProfile(show: boolean) {
         this.setState({
             showInProfile: show
@@ -416,6 +434,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             cancelLink={this.cancelLink.bind(this)}
             showInProfile={this.state.showInProfile}
             setShowInProfile={this.setShowInProfile.bind(this)}
+            onExpired={this.onExpired.bind(this)}
         />;
     }
 

@@ -119,6 +119,11 @@ export default class ErrorView extends Component<ErrorViewProps> {
                     {this.props.error.message}
                     {this.renderReturnInstruction()}
                 </div>
+            case ErrorType.SESSION_EXPIRED:
+                return <div>
+                    {this.props.error.message}
+                    {this.renderReturnInstruction()}
+                </div>
         }
     }
 

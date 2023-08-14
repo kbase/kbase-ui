@@ -113,7 +113,7 @@ function niceRelativeTimeRange({
     }
 
     return [
-        prefix ? prefix + ' ' : '',
+        // prefix ? prefix + ' ' : '',
         measures
             .map(([measure, unit]) => {
                 if (measure !== 1) {
@@ -129,6 +129,7 @@ function niceRelativeTimeRange({
 export interface CountDownClockProps {
     startAt: number;
     endAt: number;
+    onExpired: () => void;
 }
 
 interface CountDownClockState {
@@ -151,8 +152,15 @@ export default class CountdownClock extends Component<
 
     componentDidMount() {
         this.timer = window.setInterval(() => {
+            const now = Date.now();
+            if (now > this.props.endAt) {
+                if (this.timer) {
+                    window.clearInterval(this.timer);
+                }
+                this.props.onExpired();
+            }
             this.setState({
-                now: Date.now(),
+                now
             });
         }, CLOCK_INTERVAL);
     }

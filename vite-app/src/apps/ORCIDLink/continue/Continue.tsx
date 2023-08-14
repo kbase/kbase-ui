@@ -1,5 +1,6 @@
 import { AsyncProcessStatus } from '@kbase/ui-lib';
 import AlertMessage from 'components/AlertMessage';
+import CountdownClock from 'components/CountdownClock';
 import ErrorAlert from 'components/ErrorAlert';
 import Well from 'components/Well';
 import { Component } from 'react';
@@ -19,6 +20,7 @@ export interface ContinueProps {
     createLinkState: CreateLinkState
     confirmLink: () => Promise<void>;
     cancelLink: () => Promise<void>;
+    onExpired: () => void;
 }
 
 export default class Continue extends Component<ContinueProps> {
@@ -87,7 +89,7 @@ export default class Continue extends Component<ContinueProps> {
         const linkingState = this.props.createLinkState;
         switch (linkingState.status) {
             case AsyncProcessStatus.NONE:
-                return;
+                return this.renderCountdownClock();
             case AsyncProcessStatus.PENDING:
                 return <Alert variant="info">
                     <div style={{ display: 'flex', flexDirection: 'row', position: 'relative', justifyContent: 'center' }}>
@@ -102,6 +104,13 @@ export default class Continue extends Component<ContinueProps> {
         }
     }
 
+    renderCountdownClock() {
+        const { created_at, expires_at } = this.props.linkingSession;
+        return <Alert variant="info">
+            You have <b><CountdownClock startAt={created_at} endAt={expires_at} onExpired={this.props.onExpired.bind(this)} /></b> to finish linking.
+        </Alert>
+    }
+
     renderConfirmDialog() {
         return (
             <Well variant="primary" style={{ marginBottom: "1rem" }}>
@@ -109,12 +118,17 @@ export default class Continue extends Component<ContinueProps> {
                 <Well.Body>
                     {this.renderPendingProgress()}
                     <p>
+                        Your ORCID® account <b>{this.props.linkingSession.orcid_auth.orcid}</b> is ready
+                        for linking to your KBase account.
+                    </p>
+                    <p>
                         By linking the ORCID® account above you will be granting KBase the ability
                         to interact with that account on your behalf. You may revoke this at any
                         time.
                     </p>
                     <p>
-                        By default, your ORCID Id will be displayed in your User Profile. You may
+                        By default, your ORCID Id will be displayed in your User Profile and may be displayed
+                        in other contexts in which your account is displayed. You may
                         opt out below. After linking, you can change this setting in either the ORCID Link or
                         User Profile tool.
                     </p>
@@ -149,7 +163,7 @@ export default class Continue extends Component<ContinueProps> {
                         </Button>
                     </Stack>
                 </Well.Footer>
-            </Well>
+            </Well >
         );
     }
 

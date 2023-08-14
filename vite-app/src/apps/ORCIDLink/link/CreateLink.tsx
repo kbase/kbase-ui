@@ -86,6 +86,10 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         </p>
 
                         <p>
+                            For security purposes, once you start a linking session, you will have <b>10 minutes to complete</b> the process.
+                        </p>
+
+                        <p>
                             For more information, <a href="https://www.kbase.us/orcidlink" target="_blank'">consult the {renderORCIDLabel()} Link documentation</a>.
                         </p>
 
