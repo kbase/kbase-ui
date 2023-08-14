@@ -27,30 +27,25 @@ function niceRelativeTimeRange({
 
     const nowTime = now || Date.now();
     let date;
-    let prefix, suffix;
+    let suffix;
     if (startDate === null) {
         if (endDate === null) {
             return 'happening now, perpetual';
         } else if (endDate.getTime() < nowTime) {
-            prefix = 'ended';
             suffix = 'ago';
             date = endDate;
         } else {
-            prefix = 'happening now, ending in ';
             date = endDate;
         }
     } else {
         if (startDate.getTime() > nowTime) {
-            prefix = 'in';
             date = startDate;
         } else if (endDate === null) {
             return 'happening now, indefinite end';
         } else if (endDate.getTime() < nowTime) {
-            prefix = 'ended';
             suffix = 'ago';
             date = endDate;
         } else {
-            prefix = 'happening now, ending in ';
             date = endDate;
         }
     }
