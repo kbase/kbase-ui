@@ -109,8 +109,11 @@ export default class View extends Component<ViewProps> {
         return < Well variant="warning" style={{ marginBottom: '1rem' }}>
             <Well.Header icon="code">For Developers</Well.Header>
             <Well.Body>
-                <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
-                <li><a href={this.props.repoURL} target="_blank" rel="noreferrer"><code>orcidlink</code> service GitHub repo</a></li>
+                <p>Here are some resources that may be useful if you are developing against the ORCIDLink API, or are simply curious:</p>
+                <ul>
+                    <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
+                    <li><a href={this.props.repoURL} target="_blank" rel="noreferrer"><code>orcidlink</code> service GitHub repo</a></li>
+                </ul>
             </Well.Body>
         </Well>;
     }
