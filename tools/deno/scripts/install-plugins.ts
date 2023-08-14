@@ -120,7 +120,7 @@ async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: st
     });
 
     log(
-        `fetch release dist response: ${response2.status}, ${response2.statusText}, ${Array.from(response2.headers.entries()).map(([k, v]) => { return `${k}:${v}` }).join(', ')}`,
+        `fetch release dist response: ${response2.status}, ${response2.statusText}`,
         'fetchReleaseDist'
     );
 
@@ -162,8 +162,7 @@ async function unpackPlugins(source: string, dest: string) {
         const uncompressed = fflate.gunzipSync(archive);
         const reader = new Buffer(uncompressed);
         const untar = new Untar(reader);
-        log(`tar package: ${installationPackage}, size: ${archive.byteLength}`, 'unpackPlugins');
-        log('untarring...', 'unpackPlugins');
+        log(`  tar package: ${installationPackage}, size: ${archive.byteLength}`, 'unpackPlugins');
         for await (const entry of untar) {
             // Handle directory entry
             if (!entry.fileName.startsWith(pluginPathPrefix)) {
@@ -186,7 +185,6 @@ async function unpackPlugins(source: string, dest: string) {
             } while (nread === BUF_SIZE)
 
         }
-        log('done!', 'unpackPlugins');
     }
 }
 
@@ -216,7 +214,6 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
         const configFileName = `${pluginInstallDir}/config.yml`;
         let pluginConfigRaw;
         try {
-            console.log('about to read', configFileName);
             const raw = Deno.readFileSync(configFileName);
             pluginConfigRaw = new TextDecoder().decode(raw);
         } catch (ex) {

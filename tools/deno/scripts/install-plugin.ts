@@ -73,7 +73,6 @@ async function getPluginConfig(dest: string) {
     const configFileName = `${pluginInstallDir}/config.yml`;
     let pluginConfigRaw;
     try {
-        console.log('about to read', configFileName);
         const raw = Deno.readFileSync(configFileName);
         pluginConfigRaw = new TextDecoder().decode(raw);
     } catch (ex) {
@@ -150,7 +149,7 @@ async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: st
     });
 
     log(
-        `fetch release dist response: ${response2.status}, ${response2.statusText}, ${Array.from(response2.headers.entries()).map(([k, v]) => { return `${k}:${v}` }).join(', ')}`,
+        `fetch release dist response: ${response2.status}, ${response2.statusText}`,
         'fetchReleaseDist'
     );
 
@@ -158,15 +157,12 @@ async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: st
     if (rdr) {
         await Deno.mkdir(`${dest}`, { recursive: true })
         const r = readerFromStreamReader(rdr);
-        log('Opening...', 'fetchReleaseDist');
         const f = await Deno.open(`${dest}/dist.tgz`, { create: true, write: true });
-        log('Copying...', 'fetchReleaseDist');
 
         let nread = null;
         do {
             nread = await copyN(r, f, BUF_SIZE);
         } while (nread === BUF_SIZE)
-        log('Done...', 'fetchReleaseDist');
         f.close();
     }
 }
@@ -191,8 +187,7 @@ async function unpackPlugin(source: string, dest: string) {
     const uncompressed = fflate.gunzipSync(archive);
     const reader = new Buffer(uncompressed);
     const untar = new Untar(reader);
-    log(`tar package: ${installationPackage}, size: ${archive.byteLength}`, 'unpackPlugins');
-    log('untarring...', 'unpackPlugins');
+    log(`  tar package: ${installationPackage}, size: ${archive.byteLength}`, 'unpackPlugins');
     for await (const entry of untar) {
         // Handle directory entry
         if (!entry.fileName.startsWith(pluginPathPrefix)) {
@@ -215,7 +210,6 @@ async function unpackPlugin(source: string, dest: string) {
         } while (nread === BUF_SIZE)
 
     }
-    log('done!', 'unpackPlugins');
 }
 
 async function getYAML(path: string) {
