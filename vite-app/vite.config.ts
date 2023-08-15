@@ -14,6 +14,20 @@ export default defineConfig({
             // esmExternals: true,
             // requireReturnsDefault: 'namespace',
         },
+        rollupOptions: {
+            output: {
+                experimentalMinChunkSize: 500_000,
+                manualChunks(id) {
+                    // console.log('MANUAL CHUNK', typeof id);
+                    // if (id.includes('node_modules')) {
+                    //     return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                    // }
+                    if (id.includes('node_modules')) {
+                        return 'vendor';
+                    }
+                }
+            }
+        }
     },
     optimizeDeps: {
         disabled: 'build'
