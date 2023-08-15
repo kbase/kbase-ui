@@ -420,9 +420,32 @@ function ProfileViewer(props: ProfileProps) {
         return linkingURL;
     }
 
+    function getLinkingLink2() {
+        const linkingURL = new URL(`${props.uiOrigin}/#orcidlink/link`);
+        const returnURL = (() => {
+            if (window.parent) {
+                return new URL(window.parent.location.href);
+            } else {
+                return new URL(window.location.href);
+            }
+        })();
+        const returnLink = {
+            type: 'link',
+            url: returnURL.toString(),
+            label: 'User Profile'
+        }
+        linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
+        const hash = linkingURL.hash;
+        const query = linkingURL.search;
+        return `${hash}${query}`
+    }
+
     function onORCIDLink2() {
         const onOk = () => {
-            window.open(getLinkingLink().toString(), '_parent');
+            // window.open(getLinkingLink().toString(), '_parent');
+            const url = getLinkingLink2();
+            console.log('URL', url);
+            window.location.href = url;
         }
 
         Modal.confirm({

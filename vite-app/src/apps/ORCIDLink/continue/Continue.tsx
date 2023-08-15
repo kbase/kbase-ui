@@ -5,6 +5,7 @@ import ErrorAlert from 'components/ErrorAlert';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Alert, Button, Col, Container, Form, Row, Spinner, Stack } from 'react-bootstrap';
+import { CheckLg } from 'react-bootstrap-icons';
 import { renderORCIDIcon, renderScope } from '../common';
 import { LinkingSessionComplete } from '../lib/Model';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
@@ -119,7 +120,7 @@ export default class Continue extends Component<ContinueProps> {
                     {this.renderPendingProgress()}
                     <p>
                         Your ORCID® account <b>{this.props.linkingSession.orcid_auth.orcid}</b> is ready
-                        for linking to your KBase account.
+                        for linking to your KBase account <b>{this.props.linkingSession.username}</b>.
                     </p>
                     <p>
                         By linking the ORCID® account above you will be granting KBase the ability
@@ -155,8 +156,11 @@ export default class Continue extends Component<ContinueProps> {
                         className="justify-content-center"
                         style={{ flex: '1 1 0' }}
                     >
+                        {/* <Button variant="primary" onClick={this.props.confirmLink}>
+                            <span className="fa fa-lg fa-plus" /> Finish Creating your ORCID® Link
+                        </Button> */}
                         <Button variant="primary" onClick={this.props.confirmLink}>
-                            <span className="fa fa-lg fa-plus" /> Finishing Creating your ORCID® Link
+                            Finish Creating your ORCID® Link <CheckLg fontSize="1.5rem" />
                         </Button>
                         <Button variant="danger" onClick={this.props.cancelLink}>
                             <span className="fa fa-lg fa-mail-reply" /> Cancel

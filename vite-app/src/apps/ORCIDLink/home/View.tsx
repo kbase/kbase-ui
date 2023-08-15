@@ -161,16 +161,16 @@ export default class View extends Component<ViewProps> {
     renderLinkRevocation() {
         return <Well variant="primary">
             <Well.Header>
-                Revocation
+                Remove link to your ORCID Account
             </Well.Header>
             <Well.Body>
-                <p>You may <b>revoke</b> this link at any time.</p>
+                <p>You may <b>remove</b> your ORCID Link at any time.</p>
 
-                <p>Revoking the link will not alter any of your data stored at KBase or ORCID®. It will simply remove
+                <p>Removing the link will not alter any of your data stored at KBase or ORCID®. It will simply delete
                     the link to your ORCID® account, preventing KBase from accessing your ORCID® profile thereafter.
                 </p>
 
-                <p>Please note that if you wish to revoke this link at KBase, you may also
+                <p>Please note that after you remove the link at KBase, you may also
                     want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank" rel="noreferrer">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>

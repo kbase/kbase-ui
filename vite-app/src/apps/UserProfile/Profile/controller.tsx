@@ -85,6 +85,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
     }
 
     async loadOrgs() {
+        console.log('loading orgs...');
         this.setState({
             orgsState: {
                 status: AsyncProcessStatus.PENDING
@@ -143,7 +144,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
             .map(({ name, id, custom }) => {
                 return {
                     name,
-                    url: "/#org/" + id,
+                    url: "/#orgs/" + id,
                     logoURL: custom.logourl,
                 };
             });

@@ -2,6 +2,7 @@ import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import UserProfileClient, { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
+import { changeHash2 } from "lib/navigation";
 import { Component } from "react";
 import { Config } from "types/config";
 import { LinkingSessionComplete, Model } from "../lib/Model";
@@ -346,7 +347,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             if (typeof returnInstruction !== 'undefined') {
                 switch (returnInstruction.type) {
                     case 'link':
-                        window.open(returnInstruction.url, '_parent');
+                        window.open(returnInstruction.url);
                         return;
                     case 'window': {
                         const { id, origin } = returnInstruction;
@@ -354,15 +355,18 @@ export default class ContinueController extends Component<ContinueControllerProp
                     }
                 }
             } else {
+                // I Think this is the case of linking from the tool itself.
+                changeHash2('#orcidlink')
+
                 // TODO: what is this use case? Is it real?
                 // TODO: get from config, this is for rapid dev.
-                window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
+                // window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
             }
-            this.setState({
-                createLinkState: {
-                    status: AsyncProcessStatus.SUCCESS, value: true
-                }
-            })
+            // this.setState({
+            //     createLinkState: {
+            //         status: AsyncProcessStatus.SUCCESS, value: true
+            //     }
+            // })
         } catch (ex) {
             console.error('ERROR IS', ex);
             if (ex instanceof Error) {

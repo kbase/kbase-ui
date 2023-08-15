@@ -46,9 +46,9 @@ export default class View extends Component<ViewProps, ViewState> {
                     // a link, so we should technically be in an ERROR state.
                     // But we should just change the link status to be:
                     // NONE, PENDING, LINKED, NOTLINKED, ERROR
-                    this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked');
+                    this.props.setTitle('ORCID® Link - Successfully Removed');
                 } else {
-                    this.props.setTitle('ORCID® Link - Revoke - Confirm Link Revocation');
+                    this.props.setTitle('ORCID® Link - Confirm Link Removal');
                 }
                 break;
         }

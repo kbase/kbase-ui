@@ -14,7 +14,7 @@ export default class OrgsController extends Component<OrgsControllerProps> {
         switch (this.props.orgsState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading />
+                return <Loading message="Loading organizations..." />
             case AsyncProcessStatus.ERROR:
                 return <ErrorMessage message={this.props.orgsState.error.message} />
             case AsyncProcessStatus.SUCCESS:

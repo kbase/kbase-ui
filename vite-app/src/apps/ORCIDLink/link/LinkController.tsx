@@ -63,7 +63,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Start Linking Process');
+        this.props.setTitle('ORCID® Link - Create New Link');
         this.loadData();
     }
 

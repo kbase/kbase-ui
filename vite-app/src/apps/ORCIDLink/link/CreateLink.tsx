@@ -8,6 +8,7 @@ import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 
 import ErrorAlert from 'components/ErrorAlert';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
+import { ArrowRight } from 'react-bootstrap-icons';
 import styles from './CreateLink.module.css';
 import { StartLinkState } from './LinkController';
 
@@ -64,7 +65,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
             <div className={styles.row}>
                 <Well variant="primary">
                     <Well.Header>
-                        Create Link to {renderORCIDLabel()}
+                        Link to your {renderORCIDLabel()} Account
                     </Well.Header>
 
                     <Well.Body>
@@ -99,8 +100,11 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     <Well.Footer>
 
                         <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
-                            <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
+                            {/* <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
                                 <span className="fa fa-lg fa-plus" /> Start {renderORCIDLabel()} Link process...
+                            </Button> */}
+                            <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
+                                Continue <ArrowRight fontSize="1.5rem" fontWeight="bold" />
                             </Button>
                             <Button variant="danger"
                                 onClick={(e) => { e.preventDefault(); this.props.goBack(); }}

@@ -36,7 +36,7 @@ export default class View extends Component<RevokerProps> {
     renderRevoking() {
         return <Well variant="info" style={{ maxWidth: '60em', margin: '0 auto' }}>
             <Well.Header>
-                Revoking...
+                Removing...
             </Well.Header>
             <Well.Body>
                 <Loading message="Pulling all the strings I can" />
@@ -62,16 +62,16 @@ export default class View extends Component<RevokerProps> {
             </Well.Header>
             <Well.Body>
                 <p>
-                    Sure you want to revoke this ORCID Link?
+                    Ara you sure you want to remove this ORCID Link?
                 </p>
                 <p>
-                    ORCID Id is "{linkInfo.orcidID}""
+                    ORCID Id is <b>{linkInfo.orcidID}</b> for <b>{linkInfo.realname}</b>
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <ButtonToolbar>
                     <Button variant="danger" className="me-2" onClick={this.props.revokeLink}>
-                        <span className="fa fa-lg fa-trash" /> Revoke ORCID® Link
+                        <span className="fa fa-lg fa-trash" /> Remove ORCID® Link
                     </Button>
 
                     <Button variant="primary" onClick={this.props.cancel}>
