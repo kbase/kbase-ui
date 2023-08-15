@@ -85,7 +85,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
     }
 
     async loadOrgs() {
-        console.log('loading orgs...');
         this.setState({
             orgsState: {
                 status: AsyncProcessStatus.PENDING

@@ -346,21 +346,40 @@ export default class ContinueController extends Component<ContinueControllerProp
 
             if (typeof returnInstruction !== 'undefined') {
                 switch (returnInstruction.type) {
-                    case 'link':
-                        window.open(returnInstruction.url);
-                        return;
+                    case 'link': {
+                        // If the url is local, we make a navigation-friendly
+                        // hash.
+                        // TODO: catch error in URL construction.
+                        let url;
+                        try {
+                            url = new URL(returnInstruction.url);
+                        } catch (ex) {
+                            this.setState({
+                                createLinkState: {
+                                    status: AsyncProcessStatus.ERROR,
+                                    error: {
+                                        message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
+                                    }
+                                }
+                            });
+                            return;
+                        }
+                        if (url.origin === document.location.origin) {
+                            const hashPath = `${url.hash}${url.search}`;
+                            changeHash2(hashPath);
+                        } else {
+                            window.open(url.toString(), '_parent');
+                        }
+                        break;
+                    }
                     case 'window': {
                         const { id, origin } = returnInstruction;
                         window.opener.postMessage({ id }, origin);
                     }
                 }
             } else {
-                // I Think this is the case of linking from the tool itself.
+                // This is the case of linking from the tool itself.
                 changeHash2('#orcidlink')
-
-                // TODO: what is this use case? Is it real?
-                // TODO: get from config, this is for rapid dev.
-                // window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
             }
             // this.setState({
             //     createLinkState: {

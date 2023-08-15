@@ -175,7 +175,7 @@ export default class View extends Component<ViewProps> {
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <Button variant="outline-danger" onClick={this.props.revoke}>
-                    <span className="fa fa-lg fa-trash" /> Revoke Link to ORCID® …
+                    <span className="fa fa-lg fa-trash" /> Remove ORCID® Link …
                 </Button>
             </Well.Footer>
         </Well>
