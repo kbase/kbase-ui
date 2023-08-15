@@ -201,7 +201,6 @@ export default class ContinueController extends Component<ContinueControllerProp
             const isORCIDAlreadyLinked = await model.isORCIDLinked(linkingSession.orcid_auth.orcid);
 
             if (isORCIDAlreadyLinked) {
-                console.log('try for ', linkingSession.orcid_auth.orcid);
                 const publicLink = await model.getLinkForORCIDId(linkingSession.orcid_auth.orcid);
                 const userProfileClient = new UserProfileClient({
                     url: this.props.config.services.UserProfile.url,

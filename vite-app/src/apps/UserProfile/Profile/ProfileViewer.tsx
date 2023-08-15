@@ -444,7 +444,6 @@ function ProfileViewer(props: ProfileProps) {
         const onOk = () => {
             // window.open(getLinkingLink().toString(), '_parent');
             const url = getLinkingLink2();
-            console.log('URL', url);
             window.location.href = url;
         }
 
