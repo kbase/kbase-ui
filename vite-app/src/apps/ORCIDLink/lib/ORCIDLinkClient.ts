@@ -267,7 +267,7 @@ export type ReturnInstruction =
 
 export interface StatusResponse {
     status: string;
-    time: number;
+    current_time: number;
     start_time: number;
 }
 
