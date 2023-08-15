@@ -657,23 +657,32 @@ function Profile(props: ProfileProps) {
             <Form.Item
                 name="gravatarDefault"
                 label="Gravatar Default"
+                style={{ marginBottom: '0' }}
             >
                 <Select options={gravatarDefaults} />
             </Form.Item>
             <div style={{ fontStyle: 'italic' }}>
-                If your email address is not registered at gravatar, the {gravatarHelpLink} you select above will be used instead.
+                If your email address is not registered at <a href="https://gravatar.com" target="_blank">gravatar</a>, the {gravatarHelpLink} you select above will be used instead.
             </div>
         </>
     }
 
     function renderAvatarEditor() {
         return <>
-            <div style={{ fontWeight: 'bold', color: 'rgba(0, 0, 0, 0.3)', fontStyle: 'italic', textAlign: 'center', borderBottom: '1px solid rgba(0, 0, 0, 0.3)', marginBottom: '1rem', marginTop: '1rem' }}>Avatar</div>
+            <div style={{
+                fontWeight: 'bold',
+                color: 'rgba(0, 0, 0, 0.3)',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.3)',
+                marginBottom: '1rem',
+                marginTop: '1rem'
+            }}>Avatar</div>
             {renderAvatarImage(avatarImageSrcEdit)}
             <div style={{ marginTop: '1rem' }}>
                 {renderAvatarOptionsField()}
             </div>
-            <div style={{ marginTop: '1rem' }}>
+            <div style={{ marginTop: '0' }}>
                 {renderGravatarDefaultField()}
             </div>
         </>
