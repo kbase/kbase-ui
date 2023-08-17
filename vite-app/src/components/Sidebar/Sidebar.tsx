@@ -11,7 +11,7 @@ import SidebarMenu from '../SidebarMenu/SidebarMenu';
 const menu: Array<MenuItem> = [
     {
         "name": "narratives",
-        "label": "Narratives",
+        "label": "Navigator",
         "type": "internal",
         "tooltip": "Narrative Navigator - browse and search Narratives",
         "path": "narratives",
