@@ -7,9 +7,9 @@ import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import { Button } from 'react-bootstrap';
 import { Config } from 'types/config';
+
 import styles from './Demos.module.css';
 import InterstitialPage1 from './Interstitial/page1/Controller';
-import PreFillFormController from './PreFillForm/PreFillFormController';
 import HomeController from './home/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {
@@ -77,20 +77,20 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
                 </AuthContext.Consumer>
             }),
 
-            new Route('demos/prefill-form', { authenticationRequired: true }, () => {
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        return <PreFillFormController {...this.props} auth={authValue.value} />;
-                    }}
-                </AuthContext.Consumer>
+            // new Route('demos/prefill-form', { authenticationRequired: true }, () => {
+            //     return <AuthContext.Consumer>
+            //         {(authValue) => {
+            //             if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+            //                 return null;
+            //             }
+            //             if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+            //                 return null;
+            //             }
+            //             return <PreFillFormController {...this.props} auth={authValue.value} />;
+            //         }}
+            //     </AuthContext.Consumer>
 
-            }),
+            // }),
             new Route('demos/interstitial1', { authenticationRequired: true }, (props: RouteProps) => {
                 return <AuthContext.Consumer>
                     {(authValue) => {

@@ -42,16 +42,49 @@ export interface Affiliation {
     endYear: string | null;
 }
 
+export interface ORCIDFieldGroupBase {
+    private: boolean;
+}
+
+export interface ORCIDFieldGroupPrivate extends ORCIDFieldGroupBase {
+    private: true;
+}
+
+export interface ORCIDFieldGroupAccessible<T> extends ORCIDFieldGroupBase {
+    private: false;
+    fields: T
+}
+
+export type ORCIDFieldGroup<T> = ORCIDFieldGroupPrivate | ORCIDFieldGroupAccessible<T>;
+
+export interface ORCIDNameFieldGroup {
+    firstName: string;
+    lastName: string | null;
+    creditName: string | null;
+}
+
+export interface ORCIDBiographyFieldGroup {
+    bio: string;
+}
+
+// export interface ORCIDActivitiesFieldGroup {
+//     employments: Array<Affiliation>
+//     // works: Array<Work>
+//     // huh? missing some fields, and what is works doing here?
+// }
+
+export interface ORCIDEmailFieldGroup {
+    emailAddresses: Array<string>
+}
+
 export interface ORCIDProfile {
     // TODO: split into profile and info? E.g. id in info, profile info in profile...
     orcidId: string;
-    firstName: string;
-    lastName: string;
-    creditName: string | null;
-    bio: string;
-    affiliations: Array<Affiliation>
-    works: Array<Work>
-    emailAddresses: Array<string>
+    nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>
+    biographyGroup: ORCIDFieldGroup<ORCIDBiographyFieldGroup>;
+    // activitiesGroup: ORCIDFieldGroup<ORCIDActivitiesFieldGroup>;
+    emailGroup: ORCIDFieldGroup<ORCIDEmailFieldGroup>;
+    employments: Array<Affiliation>
 }
 
 // 
@@ -218,7 +251,7 @@ export interface Work extends PersistedWork {
 
 export interface GetNameResult {
     firstName: string;
-    lastName: string;
+    lastName: string | null;
 }
 
 

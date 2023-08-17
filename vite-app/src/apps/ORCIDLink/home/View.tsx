@@ -3,8 +3,9 @@ import { AuthenticationStatus } from 'contexts/Auth';
 import { RuntimeContext } from 'contexts/RuntimeContext';
 import { Component } from 'react';
 import { Button, Col, Container, Nav, Row, Tab } from 'react-bootstrap';
-import LinkView from '../LinkView';
-import { LinkInfo } from './HomeController';
+import LinkView from '../common/LinkView';
+
+import { LinkInfo } from '../lib/Model';
 import LinkPermissions from './LinkPermissions';
 import styles from './View.module.css';
 

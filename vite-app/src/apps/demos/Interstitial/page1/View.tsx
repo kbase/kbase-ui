@@ -1,5 +1,6 @@
+import { ORCIDBiographyFieldGroup, ORCIDFieldGroup, ORCIDNameFieldGroup } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { renderORCIDIcon } from '../../../ORCIDLink/common';
 import { ORCIDLinkState, ORCIDLinkStatus } from './Controller';
@@ -144,6 +145,22 @@ export default class View extends Component<ViewProps, ViewState> {
         </div>
     }
 
+    renderRealname(nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>): ReactNode {
+        if (nameGroup.private) {
+            return "<private>";
+        }
+        const { fields: { firstName, lastName } } = nameGroup;
+        return `${firstName} ${lastName}`;
+    }
+
+    renderBio(bioGroup: ORCIDFieldGroup<ORCIDBiographyFieldGroup>): ReactNode {
+        if (bioGroup.private) {
+            return "<private>";
+        }
+        const { fields: { bio } } = bioGroup;
+        return bio;
+    }
+
 
     renderStep2(stateStep: StepStateReady) {
         if (stateStep.step > 2) {
@@ -187,7 +204,7 @@ export default class View extends Component<ViewProps, ViewState> {
                                 Name on Account
                             </div>
                             <div className="flex-col">
-                                {orcidProfile.firstName} {orcidProfile.lastName}
+                                {this.renderRealname(orcidProfile.nameGroup)}
                             </div>
                         </div>
                         <div className="flex-row">
@@ -195,7 +212,7 @@ export default class View extends Component<ViewProps, ViewState> {
                                 Bio
                             </div>
                             <div className="flex-col">
-                                {orcidProfile.bio}
+                                {this.renderBio(orcidProfile.biographyGroup)}
                             </div>
                         </div>
                     </div>
@@ -243,7 +260,7 @@ export default class View extends Component<ViewProps, ViewState> {
                                 Name on Account
                             </div>
                             <div className="flex-col">
-                                {orcidProfile.firstName} {orcidProfile.lastName}
+                                {this.renderRealname(orcidProfile.nameGroup)}
                             </div>
                         </div>
                         <div className="flex-row">
@@ -251,7 +268,7 @@ export default class View extends Component<ViewProps, ViewState> {
                                 Bio
                             </div>
                             <div className="flex-col">
-                                {orcidProfile.bio}
+                                {this.renderBio(orcidProfile.biographyGroup)}
                             </div>
                         </div>
                     </div>

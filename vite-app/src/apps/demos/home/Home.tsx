@@ -1,8 +1,9 @@
-import LinkView from 'apps/ORCIDLink/LinkView';
+import LinkView from 'apps/ORCIDLink/common/LinkView';
+import { LinkInfo } from 'apps/ORCIDLink/lib/Model';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Col, ListGroup, Nav, Row, Stack } from 'react-bootstrap';
-import { LinkInfo } from './Controller';
+// import { LinkInfo } from './Controller';
 
 export interface ViewProps {
     link: LinkInfo | null;

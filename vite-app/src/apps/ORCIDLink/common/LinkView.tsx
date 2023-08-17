@@ -1,9 +1,12 @@
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Col, Row, Stack } from 'react-bootstrap';
-import { renderORCIDIcon, renderScope } from './common';
-import { LinkInfo } from './home/HomeController';
-import { ORCID_URL } from './lib/constants';
+import { renderORCIDIcon, renderScope } from '../common';
+
+import { ORCID_URL } from '../lib/constants';
+import { LinkInfo } from '../lib/Model';
+
+
 
 export interface LinkViewProps {
     link: LinkInfo;
@@ -41,6 +44,13 @@ export default class LinkView extends Component<LinkViewProps> {
                         </Col>
                         <Col style={{ flex: '3 1 0' }}>
                             {link.realname}
+                        </Col>
+                    </Row><Row className="gy-1">
+                        <Col style={LABEL_COL_STYLE}>
+                            Published Name
+                        </Col>
+                        <Col style={{ flex: '3 1 0' }}>
+                            {link.creditName}
                         </Col>
                     </Row>
                     <Row className="gy-1">

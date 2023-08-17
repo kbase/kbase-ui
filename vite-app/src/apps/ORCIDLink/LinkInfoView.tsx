@@ -3,8 +3,9 @@ import { Component } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { renderORCIDIcon } from './common';
 
-import { LinkInfo } from './home/HomeController';
+
 import { ORCID_URL } from './lib/constants';
+import { LinkInfo } from './lib/Model';
 
 export interface LinkInfoViewProps {
     link: LinkInfo;

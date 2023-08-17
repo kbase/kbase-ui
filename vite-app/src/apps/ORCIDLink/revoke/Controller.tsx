@@ -110,13 +110,13 @@ export default class HomeController extends Component<ControllerProps, Controlle
         } = link;
 
         // Name is the one stored from the original linking, may have changed.
-        const { firstName, lastName } = await model.getName();
+        const realname = await model.getRealname();
 
         // normalize for ui:
         return {
             createdAt: created_at,
             expiresAt: Date.now() + expires_in * 1000,
-            realname: `${firstName} ${lastName}`,
+            realname,
             orcidID: orcid,
             scope
         }

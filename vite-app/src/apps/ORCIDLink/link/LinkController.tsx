@@ -6,7 +6,7 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import { SimpleError } from 'components/MainWindow';
-import { Model } from '../lib/Model';
+import { LinkInfo, Model } from '../lib/Model';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import AlreadyLinked from './AlreadyLinked';
 import CreateLink from './CreateLink';
@@ -25,13 +25,13 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-export interface LinkInfo {
-    createdAt: number;
-    expiresAt: number;
-    realname: string;
-    orcidID: string;
-    scope: string;
-}
+// export interface LinkInfo {
+//     createdAt: number;
+//     expiresAt: number;
+//     realname: string;
+//     orcidID: string;
+//     scope: string;
+// }
 
 export interface GetNameResult {
     first_name: string;
@@ -70,31 +70,8 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const isLinked = await model.isLinked();
-        if (!isLinked) {
-            return null;
-        }
-
-        const link = await model.getLink();
-
-        const {
-            created_at,
-            orcid_auth: {
-                expires_in, orcid, scope
-            }
-        } = link;
-
-        // Name is the one stored from the original linking, may have changed.
-        const { firstName, lastName } = await model.getName();
-
-        // normalize for ui:
-        return {
-            createdAt: created_at,
-            expiresAt: Date.now() + expires_in * 1000,
-            realname: `${firstName} ${lastName}`,
-            orcidID: orcid,
-            scope
-        }
+        const linkInfo = await model.getLinkInfo()
+        return linkInfo;
     }
 
     async revokeLink() {

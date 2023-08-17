@@ -1,6 +1,6 @@
 import {
     CloseOutlined, DeleteOutlined,
-    LinkOutlined, PlusOutlined, SaveOutlined
+    PlusOutlined, SaveOutlined
 } from '@ant-design/icons';
 import {
     Alert,
@@ -743,7 +743,7 @@ function Profile(props: ProfileProps) {
         const { isTouched } = checkForm();
         if (isTouched) {
             const title = <div className="compact-text">
-                <p>Cancel form?</p>
+                <p>Close Form and Abandon Changes?</p>
                 <p>You will lose any changes that have been made.</p>
             </div>
 
@@ -802,7 +802,7 @@ function Profile(props: ProfileProps) {
                 icon={<CloseOutlined />}
                 danger
                 onClick={cancelForm}>
-                {isFormTouched ? 'Cancel Changes and Close Form' : 'Close Form'}
+                {isFormTouched ? 'Cancel Changes and Close Editor' : 'Close Editor'}
             </Button>
             <Button
                 danger
@@ -887,7 +887,7 @@ function Profile(props: ProfileProps) {
                 </Form.Item>
             </div>
             <div>
-                <a href={makeUIURL('orcidlink')} target="_blank" rel="noreferrer"><LinkOutlined /> ORCID Link Manager</a>
+                <a href={makeUIURL('orcidlink')} target="_blank" rel="noreferrer">Your ORCID Link</a>
             </div>
         </div>
 

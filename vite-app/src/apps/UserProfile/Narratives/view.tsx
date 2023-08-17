@@ -30,12 +30,16 @@ export default class Narratives extends React.Component<Props> {
             }
             return ['Manage your Narratives with the Navigator', <CompassOutlined />];
         })();
+
+        const openNavigator = () => {
+            window.open(`${document.location.origin}/narratives`, '_blank')
+        }
         // return <Button type="primary" href={`${this.props.uiOrigin}/narratives`} icon={icon} target="_blank">
         //     {label}
         // </Button>
         return <div className="ButtonBar">
             <div className="ButtonBar-button">
-                <Button type="primary" href={`${document.location.origin}/narratives`} icon={icon} target="_blank">
+                <Button type="primary" onClick={openNavigator} icon={icon} >
                     {label}
                 </Button>
             </div>

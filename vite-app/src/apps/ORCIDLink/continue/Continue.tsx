@@ -47,7 +47,7 @@ export default class Continue extends Component<ContinueProps> {
                         <div className="flex-row">
                             <div className={`flex-col ${styles['-col1']}`}>Name on Account</div>
                             <div className="flex-col">
-                                {this.props.linkingSession.orcid_auth.name}
+                                {this.props.linkingSession.orcid_auth.name || <i>not public</i>}
                             </div>
                         </div>
                     </div>

@@ -34,7 +34,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                         <Row>
                             <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">Name on Account</Col>
                             <Col md="auto">
-                                {name}
+                                {name ? name : '<not public>'}
                             </Col>
                         </Row>
                     </Container>

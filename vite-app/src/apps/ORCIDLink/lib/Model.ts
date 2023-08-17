@@ -36,6 +36,24 @@ import { SCOPE } from "./constants";
 }
 */
 
+// EXCEPTIONS
+
+export class PrivateFieldGroupError extends Error {
+
+}
+
+
+// MODEL TYPES
+
+
+export interface LinkInfo {
+    createdAt: number;
+    expiresAt: number;
+    realname: string;
+    creditName: string;
+    orcidID: string;
+    scope: string;
+}
 
 export interface LinkResult {
     link: LinkRecord | null;
@@ -309,9 +327,89 @@ export class Model {
     //     return this.orcidLinkClient.deleteWork(putCode);
     // }
 
-    async getName(): Promise<GetNameResult> {
-        const { lastName, firstName } = await this.orcidLinkClient.getProfile();
+    private async getName(): Promise<GetNameResult> {
+        const profile = await this.orcidLinkClient.getProfile();
+        console.log('get name', profile);
+        if (profile.nameGroup.private) {
+            throw new PrivateFieldGroupError('The ORCID profile name fields have been set private');
+        }
+        const { nameGroup: { fields: { lastName, firstName } } } = profile;
         return { lastName, firstName };
+    }
+
+    async getRealname(): Promise<string> {
+        // Name is the one stored from the original linking, may have changed.
+        try {
+            const { firstName, lastName } = await this.getName();
+            if (lastName) {
+                return `${firstName} ${lastName}`
+            }
+            return firstName;
+        } catch (ex) {
+            if (ex instanceof PrivateFieldGroupError) {
+                // TODO: no bueno; need to propagate permission-controllable field groups all the
+                // way to the view component.
+                return "<private>";
+            } else {
+                throw ex;
+            }
+        }
+    }
+
+    async getLinkInfo(): Promise<LinkInfo | null> {
+        // TODO: combine all these calls into 1!
+        //       or at least call them in parallel.
+
+        const isLinked = await this.isLinked();
+
+        if (!isLinked) {
+            return null;
+        }
+
+        const link = await this.getLink();
+
+        const {
+            created_at,
+            orcid_auth: {
+                expires_in, orcid, scope
+            }
+        } = link;
+
+        // Name is the one stored from the original linking, may have changed.
+        const profile = await this.getProfile();
+
+        console.log('ORCID PROFILE', profile);
+
+        const realname = ((): string => {
+            if (profile.nameGroup.private) {
+                return '<private>';
+            }
+            const { fields: { firstName, lastName } } = profile.nameGroup;
+            if (lastName) {
+                return `${firstName} ${lastName}`
+            }
+            return firstName;
+        })();
+
+        const creditName = ((): string => {
+            if (profile.nameGroup.private) {
+                return '<private>';
+            }
+            if (!profile.nameGroup.fields.creditName) {
+                return '<n/a>';
+            }
+            return profile.nameGroup.fields.creditName;
+        })();
+
+        // normalize for ui:
+        return {
+            createdAt: created_at,
+            expiresAt: Date.now() + expires_in * 1000,
+            realname,
+            creditName,
+            orcidID: orcid,
+            scope
+        }
     }
 
     async fetchLinkingSession(sessionId: string) {

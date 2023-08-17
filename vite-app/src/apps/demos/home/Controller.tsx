@@ -5,9 +5,10 @@ import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { Model } from '../../ORCIDLink/lib/Model';
+import { LinkInfo, Model } from '../../ORCIDLink/lib/Model';
 // import { ReturnLink } from '../RequestDOI/Model';
 import Demos from './Home';
+
 
 export interface HomeControllerProps {
     config: Config;
@@ -22,13 +23,13 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-export interface LinkInfo {
-    createdAt: number;
-    expiresAt: number;
-    realname: string;
-    orcidID: string;
-    scope: string;
-}
+// export interface LinkInfo {
+//     createdAt: number;
+//     expiresAt: number;
+//     realname: string;
+//     orcidID: string;
+//     scope: string;
+// }
 
 export interface GetNameResult {
     first_name: string;
@@ -62,31 +63,58 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     async fetchLink(): Promise<LinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const isLinked = await model.isLinked();
-        if (!isLinked) {
-            return null;
-        }
+        const linkInfo = await model.getLinkInfo();
 
-        const link = await model.getLink();
+        return linkInfo;
 
-        const {
-            created_at,
-            orcid_auth: {
-                expires_in, orcid, scope
-            }
-        } = link;
+        // const isLinked = await model.isLinked();
+        // if (!isLinked) {
+        //     return null;
+        // }
 
-        // Name is the one stored from the original linking, may have changed.
-        const { firstName, lastName } = await model.getName();
+        // const link = await model.getLink();
 
-        // normalize for ui:
-        return {
-            createdAt: created_at,
-            expiresAt: Date.now() + expires_in * 1000,
-            realname: `${firstName} ${lastName}`,
-            orcidID: orcid,
-            scope
-        }
+        // const {
+        //     created_at,
+        //     orcid_auth: {
+        //         expires_in, orcid, scope
+        //     }
+        // } = link;
+
+        // // Name is the one stored from the original linking, may have changed.
+        // const profile = await model.getProfile();
+
+        // const realname = ((): string => {
+        //     if (profile.nameGroup.private) {
+        //         return '<private>';
+        //     }
+        //     const { fields: { firstName, lastName } } = profile.nameGroup;
+        //     if (lastName) {
+        //         return `${firstName} ${lastName}`
+        //     }
+        //     return firstName;
+        // })();
+
+        // const creditName = ((): string => {
+        //     if (profile.nameGroup.private) {
+        //         return '<private>';
+        //     }
+        //     if (!profile.nameGroup.fields.creditName) {
+        //         return '<n/a>';
+        //     }
+        //     return profile.nameGroup.fields.creditName;
+        // })();
+
+
+        // // normalize for ui:
+        // return {
+        //     createdAt: created_at,
+        //     expiresAt: Date.now() + expires_in * 1000,
+        //     realname,
+        //     creditName,
+        //     orcidID: orcid,
+        //     scope
+        // }
     }
 
     async loadData() {

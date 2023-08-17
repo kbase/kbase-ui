@@ -432,8 +432,8 @@ function ProfileViewer(props: ProfileProps) {
             onOk,
             content: <>
                 <p>
-                    In order to create your ORCID Link, your browser will leave this page, but return
-                    to it automatically when the linking process has completed.
+                    In order to create your ORCID Link, your browser will leave this page, then return
+                    to it when you have completed the linking process.
                 </p>
             </>
         });
@@ -464,23 +464,29 @@ function ProfileViewer(props: ProfileProps) {
 
         let button;
 
-        const orcidLinkButton = (() => {
-            if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
-                if (props.orcidState.value.orcidId) {
-                    return;
-                }
-                return <Tooltip title="Click this button to link your KBase account to your ORCID account">
-                    <Button onClick={onORCIDLink}>Link to ORCID (popup)</Button>
-                </Tooltip>
-            }
-        })();
+        // const orcidLinkButton = (() => {
+        //     if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
+        //         if (props.orcidState.value.orcidId) {
+        //             return;
+        //         }
+        //         return <Tooltip title="Click this button to link your KBase account to your ORCID account">
+        //             <Button onClick={onORCIDLink}>Link to ORCID (popup)</Button>
+        //         </Tooltip>
+        //     }
+        // })();
         const orcidLinkButton2 = (() => {
             if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
                 if (props.orcidState.value.orcidId) {
                     return;
                 }
                 return <Tooltip title="Click this button to link your KBase account to your ORCID account">
-                    <Button onClick={onORCIDLink2}>Link to ORCID...</Button>
+                    <Button onClick={(ev) => {
+                        if (ev.altKey) {
+                            onORCIDLink()
+                        } else {
+                            onORCIDLink2()
+                        }
+                    }} >Link to ORCID...</Button>
                 </Tooltip>
             }
         })();
@@ -492,7 +498,7 @@ function ProfileViewer(props: ProfileProps) {
                 onClick={enableEditing}>
                 Edit Profile
             </Button>
-            {orcidLinkButton}
+            {/* {orcidLinkButton} */}
             {orcidLinkButton2}
             {warnings}
         </Space>;

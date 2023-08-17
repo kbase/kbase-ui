@@ -4,7 +4,8 @@ import { Button } from 'react-bootstrap';
 
 import LinkInfoView from '../LinkInfoView';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
-import { LinkInfo } from './LinkController';
+
+import { LinkInfo } from '../lib/Model';
 import styles from './ViewLink.module.css';
 
 
