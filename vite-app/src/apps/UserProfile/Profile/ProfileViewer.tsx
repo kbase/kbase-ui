@@ -269,8 +269,8 @@ function ProfileViewer(props: ProfileProps) {
                 <thead>
                     <tr>
                         <th style={{ width: "30%" }}>position</th>
-                        <th style={{ width: "50%" }}>organization</th>
-                        <th style={{ width: "20%" }}>tenure</th>
+                        <th style={{ width: "40%" }}>organization</th>
+                        <th style={{ width: "30%" }}>tenure</th>
                     </tr>
                 </thead>
                 <tbody>
