@@ -26,9 +26,9 @@ export default class Narratives extends React.Component<Props> {
     renderManageNarrativesButton() {
         const [label, icon] = (() => {
             if (this.props.narratives.length === 0) {
-                return ['Create your first Narrative!', <><PlusOutlined /></>];
+                return ['Create your first Narrative with the Navigator!', <PlusOutlined style={{ fontSize: '140%' }} />];
             }
-            return ['Manage your Narratives with the Navigator', <CompassOutlined />];
+            return ['Manage your Narratives with the Navigator', <CompassOutlined style={{ fontSize: '140%' }} />];
         })();
 
         const openNavigator = () => {
