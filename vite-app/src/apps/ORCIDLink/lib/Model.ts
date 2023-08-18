@@ -329,7 +329,6 @@ export class Model {
 
     private async getName(): Promise<GetNameResult> {
         const profile = await this.orcidLinkClient.getProfile();
-        console.log('get name', profile);
         if (profile.nameGroup.private) {
             throw new PrivateFieldGroupError('The ORCID profile name fields have been set private');
         }
@@ -377,8 +376,6 @@ export class Model {
 
         // Name is the one stored from the original linking, may have changed.
         const profile = await this.getProfile();
-
-        console.log('ORCID PROFILE', profile);
 
         const realname = ((): string => {
             if (profile.nameGroup.private) {
