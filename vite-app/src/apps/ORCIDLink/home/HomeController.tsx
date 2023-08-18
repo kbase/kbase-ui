@@ -232,12 +232,13 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                     <Well.Body>
                         <p>It appears that your ORCID Account is no longer authorized for KBase
                             access. You may have inadvertently removed permission for KBase, or
-                            perhaps you don't wish KBase to have access to your ORCID Account.
+                            perhaps you don't wish KBase to have access to your ORCID Account
+                            any longer.
                         </p>
                         <p>
-                            In any case, the first action you should take to remove this error
-                            message is to remove your ORCID Link. After this, you may create new
-                            ORCID Link.
+                            In any case, the first action you should take to avoid this error
+                            message is to remove your ORCID Link. After this, you may create a new
+                            ORCID Link when you need it.
                         </p>
                     </Well.Body>
                     <Well.Footer>
