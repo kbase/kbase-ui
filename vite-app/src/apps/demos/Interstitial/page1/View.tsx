@@ -1,5 +1,6 @@
 import { ORCIDBiographyFieldGroup, ORCIDFieldGroup, ORCIDNameFieldGroup } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
 import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
+import Well from 'components/Well';
 import { Component, ReactNode } from 'react';
 import { Alert, Button } from 'react-bootstrap';
 import { renderORCIDIcon } from '../../../ORCIDLink/common';
@@ -184,39 +185,41 @@ export default class View extends Component<ViewProps, ViewState> {
                 ORCID profile.
             </p>
             <div className="well" style={{ marginBottom: '1em', maxWidth: '40em' }}>
-                <div className="well-body">
-                    <div className="flex-table">
-                        <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>
-                                ORCID® Account ID
+                <Well variant="info">
+                    <Well.Body>
+                        <div className="flex-table">
+                            <div className="flex-row">
+                                <div className={`flex-col ${styles['-col1']}`}>
+                                    ORCID® Account ID
+                                </div>
+                                <div className="flex-col -col2">
+                                    <div className="flex-row" style={{ alignItems: 'center' }}>
+                                        <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
+                                            {renderORCIDIcon()}
+                                            {orcidProfile.orcidId}
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex-col -col2">
-                                <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
-                                        {renderORCIDIcon()}
-                                        {orcidProfile.orcidId}
-                                    </a>
+                            <div className="flex-row">
+                                <div className={`flex-col ${styles['-col1']}`}>
+                                    Name on Account
+                                </div>
+                                <div className="flex-col">
+                                    {this.renderRealname(orcidProfile.nameGroup)}
+                                </div>
+                            </div>
+                            <div className="flex-row">
+                                <div className={`flex-col ${styles['-col1']}`}>
+                                    Bio
+                                </div>
+                                <div className="flex-col">
+                                    {this.renderBio(orcidProfile.biographyGroup)}
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>
-                                Name on Account
-                            </div>
-                            <div className="flex-col">
-                                {this.renderRealname(orcidProfile.nameGroup)}
-                            </div>
-                        </div>
-                        <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>
-                                Bio
-                            </div>
-                            <div className="flex-col">
-                                {this.renderBio(orcidProfile.biographyGroup)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </Well.Body>
+                </Well>
             </div>
         </div>
     }

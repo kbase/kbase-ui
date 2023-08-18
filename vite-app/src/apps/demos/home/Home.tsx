@@ -99,7 +99,6 @@ export default class View extends Component<ViewProps> {
         //     </Accordion.Item>
         // })
         return <div style={{ marginTop: '1em' }}>
-            const items =
             <h3>Demos</h3>
             <Accordion>
                 <Accordion.Item eventKey="interstitial">
@@ -113,36 +112,9 @@ export default class View extends Component<ViewProps> {
                             does not have a link, the tool may offer the user the option of creating a link on the fly.
                             The ORCID Link tool will return the browser to wherever the initial tool specifies.
                         </p>
-                    </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="doiforms">
-                    <Accordion.Header>
-                        <a href="#demos/doi">DOI Request Form</a>
-                    </Accordion.Header>
-                    <Accordion.Body>
                         <p>
-                            This is one approach to creating a DOI request.
-                        </p>
-                    </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="doiadmin">
-                    <Accordion.Header>
-                        <a href="#demos/doiadmin">DOI Form and Request ADMIN</a>
-                    </Accordion.Header>
-                    <Accordion.Body>
-                        <p>
-                            Admin tools for DOI Forms and Requests
-                        </p>
-                    </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="3">
-                    <Accordion.Header>
-                        <a href="#demos/crossref">View Citation Samples by Type</a>
-                    </Accordion.Header>
-                    <Accordion.Body>
-                        <p>
-                            Exercise the citation viewer through a sampling of citations from
-                            CrossRef.
+                            NB: This was the precursor work which made the ORCID Link in User Profile possible,
+                            as well as O.L. in Fair Narrative.
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>

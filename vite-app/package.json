@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@ant-design/icons": "5.2.5",
-        "antd": "5.8.3",
+        "antd": "5.8.4",
         "bootstrap": "5.3.1",
         "react-bootstrap-icons": "1.10.3",
         "dompurify": "3.0.5",
@@ -27,7 +27,7 @@
         "uuid": "9.0.0"
     },
     "devDependencies": {
-        "@testing-library/jest-dom": "6.0.0",
+        "@testing-library/jest-dom": "6.0.1",
         "@testing-library/react": "14.0.0",
         "@testing-library/user-event": "14.4.3",
         "@kbase/ui-lib": "0.7.1",
