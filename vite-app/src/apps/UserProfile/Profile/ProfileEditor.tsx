@@ -818,7 +818,7 @@ function Profile(props: ProfileProps) {
                 return <Tooltip title="Click this button to link your KBase account to your ORCID account">
                     <Button
                         disabled={isFormTouched}
-                        onClick={(ev) => {
+                        onClick={() => {
                             changeHash2(window.location.href = getLinkingLink());
                         }} >Create ORCID Link...</Button>
                 </Tooltip>
