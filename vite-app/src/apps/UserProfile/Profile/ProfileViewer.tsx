@@ -18,6 +18,7 @@ import {
 import Link from 'antd/es/typography/Link';
 import DOMPurify from 'dompurify';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
+import { changeHash2 } from 'lib/navigation';
 import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { UserProfileAffiliation } from '../API';
@@ -423,20 +424,21 @@ function ProfileViewer(props: ProfileProps) {
     }
 
     function onORCIDLink2() {
-        const onOk = () => {
-            window.location.href = getLinkingLink();
-        }
+        // const onOk = () => {
+        //     window.location.href = getLinkingLink();
+        // }
 
-        Modal.confirm({
-            title: 'Proceed to ORCID Link',
-            onOk,
-            content: <>
-                <p>
-                    In order to create your ORCID Link, your browser will leave this page, then return
-                    to it when you have completed the linking process.
-                </p>
-            </>
-        });
+        // Modal.confirm({
+        //     title: 'Proceed to ORCID Link',
+        //     onOk,
+        //     content: <>
+        //         <p>
+        //             In order to create your ORCID Link, your browser will leave this page, then return
+        //             to it when you have completed the linking process.
+        //         </p>
+        //     </>
+        // });
+        changeHash2(window.location.href = getLinkingLink());
     }
 
     function renderControls() {
@@ -486,7 +488,7 @@ function ProfileViewer(props: ProfileProps) {
                         } else {
                             onORCIDLink2()
                         }
-                    }} >Link to ORCID...</Button>
+                    }} >Create ORCID Link...</Button>
                 </Tooltip>
             }
         })();

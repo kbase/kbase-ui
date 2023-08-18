@@ -74,7 +74,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         <p>You do not currently have a link from your KBase account to an {renderORCIDLabel()} account.</p>
 
                         <p>
-                            After clicking the button below, you will be redirected to {renderORCIDLabel()}, where you may
+                            <b>After clicking the "Continue" button below, you will be redirected to {renderORCIDLabel()}</b>, where you may
                             sign in to your {renderORCIDLabel()} account and grant permission to KBase to access certain
                             aspects of your {renderORCIDLabel()} account.
                         </p>
@@ -104,7 +104,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                                 <span className="fa fa-lg fa-plus" /> Start {renderORCIDLabel()} Link process...
                             </Button> */}
                             <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
-                                Continue <ArrowRight fontSize="1.5rem" fontWeight="bold" />
+                                Continue to {renderORCIDLabel()} <ArrowRight fontSize="1.5rem" fontWeight="bold" />
                             </Button>
                             <Button variant="danger"
                                 onClick={(e) => { e.preventDefault(); this.props.goBack(); }}

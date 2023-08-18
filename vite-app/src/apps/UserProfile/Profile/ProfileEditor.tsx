@@ -17,10 +17,12 @@ import {
     Space,
     Spin,
     Switch,
+    Tooltip,
     message
 } from 'antd';
 import Link from 'antd/es/typography/Link';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
+import { changeHash2 } from 'lib/navigation';
 import { useState } from 'react';
 import { UserProfileAffiliation, UserProfileUpdate, UserProfileUserdata } from '../API';
 import orcidIcon from '../assets/ORCID-iD_icon-vector.svg';
@@ -769,7 +771,25 @@ function Profile(props: ProfileProps) {
         setIsFormTouched(isTouched);
     }
 
-
+    function getLinkingLink() {
+        const linkingURL = new URL(`${props.uiOrigin}/#orcidlink/link`);
+        const returnURL = (() => {
+            if (window.parent) {
+                return new URL(window.parent.location.href);
+            } else {
+                return new URL(window.location.href);
+            }
+        })();
+        const returnLink = {
+            type: 'link',
+            url: returnURL.toString(),
+            label: 'User Profile'
+        }
+        linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
+        const hash = linkingURL.hash;
+        const query = linkingURL.search;
+        return `${hash}${query}`
+    }
 
     function renderControls() {
         // const warnings = (() => {
@@ -789,6 +809,21 @@ function Profile(props: ProfileProps) {
         //         >Warnings</Button>
         //     }
         // })();
+
+        const orcidLinkButton2 = (() => {
+            if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
+                if (props.orcidState.value.orcidId) {
+                    return;
+                }
+                return <Tooltip title="Click this button to link your KBase account to your ORCID account">
+                    <Button
+                        disabled={isFormTouched}
+                        onClick={(ev) => {
+                            changeHash2(window.location.href = getLinkingLink());
+                        }} >Create ORCID Link...</Button>
+                </Tooltip>
+            }
+        })();
 
         const button = <Space wrap>
             <Button
@@ -810,6 +845,7 @@ function Profile(props: ProfileProps) {
                 onClick={resetForm}>
                 Reset
             </Button>
+            {orcidLinkButton2}
         </Space>
 
 
@@ -909,8 +945,10 @@ function Profile(props: ProfileProps) {
         }
 
         const alertMessage = <div>
-            Have an ORCID account? Create an <a href={`${props.uiOrigin}/#orcidlink`} target="_blank">ORCID Link</a> to
-            show your ORCID Id in your profile.
+            Have an ORCID account? Create an <b>ORCID Link</b> to
+            connect your KBase to ORCID account, and show your ORCID Id
+            right here in your profile.
+
         </div>
         return <Alert message={alertMessage} />
 
