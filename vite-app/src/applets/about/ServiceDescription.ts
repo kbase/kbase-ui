@@ -2,6 +2,7 @@ export interface ServiceDescriptionBase {
     title: string;
     type: 'rest' | 'jsonrpc11' | 'jsonrpc20';
     module: string;
+    repoURL: string;
     versionKey?: string;
 }
 
@@ -31,18 +32,21 @@ export const SERVICES: Array<ServiceDescription> = [
         type: 'rest',
         module: 'Auth2',
         path: '/',
+        repoURL: "https://github.com/kbase/auth2",
         versionKey: 'version',
     },
     {
         title: 'Catalog',
         module: 'Catalog',
         type: 'jsonrpc11',
+        repoURL: "https://github.com/kbase/catalog",
         method: 'version',
     },
     {
         title: 'Execution Engine 2',
         type: 'jsonrpc11',
         module: 'execution_engine2',
+        repoURL: 'https://github.com/kbase/execution_engine2',
         method: 'ver',
     },
     {
@@ -50,6 +54,7 @@ export const SERVICES: Array<ServiceDescription> = [
         type: 'rest',
         module: 'Feeds',
         path: '/',
+        repoURL: 'https://github.com/kbase/feeds',
         versionKey: 'version',
     },
     {
@@ -57,6 +62,7 @@ export const SERVICES: Array<ServiceDescription> = [
         type: 'rest',
         module: 'Groups',
         path: '/',
+        repoURL: 'https://github.com/kbase/groups',
         versionKey: 'version',
     },
     {
@@ -64,6 +70,7 @@ export const SERVICES: Array<ServiceDescription> = [
         module: 'SampleService',
         type: 'jsonrpc11',
         method: 'status',
+        repoURL: 'https://github.com/kbase/sample_service',
         versionKey: 'version',
     },
     {
@@ -71,24 +78,28 @@ export const SERVICES: Array<ServiceDescription> = [
         module: 'SearchAPI2',
         type: 'jsonrpc20',
         method: 'rpc.discover',
+        repoURL: 'https://github.com/kbase/search',
         versionKey: 'service_info.version',
     },
     {
         title: 'Service Wizard',
         module: 'ServiceWizard',
         type: 'jsonrpc11',
+        repoURL: 'https://github.com/kbase/service_wizard',
         method: 'version',
     },
     {
         title: 'User Profile',
         module: 'UserProfile',
         type: 'jsonrpc11',
+        repoURL: 'https://github.com/kbase/user_profile',
         method: 'ver',
     },
     {
         title: 'Workspace',
         module: 'Workspace',
         type: 'jsonrpc11',
+        repoURL: 'https://github.com/kbase/workspace_deluxe',
         method: 'ver',
     },
 ];

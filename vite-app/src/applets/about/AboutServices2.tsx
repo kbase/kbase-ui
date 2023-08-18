@@ -75,7 +75,7 @@ export default class AboutServices extends Component<
                 style: {},
                 render: (service: ServiceDescriptionWithPerformance) => {
                     // TODO: should manage to get the service's git url 
-                    return <a href="#" target="_blank">{service.description.module}</a>;
+                    return <a href={`${service.description.repoURL}`} target="_blank">{service.description.module}</a>;
                 },
                 sorter: (a: ServiceDescriptionWithPerformance, b: ServiceDescriptionWithPerformance) => {
                     return a.description.module.localeCompare(b.description.module);
