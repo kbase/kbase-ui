@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, ReactNode } from 'react';
 import PluginWrapper2 from './PluginWrapper/PluginWrapper2';
 
 import About from '../applets/about';
@@ -65,10 +65,54 @@ interface BodyState { }
 //     }
 // ])
 
+export interface RouteEntryx {
+    matcher: string,
+    authenticationRequired: boolean,
+    keywords: Array<string>
+    component: (props: RouteProps & BodyProps) => ReactNode
+}
+
+// export class RouteEntry<T> {
+//     matcher: string;
+//     authenticationRequired: boolean;
+//     keywords: Array<string>;
+//     component: (props: RouteProps & BodyProps) => ReactNode
+
+//     constructor(mather: string, authenticationRequired: boolean: keywords)
+
+// }
+
 export default class Body extends Component<BodyProps, BodyState> {
     routes: Array<Route>;
     constructor(props: BodyProps) {
         super(props);
+
+        this.routes = [];
+
+        // const routes2: Array<RouteEntryx> = [
+        //     {
+        //         matcher: 'demos/*',
+        //         authenticationRequired: false,
+        //         keywords: ['demo', 'orcidlink'],
+        //         component: (props: RouteProps & BodyProps) => {
+        //             return <ORCIDLinkDemos {...props} />
+        //         }
+        //     },
+        //     {
+        //         matcher: 'orcidlink/*',
+        //         authenticationRequired: false,
+        //         keywords: ['orcid', 'orcidlink'],
+        //         component: (props: RouteProps & BodyProps) => {
+        //             return <ORCIDLink {...props} />
+        //         }
+        //     }
+        // ];
+
+        // for (const { matcher, authenticationRequired, component } of routes2) {
+        //     this.routes.push(new Route(matcher, { authenticationRequired }, (routeProps: RouteProps) => {
+        //         return component({ ...routeProps, ...props })
+        //     }));
+        // }
 
         this.routes = [
             new Route('demos/*', { authenticationRequired: false }, (props: RouteProps) => {
@@ -499,6 +543,10 @@ export default class Body extends Component<BodyProps, BodyState> {
             }),
         ];
 
+
+
+        // Here we add routes "dynamically" from the the plugin configs collected from all
+        // the plugins.
         for (const plugin of this.props.pluginsInfo) {
             const autoload = plugin.configs.plugin.services.route.autoload || false
             if (autoload || plugin.configs.plugin.package.name === "feeds") {

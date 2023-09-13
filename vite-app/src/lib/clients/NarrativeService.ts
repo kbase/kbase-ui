@@ -1,7 +1,7 @@
-import {DynamicServiceClient} from "../kb_lib/comm/JSONRPC11/DynamicServiceClient";
-import {JSONObject, JSONObjectOf, objectToJSONObject} from "@kbase/ui-lib/lib/json";
-import { JSONLikeObject } from "../kb_lib/jsonLike";
+import { JSONObject, JSONObjectOf, objectToJSONObject } from "@kbase/ui-lib/lib/json";
 import { ObjectInfoRaw, WorkspaceInfoRaw } from "lib/kb_lib/comm/coreServices/Workspace";
+import { JSONLikeObject } from "../jsonLike";
+import { DynamicServiceClient } from "../kb_lib/comm/JSONRPC11/DynamicServiceClient";
 
 export interface RenameNarrativeParams extends JSONObject {
     narrative_ref: string;
@@ -71,7 +71,7 @@ export interface ObjectInfo extends JSONObject {
     typeMajorVersion: string;
     typeMinorVersion: string;
     saveDateMs: string;
-    
+
 }
 
 
@@ -89,7 +89,7 @@ export interface ListNarrativesParams extends JSONObject {
     Note: the service re-uses the "Narrative" object like this in several 
     methods, but the property names are different in each one!
 */
-export interface Narrative extends JSONObject{
+export interface Narrative extends JSONObject {
     ws: WorkspaceInfoRaw;
     nar: ObjectInfoRaw
 }
@@ -99,7 +99,7 @@ export interface ListNarrativesResult extends JSONObject {
 }
 
 export class NarrativeService extends DynamicServiceClient {
-    module:string = 'NarrativeService'
+    module: string = 'NarrativeService'
 
     async rename_narrative(params: RenameNarrativeParams): Promise<RenameNarrativeResult> {
         const [result] = await this.callFunc<[RenameNarrativeParams], [RenameNarrativeResult]>('rename_narrative', [
@@ -123,9 +123,9 @@ export class NarrativeService extends DynamicServiceClient {
     }
 
     async list_narratives(params: ListNarrativesParams): Promise<ListNarrativesResult> {
-         const [result] = await this.callFunc<[ListNarrativesParams], [ListNarrativesResult]>('list_narratives', [
+        const [result] = await this.callFunc<[ListNarrativesParams], [ListNarrativesResult]>('list_narratives', [
             params
-         ]);
+        ]);
         // Unfortunately, list_narratives does not return beautiful objectified infos.
         return result;
     }

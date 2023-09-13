@@ -2,6 +2,7 @@ import { changeHash2 } from 'lib/navigation';
 import { Component, createRef } from 'react';
 import { Nav } from 'react-bootstrap';
 import { MenuItem, MenuItemExternal, MenuItemInternal } from '../../types/menu';
+import { FeedsBadgeWrapper } from './FeedsBadgeWrapper';
 import './SidebarMenu.css';
 import styles from './SidebarMenu.module.css';
 
@@ -64,11 +65,19 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
             <span className={`fa fa-3x fa-${button.icon}`} />
         </div>;
     }
+
     renderBadge(menuItem: MenuItemInternal) {
-        if (!menuItem.renderBadge) {
-            return null;
+        switch (menuItem.name) {
+            case 'feeds':
+                return <FeedsBadgeWrapper />
+            default:
+                return;
         }
-        return menuItem.renderBadge(menuItem);
+        // if (!menuItem.renderBadge) {
+        //     return null;
+        // }
+        // // return <FeedsBadgeWrapper />;
+        // return menuItem.renderBadge(menuItem);
     }
 
     showLabel() {

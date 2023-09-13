@@ -6,17 +6,18 @@
 }
 
 .normalSize {
-    border-radius: 1em;
-    padding: 1em;
+    border-radius: 1rem;
+    padding: 1rem;
 }
 
 .compactSize {
-    padding: 0.5em;
-    border-radius: 0.5em;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
 }
 
 .inlineSize {
-    padding: 0.25em;
+    padding: 0.25rem;
     padding-left: 0;
     border: none;
 }
@@ -39,7 +40,7 @@
 
 .message {
     flex: 1 1 0;
-    margin-left: 0.5em;
+    margin-left: 0.5rem;
     font-style: italic;
     color: rgb(100, 100, 100);
 }

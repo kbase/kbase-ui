@@ -1,3 +1,12 @@
+import { JSONObject, objectToJSONObject } from '@kbase/ui-lib/lib/json';
+import { JSONLikeObject } from '../../../../jsonLike';
+import {
+    ServiceClient,
+    ServiceClientParams,
+} from '../../JSONRPC11/ServiceClient';
+import { ControlledField } from './ControlledField';
+import groupsData from './data/groups/groups.json';
+import schemasData from './data/schemas/schemas.json';
 import {
     EpochTimeMS,
     Sample,
@@ -8,15 +17,6 @@ import {
     Username,
     WSUPA,
 } from './Sample';
-import { ControlledField } from './ControlledField';
-import {
-    ServiceClient,
-    ServiceClientParams,
-} from '../../JSONRPC11/ServiceClient';
-import groupsData from './data/groups/groups.json';
-import schemasData from './data/schemas/schemas.json';
-import { JSONObject, objectToJSONObject } from '@kbase/ui-lib/lib/json';
-import { JSONLikeObject } from '../../../jsonLike';
 
 // const __dirname = dirname(fromFileUrl(import.meta.url));
 // const groupsData = JSON.parse(Deno.readTextFileSync(join(__dirname, 'data/groups/groups.json')));
@@ -131,7 +131,7 @@ export interface GetFieldDefinitionsResult extends JSONLikeObject {
     fields: Array<ControlledField>;
 }
 
-export interface GetFieldGroupsParams {}
+export interface GetFieldGroupsParams { }
 
 export interface GetFieldGroupsResult extends JSONObject {
     groups: FieldGroups;

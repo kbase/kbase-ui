@@ -3,7 +3,7 @@ import {
     JSONObject,
     JSONScalarValue,
     JSONValue
-} from '@kbase/ui-lib/lib/json';
+} from './json';
 
 export type JSONLikeValue =
     | JSONScalarValue

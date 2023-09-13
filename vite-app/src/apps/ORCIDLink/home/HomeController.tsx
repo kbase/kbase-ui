@@ -258,10 +258,15 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     renderSuccess({ link, url, repoURL }: { link: LinkInfo | null, url: string, repoURL: string }) {
-        const isDeveloper = !!this.props.auth.authInfo.account.roles.find((role) => {
+        const isDeveloper = this.props.auth.authInfo.account.roles.some((role) => {
             return role.id === 'DevToken'
         });
-        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} docURL={url} repoURL={repoURL} />
+
+        const isManager = this.props.auth.authInfo.account.customroles.some((role) => {
+            return role === 'orcidlink_admin'
+        });
+
+        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} isManager={isManager} docURL={url} repoURL={repoURL} />
     }
 
     render() {

@@ -1,6 +1,6 @@
 import { JSONArrayOf, JSONObject } from '@kbase/ui-lib/lib/json';
 import { JSONValue, isJSONArray, isJSONObject } from 'lib/json';
-import { JSONLikeObject } from 'lib/kb_lib/jsonLike';
+import { JSONLikeObject } from 'lib/jsonLike';
 import { hasOwnProperty } from 'lib/utils';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 

@@ -1,5 +1,5 @@
 import { JSONObject, JSONValue } from 'lib/json';
-import { toJSON } from 'lib/kb_lib/jsonLike';
+import { toJSON } from 'lib/jsonLike';
 
 
 

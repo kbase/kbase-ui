@@ -102,7 +102,11 @@ function render-templates {
 # Optional dev tooling:
 
 function generate-dev-cert {
-    _noop
+    env bash tools/make-dev-cert.sh
+}
+
+function remove-dev-cert {
+    rm tools/proxy/contents/ssl/*
 }
 
 function help {

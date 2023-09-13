@@ -129,6 +129,7 @@ export interface CountDownClockProps {
 
 interface CountDownClockState {
     now: number;
+    expired: boolean;
 }
 
 export default class CountdownClock extends Component<
@@ -140,19 +141,30 @@ export default class CountdownClock extends Component<
     constructor(props: CountDownClockProps) {
         super(props);
 
+        const now = Date.now();
         this.state = {
-            now: Date.now(),
+            now,
+            expired: this.isExpired(now)
         };
+    }
+
+    isExpired(now: number) {
+        return now > this.props.endAt;
     }
 
     componentDidMount() {
         this.timer = window.setInterval(() => {
             const now = Date.now();
-            if (now > this.props.endAt) {
+            if (this.isExpired(now)) {
+                this.setState({
+                    now,
+                    expired: true
+                })
                 if (this.timer) {
                     window.clearInterval(this.timer);
                 }
                 this.props.onExpired();
+                return;
             }
             this.setState({
                 now
@@ -163,6 +175,10 @@ export default class CountdownClock extends Component<
     render() {
         const { startAt, endAt } = this.props;
         const { now } = this.state;
-        return <span>{niceRelativeTimeRange({ startAt, endAt, now })}</span>;
+        let className = '';
+        if (this.state.expired) {
+            className += 'text-danger'
+        }
+        return <span className={className}>{niceRelativeTimeRange({ startAt, endAt, now })}</span>;
     }
 }

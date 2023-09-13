@@ -12,6 +12,7 @@ import styles from './View.module.css';
 export interface ViewProps {
     link: LinkInfo | null;
     isDeveloper: boolean;
+    isManager: boolean;
     docURL: string;
     repoURL: string;
     revoke: () => void
@@ -97,6 +98,7 @@ export default class View extends Component<ViewProps> {
                     {this.renderUsefulNote()}
 
                     {this.renderDev()}
+                    {this.renderManage()}
                     {this.renderMoreInfo()}
                 </Col>
             </Row>
@@ -114,6 +116,22 @@ export default class View extends Component<ViewProps> {
                 <ul>
                     <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
                     <li><a href={this.props.repoURL} target="_blank" rel="noreferrer"><code>orcidlink</code> service GitHub repo</a></li>
+                </ul>
+            </Well.Body>
+        </Well>;
+    }
+
+
+    renderManage() {
+        if (!this.props.isManager) {
+            return;
+        }
+        return < Well variant="warning" style={{ marginBottom: '1rem' }}>
+            <Well.Header icon="code">For Service Managers and Admins</Well.Header>
+            <Well.Body>
+                <p>Let's keep it rockin'!:</p>
+                <ul>
+                    <li><a href="/#orcidlink/manage">Management Interface</a></li>
                 </ul>
             </Well.Body>
         </Well>;
@@ -162,7 +180,7 @@ export default class View extends Component<ViewProps> {
     renderLinkRevocation() {
         return <Well variant="primary">
             <Well.Header>
-                Remove link to your ORCID Account
+                Remove your ORCID Link
             </Well.Header>
             <Well.Body>
                 <p>You may <b>remove</b> your ORCID Link at any time.</p>
@@ -200,7 +218,7 @@ export default class View extends Component<ViewProps> {
                 return [null, null];
             }
             const tab = <Nav.Item>
-                <Nav.Link eventKey="manage" disabled={this.props.link === null}>Manage</Nav.Link>
+                <Nav.Link eventKey="manage" disabled={this.props.link === null}>Manage your Link</Nav.Link>
             </Nav.Item>
             const pane = <Tab.Pane eventKey="manage">{this.renderPreferences()}</Tab.Pane>
             return [tab, pane]

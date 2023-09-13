@@ -227,10 +227,10 @@ export interface DeployConfig {
                 hard: number;
             };
         };
-        menus: {
-            hamburger: HamburgerMenuDefintion;
-            sidebar: Menu;
-        };
+        // menus: {
+        //     hamburger: HamburgerMenuDefintion;
+        //     sidebar: Menu;
+        // };
         defaults: {
             path: {
                 type: "path" | "hash";

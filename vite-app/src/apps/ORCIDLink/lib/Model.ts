@@ -7,8 +7,10 @@ import { hasOwnProperty } from "lib/utils";
 import {
     ErrorInfo,
     GetNameResult,
-    InfoResponse, LinkRecord, LinkRecordPublicNonOwner, ORCIDAuth,
-    ORCIDLinkServiceClient, ORCIDProfile, ReturnInstruction, Work
+    InfoResponse, LinkRecord, LinkRecordPublicNonOwner,
+    ManageLinkingSessionsQueryResult, ManageLinksParams, ManageLinksResponse,
+    ManageStatsResult,
+    ORCIDLinkServiceClient, ORCIDLinkServiceManageClient, ORCIDProfile, ReturnInstruction, StatusResponse, Work
 } from "./ORCIDLinkClient";
 import { SCOPE } from "./constants";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
@@ -59,36 +61,8 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-export type LinkingSesssionType = 'initial' | 'started' | 'complete';
-
-export interface LinkingSessionBase {
-    kind: LinkingSesssionType;
-    session_id: string;
-    username: string;
-    created_at: number;
-    expires_at: number;
-}
 
 
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionInitial extends LinkingSessionBase {
-    // kind: 'initial'
-}
-
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionStarted extends LinkingSessionBase {
-    // kind: 'started';
-    return_link: string;
-    skip_prompt: boolean;
-}
-
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionComplete extends LinkingSessionBase {
-    // kind: 'complete'
-    return_link: string;
-    skip_prompt: boolean;
-    orcid_auth: ORCIDAuth;
-}
 
 // export type LinkingSession = LinkingSessionInitial | LinkingSessionStarted | LinkingSessionComplete
 
@@ -112,10 +86,10 @@ export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string
         orcid: {
             label: `Allow ${SCOPE_USER} to read your information with visibility set to Trusted Organizations.`,
             tooltip: `Allow ${SCOPE_USER} to read any information from your record you have marked as \
-            limited access. ${SCOPE_USER} cannot read information you have marked as private.`
+            "Everyone" (public) or "Trusted parties". ${SCOPE_USER} cannot read information you have marked as "Only me" (private).`
         },
         help: [
-            'KBase uses this to pre-fill certain forms with information in your ORCID® profile'
+            'KBase may access your ORCID® profile to display your ORCID Id in your profile, or to assist in filling out forms'
         ]
     },
     '/activities/update': {
@@ -129,7 +103,7 @@ export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string
             any other trusted organization.`
         },
         help: [
-            'KBase uses this to assist you in linking published Narratives to your ORCID® account.'
+            'In the future, KBase may use this automate the sharing of published "Fair Narratives" to your ORCID® account.'
         ]
     }
 }
@@ -249,6 +223,10 @@ export class Model {
             timeout: 1000,
             token: auth.authInfo.token
         });
+    }
+
+    async getStatus(): Promise<StatusResponse> {
+        return this.orcidLinkClient.getStatus();
     }
 
     async getInfo(): Promise<InfoResponse> {
@@ -485,6 +463,104 @@ export class Model {
         }
 
         await client.update_user_profile({ profile: profileUpdate });
+    }
+
+    // Management
+
+    async isManager(): Promise<boolean> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const { is_manager } = await client.getIsManager();
+
+        return is_manager;
+    }
+
+    async manageQueryLinks(query: ManageLinksParams): Promise<ManageLinksResponse> {
+
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.queryLinks(query);
+
+        return result;
+    }
+
+    // async manageQueryLinkingSessions(query: ManageLinkingSessionsQueryParams): Promise<ManageLinkingSessionsQueryResult> {
+
+    //     const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+    //     const { authInfo: { token } } = this.auth;
+
+    //     const client = new ORCIDLinkServiceManageClient({
+    //         url, token, timeout
+    //     });
+
+    //     const result = await client.queryLinkingSessions(query);
+
+    //     return result;
+    // }
+
+
+    async manageQueryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.queryLinkingSessions();
+
+        return result;
+    }
+
+    async manageGetStats(): Promise<ManageStatsResult> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.getStats();
+
+        return result;
+    }
+
+    async deleteExpiredSessions(): Promise<void> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.deleteExpiredSessions();
+
+        return result;
+    }
+
+
+
+    async manageGetLink(username: string): Promise<LinkRecord> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.getLink(username);
+
+        return result;
     }
 
     // async getDOICitation(doi: string) {

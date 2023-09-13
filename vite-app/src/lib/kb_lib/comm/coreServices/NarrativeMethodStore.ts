@@ -1,7 +1,7 @@
 import {
     JSONValue
 } from '@kbase/ui-lib/lib/json';
-import { JSONLikeObject, toJSON } from '../../jsonLike';
+import { JSONLikeObject, toJSON } from '../../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 
 // Get Method Brief Info

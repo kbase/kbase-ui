@@ -2,16 +2,17 @@ export type MenuType = 'internal' | 'external';
 
 export interface MenuItemBase {
     name: string;
-    type: MenuType;
     label: string;
-    syncHash?: boolean;
     icon: string;
+    type: MenuType;
+
+    // syncHash?: boolean;
     newWindow?: boolean;
     tooltip?: string;
     requiresAuth?: boolean;
     allowedTags?: Array<string>;
     allowedRoles?: Array<string>;
-    renderBadge?: (menuItem: MenuItem) => JSX.Element;
+    // renderBadge?: (menuItem: MenuItem) => JSX.Element;
 }
 
 export interface MenuItemInternal extends MenuItemBase {

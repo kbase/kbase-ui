@@ -11,6 +11,8 @@ import Continue from './continue/ContinueController';
 import HomeController from './home/HomeController';
 import { ReturnInstruction } from './lib/ORCIDLinkClient';
 import Link from './link/LinkController';
+import ManageController from './manage/controller';
+import ViewLinkContext from './manage/viewLink';
 import ConfirmRevoke from './revoke/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {
@@ -192,7 +194,41 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
             }),
             new Route('orcidlink/help', { authenticationRequired: true }, () => {
                 return <Help />;
-            })
+            }),
+
+            new Route('orcidlink/manage/link/:username', { authenticationRequired: true }, (props: RouteProps) => {
+                // TODO: need to make route support authenticated and unauthenticated invocations
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+
+                        return <ViewLinkContext username={props.params.get('username')!} />;
+                    }}
+                </AuthContext.Consumer>
+            }),
+            new Route('orcidlink/manage', { authenticationRequired: true }, () => {
+                // TODO: need to make route support authenticated and unauthenticated invocations
+                return <AuthContext.Consumer>
+                    {(authValue) => {
+                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
+                            return null;
+                        }
+                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
+                            return null;
+                        }
+
+                        return <ManageController
+                            {...this.props}
+                            auth={authValue.value}
+                        />;
+                    }}
+                </AuthContext.Consumer>
+            }),
         ]
 
         return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', overflowY: 'auto', margin: '0 1em' }}>

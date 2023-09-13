@@ -26,10 +26,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
         return (
             <div
                 dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(marked.parse(description, {
-                        mangle: false,
-                        headerIds: false
-                    })),
+                    __html: DOMPurify.sanitize(marked.parse(description)),
                 }}
             />
         );

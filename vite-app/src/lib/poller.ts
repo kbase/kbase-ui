@@ -18,9 +18,26 @@ export class Job {
     }
 }
 
+export interface SimpleJobConfig extends JobConfig {
+    runner: () => void
+}
+
+export class SimpleJob extends Job {
+    runner: () => void;
+    constructor(config: SimpleJobConfig) {
+        super(config)
+        this.runner = config.runner;
+    }
+
+    run() {
+        this.runner();
+    }
+}
+
 export interface TaskConfig {
     runInitially: boolean;
     interval: number;
+    jobs?: Array<Job>;
 }
 
 export class Task {
@@ -28,13 +45,13 @@ export class Task {
     interval: number;
     lastRun: number | null;
     jobs: Array<Job>;
-    constructor(config: TaskConfig) {
-        this.runInitially = config.runInitially;
-        this.interval = config.interval;
+
+    constructor({ runInitially, interval, jobs }: TaskConfig) {
+        this.runInitially = runInitially;
+        this.interval = interval;
+        this.jobs = jobs || [];
 
         this.lastRun = null;
-
-        this.jobs = [];
     }
 
     getInterval() {
@@ -280,8 +297,7 @@ export function makePoller({
     });
     task.addJob(job);
     const poller = new Poller({
-        task: task,
+        task
     });
     return poller;
 }
-// return {Poller, Task, Job, makePoller};

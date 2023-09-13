@@ -214,10 +214,7 @@ function ProfileViewer(props: ProfileProps) {
             // const fixed = this.props.profileUserdata.researchStatement.replace(/\n/, '<br />');
             // statement = <p style={{ whiteSpace: 'pre' }}>{this.props.profileUserdata.researchStatement}</p>;
             marked.use({
-                breaks: true,
-                // the following two settings are to disable deprecation warnings.
-                mangle: false,
-                headerIds: false
+                breaks: true
             });
             const content = DOMPurify.sanitize(marked.parse(researchStatement));
             statement = <div dangerouslySetInnerHTML={{ __html: content }} />;

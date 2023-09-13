@@ -1,14 +1,47 @@
-import { toJSON } from "lib/kb_lib/jsonLike";
+import { JSONLikeObject, toJSON } from "lib/jsonLike";
 import { ServiceClient } from "./ServiceClient";
 // import { MultiServiceClient } from "./DynamicServiceClient";
-import { LinkingSessionComplete } from "./Model";
+import { JSONObject } from "lib/json";
+
 
 const WORKS_PATH = 'orcid/works';
 const GET_PROFILE_PATH = 'orcid/profile';
 const GET_LINK_PATH = 'link';
 const GET_LINK_SHARE_PATH = 'link/share';
 const LINKING_SESSIONS_PATH = 'linking-sessions';
+const MANAGE_PATH = 'manage';
 const LINK_PATH = 'link';
+
+
+export type LinkingSesssionType = 'initial' | 'started' | 'complete';
+
+export interface LinkingSessionBase {
+    kind: LinkingSesssionType;
+    session_id: string;
+    username: string;
+    created_at: number;
+    expires_at: number;
+}
+
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionInitial extends LinkingSessionBase {
+    // kind: 'initial'
+}
+
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionStarted extends LinkingSessionBase {
+    // kind: 'started';
+    return_link: string;
+    skip_prompt: boolean;
+}
+
+// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+export interface LinkingSessionComplete extends LinkingSessionBase {
+    // kind: 'complete'
+    return_link: string;
+    skip_prompt: boolean;
+    orcid_auth: ORCIDAuth;
+}
 
 // Errors
 
@@ -373,14 +406,21 @@ export type GetWorksResult = Array<{
 }>
 
 export interface ORCIDAuth {
-    scope: string
-    orcid: string;
-    name: string;
+    access_token: string;
     expires_in: number;
+    id_token: string;
+    name: string;
+    orcid: string;
+    refresh_token: string;
+    scope: string
+    token_type: string;
+
 }
 
 export interface LinkRecord {
     created_at: number,
+    expires_at: number;
+    username: string;
     orcid_auth: ORCIDAuth
 }
 
@@ -408,6 +448,7 @@ export interface ErrorInfo {
 export interface ErrorInfoResponse {
     error_info: ErrorInfo
 }
+
 
 export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
@@ -529,3 +570,143 @@ export class ORCIDLinkServiceClient extends ServiceClient {
     }
 }
 
+
+
+export interface IsManagerResponse {
+    is_manager: boolean
+}
+
+// Manage api query links
+
+export interface FilterString extends JSONObject {
+    eq: string
+}
+
+export interface FilterNumber extends JSONLikeObject {
+    eq?: number;
+    gte?: number;
+    gt?: number;
+    lte?: number;
+    lt?: number;
+}
+
+export interface LinkQueryFind extends JSONLikeObject {
+    username?: FilterString;
+    orcid?: FilterString;
+    created?: FilterNumber;
+    expires?: FilterNumber;
+}
+
+export interface QuerySortSpec extends JSONLikeObject {
+    field_name: string;
+    descending?: boolean;
+}
+
+export interface QuerySort extends JSONLikeObject {
+    specs: Array<QuerySortSpec>;
+}
+
+// export interface LinkQuery extends JSONLikeObject {
+//     find?: LinkQueryFind;
+//     sort?: QuerySort;
+//     offset?: number;
+//     limit?: number;
+// }
+
+export interface Query<FilterT extends JSONLikeObject> extends JSONLikeObject {
+    find?: FilterT;
+    sort?: QuerySort;
+    offset?: number;
+    limit?: number;
+}
+
+export type LinksQuery = Query<LinkQueryFind>
+
+// export interface ManageLinksParams extends JSONLikeObject {
+//     query: LinkQuery
+// }
+
+export type ManageLinksParams = LinksQuery;
+
+export interface ManageLinksResponse {
+    links: Array<LinkRecord>;
+}
+
+// Manage Linking Sessions Query
+
+export interface LinkingSessionsFilter extends JSONLikeObject {
+
+}
+
+export type LinkingSessionsQuery = Query<LinkingSessionsFilter>
+
+// export interface LinkingSessionsQuery extends JSONLikeObject {
+//     find?: LinkingSessionsQueryFind;
+//     sort?: QuerySort;
+//     offset?: number;
+//     limit?: number;
+// }
+export type ManageLinkingSessionsQueryParams = LinkingSessionsQuery;
+
+export interface ManageLinkingSessionsQueryResult {
+    initial_linking_sessions: Array<LinkingSessionInitial>
+    started_linking_sessions: Array<LinkingSessionStarted>
+    completed_linking_sessions: Array<LinkingSessionComplete>
+}
+
+export interface LinkStats {
+    last_24_hours: number
+    last_7_days: number
+    last_30_days: number
+    all_time: number
+}
+
+export interface LinkSessionStats {
+    active: number
+    expired: number
+}
+
+export interface ManageStatsResult {
+    stats: {
+        links: LinkStats,
+        linking_sessions_initial: LinkSessionStats,
+        linking_sessions_started: LinkSessionStats,
+        linking_sessions_completed: LinkSessionStats
+    }
+}
+
+export class ORCIDLinkServiceManageClient extends ServiceClient {
+    module = 'ORCIDLink';
+
+    // Management
+
+    async getIsManager(): Promise<IsManagerResponse> {
+        return await this.get<IsManagerResponse>(`${MANAGE_PATH}/is_manager`) as unknown as IsManagerResponse;
+    }
+
+    async queryLinks(params: ManageLinksParams): Promise<ManageLinksResponse> {
+        return await this.post<ManageLinksResponse>(`${MANAGE_PATH}/links`, toJSON(params)) as unknown as ManageLinksResponse;
+    }
+
+
+    async getLink(username: string): Promise<LinkRecord> {
+        return await this.get<LinkRecord>(`${MANAGE_PATH}/link/${username}`) as unknown as LinkRecord;
+    }
+
+
+    // async queryLinkingSessions(params: ManageLinkingSessionsQueryParams): Promise<ManageLinkingSessionsQueryResult> {
+    //     return await this.post<void>(`${MANAGE_PATH}/linking_sessions`, toJSON(params)) as unknown as ManageLinkingSessionsQueryResult;
+    // }
+
+    async queryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
+        return await this.get<ManageLinkingSessionsQueryResult>(`${MANAGE_PATH}/linking_sessions`) as unknown as ManageLinkingSessionsQueryResult;
+    }
+
+    async getStats(): Promise<ManageStatsResult> {
+        return await this.get<ManageStatsResult>(`${MANAGE_PATH}/stats`) as unknown as ManageStatsResult;
+    }
+
+    async deleteExpiredSessions(): Promise<void> {
+        return await this.delete(`${MANAGE_PATH}/expired_linking_sessions`);
+    }
+}

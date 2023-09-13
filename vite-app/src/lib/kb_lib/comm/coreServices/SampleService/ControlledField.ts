@@ -3,7 +3,7 @@
 // we can piggyback on??
 
 import { JSONValue } from '@kbase/ui-lib/lib/json';
-import { JSONLikeObjectOf, JSONLikeValue } from '../../../jsonLike';
+import { JSONLikeObjectOf, JSONLikeValue } from '../../../../jsonLike';
 
 export type JSONSchemaFieldType =
     | 'string'

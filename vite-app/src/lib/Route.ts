@@ -1,4 +1,5 @@
 import { Role } from "@kbase/ui-lib/lib/Auth";
+import { ReactNode } from "react";
 import { RouteProps } from "../components/Router2";
 import { HashPath } from "../contexts/RouterContext";
 
@@ -40,7 +41,7 @@ export type RouteSpecElement =
 
 export type RouteSpec = Array<RouteSpecElement>;
 
-export type RouteRenderer = (props: RouteProps) => JSX.Element;
+export type RouteRenderer = (props: RouteProps) => ReactNode;
 
 export type Params = Map<string, string>;
 

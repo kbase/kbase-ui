@@ -5,8 +5,8 @@ import UserProfileClient, { UserProfile } from "lib/kb_lib/comm/coreServices/Use
 import { changeHash2 } from "lib/navigation";
 import { Component } from "react";
 import { Config } from "types/config";
-import { LinkingSessionComplete, Model } from "../lib/Model";
-import { ErrorCode, LinkRecord, ReturnInstruction } from "../lib/ORCIDLinkClient";
+import { Model } from "../lib/Model";
+import { ErrorCode, LinkRecord, LinkingSessionComplete, ReturnInstruction } from "../lib/ORCIDLinkClient";
 import { ClientError } from "../lib/ServiceClient";
 import Continue from "./Continue";
 import ErrorView from "./Error";

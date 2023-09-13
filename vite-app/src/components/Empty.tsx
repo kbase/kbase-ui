@@ -5,6 +5,7 @@ export interface EmptyProps extends PropsWithChildren {
     message?: string;
     icon?: string;
     size?: 'normal' | 'compact' | 'inline'
+    style?: React.CSSProperties
 }
 
 export default class Empty extends React.Component<EmptyProps> {
@@ -32,7 +33,7 @@ export default class Empty extends React.Component<EmptyProps> {
             return this.props.children;
         })();
         return (
-            <div className={mainClasses.join(' ')}>
+            <div className={mainClasses.join(' ')} style={this.props.style || {}}>
                 <div className={iconClasses.join(' ')}>
                     <span className="fa-stack fa-lg">
                         <i

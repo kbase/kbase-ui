@@ -4,7 +4,7 @@ import {
     JSONValue,
     objectToJSONObject
 } from 'lib/json';
-import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../jsonLike';
+import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 import { EpochTimeMS, Mapping, SDKBoolean } from '../types';
 

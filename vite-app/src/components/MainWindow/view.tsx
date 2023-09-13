@@ -9,6 +9,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import Signin from '../Signin/SigninMain';
 import Title from '../Title';
 // import { Logo } from '../Logo/Logo';
+import { Form } from 'react-bootstrap';
 import Notifications from '../Notifications/NotificationsMain';
 import styles from './style.module.css';
 // import { Ping } from '../Ping';
@@ -148,9 +149,19 @@ export default class MainWindow extends Component<MainWindowProps> {
         </div>;
     }
 
+    renderMenuSearch() {
+        return <div className={styles.menuSearch}>
+            <div className={styles.menuSearchSearchbar}>
+                <Form.Control type="text" />
+            </div>
+            <div className={styles.menuSearchSearchresults}></div>
+        </div>
+    }
+
     render() {
         return (
             <div className={styles.main} data-k-b-testhook-component="mainwindow">
+                {/* {this.renderMenuSearch()} */}
                 {this.renderHeader()}
                 <div className={styles.body}>
                     {this.renderNavigation()}

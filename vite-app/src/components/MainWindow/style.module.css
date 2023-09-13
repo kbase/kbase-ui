@@ -4,7 +4,26 @@
     flex-direction: column;
     height: 100vh;
     min-height: 0;
+    position: relative;
 }
+
+.menuSearch {
+    position: absolute;
+    top: 0;
+    left: 100px;
+    right: 100px;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.menuSearchSearchbar {}
+
+.menuSearchSearchbar input {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.menuSearchSearchresults {}
 
 .header {
     flex: 0 0 70px;
