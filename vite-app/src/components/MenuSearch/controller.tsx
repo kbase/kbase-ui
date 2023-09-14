@@ -8,6 +8,6 @@ interface MenuSearchControllerState {
 
 }
 
-export class MenuSearchController extends Component {
+export class MenuSearchController extends Component<MenuSearchControllerProps, MenuSearchControllerState> {
 
 }

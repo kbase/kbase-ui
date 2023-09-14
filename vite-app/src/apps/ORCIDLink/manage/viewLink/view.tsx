@@ -15,13 +15,6 @@ export interface ORCIDLinkManageProps {
 interface ORCIDLinkManageState {
 }
 
-function renderORCIDLink(orcidId: string) {
-    return <a href={`${ORCID_URL}/${orcidId}`} target="_blank">
-        {renderORCIDIcon()}
-        {orcidId}
-    </a>
-}
-
 export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
     renderLink() {
         return <Well variant="primary">
