@@ -57,6 +57,15 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                     return Intl.DateTimeFormat('en-US', {}).format(linkRecord.created_at);
                 }
             },
+
+            {
+                id: 'retires_at',
+                label: 'Retires At',
+                flex: '0 0 8rem',
+                render: (linkRecord: LinkRecord) => {
+                    return Intl.DateTimeFormat('en-US', {}).format(linkRecord.retires_at);
+                }
+            },
             {
                 id: 'view',
                 label: 'View',

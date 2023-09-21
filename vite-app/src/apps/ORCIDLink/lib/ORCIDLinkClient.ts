@@ -420,6 +420,7 @@ export interface ORCIDAuth {
 export interface LinkRecord {
     created_at: number,
     expires_at: number;
+    retires_at: number;
     username: string;
     orcid_auth: ORCIDAuth
 }

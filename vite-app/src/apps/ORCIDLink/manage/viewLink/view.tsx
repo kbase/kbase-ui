@@ -47,15 +47,24 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                             Created on
                         </div>
                         <div className="flex-col -col2">
-                            {Intl.DateTimeFormat('en-US').format(this.props.link.created_at)}
+                            {Intl.DateTimeFormat('en-US', { dateStyle: "long", timeStyle: "long" }).format(this.props.link.created_at)}
                         </div>
                     </div>
                     <div className="flex-row">
                         <div className={`flex-col ${styles['-col1']}`}>
-                            Expires on
+                            Expires at
                         </div>
                         <div className="flex-col -col2">
-                            {Intl.DateTimeFormat('en-US').format(this.props.link.expires_at)}
+                            {Intl.DateTimeFormat('en-US', { dateStyle: "long", timeStyle: "long" }).format(this.props.link.expires_at)}
+                        </div>
+                    </div>
+
+                    <div className="flex-row">
+                        <div className={`flex-col ${styles['-col1']}`}>
+                            Retires at
+                        </div>
+                        <div className="flex-col -col2">
+                            {Intl.DateTimeFormat('en-US', { dateStyle: "long", timeStyle: "long" }).format(this.props.link.retires_at)}
                         </div>
                     </div>
                     {/* <div className="flex-row">
