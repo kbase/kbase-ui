@@ -34,7 +34,7 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
     }
     componentDidMount() {
         // First ensure that the user is an admin.
-        this.props.setTitle('KBase ORCID® Link Management');
+        this.props.setTitle('KBase ORCID® Link - Manager');
         this.initialize();
     }
 

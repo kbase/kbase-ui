@@ -18,7 +18,7 @@ interface ORCIDLinkManageState {
 function renderORCIDLink(orcidId: string) {
     return <a href={`${ORCID_URL}/${orcidId}`} target="_blank">
         {renderORCIDIcon()}
-        {orcidId}
+        {ORCID_URL}/{orcidId}
     </a>
 }
 

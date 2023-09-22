@@ -109,16 +109,16 @@ export default class View extends Component<ViewProps> {
         if (!this.props.isDeveloper) {
             return;
         }
-        return < Well variant="warning" style={{ marginBottom: '1rem' }}>
+        return <Well variant="warning" style={{ marginBottom: '1rem' }}>
             <Well.Header icon="code">For Developers</Well.Header>
             <Well.Body>
-                <p>Here are some resources that may be useful if you are developing against the ORCIDLink API, or are simply curious:</p>
+                <p>Resources that may be useful if you are developing against the ORCID Link API, or are are simply a curious dev:</p>
                 <ul>
                     <li><a href={this.props.docURL} target="_blank" rel="noreferrer">ORCIDLink API Documentation</a></li>
                     <li><a href={this.props.repoURL} target="_blank" rel="noreferrer"><code>orcidlink</code> service GitHub repo</a></li>
                 </ul>
             </Well.Body>
-        </Well>;
+        </Well>
     }
 
 
@@ -127,14 +127,13 @@ export default class View extends Component<ViewProps> {
             return;
         }
         return < Well variant="warning" style={{ marginBottom: '1rem' }}>
-            <Well.Header icon="code">For Service Managers and Admins</Well.Header>
+            <Well.Header icon="briefcase">For Service Managers and Admins</Well.Header>
             <Well.Body>
-                <p>Let's keep it rockin'!:</p>
                 <ul>
                     <li><a href="/#orcidlink/manage">Management Interface</a></li>
                 </ul>
             </Well.Body>
-        </Well>;
+        </Well>
     }
 
     // INFO

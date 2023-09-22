@@ -59,7 +59,7 @@
         {
             "name": "orcidlink",
             "label": "KBase ORCID® Link",
-            "icon": "leaf",
+            "image": "orcidIcon",
             "type": "internal",
             "path": "orcidlink",
             "newWindow": false,

@@ -34,7 +34,7 @@ export default class ViewLinkController extends Component<ViewLinkControllerProp
     }
     componentDidMount() {
         // First ensure that the user is an admin.
-        this.props.setTitle(`KBase ORCID® Link Manager - View Link for ${this.props.username}`)
+        this.props.setTitle(`KBase ORCID® Link - Manager - View Link for ${this.props.username}`)
         this.initialize();
     }
 

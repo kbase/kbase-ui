@@ -1,8 +1,9 @@
+import { ImageName, image } from 'components/images';
 import { Component } from 'react';
-import { MenuItem } from '../../types/menu';
 import { Dropdown } from 'react-bootstrap';
-import logo from './kbase_logo.png';
+import { MenuItem } from '../../types/menu';
 import styles from './HamburgerMenuLogo.module.css';
+import logo from './kbase_logo.png';
 
 
 export interface HamburgerMenuProps {
@@ -28,6 +29,11 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
                         <span className={`fa fa-${menuItem.icon} ${styles.navbarIcon}`} />
                     </div>
                 );
+            } else if (menuItem.image) {
+                // Note we trust that it is a valid image name
+                icon = <div className={styles.navbarIconWrapper} key={menuItem.name}>
+                    <img src={image(menuItem.image as ImageName)} className="navbar-image" style={{ width: '100%' }} />
+                </div>
             }
             if (menuItem.type === 'internal') {
                 return (

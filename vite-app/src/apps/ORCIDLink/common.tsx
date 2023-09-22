@@ -1,10 +1,10 @@
+import { image } from 'components/images';
 import { Accordion, Image } from 'react-bootstrap';
-import orcidIcon from './images/ORCID-iD_icon-vector.svg';
 import { SCOPE_HELP } from './lib/Model';
 import { SCOPE } from './lib/constants';
 
 export function renderORCIDIcon() {
-    return <Image src={orcidIcon} style={{ height: '1em', marginRight: '0.25em' }} />
+    return <Image src={image('orcidIcon')} style={{ height: '24px', marginRight: '0.25em' }} />
 }
 
 export function renderORCIDLabel() {

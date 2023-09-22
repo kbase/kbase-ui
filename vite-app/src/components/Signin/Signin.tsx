@@ -1,10 +1,11 @@
 import { AuthenticationStatus } from '@kbase/ui-lib';
 import { UserProfile } from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
+import { image } from 'components/images';
 import { Component } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { AuthenticationState, AuthenticationStateAuthenticated, } from '../../contexts/Auth';
-import SigninButton from './SigninButton';
 import styles from './Signin.module.css';
+import SigninButton from './SigninButton';
 
 export interface SigninProps {
     authState: AuthenticationState;
@@ -26,13 +27,13 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 if (gravatarHash) {
                     return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&r=pg&d=${gravatarDefault}`;
                 } else {
-                    return `images/nouserpic.png`;
+                    return image('nouserpic');
                 }
             } else {
-                return `images/nouserpic.png`;
+                return image('nouserpic');
             }
         } else {
-            return `images/nouserpic.png`;
+            return image('nouserpic');
         }
     }
 
@@ -47,10 +48,10 @@ export default class Signin extends Component<SigninProps, SigninState> {
                 case 'silhouette':
                 case 'mysteryman':
                 default:
-                    return `images/nouserpic.png`;
+                    return image('nouserpic');
             }
         } else {
-            return `images/nouserpic.png`;
+            return image('nouserpic');
         }
     }
 

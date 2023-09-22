@@ -16,14 +16,13 @@ import {
     Tooltip
 } from 'antd';
 import Link from 'antd/es/typography/Link';
+import { image } from 'components/images';
 import DOMPurify from 'dompurify';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { changeHash2 } from 'lib/navigation';
 import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { UserProfileAffiliation } from '../API';
-import orcidIcon from '../assets/ORCID-iD_icon-vector.svg';
-import nouserpic from '../assets/nouserpic.png';
 import { ORCID_URL } from '../constants';
 import Area from './Area';
 import Orgs from './Orgs/controller';
@@ -307,16 +306,16 @@ function ProfileViewer(props: ProfileProps) {
         switch (avatarOption) {
             case 'silhouette':
                 // Opting out of gravatar causes this one image to be shown, in all cases.
-                return nouserpic;
+                return image('nouserpic');
             case 'gravatar':
                 if (!gravatarHash) {
                     // Should never occur, but may in some old test profiles.
-                    return nouserpic;
+                    return image('nouserpic');
                 }
                 return gravatarURL(gravatarHash, gravatarDefault || 'identicon');
             default:
                 // should never occur, but may in some old test profiles.
-                return nouserpic;
+                return image('nouserpic');
         }
     }
 
@@ -331,7 +330,7 @@ function ProfileViewer(props: ProfileProps) {
     function renderAvatarImage(srcRenderer: () => string) {
         return <Image
             style={{ maxWidth: '100%', alignSelf: 'center' }}
-            fallback={nouserpic}
+            fallback={image('nouserpic')}
             alt='User avatar'
             preview={false}
             src={srcRenderer()}
@@ -545,9 +544,9 @@ function ProfileViewer(props: ProfileProps) {
 
     function renderORCIDIcon() {
         return <img
-            src={orcidIcon}
+            src={image('orcidIcon')}
             alt="ORCID® icon"
-            style={{ height: '1em', marginRight: '0.25em', flex: '0 0 auto' }} />
+            style={{ height: '24px', marginRight: '0.25em', flex: '0 0 auto' }} />
     }
 
     function renderORCIDIdLink(orcidId: string) {

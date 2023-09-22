@@ -3,7 +3,8 @@ export type MenuType = 'internal' | 'external';
 export interface MenuItemBase {
     name: string;
     label: string;
-    icon: string;
+    icon?: string;
+    image?: string;
     type: MenuType;
 
     // syncHash?: boolean;
