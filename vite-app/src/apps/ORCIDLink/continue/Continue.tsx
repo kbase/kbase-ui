@@ -33,7 +33,7 @@ export default class Continue extends Component<ContinueProps> {
                 <Well.Body>
                     <div className="flex-table">
                         <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>ORCID® Account ID</div>
+                            <div className={`flex-col ${styles['-col1']}`}>ORCID® iD</div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
                                     <a href={`${ORCID_URL}/${orcid}`} target="_blank">
@@ -94,11 +94,11 @@ export default class Continue extends Component<ContinueProps> {
                 return <Alert variant="info">
                     <div style={{ display: 'flex', flexDirection: 'row', position: 'relative', justifyContent: 'center' }}>
                         <div style={{ position: 'absolute', left: "0", top: "0" }}><Spinner animation="border" size="sm" /></div>
-                        Creating ORCID Link...
+                        Creating KBase ORCID® Link...
                     </div>
                 </Alert>
             case AsyncProcessStatus.SUCCESS:
-                return <Alert variant="success">ORCID Link Created, Redirecting...</Alert>
+                return <Alert variant="success">KBase ORCID® Link Created, Redirecting...</Alert>
             case AsyncProcessStatus.ERROR:
                 return <ErrorAlert message={linkingState.error.message} />
         }
@@ -127,15 +127,15 @@ export default class Continue extends Component<ContinueProps> {
                         time.
                     </p>
                     <p>
-                        By default, your ORCID Id will be displayed in your User Profile and may be displayed
+                        By default, your ORCID® iD will be displayed in your User Profile and may be displayed
                         in other contexts in which your account is displayed. You may
-                        opt out below. After linking, you can change this setting in either the ORCID Link or
+                        opt out below. After linking, you can change this setting in either the KBase ORCID® Link or
                         User Profile tool.
                     </p>
                     <Form>
                         <Form.Group as={Row} controlId="showInProfileField" className="align-items-center">
                             <Form.Label column>
-                                Show ORCID Id in your User Profile?
+                                Show ORCID® iD in your User Profile?
                             </Form.Label>
                             <Col>
                                 <Form.Switch id="show-in-profile"
@@ -156,10 +156,10 @@ export default class Continue extends Component<ContinueProps> {
                         style={{ flex: '1 1 0' }}
                     >
                         {/* <Button variant="primary" onClick={this.props.confirmLink}>
-                            <span className="fa fa-lg fa-plus" /> Finish Creating your ORCID® Link
+                            <span className="fa fa-lg fa-plus" /> Finish Creating your KBase ORCID® Link
                         </Button> */}
                         <Button variant="primary" onClick={this.props.confirmLink}>
-                            Finish Creating your ORCID® Link <CheckLg fontSize="1.5rem" />
+                            Finish Creating your KBase ORCID® Link <CheckLg fontSize="1.5rem" />
                         </Button>
                         <Button variant="danger" onClick={this.props.cancelLink}>
                             <span className="fa fa-lg fa-mail-reply" /> Cancel
@@ -179,7 +179,7 @@ export default class Continue extends Component<ContinueProps> {
                 <p>The following ORCID® account will be linked to this KBase account.</p>
 
                 <p>
-                    You may follow the <b>ORCID® Account ID</b> link below to inspect additional
+                    You may follow the <b>ORCID® iD</b> link below to inspect additional
                     information about the account.
                 </p>
 

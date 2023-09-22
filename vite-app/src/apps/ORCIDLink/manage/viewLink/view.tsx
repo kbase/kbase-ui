@@ -18,12 +18,12 @@ interface ORCIDLinkManageState {
 export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
     renderLink() {
         return <Well variant="primary">
-            <Well.Header><div>ORCID Link for <b>{this.props.link.username}</b></div></Well.Header>
+            <Well.Header><div>KBase ORCID® Link for <b>{this.props.link.username}</b></div></Well.Header>
             <Well.Body>
                 <div className="flex-table">
                     <div className="flex-row">
                         <div className={`flex-col ${styles['-col1']}`}>
-                            ORCID® Account ID
+                            ORCID® iD
                         </div>
                         <div className="flex-col -col2">
                             <div className="flex-row" style={{ alignItems: 'center' }}>
@@ -86,7 +86,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             <Well.Body>
                 <Stack gap={2}>
                     <Button href={`/#people/${this.props.link.username}`} target="_blank" variant="secondary">View User Profile</Button>
-                    <Button href={`${ORCID_URL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View ORCID Profile</Button>
+                    <Button href={`${ORCID_URL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View KBase ORCID® Profile</Button>
                 </Stack>
             </Well.Body>
         </Well>
@@ -100,7 +100,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                         <Button href={`/#orcidlink/manage`} variant="secondary">
                             <Stack direction="horizontal" gap={2}>
                                 <ArrowReturnLeft />
-                                <span>ORCIDLink Manage UI</span>
+                                <span>KBase ORCID® Link Manage UI</span>
                             </Stack>
                         </Button>
                     </Col>

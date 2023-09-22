@@ -20,7 +20,7 @@ export default class AlreadyLinked extends Component<AlreadyLinkedProps> {
     renderReturn() {
         if (!this.props.returnInstruction) {
             return <p>
-                <Button onClick={this.props.returnFromWhence}>Return to the ORCID Link home page</Button>
+                <Button onClick={this.props.returnFromWhence}>Return to the KBase ORCID® Link home page</Button>
             </p>
         }
 
@@ -37,12 +37,12 @@ export default class AlreadyLinked extends Component<AlreadyLinkedProps> {
                 </Well.Header>
                 <Well.Body>
                     <p>
-                        Your KBase account is already linked to an ORCID account.
+                        Your KBase account is already linked to an ORCID® account.
                     </p>
 
                     <LinkInfoView link={this.props.link} />
                     <p style={{ marginTop: '1em' }}>
-                        Each KBase account may have only a single ORCID Id linked. Conversely, an ORCID Id may
+                        Each KBase account may have only a single ORCID® iD linked. Conversely, an ORCID® iD may
                         only be linked to one KBase account.
                     </p>
                     {this.renderReturn()}

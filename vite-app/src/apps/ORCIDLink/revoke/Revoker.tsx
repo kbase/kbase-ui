@@ -20,7 +20,7 @@ export default class View extends Component<RevokerProps> {
             </Well.Header>
             <Well.Body>
                 <p>
-                    The ORCID Link has been successfully removed.
+                    The KBase ORCID® Link has been successfully removed.
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
@@ -58,20 +58,20 @@ export default class View extends Component<RevokerProps> {
     renderLinked(linkInfo: ORCIDLinkInfo) {
         return <Well variant="danger">
             <Well.Header>
-                Confirm Removal of ORCID Link
+                Confirm Removal of KBase ORCID® Link
             </Well.Header>
             <Well.Body>
                 <p>
-                    Ara you sure you want to remove this ORCID Link?
+                    Ara you sure you want to remove this KBase ORCID® Link?
                 </p>
                 <p>
-                    ORCID Id is <b>{linkInfo.orcidID}</b> for <b>{linkInfo.realname}</b>
+                    ORCID® iD is <b>{linkInfo.orcidID}</b> for <b>{linkInfo.realname}</b>
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <ButtonToolbar>
                     <Button variant="danger" className="me-2" onClick={this.props.revokeLink}>
-                        <span className="fa fa-lg fa-trash" /> Remove ORCID® Link
+                        <span className="fa fa-lg fa-trash" /> Remove KBase ORCID® Link
                     </Button>
 
                     <Button variant="primary" onClick={this.props.cancel}>

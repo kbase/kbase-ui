@@ -136,7 +136,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     </p>
                     <img
                         src={orcidSignIn}
-                        alt="ORCID Sign In"
+                        alt="ORCID® Sign In"
                         style={{ width: '80%', boxShadow: '4px 4px 4px 4px rgba(100, 100, 100, 1)', marginBottom: '20px' }} />
                     <p>
                         After registering, the linking process will be resumed, just as if you had simply signed in with an existing {renderORCIDLabel()} account.

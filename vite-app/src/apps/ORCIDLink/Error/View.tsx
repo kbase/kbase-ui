@@ -19,7 +19,7 @@ export type ErrorViewProps = PropsWithChildren<{
 
 export default class ErrorView extends Component<ErrorViewProps> {
     componentDidMount() {
-        this.props.setTitle('ORCID Link - Error');
+        this.props.setTitle('KBase ORCID® Link - Error');
 
         // TODO: need a controller!
 

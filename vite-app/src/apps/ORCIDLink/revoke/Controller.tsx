@@ -89,7 +89,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Revoke');
+        this.props.setTitle('KBase ORCID® Link - Revoke');
         this.loadData();
     }
 
@@ -198,7 +198,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'This account does not have an ORCID Link '
+                            message: 'This account does not have a KBase ORCID® Link '
                         }
                     }
                 });

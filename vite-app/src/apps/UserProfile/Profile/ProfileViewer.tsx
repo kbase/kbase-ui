@@ -478,14 +478,14 @@ function ProfileViewer(props: ProfileProps) {
                 if (props.orcidState.value.orcidId) {
                     return;
                 }
-                return <Tooltip title="Click this button to link your KBase account to your ORCID account">
+                return <Tooltip title="Click this button to link your KBase account to your ORCID® account">
                     <Button onClick={(ev) => {
                         if (ev.altKey) {
                             onORCIDLink()
                         } else {
                             onORCIDLink2()
                         }
-                    }} >Create ORCID Link...</Button>
+                    }} >Create KBase ORCID® Link...</Button>
                 </Tooltip>
             }
         })();
@@ -546,7 +546,7 @@ function ProfileViewer(props: ProfileProps) {
     function renderORCIDIcon() {
         return <img
             src={orcidIcon}
-            alt="ORCID icon"
+            alt="ORCID® icon"
             style={{ height: '1em', marginRight: '0.25em', flex: '0 0 auto' }} />
     }
 
@@ -554,7 +554,7 @@ function ProfileViewer(props: ProfileProps) {
         return <Link href={`${ORCID_URL}/${orcidId}`} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             {renderORCIDIcon()}
             <div style={{ flex: '1 1 0' }}>
-                {orcidId}
+                {ORCID_URL}/{orcidId}
             </div>
         </Link>;
     }
@@ -572,6 +572,18 @@ function ProfileViewer(props: ProfileProps) {
         }
     }
 
+    function showORCIDId(): boolean {
+        const { orcidState } = props;
+        switch (orcidState.status) {
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+            case AsyncProcessStatus.ERROR:
+                return false;
+            case AsyncProcessStatus.SUCCESS:
+                return !!(orcidState.value.orcidId && props.profileView.profile.preferences?.showORCIDId?.value && props.profileView.profile.preferences?.showORCIDId.value);
+        }
+    }
+
     function renderORCIDRow() {
         const { orcidState } = props;
         switch (orcidState.status) {
@@ -585,7 +597,7 @@ function ProfileViewer(props: ProfileProps) {
                 if (orcidState.value.orcidId && props.profileView.profile.preferences?.showORCIDId?.value) {
                     return <tr>
                         <th>
-                            ORCID iD
+                            ORCID® iD
                         </th>
                         <td>
                             {renderORCIDId(orcidState.value.orcidId)}
@@ -594,7 +606,6 @@ function ProfileViewer(props: ProfileProps) {
                 }
         }
     }
-
 
     function renderIdentityView() {
         return <div>
@@ -678,7 +689,7 @@ function ProfileViewer(props: ProfileProps) {
             <div className="Profile-content-area">
 
                 <Row gutter={8} >
-                    <Col span={6}>
+                    <Col span={showORCIDId() ? 8 : 6}>
                         <Area title={props.profileView.user.realname} >
                             <div style={{ marginBottom: '1rem' }}>
                                 {renderIdentityView()}
@@ -691,7 +702,7 @@ function ProfileViewer(props: ProfileProps) {
                             {renderResearchInterests()}
                         </Area>
                     </Col>
-                    <Col span={12} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Area title='Organizations' scroll="auto">
                             <Orgs orgsState={props.orgsState} />
                         </Area>
@@ -708,7 +719,7 @@ function ProfileViewer(props: ProfileProps) {
                             {renderResearchStatement()}
                         </Area>
                     </Col>
-                    <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col span={showORCIDId() ? 10 : 12} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Area title='Affiliations'>
                             {renderAffiliations()}
                         </Area>

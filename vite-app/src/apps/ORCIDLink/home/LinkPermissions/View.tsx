@@ -38,7 +38,7 @@ export default class PermissionsView extends Component<PermissionsViewProps> {
                                 />
                             </Col>
                             <Col xs={6}>
-                                When enabled your ORCID Id will be displayed in <a href="/#people" target="_blank">your User Profile</a>.
+                                When enabled your ORCID® iD will be displayed in <a href="/#people" target="_blank">your User Profile</a>.
                             </Col>
                         </Row>
                     </Container>

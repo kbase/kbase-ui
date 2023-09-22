@@ -92,7 +92,7 @@ export default class View extends Component<ViewProps, ViewState> {
 
     renderStep1(stateStep: StepStateReady) {
         if (stateStep.step > 1) {
-            return this.renderStepDoneTitle(1, 'Enable ORCID Link - Confirmed')
+            return this.renderStepDoneTitle(1, 'Enable ORCID® Link - Confirmed')
         }
         if (this.props.orcidState.status === ORCIDLinkStatus.LINKED) {
             const process = JSON.stringify({
@@ -101,12 +101,12 @@ export default class View extends Component<ViewProps, ViewState> {
             const url = new URL(`${this.props.baseURL}#demos/interstitial1`)
             url.searchParams.set('process', process);
             return <div>
-                {this.renderStepTitle(1, 'Enable ORCID Link')}
+                {this.renderStepTitle(1, 'Enable KBase ORCID® Link')}
                 <p>
-                    Your KBase account is already linked to your ORCID account.
+                    Your KBase account is already linked to your ORCID® account.
                 </p>
                 <p>
-                    You see, here we detected that the account is linked to ORCID, so we can
+                    You see, here we detected that the account is linked to ORCID®, so we can
                     dispense with linking. We offer the user a simple button to continue
                     on to the next step. We could just as easily just dispense with the first
                     step altogether, and start at the second step.
@@ -117,13 +117,13 @@ export default class View extends Component<ViewProps, ViewState> {
             </div>;
         }
         return <div>
-            {this.renderStepTitle(1, 'Enable ORCID Link')}
+            {this.renderStepTitle(1, 'Enable KBase ORCID® Link')}
             <p>
                 This represents the first step of some KBase user workflow, some process.
             </p>
             <p>
-                That process notices that the user does not have an ORCID link and displays a
-                link to the ORCID Link page. That link contains instructions for routing back to
+                That process notices that the user does not have a KBase ORCID® link and displays a
+                link to the KBase ORCID® Link page. That link contains instructions for routing back to
                 the next step of the workflow.
             </p>
             <p>
@@ -165,24 +165,24 @@ export default class View extends Component<ViewProps, ViewState> {
 
     renderStep2(stateStep: StepStateReady) {
         if (stateStep.step > 2) {
-            return this.renderStepDoneTitle(2, 'Do Something With ORCID account - DONE');
+            return this.renderStepDoneTitle(2, 'Do Something With ORCID® account - DONE');
         }
         if (stateStep.step < 2) {
-            return this.renderStepPendingTitle(2, 'Do Something With ORCID account');
+            return this.renderStepPendingTitle(2, 'Do Something With ORCID® account');
         }
         if (this.props.orcidState.status !== ORCIDLinkStatus.LINKED) {
             return <div>Error, not really linked!</div>
         }
         const { orcidProfile } = this.props.orcidState;
         return <div>
-            {this.renderStepTitle(2, 'Do Something With ORCID account')}
+            {this.renderStepTitle(2, 'Do Something With ORCID® account')}
             <p>
-                The user's KBase account is linked to their ORCID account.
+                The user's KBase account is linked to their ORCID® account.
             </p>
             <p>
-                The user is now ready to use functionality requiring access to their ORCID account.
+                The user is now ready to use functionality requiring access to their ORCID® account.
                 In the example below, we just display some profile information from their
-                ORCID profile.
+                ORCID® profile.
             </p>
             <div className="well" style={{ marginBottom: '1em', maxWidth: '40em' }}>
                 <Well variant="info">
@@ -190,7 +190,7 @@ export default class View extends Component<ViewProps, ViewState> {
                         <div className="flex-table">
                             <div className="flex-row">
                                 <div className={`flex-col ${styles['-col1']}`}>
-                                    ORCID® Account ID
+                                    ORCID® iD
                                 </div>
                                 <div className="flex-col -col2">
                                     <div className="flex-row" style={{ alignItems: 'center' }}>
@@ -237,7 +237,7 @@ export default class View extends Component<ViewProps, ViewState> {
         return <div>
             {this.renderStepTitle(3, 'Do something else')}
             <p>
-                The user's KBase account is linked to their ORCID account.
+                The user's KBase account is linked to their ORCID® account.
             </p>
             <p>
                 This is some 3rd step
@@ -247,7 +247,7 @@ export default class View extends Component<ViewProps, ViewState> {
                     <div className="flex-table">
                         <div className="flex-row">
                             <div className={`flex-col ${styles['-col1']}`}>
-                                ORCID® Account ID
+                                ORCID® iD
                             </div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
@@ -293,14 +293,14 @@ export default class View extends Component<ViewProps, ViewState> {
             label: `Some Process, step ${step}`
         }
         linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
-        return <a href={`${linkingURL.toString()}`}>Click here to link your KBase account to your ORCID account <i>(go to step {step})</i></a>
+        return <a href={`${linkingURL.toString()}`}>Click here to link your KBase account to your ORCID® account <i>(go to step {step})</i></a>
     }
 
     // renderAutoLinkingLink() {
     //     const url = new URL('https://ci.kbase.us/#orcidlink');
     //     url.searchParams.set('return_url', 'https://ci.kbase.us#/demos/interstitial1');
     //     url.searchParams.set('skip_prompt', 'true')
-    //     return <a href={`${url.toString()}`}>Click here to link your KBase to your ORCID account without stopping!</a>
+    //     return <a href={`${url.toString()}`}>Click here to link your KBase to your ORCID® account without stopping!</a>
     // }
 
 
@@ -314,8 +314,8 @@ export default class View extends Component<ViewProps, ViewState> {
                 <Button variant="secondary" href="/#demos"><span className="fa fa-mail-reply" /> Back</Button>
             </p>
             <p>
-                This demo simulates a KBase user process which depends up on an ORCID link to utilize the
-                user's ORCID profile. It uses an "interstitial", or "in between", page to handle routing through
+                This demo simulates a KBase user process which depends up on a KBase ORCID® link to utilize the
+                user's ORCID® profile. It uses an "interstitial", or "in between", page to handle routing through
                 the OAuth process which will allow a user to perform the linking.
             </p>
             <p>

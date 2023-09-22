@@ -44,9 +44,7 @@ export class PrivateFieldGroupError extends Error {
 
 }
 
-
 // MODEL TYPES
-
 
 export interface LinkInfo {
     createdAt: number;
@@ -61,49 +59,69 @@ export interface LinkResult {
     link: LinkRecord | null;
 }
 
-
-
-
 // export type LinkingSession = LinkingSessionInitial | LinkingSessionStarted | LinkingSessionComplete
 
 // ORCID Link step
 
 const SCOPE_USER = 'KBase';
 
-export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string, tooltip: string }, help: Array<string> } } = {
+export interface ScopeHelp {
+    label: string,
+    orcid: {
+        label: string,
+        tooltip: string
+    },
+    help: Array<string>
+    seeAlso: Array<{ url: string, label: string }>
+}
+
+export const SCOPE_HELP: { [K in SCOPE]: ScopeHelp } = {
     'openid': {
         label: 'Open ID',
         orcid: {
             label: `Allow ${SCOPE_USER} to get your ORCID® iD.`,
-            tooltip: `Allow ${SCOPE_USER} to get your 16-character ORCID® ID and read information on your ORCID® record you have marked as public.`
+            tooltip: `Allow ${SCOPE_USER} to get your 16-character ORCID® iD and read information on your ORCID® record you have marked as public.`
         },
         help: [
             'KBase uses this when you sign in to KBase via ORCID®'
-        ]
+        ],
+        seeAlso: []
     },
     '/read-limited': {
         label: 'Read Limited',
         orcid: {
-            label: `Allow ${SCOPE_USER} to read your information with visibility set to Trusted Organizations.`,
-            tooltip: `Allow ${SCOPE_USER} to read any information from your record you have marked as \
+            label: `Allows ${SCOPE_USER} to read your information with visibility set to Trusted Organizations.`,
+            tooltip: `Allows ${SCOPE_USER} to read any information from your record you have marked as available to \
             "Everyone" (public) or "Trusted parties". ${SCOPE_USER} cannot read information you have marked as "Only me" (private).`
         },
         help: [
-            'KBase may access your ORCID® profile to display your ORCID Id in your profile, or to assist in filling out forms'
+            `${SCOPE_USER} accesses your ORCID® profile to show relevant information in the KBase ORCID® Link tool (available only to you), and to assist in filling out forms`
+        ],
+        seeAlso: [
+            {
+                url: 'https://support.orcid.org/hc/en-us/articles/360006973893-Trusted-organizations',
+                label: 'About ORCID® Trusted Parties'
+            }
         ]
     },
     '/activities/update': {
         label: 'Update Activities',
         orcid: {
-            label: `Allow ${SCOPE_USER} to add/update your research activities (works, affiliations, etc).`,
-            tooltip: `Allow ${SCOPE_USER} to add information about your research activites \
+            label: `Allows ${SCOPE_USER} to add/update your research activities (works, affiliations, etc).`,
+            tooltip: `Allows ${SCOPE_USER} to add information about your research activites \
             (for example, works, affiliations) that is stored in the ${SCOPE_USER} system(s) to your \
-            ORCID record. ${SCOPE_USER} will also be able to update this and any other information \
+            ORCID® record. ${SCOPE_USER} will also be able to update research activites \
             ${SCOPE_USER} has added, but will not be able to edit information added by you or \
             any other trusted organization.`
         },
         help: [
-            'In the future, KBase may use this automate the sharing of published "Fair Narratives" to your ORCID® account.'
+            'In the future, you may use this feature to automatically share published "FAIR Narratives" in your ORCID® account.'
+        ],
+        seeAlso: [
+            {
+                url: 'https://support.orcid.org/hc/en-us/articles/360006973893-Trusted-organizations',
+                label: 'About ORCID® Trusted Organizations'
+            }
         ]
     }
 }
@@ -111,7 +129,6 @@ export const SCOPE_HELP: { [K in SCOPE]: { label: string, orcid: { label: string
 export type GetProfileResult = {
     result: ORCIDProfile
 };
-
 
 export interface CellBase {
     type: 'markdown' | 'app' | 'code'
@@ -150,7 +167,6 @@ export interface AppPublications {
     }>
 }
 
-
 export type CitationSource = 'app' | 'markdown' | 'manual';
 
 export type Citation = {
@@ -178,8 +194,6 @@ export interface Citations {
     manualCitations: Array<Citation>
 }
 
-
-
 // This is why having canned clients, even if relatively simply wrappers around
 // GenericClient, is so nice:
 export type AppTag = 'dev' | 'beta' | 'release';
@@ -202,7 +216,6 @@ export interface ORCIDLinkInfo {
     orcidID: string;
     scope: string;
 }
-
 
 export interface JournalAbbreviationsMap {
     [title: string]: Array<string>
@@ -279,7 +292,6 @@ export class Model {
         this.orcidLinkClient.startLinkingSession(sessionId, returnInstruction, skipPrompt, uiOptions)
     }
 
-
     async getWork(putCode: string): Promise<Work> {
         return this.orcidLinkClient.getWork(putCode);
     }
@@ -308,7 +320,7 @@ export class Model {
     private async getName(): Promise<GetNameResult> {
         const profile = await this.orcidLinkClient.getProfile();
         if (profile.nameGroup.private) {
-            throw new PrivateFieldGroupError('The ORCID profile name fields have been set private');
+            throw new PrivateFieldGroupError('The ORCID® profile name fields have been set private');
         }
         const { nameGroup: { fields: { lastName, firstName } } } = profile;
         return { lastName, firstName };
@@ -508,7 +520,6 @@ export class Model {
     //     return result;
     // }
 
-
     async manageQueryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
         const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
         const { authInfo: { token } } = this.auth;
@@ -547,8 +558,6 @@ export class Model {
 
         return result;
     }
-
-
 
     async manageGetLink(username: string): Promise<LinkRecord> {
         const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;

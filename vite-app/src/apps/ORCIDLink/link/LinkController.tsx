@@ -63,7 +63,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Create New Link');
+        this.props.setTitle('KBase ORCID® Link - Create New Link');
         this.loadData();
     }
 
@@ -169,7 +169,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     renderLoading() {
-        return <Loading message="Loading ORCID Link..." />;
+        return <Loading message="Loading KBase ORCID® Link..." />;
     }
 
     renderError({ message }: { message: string }) {

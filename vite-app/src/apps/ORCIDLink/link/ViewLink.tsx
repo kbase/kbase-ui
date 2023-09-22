@@ -17,7 +17,7 @@ export default class ViewLink extends Component<StartProps> {
     render() {
         return <div className={styles.main}>
             <h1>
-                Your ORCID® Link
+                Your KBase ORCID® Link
             </h1>
 
             <div className="well" style={{ marginBottom: '1em' }}>
@@ -75,10 +75,10 @@ export default class ViewLink extends Component<StartProps> {
             <div className={styles.row}>
                 <div className={styles.col1}>
                     <h3>About</h3>
-                    <p>The ORCID® Link allows you to use KBase tools which access your ORCID® profile, and update your ORCID® research works with KBase published narratives and data.</p>
+                    <p>The KBase ORCID® Link allows you to use KBase tools which access your ORCID® profile, and update your ORCID® research works with KBase published narratives and data.</p>
 
                     <p>Note that this link will only be used when you are signed in to KBase. In addition,
-                        any tool which uses ORCID® link will inform you.
+                        any tool which uses KBase ORCID® Link will inform you.
                     </p>
                     <h3>Demos</h3>
                     <ul>

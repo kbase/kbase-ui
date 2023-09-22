@@ -31,13 +31,13 @@ export default class View extends Component<ViewProps, ViewState> {
         switch (this.props.linkState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                this.props.setTitle('ORCID® Link - Revoke - Loading...');
+                this.props.setTitle('KBase ORCID® Link - Revoke - Loading...');
                 break;
             case AsyncProcessStatus.ERROR:
                 if (this.props.revokeState.status === RevokeStatus.REVOKED) {
-                    this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked');
+                    this.props.setTitle('KBaseORCID® Link - Revoke - Successfully Revoked');
                 } else {
-                    this.props.setTitle('ORCID® Link - Revoke - Error');
+                    this.props.setTitle('KBaseORCID® Link - Revoke - Error');
                 }
                 break;
             case AsyncProcessStatus.SUCCESS:
@@ -46,16 +46,16 @@ export default class View extends Component<ViewProps, ViewState> {
                     // a link, so we should technically be in an ERROR state.
                     // But we should just change the link status to be:
                     // NONE, PENDING, LINKED, NOTLINKED, ERROR
-                    this.props.setTitle('ORCID® Link - Successfully Removed');
+                    this.props.setTitle('KBase ORCID® Link - Successfully Removed');
                 } else {
-                    this.props.setTitle('ORCID® Link - Confirm Link Removal');
+                    this.props.setTitle('KBaseORCID® Link - Confirm Link Removal');
                 }
                 break;
         }
     }
 
     // renderNotLinked() {
-    //     this.props.setTitle('ORCID® Link - Revoke - Not Linked')
+    //     this.props.setTitle('KBase ORCID® Link - Revoke - Not Linked')
     //     return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
     //         <div className="well-header">
     //             Warning: Not Linked
@@ -73,7 +73,7 @@ export default class View extends Component<ViewProps, ViewState> {
     // }
 
     // renderRevoked() {
-    //     this.props.setTitle('ORCID® Link - Revoke - Successfully Revoked Link')
+    //     this.props.setTitle('KBase ORCID® Link - Revoke - Successfully Revoked Link')
     //     return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
     //         <Well.Header>
     //             Success!
@@ -100,12 +100,12 @@ export default class View extends Component<ViewProps, ViewState> {
             </Well.Header>
             <Well.Body>
                 <p>
-                    Here you may revoke, or remove, your ORCID Link.
+                    Here you may revoke, or remove, your KBase ORCID® Link.
                 </p>
                 <ul>
-                    <li>This <b>will</b> prevent KBase from accessing your ORCID account in any way.</li>
-                    <li>This <b>will not</b> affect your ability to sign in via ORCID.</li>
-                    <li>If you have opted to show your ORCID Id in your profile, it will no longer be shown.</li>
+                    <li>This <b>will</b> prevent KBase from accessing your ORCID® account in any way.</li>
+                    <li>This <b>will not</b> affect your ability to sign in via ORCID®.</li>
+                    <li>If you have opted to show your ORCID® iD in your profile, it will no longer be shown.</li>
                 </ul>
             </Well.Body>
         </Well>;
@@ -128,7 +128,7 @@ export default class View extends Component<ViewProps, ViewState> {
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <ButtonToolbar>
                     <Button variant="primary" onClick={this.props.cancel}>
-                        <span className="fa fa-lg fa-mail-reply" />  Return to ORCID Link home
+                        <span className="fa fa-lg fa-mail-reply" />  Return to KBase ORCID® Link home
                     </Button>
                 </ButtonToolbar>
             </Well.Footer>
@@ -142,7 +142,7 @@ export default class View extends Component<ViewProps, ViewState> {
             </Well.Header>
             <Well.Body>
                 <p>
-                    The ORCID Link has been successfully removed.
+                    The KBase ORCID® Link has been successfully removed.
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>

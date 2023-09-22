@@ -21,7 +21,7 @@ export default class LinkInfoView extends Component<LinkInfoViewProps> {
                 <Well.Body>
                     <Container fluid>
                         <Row>
-                            <Col md={3}>ORCID® Account ID</Col>
+                            <Col md={3}>ORCID® iD</Col>
                             <Col md={9}>
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
                                     <a href={`${ORCID_URL}/${orcidID}`} target="_blank">

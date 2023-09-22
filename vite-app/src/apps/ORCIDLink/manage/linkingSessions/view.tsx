@@ -31,7 +31,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
             },
             {
                 id: 'orcid',
-                label: 'ORCID Id',
+                label: 'ORCID® iD',
                 style: {},
                 render: (linkRecord: LinkRecord) => {
                     return linkRecord.orcid_auth.orcid;

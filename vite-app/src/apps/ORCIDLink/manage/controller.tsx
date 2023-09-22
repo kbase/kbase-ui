@@ -34,7 +34,7 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
     }
     componentDidMount() {
         // First ensure that the user is an admin.
-        this.props.setTitle('ORCID Link Management');
+        this.props.setTitle('KBase ORCID® Link Management');
         this.initialize();
     }
 
@@ -50,7 +50,7 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
                 manageState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message: 'Management tools only available to ORCIDLink administrators'
+                        message: 'Management tools only available to KBase ORCID® Link administrators'
                     }
                 }
             });
@@ -66,7 +66,7 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
                 manageState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message: 'Management tools only available to ORCIDLink managers'
+                        message: 'Management tools only available to KBase ORCID® managers'
                     }
                 }
             });

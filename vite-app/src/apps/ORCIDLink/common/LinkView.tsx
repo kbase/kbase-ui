@@ -6,8 +6,6 @@ import { renderORCIDIcon, renderScope } from '../common';
 import { ORCID_URL } from '../lib/constants';
 import { LinkInfo } from '../lib/Model';
 
-
-
 export interface LinkViewProps {
     link: LinkInfo;
 }
@@ -17,24 +15,27 @@ const LABEL_COL_STYLE: React.CSSProperties = {
 }
 
 export default class LinkView extends Component<LinkViewProps> {
+    renderORCIDId(link: LinkInfo) {
+        return <a href={`${ORCID_URL}/${link.orcidID}`} target="_blank" rel="noreferrer">
+            {renderORCIDIcon()}
+            {ORCID_URL}/{link.orcidID}
+        </a>
+    }
     render() {
         const link = this.props.link;
         return <Well variant="primary" style={{ marginBottom: '1em' }}>
             <Well.Header>
-                Your ORCID® Link
+                Your KBase ORCID® Link
             </Well.Header>
             <Well.Body>
                 <Stack gap={2}>
                     <Row>
                         <Col style={LABEL_COL_STYLE}>
-                            ORCID® Account ID
+                            ORCID® iD
                         </Col>
                         <Col style={{ flex: '3 1 0' }}>
                             <div className="flex-row" style={{ alignItems: 'center' }}>
-                                <a href={`${ORCID_URL}/${link.orcidID}`} target="_blank" rel="noreferrer">
-                                    {renderORCIDIcon()}
-                                    {link.orcidID}
-                                </a>
+                                {this.renderORCIDId(link)}
                             </div>
                         </Col>
                     </Row>

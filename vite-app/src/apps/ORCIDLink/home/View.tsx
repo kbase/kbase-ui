@@ -42,11 +42,11 @@ export default class View extends Component<ViewProps> {
                 Note
             </Well.Header>
             <Well.Body>
-                <p>An ORCID® Link gives KBase tools access to your ORCID® account while you are logged into KBase.</p>
-                <p>You can only create an ORCID® Link from this page. It will be stored at KBase until you remove it.
+                <p>A KBase ORCID® Link gives KBase tools access to your ORCID® account while you are logged into KBase.</p>
+                <p>You can only create a KBase ORCID® Link from this page. It will be stored at KBase until you remove it.
                     (It expires after 20 years, but this is essentially "forever".)
                 </p>
-                <p>Here are some examples of how KBase can use your ORCID® Link:</p>
+                <p>Here are some examples of how KBase can use your KBase ORCID® Link:</p>
                 <ul>
                     <li>Pre-filling form fields from your ORCID® profile</li>
                     <li>Automatically creating publication records in your ORCID® profile when you publish a KBase Narrative</li>
@@ -65,14 +65,14 @@ export default class View extends Component<ViewProps> {
             <Well.Header icon="info-circle">More Information</Well.Header>
             <Well.Body>
                 <p>
-                    For further information about KBase and ORCID please consult the following resources:
+                    For further information about KBase and ORCID® please consult the following resources:
                 </p>
                 <ul>
                     <li>
-                        <a href="https://docs.kbase.us" target="_blank" rel="noreferrer">Linking your KBase account to your ORCID account [does not exist yet]</a>
+                        <a href="https://docs.kbase.us" target="_blank" rel="noreferrer">Linking your KBase account to your ORCID® account [does not exist yet]</a>
                     </li>
                     <li>
-                        <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer"><span className="fa fa-external-link" /> About ORCID</a>
+                        <a href="https://info.orcid.org/what-is-orcid/" target="_blank" rel="noreferrer"><span className="fa fa-external-link" /> About ORCID®</a>
                     </li>
                 </ul>
             </Well.Body>
@@ -146,17 +146,17 @@ export default class View extends Component<ViewProps> {
     renderUnlinked() {
         return <Well variant="primary" className="mb-3">
             <Well.Header>
-                Create Your ORCID® Link!
+                Create Your KBase ORCID® Link!
             </Well.Header>
             <Well.Body>
                 <p>You do not currently have a link from your KBase account to an ORCID® account.</p>
                 <p>
-                    Click the button below to begin the ORCID® Link process.
+                    Click the button below to begin the KBase ORCID® Link process.
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <Button variant="primary" href="/#orcidlink/link">
-                    <span className="fa fa-lg fa-plus" /> Create your ORCID® Link …
+                    <span className="fa fa-lg fa-plus" /> Create your KBase ORCID® Link …
                 </Button>
             </Well.Footer>
         </Well>
@@ -180,10 +180,10 @@ export default class View extends Component<ViewProps> {
     renderLinkRevocation() {
         return <Well variant="primary">
             <Well.Header>
-                Remove your ORCID Link
+                Remove your KBase ORCID® Link
             </Well.Header>
             <Well.Body>
-                <p>You may <b>remove</b> your ORCID Link at any time.</p>
+                <p>You may <b>remove</b> your KBase ORCID® Link at any time.</p>
 
                 <p>Removing the link will not alter any of your data stored at KBase or ORCID®. It will simply delete
                     the link to your ORCID® account, preventing KBase from accessing your ORCID® profile thereafter.
@@ -194,7 +194,7 @@ export default class View extends Component<ViewProps> {
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <Button variant="outline-danger" onClick={this.props.revoke}>
-                    <span className="fa fa-lg fa-trash" /> Remove ORCID® Link …
+                    <span className="fa fa-lg fa-trash" /> Remove KBase ORCID® Link …
                 </Button>
             </Well.Footer>
         </Well>

@@ -38,7 +38,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Demos - Using linking as an insterstitial page (page 2)')
+        this.props.setTitle('KBase ORCID® Link - Demos - Using linking as an insterstitial page (page 2)')
         this.loadData();
     }
 
@@ -90,7 +90,7 @@ export default class Controller extends Component<ControllerProps, ControllerSta
     // Renderers
 
     renderLoading() {
-        return <Loading message="Loading ORCID Interstitial Page ..." />;
+        return <Loading message="Loading KBase ORCID® Link Interstitial Page ..." />;
     }
 
     renderError({ message }: { message: string }) {

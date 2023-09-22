@@ -53,7 +53,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link');
+        this.props.setTitle('KBase ORCID® Link');
         this.loadData();
     }
 
@@ -219,7 +219,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     renderLoading() {
-        return <Loading message="Loading ORCID Link..." />;
+        return <Loading message="Loading KBase ORCID® Link..." />;
     }
 
     renderError(error: StandardError) {
@@ -230,15 +230,15 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                         Error
                     </Well.Header>
                     <Well.Body>
-                        <p>It appears that your ORCID Account is no longer authorized for KBase
+                        <p>It appears that your ORCID® Account is no longer authorized for KBase
                             access. You may have inadvertently removed permission for KBase, or
-                            perhaps you don't wish KBase to have access to your ORCID Account
+                            perhaps you don't wish KBase to have access to your ORCID® Account
                             any longer.
                         </p>
                         <p>
                             In any case, the first action you should take to avoid this error
-                            message is to remove your ORCID Link. After this, you may create a new
-                            ORCID Link when you need it.
+                            message is to remove your KBase ORCID® Link. After this, you may create a new
+                            KBase ORCID® Link when you need it.
                         </p>
                     </Well.Body>
                     <Well.Footer>
@@ -247,7 +247,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                             <span
                                 className="fa fa-trash fa-lg"
                                 style={{ marginRight: '0.25rem' }}
-                            /> Remove ORCID Link
+                            /> Remove KBase ORCID® Link
                         </Button>
                     </Well.Footer>
                 </Well>

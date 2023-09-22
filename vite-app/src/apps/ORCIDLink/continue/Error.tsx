@@ -21,7 +21,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                 <Well.Body>
                     <Container fluid>
                         <Row>
-                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">ORCID® Account ID</Col>
+                            <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">ORCID® iD</Col>
                             <Col md="auto">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
                                     <a href={`${ORCID_URL}/${orcid}`} target="_blank">
@@ -97,22 +97,22 @@ export default class ErrorView extends Component<ErrorViewProps> {
         switch (this.props.error.type) {
             case ErrorType.ALREADY_LINKED:
                 return <div>
-                    <p>Your KBase account is already linked to the following ORCID account:</p>
+                    <p>Your KBase account is already linked to the following ORCID® account:</p>
                     {this.renderORCIDUserRecord(this.props.error.link.orcid_auth)}
-                    <p style={{ marginTop: '1em' }}>Each KBase account may only be linked to a single ORCID account.</p>
-                    <p>Conversely, an ORCID account may be linked to only one KBase account.</p>
+                    <p style={{ marginTop: '1em' }}>Each KBase account may only be linked to a single ORCID® account.</p>
+                    <p>Conversely, an ORCID® account may be linked to only one KBase account.</p>
                 </div>
             case ErrorType.ORCID_ALREADY_LINKED:
                 return <div>
-                    <p>A KBase account is already linked to the ORCID Link you have selected.</p>
+                    <p>A KBase account is already linked to the KBase ORCID® Link you have selected.</p>
 
-                    <p>The ORCID Account is:</p>
+                    <p>The ORCID® Account is:</p>
                     {this.renderORCIDUserRecord(this.props.error.info.orcid)}
 
                     <p className="mt-3">The KBase account is:</p>
                     {this.renderMiniUserProfile(this.props.error.info.kbase.userProfile)}
-                    <p style={{ marginTop: '1em' }}>An ORCID account may be linked to only a single KBase account.</p>
-                    <p>Conversely, a KBase account may only be linked to a single ORCID Account.</p>
+                    <p style={{ marginTop: '1em' }}>An ORCID® account may be linked to only a single KBase account.</p>
+                    <p>Conversely, a KBase account may only be linked to a single ORCID® Account.</p>
                 </div>
             case ErrorType.FETCH_LINK_SESSION_ERROR:
                 return <div>

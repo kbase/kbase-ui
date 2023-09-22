@@ -99,7 +99,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Confirm Link');
+        this.props.setTitle('KBase ORCID® Link - Confirm Link');
         if (this.props.skipPrompt) {
             this.confirmLink();
         } else {
@@ -127,7 +127,7 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.ALREADY_LINKED,
-                            message: 'Already linked; each user may have a single ORCID Link',
+                            message: 'Already linked; each user may have a single KBase ORCID® Link',
                             link
                         }
                     }
@@ -214,7 +214,7 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.ORCID_ALREADY_LINKED,
-                            message: "This ORCID account is already linked to another KBase account",
+                            message: "This ORCID® account is already linked to another KBase account",
                             info: {
                                 orcid: {
                                     orcid: linkingSession.orcid_auth.orcid,
@@ -287,7 +287,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     renderLoading() {
-        return <Loading message="Loading ORCID Link..." />;
+        return <Loading message="Loading KBase ORCID® Link..." />;
     }
 
     renderError(error: ContinueLinkingError) {

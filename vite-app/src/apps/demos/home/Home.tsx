@@ -14,7 +14,7 @@ export default class View extends Component<ViewProps> {
         return <div style={{ marginTop: '1em' }}>
             <h3>Extant links</h3>
             <p>
-                These are existing KBase docs related to ORCID
+                These are existing KBase docs related to ORCID®
             </p>
             <Accordion>
                 <Accordion.Item eventKey="0">
@@ -27,15 +27,15 @@ export default class View extends Component<ViewProps> {
                             useful for sign in.
                         </p>
                         <p>
-                            KBase only stores the user's ORCID® Id. During sign in, the auth server obtains the user's ORCID® Id, which is looked up in
+                            KBase only stores the user's ORCID® iD. During sign in, the auth server obtains the user's ORCID® iD, which is looked up in
                             auth system, and if there is a match, a KBase login token is created for the matching KBase account.
                         </p>
                         <p>
                             This process does not store a persistent token for the user's ORCID® account.
                         </p>
                         <p>
-                            The new ORCID® Link capability (front end and back end) will store a long-lasting (20 year) ORCID® token which allows us to
-                            query and update their ORICD account. We will, of course, have their ORCID® Id no matter how they sign in.
+                            The new KBase ORCID® Link capability (front end and back end) will store a long-lasting (20 year) ORCID® token which allows us to
+                            query and update their ORICD account. We will, of course, have their ORCID® iD no matter how they sign in.
                         </p>
                     </Accordion.Body>
                 </Accordion.Item>
@@ -107,13 +107,13 @@ export default class View extends Component<ViewProps> {
                     </Accordion.Header>
                     <Accordion.Body>
                         <p>
-                            Sometimes a user tool either requires or can utilize the ORCID Link. After a quick call to the
-                            ORCID Link service to determine if the user does have a link, if it is determined that the user
+                            Sometimes a user tool either requires or can utilize the KBaseORCID® Link. After a quick call to the
+                            KBase ORCID® Link service to determine if the user does have a link, if it is determined that the user
                             does not have a link, the tool may offer the user the option of creating a link on the fly.
-                            The ORCID Link tool will return the browser to wherever the initial tool specifies.
+                            The KBase ORCID® Link tool will return the browser to wherever the initial tool specifies.
                         </p>
                         <p>
-                            NB: This was the precursor work which made the ORCID Link in User Profile possible,
+                            NB: This was the precursor work which made the KBase ORCID® Link in User Profile possible,
                             as well as O.L. in Fair Narrative.
                         </p>
                     </Accordion.Body>
@@ -155,7 +155,7 @@ export default class View extends Component<ViewProps> {
         return <div>
             <Nav >
                 <Nav.Link href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</Nav.Link>
-                <Nav.Link href="#orcidlink" ><span className="fa fa-home" /> ORCID® Link Home</Nav.Link>
+                <Nav.Link href="#orcidlink" ><span className="fa fa-home" />KBase ORCID® Link Home</Nav.Link>
             </Nav>
         </div>
     }
@@ -164,7 +164,7 @@ export default class View extends Component<ViewProps> {
         return <div>
             <ListGroup variant="pill">
                 <ListGroup.Item action active={false} href="https://github.com/kbaseIncubator/kbase-credit-engine-docs" target="_blank" rel="noreferrer"><span className="fa fa-file-o" /> Docs</ListGroup.Item>
-                <ListGroup.Item action active={false} href="#orcidlink" ><span className="fa fa-home" /> ORCID® Link Home</ListGroup.Item>
+                <ListGroup.Item action active={false} href="#orcidlink" ><span className="fa fa-home" />KBase ORCID® Link Home</ListGroup.Item>
             </ListGroup>
         </div>
     }
@@ -173,7 +173,7 @@ export default class View extends Component<ViewProps> {
         return <Stack gap={3}>
             <Row>
                 <Col>
-                    <p>Demos and help for development of ORCID® Link and friends.</p>
+                    <p>Demos and help for development of KBase ORCID® Link and friends.</p>
                     {this.renderNav()}
                     {this.renderDemoLinks()}
                     {this.renderDevInfo()}

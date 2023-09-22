@@ -93,7 +93,7 @@
             },
             {
                 "name": "orcidlink",
-                "label": "ORCID® Link",
+                "label": "KBase ORCID® Link",
                 "type": "internal",
                 "path": "orcidlink",
                 "newWindow": false,

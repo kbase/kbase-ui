@@ -56,7 +56,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     componentDidMount() {
-        this.props.setTitle('ORCID® Link - Demos');
+        this.props.setTitle('KBase ORCID® Link - Demos');
         this.loadData();
     }
 

@@ -698,9 +698,7 @@ function Profile(props: ProfileProps) {
             preview={false}
             src={srcRenderer()}
         />
-
     }
-
 
     function renderAvatar() {
         return <div className="ProfileAvatar">
@@ -815,12 +813,12 @@ function Profile(props: ProfileProps) {
                 if (props.orcidState.value.orcidId) {
                     return;
                 }
-                return <Tooltip title="Click this button to link your KBase account to your ORCID account">
+                return <Tooltip title="Click this button to link your KBase account to your ORCID® account">
                     <Button
                         disabled={isFormTouched}
                         onClick={() => {
                             changeHash2(window.location.href = getLinkingLink());
-                        }} >Create ORCID Link...</Button>
+                        }} >Create KBase ORCID® Link...</Button>
                 </Tooltip>
             }
         })();
@@ -892,11 +890,22 @@ function Profile(props: ProfileProps) {
         </div>;
     }
 
+    function hasORCIDId(): boolean {
+        const { orcidState } = props;
+        switch (orcidState.status) {
+            case AsyncProcessStatus.NONE:
+            case AsyncProcessStatus.PENDING:
+            case AsyncProcessStatus.ERROR:
+                return false;
+            case AsyncProcessStatus.SUCCESS:
+                return !!(orcidState.value.orcidId);
+        }
+    }
 
     function renderORCIDIcon() {
         return <img
             src={orcidIcon}
-            alt="ORCID icon"
+            alt="ORCID® icon"
             style={{ height: '1em', marginRight: '0.25em', flex: '0 0 auto' }} />
     }
 
@@ -923,7 +932,7 @@ function Profile(props: ProfileProps) {
                 </Form.Item>
             </div>
             <div>
-                <a href={makeUIURL('orcidlink')} target="_blank" rel="noreferrer">Your ORCID Link</a>
+                <a href={makeUIURL('orcidlink')} target="_blank" rel="noreferrer">Your KBase ORCID® Link</a>
             </div>
         </div>
 
@@ -933,20 +942,19 @@ function Profile(props: ProfileProps) {
         return <Link href={`${ORCID_URL}/${orcidId}`} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             {renderORCIDIcon()}
             <div style={{ flex: '1 1 0' }}>
-                {orcidId}
+                {ORCID_URL}/{orcidId}
             </div>
         </Link>;
     }
 
     function renderORCIDId(orcidId: string | null) {
-
         if (orcidId) {
             return renderORCIDIdLinkEdit(orcidId);
         }
 
         const alertMessage = <div>
-            Have an ORCID account? Create an <b>ORCID Link</b> to
-            connect your KBase to ORCID account, and show your ORCID Id
+            Have an ORCID® account? Create an <b>KBase ORCID® Link</b> to
+            connect your KBase to ORCID® account, and show your ORCID® iD
             right here in your profile.
 
         </div>
@@ -967,7 +975,7 @@ function Profile(props: ProfileProps) {
 
                 return <tr>
                     <th>
-                        ORCID iD
+                        ORCID® iD
                     </th>
                     <td>
                         {renderORCIDId(orcidState.value.orcidId)}
@@ -1373,7 +1381,7 @@ function Profile(props: ProfileProps) {
                         onLoad={onFormLoad}
                     >
                         <Row gutter={8} >
-                            <Col span={6}>
+                            <Col span={hasORCIDId() ? 8 : 6}>
                                 <Area title={props.profileView.user.realname} >
                                     <div style={{ marginBottom: '1rem' }}>
                                         {renderIdentity()}
@@ -1386,7 +1394,7 @@ function Profile(props: ProfileProps) {
                                     {renderResearchInterests()}
                                 </Area>
                             </Col>
-                            <Col span={12} style={{ display: 'flex', flexDirection: 'column' }}>
+                            <Col span={hasORCIDId() ? 10 : 12} style={{ display: 'flex', flexDirection: 'column' }}>
                                 <Area title='Organizations' scroll="auto">
                                     {renderOrganizations()}
                                 </Area>

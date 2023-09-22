@@ -41,7 +41,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             },
             {
                 id: 'orcid',
-                label: 'ORCID Id',
+                label: 'ORCID® iD',
                 style: {},
                 render: (linkRecord: LinkRecord) => {
                     return renderORCIDLink(linkRecord.orcid_auth.orcid);
