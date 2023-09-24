@@ -220,7 +220,7 @@ export default class Sidebar extends Component<SidebarProps, SidebarState> {
             }
             return menuItem;
         }).filter(({ requiresAuth }) => {
-            return requiresAuth;
+            return !requiresAuth;
         })
 
         return <SidebarMenu path={this.state.path} menu={unauthenticatedMenu} />;
