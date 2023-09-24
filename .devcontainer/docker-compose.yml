@@ -55,7 +55,7 @@ services:
     volumes:
       - ../build:/usr/share/nginx/html
       # - /Users/erikpearson/Work/KBase/2023/CE-255/kbase-ui-plugin-react-profile-view/dist/plugin:/usr/share/nginx/html/plugins/react-profile-view
-      # - /Users/erikpearson/Work/KBase/2023/PTV-1884/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
+      # - /Users/erikpearson/Work/KBase/2023/UFI-60/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
       # - /Users/erikpearson/Work/KBase/2023/helpdesk/UFI-48/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
       # - /Users/erikpearson/Work/KBase/2023/helpdesk/UFI-48/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
       # - /Users/erikpearson/Work/KBase/2022/fix-app-icons/kbase-ui-plugin-organizations/react-app:/usr/share/nginx/html/plugins/organizations
