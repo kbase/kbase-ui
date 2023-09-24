@@ -1,7 +1,9 @@
+import { Tooltip } from "antd";
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 import { LinkRecord } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
+import RelativeTimeClock from "components/RelativeTimeClock";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
 
@@ -54,22 +56,30 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                 label: 'Created',
                 flex: '0 0 8rem',
                 render: (linkRecord: LinkRecord) => {
-                    return Intl.DateTimeFormat('en-US', {}).format(linkRecord.created_at);
+                    return <Tooltip title={Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'long' }).format(linkRecord.created_at)}>
+                        {Intl.DateTimeFormat('en-US', {}).format(linkRecord.created_at)}
+                    </Tooltip>
                 }
             },
 
             {
                 id: 'retires_at',
-                label: 'Retires At',
+                label: 'Retires',
                 flex: '0 0 8rem',
                 render: (linkRecord: LinkRecord) => {
-                    return Intl.DateTimeFormat('en-US', {}).format(linkRecord.retires_at);
+                    return <Tooltip title={Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeStyle: 'long' }).format(linkRecord.retires_at)}>
+                        <RelativeTimeClock
+                            // now={this.props.orcidlinkStatus.current_time}
+                            now={Date.now()}
+                            at={linkRecord.retires_at}
+                            size="compact" />
+                    </Tooltip>
                 }
             },
             {
                 id: 'view',
                 label: 'View',
-                flex: '0 0 4rem',
+                flex: '0 0 5rem',
                 render: (linkRecord: LinkRecord) => {
                     return <Button onClick={() => { this.viewLink(linkRecord.username) }}>View</Button>;
                 }

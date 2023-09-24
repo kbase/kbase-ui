@@ -1,8 +1,7 @@
 import { LinkRecord, ManageLinkingSessionsQueryResult, StatusResponse } from "apps/ORCIDLink/lib/ORCIDLinkClient";
-import CountdownClock from "components/CountdownClock";
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
 import Empty from "components/Empty";
-import { niceElapsed } from "lib/time";
+import RelativeTimeClock from "components/RelativeTimeClock";
 import { Component } from "react";
 import { Accordion, Button, Table } from "react-bootstrap";
 import { Gear } from "react-bootstrap-icons";
@@ -54,11 +53,18 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                 <td>
                     {session_id}
                 </td>
+
                 <td>
-                    {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label}
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={created_at}
+                        size="compact" />
                 </td>
                 <td>
-                    <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} />
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={expires_at}
+                        size="compact" />
                 </td>
             </tr>
         });
@@ -97,10 +103,18 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     {session_id}
                 </td>
                 <td>
-                    {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label}
+                    {/* {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label} */}
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={created_at}
+                        size="compact" />
                 </td>
                 <td>
-                    <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} />
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={expires_at}
+                        size="compact" />
+                    {/* <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} /> */}
                     {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
                 </td>
             </tr>
@@ -140,10 +154,16 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     {session_id}
                 </td>
                 <td>
-                    {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label}
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={created_at}
+                        size="compact" />
                 </td>
                 <td>
-                    <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} />
+                    <RelativeTimeClock
+                        now={this.props.orcidlinkStatus.current_time}
+                        at={expires_at}
+                        size="compact" />
                 </td>
             </tr>
         });
