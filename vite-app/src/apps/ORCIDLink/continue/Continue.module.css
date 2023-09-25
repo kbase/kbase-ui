@@ -2,7 +2,7 @@
     overflow-y: auto;
 }
 
-.-col1 {
+.flex-col.-col1 {
     flex: 0 0 11em;
     font-weight: bold;
     color: rgba(100, 100, 100);

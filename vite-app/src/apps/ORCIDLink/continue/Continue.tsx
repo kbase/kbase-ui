@@ -33,18 +33,18 @@ export default class Continue extends Component<ContinueProps> {
                 <Well.Body>
                     <div className="flex-table">
                         <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>ORCID® iD</div>
+                            <div className={`flex-col ${styles['-col1']}`} style={{ flex: '0 0 5rem' }}>ORCID® iD</div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
                                     <a href={`${ORCID_URL}/${orcid}`} target="_blank">
                                         {renderORCIDIcon()}
-                                        {orcid}
+                                        {ORCID_URL}/{orcid}
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div className="flex-row">
-                            <div className={`flex-col ${styles['-col1']}`}>Name on Account</div>
+                            <div className={`flex-col ${styles['-col1']}`} style={{ flex: '0 0 5rem' }}>Name</div>
                             <div className="flex-col">
                                 {this.props.linkingSession.orcid_auth.name || <i>not public</i>}
                             </div>
@@ -118,7 +118,7 @@ export default class Continue extends Component<ContinueProps> {
                 <Well.Body>
                     {this.renderPendingProgress()}
                     <p>
-                        Your ORCID® account <b>{this.props.linkingSession.orcid_auth.orcid}</b> is ready
+                        Your ORCID® account <b>{renderORCIDIcon()}{this.props.linkingSession.orcid_auth.orcid}</b> is ready
                         for linking to your KBase account <b>{this.props.linkingSession.username}</b>.
                     </p>
                     <p>
@@ -137,7 +137,7 @@ export default class Continue extends Component<ContinueProps> {
                             <Form.Label column>
                                 Show ORCID® iD in your User Profile?
                             </Form.Label>
-                            <Col>
+                            <Col style={{ flex: '0 0 6rem' }}>
                                 <Form.Switch id="show-in-profile"
                                     checked={this.props.showInProfile}
                                     onChange={(ev) => { this.props.setShowInProfile(ev.target.checked) }}
