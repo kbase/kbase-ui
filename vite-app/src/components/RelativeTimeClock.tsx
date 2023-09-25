@@ -53,6 +53,7 @@ function niceRelativeTimeRange({
     // Elapsed time in seconds.
     const elapsed = Math.round((now - at) / 1000);
     const elapsedAbs = Math.abs(elapsed);
+    console.log('elapsed', elapsed);
     let measureAbs;
 
     const measures = [];
@@ -104,7 +105,9 @@ function niceRelativeTimeRange({
             }
         }
     } else {
-        measureAbs = Math.floor(elapsedAbs / (3600 * 24));
+        // If we have more than 1 week (section above), then we just
+        // show days, rounded to the nearest day.
+        measureAbs = Math.round(elapsedAbs / (3600 * 24));
         measures.push([measureAbs, 'day']);
     }
 
