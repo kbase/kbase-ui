@@ -354,8 +354,8 @@ function main() {
             setState(SEND_NOW);
 
             // And here we wait until the message is sent and we  are back in the WAITING state.
-            // This should be sent very quickly, so a 1 second timeout should be plenty.
-            return await waitUntilStatus(WAITING, 1000);
+            // This should be sent very quickly, so a 2 second timeout should be plenty.
+            return await waitUntilStatus(WAITING, 2000);
         }
     }
 
