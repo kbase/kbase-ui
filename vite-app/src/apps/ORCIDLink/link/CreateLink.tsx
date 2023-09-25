@@ -158,7 +158,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     </p>
                     <p>
                         In contrast, {renderORCIDLinkLabel()} provides expanded and long-term access, which allows KBase to provide tools for you that
-                        that can access limited aspects of your {renderORCIDLabel()} account. The {renderORCIDLabel()} Link can be added or removed
+                        that can access limited aspects of your {renderORCIDLabel()} account. The {renderORCIDLinkLabel()} can be added or removed
                         at any time without affecting your ability to sign in to KBase through {renderORCIDLabel()}.
                     </p>
                 </Accordion.Body>
