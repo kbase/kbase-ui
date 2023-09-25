@@ -2,7 +2,7 @@ import AlertMessage from 'components/AlertMessage';
 import Well from 'components/Well';
 import { Component } from 'react';
 import { Accordion, Alert, Button, Col, Row, Spinner, Stack } from 'react-bootstrap';
-import { renderORCIDLabel } from '../common';
+import { renderORCIDLabel, renderORCIDLinkLabel } from '../common';
 import orcidSignIn from '../images/ORCID-sign-in.png';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 
@@ -82,7 +82,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         <p><i>What if you don't have an {renderORCIDLabel()} Account?</i> Check out the FAQs to the right for an answer.</p>
 
                         <p>
-                            After finishing at {renderORCIDLabel()}, you will be returned to KBase and asked to confirm the link. Once confirmed, the {renderORCIDLabel()} Link
+                            After finishing at {renderORCIDLabel()}, you will be returned to KBase and asked to confirm the link. Once confirmed, the {renderORCIDLinkLabel()}
                             will be added to your account.
                         </p>
 
@@ -91,7 +91,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         </p>
 
                         <p>
-                            For more information, <a href="https://www.kbase.us/orcidlink" target="_blank'">consult the {renderORCIDLabel()} Link documentation</a>.
+                            For more information, <a href="https://www.kbase.us/orcidlink" target="_blank'">consult the {renderORCIDLinkLabel()} documentation</a>.
                         </p>
 
                         {this.renderReturnURL()}
@@ -150,15 +150,14 @@ export default class CreateLink extends Component<CreateLinkProps> {
                 </Accordion.Header>
                 <Accordion.Body>
                     <p>
-                        If you already log in with {renderORCIDLabel()}, it may seem odd to need to create a separate {renderORCIDLabel()} Link.
+                        If you already log in with {renderORCIDLabel()}, it may seem odd to need to create a separate {renderORCIDLinkLabel()}.
                     </p>
                     <p>
-                        Your {renderORCIDLabel()} sign-in link is only used to obtain your {renderORCIDLabel()} Id during sign-in. This is, in turn, used to
-                        look up the associated KBase account and, if successful, assign an authentication token to your browser. All that KBase knows about
-                        your {renderORCIDLabel()} account during sign-in is the {renderORCIDLabel()} Id.
+                        Your {renderORCIDLabel()} sign-in link is only used to obtain your {renderORCIDLabel()} iD during sign-in. This is, in turn, used to
+                        look up the associated KBase account and log you in.
                     </p>
                     <p>
-                        In contrast, {renderORCIDLabel()} Link provides a long-term "access token", which allows KBase to provide tools for you that
+                        In contrast, {renderORCIDLinkLabel()} provides expanded and long-term access, which allows KBase to provide tools for you that
                         that can access limited aspects of your {renderORCIDLabel()} account. The {renderORCIDLabel()} Link can be added or removed
                         at any time without affecting your ability to sign in to KBase through {renderORCIDLabel()}.
                     </p>
