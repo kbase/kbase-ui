@@ -36,7 +36,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             {
                 id: 'username',
                 label: 'Username',
-                style: {},
+                flex: '1 0 0',
                 render: (linkRecord: LinkRecord) => {
                     return <a href={`/#people/${linkRecord.username}`} target="_blank">{linkRecord.username}</a>
                 }
@@ -44,7 +44,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             {
                 id: 'orcid',
                 label: 'ORCID® iD',
-                style: {},
+                flex: '2 0 0',
                 render: (linkRecord: LinkRecord) => {
                     return renderORCIDLink(linkRecord.orcid_auth.orcid);
                     // return <a href={`ORCID_URL/${linkRecord.orcid_auth.orcid}`} target="_blank">{linkRecord.orcid_auth.orcid}</a>

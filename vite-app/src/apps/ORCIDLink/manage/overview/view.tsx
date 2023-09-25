@@ -32,7 +32,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
 
             ]
         ];
-        return <PropTable rows={rows} styles={{ body: { flex: '0 0 auto' }, col1: { flex: '0 0 10rem' }, col2: { flex: '0 0 2rem' } }} />
+        return <PropTable rows={rows} styles={{ body: { flex: '0 0 auto' }, col1: { flex: '1 0 0' }, col2: { flex: '0 0 2rem' } }} />
     }
 
     renderLinkingSessionStats() {
