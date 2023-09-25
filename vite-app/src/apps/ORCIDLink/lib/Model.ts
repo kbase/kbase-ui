@@ -559,6 +559,32 @@ export class Model {
         return result;
     }
 
+    async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.deleteLinkingSessionStarted(sessionId);
+
+        return result;
+    }
+
+    async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
+        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
+        const { authInfo: { token } } = this.auth;
+
+        const client = new ORCIDLinkServiceManageClient({
+            url, token, timeout
+        });
+
+        const result = await client.deleteLinkingSessionCompleted(sessionId);
+
+        return result;
+    }
+
     async manageGetLink(username: string): Promise<LinkRecord> {
         const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
         const { authInfo: { token } } = this.auth;

@@ -710,4 +710,12 @@ export class ORCIDLinkServiceManageClient extends ServiceClient {
     async deleteExpiredSessions(): Promise<void> {
         return await this.delete(`${MANAGE_PATH}/expired_linking_sessions`);
     }
+
+    async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
+        return await this.delete(`${MANAGE_PATH}/linking_session_started/${sessionId}`);
+    }
+
+    async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
+        return await this.delete(`${MANAGE_PATH}/linking_session_completed/${sessionId}`);
+    }
 }

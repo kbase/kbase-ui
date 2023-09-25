@@ -510,10 +510,8 @@ function ProfileViewer(props: ProfileProps) {
         return renderResearchInterestsView();
     }
 
-
     function renderResearchInterestsView() {
         const researchInterests = props.profileView.profile.userdata.researchInterests;
-
         if (Array.isArray(researchInterests) &&
             researchInterests.length > 0) {
             const normalized = researchInterests.map((interest) => {

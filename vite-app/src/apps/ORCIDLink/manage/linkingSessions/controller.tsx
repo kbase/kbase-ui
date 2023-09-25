@@ -108,7 +108,6 @@ export default class QueryLinkingSessionsController extends Component<QueryLinki
         });
     }
 
-
     async pruneExpiredSessions() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         // TODO: yeah, need to handle this.
@@ -118,6 +117,34 @@ export default class QueryLinkingSessionsController extends Component<QueryLinki
             dismissAfter: 3000,
             id: 'foo',
             message: 'Expired Sessions, if any, have been deleted',
+            startedAt: Date.now(),
+            type: 'success',
+        });
+        return this.loadData();
+    }
+
+    async deleteStartedSession(sessionId: string) {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        await model.deleteLinkingSessionStarted(sessionId);
+        this.props.notify({
+            kind: NotificationKind.AUTODISMISS,
+            dismissAfter: 3000,
+            id: 'foo',
+            message: 'The session has been deleted',
+            startedAt: Date.now(),
+            type: 'success',
+        });
+        return this.loadData();
+    }
+
+    async deleteCompletedSession(sessionId: string) {
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        await model.deleteLinkingSessionCompleted(sessionId);
+        this.props.notify({
+            kind: NotificationKind.AUTODISMISS,
+            dismissAfter: 3000,
+            id: 'foo',
+            message: 'The session has been deleted',
             startedAt: Date.now(),
             type: 'success',
         });
@@ -136,6 +163,8 @@ export default class QueryLinkingSessionsController extends Component<QueryLinki
                     linkingSessions={this.state.manageState.value.linkingSessions}
                     orcidlinkStatus={this.state.manageState.value.status}
                     pruneExpiredSessions={this.pruneExpiredSessions.bind(this)}
+                    deleteStartedSession={this.deleteStartedSession.bind(this)}
+                    deleteCompletedSession={this.deleteCompletedSession.bind(this)}
                 />
         }
     }

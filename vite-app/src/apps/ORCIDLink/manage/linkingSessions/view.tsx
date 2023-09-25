@@ -10,6 +10,8 @@ export interface QueryLinkingSessionsViewProps {
     linkingSessions: ManageLinkingSessionsQueryResult;
     orcidlinkStatus: StatusResponse;
     pruneExpiredSessions: () => void;
+    deleteStartedSession: (sessionId: string) => void;
+    deleteCompletedSession: (sessionId: string) => void;
 }
 
 interface QueryLinkingSessionsViewState {
@@ -117,6 +119,9 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     {/* <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} /> */}
                     {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
                 </td>
+                <td>
+                    <Button variant="danger" onClick={() => { this.props.deleteStartedSession(session_id) }}>Delete</Button>
+                </td>
             </tr>
         });
         return <Table striped>
@@ -133,6 +138,9 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     </th>
                     <th style={{ width: '20%' }}>
                         Expires
+                    </th>
+                    <th style={{ width: '4rem' }}>
+
                     </th>
                 </tr>
             </thead>
@@ -165,6 +173,9 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                         at={expires_at}
                         size="compact" />
                 </td>
+                <td>
+                    <Button variant="danger" onClick={() => { this.props.deleteCompletedSession(session_id) }}>Delete</Button>
+                </td>
             </tr>
         });
         return <Table striped>
@@ -181,6 +192,8 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     </th>
                     <th style={{ width: '20%' }}>
                         Expires
+                    </th>
+                    <th style={{ width: '4rem' }}>
                     </th>
                 </tr>
             </thead>
