@@ -1,12 +1,16 @@
-import { ErrorCode, ORCIDLinkServiceClient } from "apps/ORCIDLink/lib/ORCIDLinkClient";
+import { ErrorCode } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { ClientError } from "apps/ORCIDLink/lib/ServiceClient";
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import ORCIDLinkAPI from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { Component } from "react";
 import { Config } from "types/config";
-import { ProfileWarnings, UserProfileBFFService, UserProfileSubset, UserProfileUpdate, UserProfileUser, fetchProfileAPI2, updateProfileAPI } from "../API";
+import {
+    ProfileWarnings, UserProfileBFFService, UserProfileSubset, UserProfileUpdate,
+    UserProfileUser, fetchProfileAPI2, updateProfileAPI
+} from "../API";
 import { AsyncFetchState, AsyncFetchStatus } from "../asyncFetchState";
 import { SERVICE_CALL_TIMEOUT } from "../constants";
 import ProfileEditor from "./ProfileEditor";
@@ -278,11 +282,11 @@ export default class ProfileController extends Component<ProfileControllerProps,
             const orcidLinkURL = new URL(baseURL);
             orcidLinkURL.pathname = '/services/orcidlink';
 
-            const { orcidId } = await new ORCIDLinkServiceClient({
-                url: orcidLinkURL.toString(),
+            const { orcid_auth: { orcid: orcidId } } = await new ORCIDLinkAPI({
+                url: `${orcidLinkURL.toString()}/api/v1`,
                 timeout: SERVICE_CALL_TIMEOUT,
                 token
-            }).getLinkShare(username);
+            }).getOtherLink({ username });
 
             this.setState({
                 orcidState: {
@@ -361,7 +365,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
         } = this.props.config;
 
         try {
-
             const [profile, warnings] = await fetchProfileAPI2(username, token, url);
             const { user, profile: { userdata, preferences, synced: { gravatarHash } } } = profile;
 

@@ -96,6 +96,9 @@ export default class HomeController extends Component<ControllerProps, Controlle
     async fetchLink(): Promise<ORCIDLinkInfo | null> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
+        // We get the link for the authenticated user, which is what this api call
+        // is for!
+
         const link = await model.getLink();
 
         if (link === null) {

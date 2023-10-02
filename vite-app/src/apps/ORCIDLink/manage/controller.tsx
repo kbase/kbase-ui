@@ -59,28 +59,48 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
 
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
-        const isManager = await model.isManager();
-
-        if (!isManager) {
-            this.setState({
-                manageState: {
-                    status: AsyncProcessStatus.ERROR,
-                    error: {
-                        message: 'Management tools only available to KBase ORCID® managers'
+        try {
+            const isManager = await model.isManager();
+            if (!isManager) {
+                this.setState({
+                    manageState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: 'Management tools only available to KBase ORCID® managers'
+                        }
                     }
-                }
-            });
-            return;
-        }
-
-        this.setState({
-            manageState: {
-                status: AsyncProcessStatus.SUCCESS,
-                value: {
-                    isAdmin: true
-                }
+                });
+            } else {
+                this.setState({
+                    manageState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: {
+                            isAdmin: true
+                        }
+                    }
+                });
             }
-        });
+        } catch (ex) {
+            if (ex instanceof Error) {
+                this.setState({
+                    manageState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: ex.message
+                        }
+                    }
+                });
+            } else {
+                this.setState({
+                    manageState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: 'Unknown error'
+                        }
+                    }
+                });
+            }
+        }
     }
 
     addViewedLink(username: string) {

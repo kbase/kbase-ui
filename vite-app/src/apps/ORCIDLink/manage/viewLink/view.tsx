@@ -1,7 +1,7 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { LinkRecord } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import Well from "components/Well";
+import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
 import { Button, Col, Container, Row, Stack } from "react-bootstrap";
 import { ArrowReturnLeft } from "react-bootstrap-icons";
@@ -9,7 +9,7 @@ import styles from './view.module.css';
 
 
 export interface ORCIDLinkManageProps {
-    link: LinkRecord
+    link: LinkRecordPublic
 }
 
 interface ORCIDLinkManageState {

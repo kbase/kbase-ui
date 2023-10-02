@@ -1,16 +1,16 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { SDKBoolean } from "lib/kb_lib/comm/types";
-import { Config } from "types/config";
-// import { CSLMetadata } from "../demos/RequestDOI/steps/Citations/DOIOrgClient";
+import ORCIDLinkAPI, { InfoResult, StatusResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import ORCIDLinkManageAPI, { FindLinksParams, FindLinksResult, GetLinkingSessionsResult, GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
+import { LinkRecordPublic, LinkRecordPublicNonOwner } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
+import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { hasOwnProperty } from "lib/utils";
+import { Config } from "types/config";
 import {
     ErrorInfo,
     GetNameResult,
-    InfoResponse, LinkRecord, LinkRecordPublicNonOwner,
-    ManageLinkingSessionsQueryResult, ManageLinksParams, ManageLinksResponse,
-    ManageStatsResult,
-    ORCIDLinkServiceClient, ORCIDLinkServiceManageClient, ORCIDProfile, ReturnInstruction, StatusResponse, Work
+    ORCIDLinkServiceClient, ORCIDProfile, ReturnInstruction,
+    Work
 } from "./ORCIDLinkClient";
 import { SCOPE } from "./constants";
 // import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
@@ -55,9 +55,9 @@ export interface LinkInfo {
     scope: string;
 }
 
-export interface LinkResult {
-    link: LinkRecord | null;
-}
+// export interface LinkResult {
+//     link: LinkRecord | null;
+// }
 
 // export type LinkingSession = LinkingSessionInitial | LinkingSessionStarted | LinkingSessionComplete
 
@@ -126,9 +126,9 @@ export const SCOPE_HELP: { [K in SCOPE]: ScopeHelp } = {
     }
 }
 
-export type GetProfileResult = {
-    result: ORCIDProfile
-};
+// export type GetProfileResult = {
+//     result: ORCIDProfile
+// };
 
 export interface CellBase {
     type: 'markdown' | 'app' | 'code'
@@ -227,6 +227,8 @@ export class Model {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     orcidLinkClient: ORCIDLinkServiceClient;
+    orcidLinkAPI: ORCIDLinkAPI
+    orcidLinkManageAPI: ORCIDLinkManageAPI
 
     constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
         this.config = config;
@@ -236,47 +238,59 @@ export class Model {
             timeout: 1000,
             token: auth.authInfo.token
         });
+        this.orcidLinkAPI = new ORCIDLinkAPI({
+            url: `${this.config.services.ORCIDLink.url}/api/v1`,
+            timeout: 1000,
+            token: auth.authInfo.token
+        });
+        this.orcidLinkManageAPI = new ORCIDLinkManageAPI({
+            url: `${this.config.services.ORCIDLink.url}/api/v1`,
+            timeout: 1000,
+            token: auth.authInfo.token
+        })
     }
 
-    async getStatus(): Promise<StatusResponse> {
-        return this.orcidLinkClient.getStatus();
+    async getStatus(): Promise<StatusResult> {
+        return this.orcidLinkAPI.status();
     }
 
-    async getInfo(): Promise<InfoResponse> {
-        return this.orcidLinkClient.getInfo();
+    async getInfo(): Promise<InfoResult> {
+        return this.orcidLinkAPI.info();
     }
 
     async getErrorInfo(errorCode: number): Promise<ErrorInfo> {
-        const { error_info } = await this.orcidLinkClient.getErrorInfo(errorCode);
+        const { error_info } = await this.orcidLinkAPI.errorInfo(errorCode);
         return error_info;
     }
 
     async getProfile(): Promise<ORCIDProfile> {
-        return this.orcidLinkClient.getProfile();
+        return this.orcidLinkAPI.getProfile({ username: this.auth.authInfo.account.user });
     }
 
     async isLinked(): Promise<boolean> {
-        return this.orcidLinkClient.isLinked();
+        return this.orcidLinkAPI.isLinked({ username: this.auth.authInfo.account.user });
     }
 
     async getDocURL(): Promise<string> {
         return this.orcidLinkClient.getDocURL();
     }
 
-    async getLink(): Promise<LinkRecord> {
-        return this.orcidLinkClient.getLink();
+    async getLink(): Promise<LinkRecordPublic> {
+        const username = this.auth.authInfo.account.user;
+        return this.orcidLinkAPI.getOwnerLink({ username });
     }
 
-    async getLinkForORCIDId(orcidId: string): Promise<LinkRecordPublicNonOwner> {
-        return this.orcidLinkClient.getLinkForORCIDId(orcidId);
+    async getLinkForOther(username: string): Promise<LinkRecordPublicNonOwner> {
+        return this.orcidLinkAPI.getOwnerLink({ username });
     }
+
+    // async getLinkForORCIDId(orcidId: string): Promise<LinkRecordPublicNonOwner> {
+    //     return this.orcidLinkClient.getLinkForORCIDId(orcidId);
+    // }
 
     async deleteLink() {
-        return this.orcidLinkClient.deleteLink();
-    }
-
-    async isORCIDLinked(orcidId: string): Promise<boolean> {
-        return this.orcidLinkClient.isORCIDLinked(orcidId);
+        const username = this.auth.authInfo.account.user;
+        return this.orcidLinkAPI.deleteLink({ username });
     }
 
     /**
@@ -286,7 +300,9 @@ export class Model {
      * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
      */
     async startLink({ returnInstruction, skipPrompt, uiOptions }: { returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string }) {
-        const { session_id: sessionId } = await this.orcidLinkClient.createLinkingSession();
+        const { session_id: sessionId } = await this.orcidLinkAPI.createLinkingSession({
+            username: this.auth.authInfo.account.user
+        });
 
         // Then redirect the browser to start the oauth process
         this.orcidLinkClient.startLinkingSession(sessionId, returnInstruction, skipPrompt, uiOptions)
@@ -318,7 +334,7 @@ export class Model {
     // }
 
     private async getName(): Promise<GetNameResult> {
-        const profile = await this.orcidLinkClient.getProfile();
+        const profile = await this.orcidLinkAPI.getProfile({ username: this.auth.authInfo.account.user });
         if (profile.nameGroup.private) {
             throw new PrivateFieldGroupError('The ORCID® profile name fields have been set private');
         }
@@ -400,15 +416,15 @@ export class Model {
     }
 
     async fetchLinkingSession(sessionId: string) {
-        return this.orcidLinkClient.getLinkingSession(sessionId);
+        return this.orcidLinkAPI.getLinkingSession({ session_id: sessionId });
     }
 
-    async confirmLink(token: string) {
-        return this.orcidLinkClient.finishLink(token);
+    async confirmLink(sessionId: string) {
+        return this.orcidLinkAPI.finishLinkingSession({ session_id: sessionId });
     }
 
-    async cancelLink(token: string) {
-        return this.orcidLinkClient.deletelLinkingSession(token);
+    async cancelLink(sessionId: string) {
+        return this.orcidLinkAPI.deleteLinkingSession({ session_id: sessionId });
     }
 
     async removeShowORCIDIdPreference() {
@@ -480,29 +496,12 @@ export class Model {
     // Management
 
     async isManager(): Promise<boolean> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const { is_manager } = await client.getIsManager();
-
+        const { is_manager } = await this.orcidLinkManageAPI.isManager({ username: this.auth.authInfo.account.user });
         return is_manager;
     }
 
-    async manageQueryLinks(query: ManageLinksParams): Promise<ManageLinksResponse> {
-
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.queryLinks(query);
-
+    async manageQueryLinks(query: FindLinksParams): Promise<FindLinksResult> {
+        const result = await this.orcidLinkManageAPI.findLinks({ query });
         return result;
     }
 
@@ -520,85 +519,38 @@ export class Model {
     //     return result;
     // }
 
-    async manageQueryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.queryLinkingSessions();
-
+    async manageQueryLinkingSessions(): Promise<GetLinkingSessionsResult> {
+        const result = await this.orcidLinkManageAPI.getLinkingSessions();
         return result;
     }
 
-    async manageGetStats(): Promise<ManageStatsResult> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.getStats();
-
+    async manageGetStats(): Promise<GetStatsResult> {
+        const result = await this.orcidLinkManageAPI.getStats();
         return result;
     }
 
     async deleteExpiredSessions(): Promise<void> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
+        const result = await this.orcidLinkManageAPI.deleteExpiredLinkingSessions();
+        return result;
+    }
 
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.deleteExpiredSessions();
-
+    async deleteLinkingSessionInitial(sessionId: string): Promise<void> {
+        const result = await this.orcidLinkManageAPI.deleteLinkingSessionInitial({ session_id: sessionId });
         return result;
     }
 
     async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.deleteLinkingSessionStarted(sessionId);
-
+        const result = await this.orcidLinkManageAPI.deleteLinkingSessionStarted({ session_id: sessionId });
         return result;
     }
 
     async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.deleteLinkingSessionCompleted(sessionId);
-
+        const result = await await this.orcidLinkManageAPI.deleteLinkingSessionCompleted({ session_id: sessionId });
         return result;
     }
 
-    async manageGetLink(username: string): Promise<LinkRecord> {
-        const { services: { ORCIDLink: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token } } = this.auth;
-
-        const client = new ORCIDLinkServiceManageClient({
-            url, token, timeout
-        });
-
-        const result = await client.getLink(username);
-
-        return result;
+    async manageGetLink(username: string): Promise<LinkRecordPublic> {
+        const { link } = await this.orcidLinkManageAPI.getLink({ username });
+        return link;
     }
-
-    // async getDOICitation(doi: string) {
-    //     return this.orcidLinkClient.getDOICitation(doi);
-    // }
 }

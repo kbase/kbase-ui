@@ -1,16 +1,10 @@
+import { JSONObject } from "lib/json";
 import { JSONLikeObject, toJSON } from "lib/jsonLike";
 import { ServiceClient } from "./ServiceClient";
-// import { MultiServiceClient } from "./DynamicServiceClient";
-import { JSONObject } from "lib/json";
 
 
 const WORKS_PATH = 'orcid/works';
-const GET_PROFILE_PATH = 'orcid/profile';
-const GET_LINK_PATH = 'link';
-const GET_LINK_SHARE_PATH = 'link/share';
 const LINKING_SESSIONS_PATH = 'linking-sessions';
-const MANAGE_PATH = 'manage';
-const LINK_PATH = 'link';
 
 
 export type LinkingSesssionType = 'initial' | 'started' | 'complete';
@@ -41,6 +35,13 @@ export interface LinkingSessionComplete extends LinkingSessionBase {
     return_link: string;
     skip_prompt: boolean;
     orcid_auth: ORCIDAuth;
+}
+
+export interface LinkingSessionPublicComplete extends LinkingSessionBase {
+    // kind: 'complete'
+    return_link: string;
+    skip_prompt: boolean;
+    orcid_auth: ORCIDAuthPublic;
 }
 
 // Errors
@@ -425,6 +426,21 @@ export interface LinkRecord {
     orcid_auth: ORCIDAuth
 }
 
+export interface ORCIDAuthPublic {
+    expires_in: number;
+    name: string;
+    orcid: string;
+    scope: string
+}
+
+export interface LinkRecordPublic {
+    created_at: number,
+    expires_at: number;
+    retires_at: number;
+    username: string;
+    orcid_auth: ORCIDAuthPublic
+}
+
 export interface ORCIDAuthPublicNonOwner {
     orcid: string;
     name: string;
@@ -454,53 +470,9 @@ export interface ErrorInfoResponse {
 export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
 
-    // General
-
-    async getStatus(): Promise<StatusResponse> {
-        return await this.get<StatusResponse>("status")
-    }
-
-    async getInfo(): Promise<InfoResponse> {
-        return await this.get<InfoResponse>("info")
-    }
-
-    async getErrorInfo(errorCode: number): Promise<ErrorInfoResponse> {
-        return await this.get<ErrorInfoResponse>(`error-info/${errorCode}`)
-    }
-
-    //
-
-    async getProfile(): Promise<ORCIDProfile> {
-        return await this.get<ORCIDProfile>(`${GET_PROFILE_PATH}`)
-    }
-
-    async isLinked(): Promise<boolean> {
-        return this.get<boolean>(`${GET_LINK_PATH}/is_linked`)
-    }
-
-    async isORCIDLinked(orcidId: string): Promise<boolean> {
-        return this.get<boolean>(`${GET_LINK_PATH}/is_orcid_linked/${orcidId}`);
-    }
-
     async getDocURL(): Promise<string> {
         const url = await this.getURL();
         return `${url}/docs`;
-    }
-
-    async getLink(): Promise<LinkRecord> {
-        return await this.get<LinkRecord>(`${GET_LINK_PATH}`)
-    }
-
-    async getLinkForORCIDId(orcidId: string): Promise<LinkRecordPublicNonOwner> {
-        return await this.get<LinkRecordPublicNonOwner>(`${GET_LINK_PATH}/for_orcid/${orcidId}`)
-    }
-
-    async getLinkShare(username: string): Promise<LinkShareRecord> {
-        return await this.get<LinkShareRecord>(`${GET_LINK_SHARE_PATH}/${username}`)
-    }
-
-    async deleteLink(): Promise<void> {
-        return await this.delete(`${LINK_PATH}`)
     }
 
     // ORICD Account works
@@ -527,10 +499,6 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
     // Linking Sessions
 
-    async createLinkingSession(): Promise<CreateLinkingSessionResult> {
-        return await this.post<CreateLinkingSessionResult>(`${LINKING_SESSIONS_PATH}`)
-    }
-
     async startLinkingSession(sessionId: string, returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string): Promise<void> {
         const baseURL = await this.getURL();
         const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`);
@@ -554,20 +522,6 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
         startURL.searchParams.set('skip_prompt', skipPrompt ? 'true' : 'false')
         window.open(startURL, '_parent');
-    }
-
-    async getLinkingSession(sessionId: string): Promise<LinkingSessionComplete> {
-        return await this.get<LinkingSessionComplete>(`${LINKING_SESSIONS_PATH}/${sessionId}`)
-    }
-
-    async deletelLinkingSession(token: string): Promise<void> {
-        return await this.delete(`${LINKING_SESSIONS_PATH}/${token}`);
-    }
-
-    // Not REST?
-
-    async finishLink(sessionId: string): Promise<void> {
-        return await this.put<void>(`${LINKING_SESSIONS_PATH}/${sessionId}/finish`);
     }
 }
 
@@ -647,13 +601,13 @@ export type LinkingSessionsQuery = Query<LinkingSessionsFilter>
 //     offset?: number;
 //     limit?: number;
 // }
-export type ManageLinkingSessionsQueryParams = LinkingSessionsQuery;
+// export type ManageLinkingSessionsQueryParams = LinkingSessionsQuery;
 
-export interface ManageLinkingSessionsQueryResult {
-    initial_linking_sessions: Array<LinkingSessionInitial>
-    started_linking_sessions: Array<LinkingSessionStarted>
-    completed_linking_sessions: Array<LinkingSessionComplete>
-}
+// export interface ManageLinkingSessionsQueryResult {
+//     initial_linking_sessions: Array<LinkingSessionInitial>
+//     started_linking_sessions: Array<LinkingSessionStarted>
+//     completed_linking_sessions: Array<LinkingSessionPuComplete>
+// }
 
 export interface LinkStats {
     last_24_hours: number
@@ -676,46 +630,45 @@ export interface ManageStatsResult {
     }
 }
 
-export class ORCIDLinkServiceManageClient extends ServiceClient {
-    module = 'ORCIDLink';
+// export class ORCIDLinkServiceManageClient extends ServiceClient {
+//     module = 'ORCIDLink';
 
-    // Management
+//     // Management
 
-    async getIsManager(): Promise<IsManagerResponse> {
-        return await this.get<IsManagerResponse>(`${MANAGE_PATH}/is_manager`) as unknown as IsManagerResponse;
-    }
+//     async getIsManager(): Promise<IsManagerResponse> {
+//         return await this.get<IsManagerResponse>(`${MANAGE_PATH}/is_manager`) as unknown as IsManagerResponse;
+//     }
 
-    async queryLinks(params: ManageLinksParams): Promise<ManageLinksResponse> {
-        return await this.post<ManageLinksResponse>(`${MANAGE_PATH}/links`, toJSON(params)) as unknown as ManageLinksResponse;
-    }
+//     async queryLinks(params: ManageLinksParams): Promise<ManageLinksResponse> {
+//         return await this.post<ManageLinksResponse>(`${MANAGE_PATH}/links`, toJSON(params)) as unknown as ManageLinksResponse;
+//     }
+
+//     async getLink(username: string): Promise<LinkRecord> {
+//         return await this.get<LinkRecord>(`${MANAGE_PATH}/link/${username}`) as unknown as LinkRecord;
+//     }
 
 
-    async getLink(username: string): Promise<LinkRecord> {
-        return await this.get<LinkRecord>(`${MANAGE_PATH}/link/${username}`) as unknown as LinkRecord;
-    }
+//     // async queryLinkingSessions(params: ManageLinkingSessionsQueryParams): Promise<ManageLinkingSessionsQueryResult> {
+//     //     return await this.post<void>(`${MANAGE_PATH}/linking_sessions`, toJSON(params)) as unknown as ManageLinkingSessionsQueryResult;
+//     // }
 
+//     // async queryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
+//     //     return await this.get<ManageLinkingSessionsQueryResult>(`${MANAGE_PATH}/linking_sessions`) as unknown as ManageLinkingSessionsQueryResult;
+//     // }
 
-    // async queryLinkingSessions(params: ManageLinkingSessionsQueryParams): Promise<ManageLinkingSessionsQueryResult> {
-    //     return await this.post<void>(`${MANAGE_PATH}/linking_sessions`, toJSON(params)) as unknown as ManageLinkingSessionsQueryResult;
-    // }
+//     // async getStats(): Promise<ManageStatsResult> {
+//     //     return await this.get<ManageStatsResult>(`${MANAGE_PATH}/stats`) as unknown as ManageStatsResult;
+//     // }
 
-    async queryLinkingSessions(): Promise<ManageLinkingSessionsQueryResult> {
-        return await this.get<ManageLinkingSessionsQueryResult>(`${MANAGE_PATH}/linking_sessions`) as unknown as ManageLinkingSessionsQueryResult;
-    }
+//     // async deleteExpiredSessions(): Promise<void> {
+//     //     return await this.delete(`${MANAGE_PATH}/expired_linking_sessions`);
+//     // }
 
-    async getStats(): Promise<ManageStatsResult> {
-        return await this.get<ManageStatsResult>(`${MANAGE_PATH}/stats`) as unknown as ManageStatsResult;
-    }
+//     // async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
+//     //     return await this.delete(`${MANAGE_PATH}/linking_session_started/${sessionId}`);
+//     // }
 
-    async deleteExpiredSessions(): Promise<void> {
-        return await this.delete(`${MANAGE_PATH}/expired_linking_sessions`);
-    }
-
-    async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
-        return await this.delete(`${MANAGE_PATH}/linking_session_started/${sessionId}`);
-    }
-
-    async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
-        return await this.delete(`${MANAGE_PATH}/linking_session_completed/${sessionId}`);
-    }
-}
+//     // async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
+//     //     return await this.delete(`${MANAGE_PATH}/linking_session_completed/${sessionId}`);
+//     // }
+// }

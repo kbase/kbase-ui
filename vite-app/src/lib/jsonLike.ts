@@ -88,3 +88,30 @@ export function toJSON(like: unknown): JSONValue {
             throw new Error(`Not acceptable JSON value: ${typeof like}`);
     }
 }
+
+export function toJSONObject(like: unknown): JSONObject {
+    // return (like as unknown) as JSONValue;
+    switch (typeof like) {
+        case 'string':
+        case 'number':
+        case 'boolean':
+        case 'undefined':
+            throw new Error('May not be a JSON Object')
+        case 'object':
+            if (like === null) {
+                throw new Error('May not be a JSON Object')
+            } else if (Array.isArray(like)) {
+                throw new Error('May not be a JSON Object')
+            } else {
+                const x: JSONObject = {};
+                for (const [k, v] of Object.entries(like)) {
+                    if (typeof v !== 'undefined') {
+                        x[k] = toJSON(v);
+                    }
+                }
+                return x;
+            }
+        default:
+            throw new Error(`Not acceptable JSON value: ${typeof like}`);
+    }
+}

@@ -3,17 +3,18 @@ import AlertMessage from 'components/AlertMessage';
 import CountdownClock from 'components/CountdownClock';
 import ErrorAlert from 'components/ErrorAlert';
 import Well from 'components/Well';
+import { LinkingSessionPublicComplete } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
 import { Component } from 'react';
 import { Alert, Button, Col, Container, Form, Row, Spinner, Stack } from 'react-bootstrap';
 import { CheckLg } from 'react-bootstrap-icons';
 import { renderORCIDIcon, renderScope } from '../common';
-import { LinkingSessionComplete, ReturnInstruction } from '../lib/ORCIDLinkClient';
+import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import { ORCID_URL } from '../lib/constants';
 import styles from './Continue.module.css';
 import { CreateLinkState } from './ContinueController';
 
 export interface ContinueProps {
-    linkingSession: LinkingSessionComplete;
+    linkingSession: LinkingSessionPublicComplete;
     showInProfile: boolean;
     setShowInProfile: (show: boolean) => void;
     returnInstruction?: ReturnInstruction;

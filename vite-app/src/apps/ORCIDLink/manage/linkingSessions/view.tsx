@@ -1,14 +1,16 @@
-import { LinkRecord, ManageLinkingSessionsQueryResult, StatusResponse } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
 import Empty from "components/Empty";
 import RelativeTimeClock from "components/RelativeTimeClock";
+import { StatusResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import { GetLinkingSessionsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
+import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
 import { Accordion, Button, Table } from "react-bootstrap";
 import { Gear } from "react-bootstrap-icons";
 
 export interface QueryLinkingSessionsViewProps {
-    linkingSessions: ManageLinkingSessionsQueryResult;
-    orcidlinkStatus: StatusResponse;
+    linkingSessions: GetLinkingSessionsResult;
+    orcidlinkStatus: StatusResult;
     pruneExpiredSessions: () => void;
     deleteStartedSession: (sessionId: string) => void;
     deleteCompletedSession: (sessionId: string) => void;
@@ -21,12 +23,12 @@ interface QueryLinkingSessionsViewState {
 export default class QueryLinkingSessionsView extends Component<QueryLinkingSessionsViewProps, QueryLinkingSessionsViewState> {
 
     renderTable() {
-        const columns: Array<ColumnDef<LinkRecord>> = [
+        const columns: Array<ColumnDef<LinkRecordPublic>> = [
             {
                 id: 'username',
                 label: 'Username',
                 style: {},
-                render: (linkRecord: LinkRecord) => {
+                render: (linkRecord: LinkRecordPublic) => {
                     return linkRecord.username;
                 }
             },
@@ -34,12 +36,12 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                 id: 'orcid',
                 label: 'ORCID® iD',
                 style: {},
-                render: (linkRecord: LinkRecord) => {
+                render: (linkRecord: LinkRecordPublic) => {
                     return linkRecord.orcid_auth.orcid;
                 }
             }
         ]
-        const dataSource: Array<LinkRecord> = [];
+        const dataSource: Array<LinkRecordPublic> = [];
         return <DataBrowser heights={{ header: 40, row: 40 }} columns={columns} dataSource={dataSource} />
 
     }

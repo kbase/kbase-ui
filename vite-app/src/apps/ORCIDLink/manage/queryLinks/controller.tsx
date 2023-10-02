@@ -1,8 +1,8 @@
-import { LinkRecord } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import ErrorMessage from "components/ErrorMessage";
 import { SimpleError } from "components/MainWindow";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import Poller, { makePoller } from "lib/poller";
 import { Component } from "react";
 import { Config } from "types/config";
@@ -16,7 +16,7 @@ export interface QueryLinksControllerProps {
 }
 
 export interface QueryLinksState {
-    links: Array<LinkRecord>
+    links: Array<LinkRecordPublic>
 }
 
 interface QueryLinksControllerState {

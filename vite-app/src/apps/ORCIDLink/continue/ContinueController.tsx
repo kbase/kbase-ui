@@ -1,12 +1,14 @@
 import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
-import UserProfileClient, { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
+import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
+import { LinkingSessionPublicComplete } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
 import { changeHash2 } from "lib/navigation";
 import { Component } from "react";
 import { Config } from "types/config";
 import { Model } from "../lib/Model";
-import { ErrorCode, LinkRecord, LinkingSessionComplete, ReturnInstruction } from "../lib/ORCIDLinkClient";
+import { ErrorCode, LinkRecordPublic, ReturnInstruction } from "../lib/ORCIDLinkClient";
 import { ClientError } from "../lib/ServiceClient";
 import Continue from "./Continue";
 import ErrorView from "./Error";
@@ -39,7 +41,7 @@ export enum ErrorType {
 
 export interface AlreadyLinkedError extends ErrorBase {
     type: ErrorType.ALREADY_LINKED,
-    link: LinkRecord
+    link: LinkRecordPublic
 }
 
 // Note that the prop names are the same as for orcid auth so we can 
@@ -74,7 +76,7 @@ export type ContinueLinkingError =
     FetchLinkSessionError |
     SessionExpiredError;
 
-export type ContinueLinkingState = AsyncProcess<LinkingSessionComplete, ContinueLinkingError>;
+export type ContinueLinkingState = AsyncProcess<LinkingSessionPublicComplete, ContinueLinkingError>;
 
 export type CreateLinkState = AsyncProcess<true, { message: string }>;
 
@@ -134,12 +136,10 @@ export default class ContinueController extends Component<ContinueControllerProp
                 });
                 return;
             }
-
-
         } catch (ex) {
-            if (ex instanceof ClientError) {
-                if (ex.code === ErrorCode.not_found) {
-                    // Strangely enough, this is the happy path!
+            if (ex instanceof JSONRPC20Exception) {
+                if (ex.error.code === ErrorCode.not_found) {
+                    // Strangely enough, this is the happy path, we just continue.
                 } else {
                     this.setState({
                         continueState: {
@@ -197,38 +197,6 @@ export default class ContinueController extends Component<ContinueControllerProp
             // }
 
             const linkingSession = await model.fetchLinkingSession(this.props.linkingSessionId);
-
-            const isORCIDAlreadyLinked = await model.isORCIDLinked(linkingSession.orcid_auth.orcid);
-
-            if (isORCIDAlreadyLinked) {
-                const publicLink = await model.getLinkForORCIDId(linkingSession.orcid_auth.orcid);
-                const userProfileClient = new UserProfileClient({
-                    url: this.props.config.services.UserProfile.url,
-                    timeout: this.props.config.ui.constants.clientTimeout,
-                    token: this.props.auth.authInfo.token
-                });
-                // TODO: this is the wrong username; we need the username associated with the link...
-                const [userProfile] = await userProfileClient.get_user_profile([publicLink.username]);
-                this.setState({
-                    continueState: {
-                        status: AsyncProcessStatus.ERROR,
-                        error: {
-                            type: ErrorType.ORCID_ALREADY_LINKED,
-                            message: "This ORCID® account is already linked to another KBase account",
-                            info: {
-                                orcid: {
-                                    orcid: linkingSession.orcid_auth.orcid,
-                                    name: linkingSession.orcid_auth.name
-                                },
-                                kbase: {
-                                    userProfile
-                                }
-                            }
-                        }
-                    }
-                });
-                return;
-            }
 
             this.setState({
                 continueState: {
@@ -447,7 +415,7 @@ export default class ContinueController extends Component<ContinueControllerProp
         this.handleReturnLink();
     }
 
-    renderSuccess(linkingSession: LinkingSessionComplete) {
+    renderSuccess(linkingSession: LinkingSessionPublicComplete) {
         return <Continue
             linkingSession={linkingSession}
             returnInstruction={this.props.returnInstruction}
