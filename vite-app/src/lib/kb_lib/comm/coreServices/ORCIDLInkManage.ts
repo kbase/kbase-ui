@@ -141,9 +141,7 @@ export interface GetStatsResult {
 
 export default class ORCIDLinkManageAPI extends ServiceClient2 {
     async isManager(params: IsManagerParams): Promise<IsManagerResult> {
-        console.log('calling is-manager', params)
         const result = await this.callMethod('is-manager', params);
-        console.log('got', result);
         return result as unknown as IsManagerResult;
     }
 

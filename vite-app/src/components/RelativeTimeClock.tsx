@@ -53,7 +53,6 @@ function niceRelativeTimeRange({
     // Elapsed time in seconds.
     const elapsed = Math.round((now - at) / 1000);
     const elapsedAbs = Math.abs(elapsed);
-    console.log('elapsed', elapsed);
     let measureAbs;
 
     const measures = [];
