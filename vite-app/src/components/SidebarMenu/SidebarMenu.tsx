@@ -35,6 +35,12 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         };
     }
 
+    componentDidMount() {
+        this.setState({
+            activeKey: this.getActiveKey(),
+        });
+    }
+
     updateActiveKey() {
         this.setState({
             activeKey: this.getActiveKey(),
@@ -144,6 +150,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
             <Nav.Item key={menuItem.name}>
                 <Nav.Link
                     eventKey={menuItem.name}
+                    className={styles.navLink}
                     onSelect={() => {
                         if (menuItem.newWindow) {
                             window.open(menuItem.url, '_blank');
@@ -193,7 +200,6 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
 
         // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
-
             if (item.type === 'internal') {
                 if (path.startsWith(item.path)) {
                     return item.name;
