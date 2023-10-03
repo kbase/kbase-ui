@@ -1,5 +1,5 @@
 (function () {
-    console.warn('Analyzing browser for compatability...');
+    console.warn('Analyzing browser for compatibility...');
 
     // ES6!
     // Prior to ES6, const is not a keyword, and in strict mode,
@@ -25,7 +25,6 @@
         failed = 'q';
     } else if (typeof window['addEventListener'] === 'undefined') {
         failed = 'a';
-
     } else if (typeof window['location']['origin'] === 'undefined') {
         // IE11 <
         failed = 'o';
@@ -43,4 +42,4 @@
     } else {
         console.warn('...passed');
     }
-}());
+})();
