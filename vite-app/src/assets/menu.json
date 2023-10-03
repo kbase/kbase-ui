@@ -116,6 +116,15 @@
             ]
         },
         {
+            "name": "narratives",
+            "label": "Navigator",
+            "icon": "compass",
+            "type": "external",
+            "url": "/narratives",
+            "newWindow": false,
+            "requiresAuth": true
+        },
+        {
             "name": "about-kbase",
             "label": "About KBase",
             "icon": "info-circle",
@@ -139,16 +148,6 @@
             "type": "external",
             "url": "https://www.kbase.us/support",
             "newWindow": true
-        },
-        {
-            "name": "navigator",
-            "label": "Navigator",
-            "icon": "compass",
-            "tooltip": "Narrative Navigator - browse and search Narratives",
-            "type": "internal",
-            "path": "navigator",
-            "newWindow": false,
-            "requiresAuth": true
         },
         {
             "name": "orgs",
@@ -238,7 +237,7 @@
         ]
     },
     "sidebar": [
-        "navigator",
+        "narratives",
         "orgs",
         "catalog",
         "search",
