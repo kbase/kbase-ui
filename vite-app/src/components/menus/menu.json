@@ -7,7 +7,8 @@
             "type": "internal",
             "path": "narrativemanager/start",
             "newWindow": true,
-            "icon": "file"
+            "icon": "file",
+            "requiresAuth": true
         },
         {
             "name": "new-narrative",
@@ -15,14 +16,16 @@
             "path": "narrativemanager/new",
             "newWindow": true,
             "label": "New Narrative",
-            "icon": "plus"
+            "icon": "plus",
+            "requiresAuth": true
         },
         {
             "name": "about",
             "label": "About KBase UI",
             "icon": "info-circle",
             "type": "internal",
-            "path": "about"
+            "path": "about",
+            "requiresAuth": false
         },
         {
             "name": "developer",
@@ -79,14 +82,16 @@
             "label": "KBase Services Status",
             "icon": "server",
             "type": "internal",
-            "path": "about/services"
+            "path": "about/services",
+            "requiresAuth": false
         },
         {
             "name": "about-plugins",
             "label": "KBase UI Plugins",
             "icon": "plug",
             "type": "internal",
-            "path": "about/plugins"
+            "path": "about/plugins",
+            "requiresAuth": false
         },
         {
             "name": "biochem-search",
@@ -94,7 +99,8 @@
             "icon": "search",
             "type": "internal",
             "path": "biochem-search",
-            "newWindow": false
+            "newWindow": false,
+            "requiresAuth": true
         },
         {
             "name": "jgi-search",
@@ -102,7 +108,8 @@
             "icon": "search",
             "type": "internal",
             "path": "jgi-search",
-            "newWindow": false
+            "newWindow": false,
+            "requiresAuth": true
         },
         {
             "name": "public-search",
@@ -113,7 +120,8 @@
             "newWindow": false,
             "allowedRoles": [
                 "DevToken"
-            ]
+            ],
+            "requiresAuth": true
         },
         {
             "name": "narratives",
@@ -130,7 +138,8 @@
             "icon": "info-circle",
             "type": "external",
             "url": "https://www.kbase.us/about",
-            "newWindow": true
+            "newWindow": true,
+            "requiresAuth": false
         },
         {
             "name": "terms-and-conditions",
@@ -139,7 +148,8 @@
             "tooltip": "",
             "type": "external",
             "url": "https://www.kbase.us/about/terms-and-conditions-v2/",
-            "newWindow": true
+            "newWindow": true,
+            "requiresAuth": false
         },
         {
             "name": "help",
@@ -147,7 +157,8 @@
             "icon": "question",
             "type": "external",
             "url": "https://www.kbase.us/support",
-            "newWindow": true
+            "newWindow": true,
+            "requiresAuth": false
         },
         {
             "name": "orgs",
@@ -208,6 +219,16 @@
             "path": "feeds",
             "newWindow": false,
             "requiresAuth": true
+        },
+        {
+            "name": "componentgallery",
+            "label": "Component Gallery",
+            "icon": "picture-o",
+            "tooltip": "A interactive gallery of some components used in this codebase",
+            "type": "internal",
+            "path": "gallery/home",
+            "newWindow": false,
+            "requiresAuth": false
         }
     ],
     "hamburger": {
@@ -227,6 +248,7 @@
             "navigator",
             "orcidlink",
             "orcidlinkdemos",
+            "componentgallery",
             "about-services",
             "about-plugins"
         ],

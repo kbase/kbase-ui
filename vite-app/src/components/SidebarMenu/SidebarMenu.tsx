@@ -13,7 +13,6 @@ export interface SidebarMenuProps {
 }
 
 interface SidebarMenuState {
-    activeKey: string | null;
 }
 
 export interface MenuButton {
@@ -21,8 +20,7 @@ export interface MenuButton {
     beta: boolean;
 }
 
-export default class SidebarMenu extends Component<SidebarMenuProps,
-    SidebarMenuState> {
+export default class SidebarMenu extends Component<SidebarMenuProps, SidebarMenuState> {
     ref: React.RefObject<HTMLDivElement>;
 
     constructor(props: SidebarMenuProps) {
@@ -35,34 +33,10 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         };
     }
 
-    componentDidMount() {
-        this.setState({
-            activeKey: this.getActiveKey(),
-        });
-    }
-
-    updateActiveKey() {
-        this.setState({
-            activeKey: this.getActiveKey(),
-        });
-    }
-
     onNavClick(path: string) {
         // Explain ourselves here ... is this the problem?
         // I don't think so, because simple external links would fail...
         // but perhaps after the router rewrite it is ??
-
-        // OLD
-        // const oldHref = window.location.href;
-        // window.location.href = '/#' + path;
-        // if (oldHref === window.location.href) {
-        //     window.dispatchEvent(new HashChangeEvent('hashchange'));
-        // }
-
-        // NEW
-        // Umm, was this it the whole time???
-        // Next: rewind the custom router (leave new code in place, just restore the code
-        // in Body.tsx ... see if this, or a better fix perhaps in "changehash" fixes safari)
         changeHash2("/" + path)
     }
 
@@ -75,15 +49,12 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     renderBadge(menuItem: MenuItemInternal) {
         switch (menuItem.name) {
             case 'feeds':
+                // Yes, this is hardcoded. But as this codebase is going nowhere, let
+                // us keep it simple.
                 return <FeedsBadgeWrapper />
             default:
                 return;
         }
-        // if (!menuItem.renderBadge) {
-        //     return null;
-        // }
-        // // return <FeedsBadgeWrapper />;
-        // return menuItem.renderBadge(menuItem);
     }
 
     showLabel() {
@@ -171,10 +142,6 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
         const buttons: Array<JSX.Element> = [];
         const handlers: Map<string, () => void> = new Map();
         for (const item of this.props.menu) {
-            // if (item.requiresAuth && 
-            //     this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
-            //     continue;
-            // }
             if (item.type === 'internal') {
                 buttons.push(this.renderInternalItem(item));
                 handlers.set(item.name, () => {
@@ -195,13 +162,10 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
     }
 
     getActiveKey(): string | null {
-        // Fetch the "path" in the hash
-        const path = document.location.hash.substring(1).replace(/^\/+/, '');
-
         // Determine if the current menu item is a prefix for the current browser (hash) path.
         for (const item of this.props.menu) {
             if (item.type === 'internal') {
-                if (path.startsWith(item.path)) {
+                if (this.props.path.startsWith(item.path)) {
                     return item.name;
                 }
             }
@@ -211,6 +175,7 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
 
     render() {
         const [menu, handlers] = this.renderMenu();
+        const activeKey = this.getActiveKey();
         return (
             <Nav
                 className={`flex-column SidebarMenuBSTweaks ${styles.main}`}
@@ -218,14 +183,13 @@ export default class SidebarMenu extends Component<SidebarMenuProps,
                 // but the TS typing does not allow null, so we fool TS into by saying 
                 // it is always a string.
                 // TODO: file a ticket with the bootstrap-react project.
-                activeKey={this.state.activeKey as string}
+                activeKey={activeKey as string}
                 onSelect={(selectedKey: string | null) => {
                     if (selectedKey) {
                         const handler = handlers.get(selectedKey);
                         if (handler) {
                             handler();
                         }
-                        this.updateActiveKey();
                     }
                 }}
             >

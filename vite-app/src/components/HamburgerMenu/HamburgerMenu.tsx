@@ -4,7 +4,6 @@ import { Dropdown } from 'react-bootstrap';
 import { MenuItem } from '../../types/menu';
 import styles from './HamburgerMenu.module.css';
 
-
 export interface HamburgerMenuProps {
     menu: {
         narrative: Array<MenuItem>;

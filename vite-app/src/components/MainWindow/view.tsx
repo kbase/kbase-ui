@@ -18,6 +18,8 @@ export interface MainWindowProps {
     authState: AuthenticationState;
     config: Config;
     hideUI?: boolean;
+    hideHeader: boolean;
+    hideNavigation: boolean;
     setTitle: (title: string) => void;
 }
 
@@ -49,7 +51,7 @@ export default class MainWindow extends Component<MainWindowProps> {
     // }
 
     renderHeader() {
-        if (this.props.hideUI) {
+        if (this.props.hideUI || this.props.hideHeader) {
             return;
         }
         return (
@@ -141,7 +143,7 @@ export default class MainWindow extends Component<MainWindowProps> {
 
 
     renderNavigation() {
-        if (this.props.hideUI) {
+        if (this.props.hideUI || this.props.hideNavigation) {
             return;
         }
         return <div className={styles.navArea}>
@@ -170,9 +172,8 @@ export default class MainWindow extends Component<MainWindowProps> {
                         <div className={styles.content}>
                             <RuntimeContext.Consumer>
                                 {(value) => {
-                                    // Try not to span the Body with runtime state
+                                    // Try not to spam the Body with runtime state
                                     // changes.
-
                                     if (value) {
                                         return (
                                             <Body

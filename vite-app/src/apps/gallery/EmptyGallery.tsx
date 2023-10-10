@@ -14,10 +14,7 @@ interface EmptyGalleryState {
     childrenText?: string;
 }
 
-
-
 const defaultChildrenString = 'This is a <b>child</b> of the <code>Empty</code> <i>component</i>';
-
 
 export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGalleryState> {
     constructor(props: EmptyGalleryProps) {
@@ -133,8 +130,6 @@ export default class EmptyGallery extends Component<EmptyGalleryProps, EmptyGall
                     </Empty>
                 </Well.Body>
             </Well>
-
-
         </Stack>
     }
 }

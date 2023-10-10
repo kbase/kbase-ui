@@ -1,9 +1,9 @@
 import { ErrorCode } from "apps/ORCIDLink/lib/ORCIDLinkClient";
-import { ClientError } from "apps/ORCIDLink/lib/ServiceClient";
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
 import ORCIDLinkAPI from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { Component } from "react";
 import { Config } from "types/config";
@@ -267,7 +267,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
         try {
             const match = /^(.*\/\/[^/]+)\/services/.exec(url);
             if (match === null) {
-                // dispatch(fetchORCIDIdError('Cannot get baseURL'));
                 this.setState({
                     orcidState: {
                         status: AsyncProcessStatus.ERROR,
@@ -297,8 +296,8 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 }
             })
         } catch (ex) {
-            if (ex instanceof ClientError) {
-                if (ex.code === ErrorCode.not_found) {
+            if (ex instanceof JSONRPC20Exception) {
+                if (ex.error.code === ErrorCode.not_found) {
                     this.setState({
                         orcidState: {
                             status: AsyncProcessStatus.SUCCESS,

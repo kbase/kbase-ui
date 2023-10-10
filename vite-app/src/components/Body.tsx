@@ -11,7 +11,7 @@ import Organizations from '../apps/Organizations';
 import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { Config } from '../types/config';
 
-import { changePath } from 'lib/navigation';
+import { changeHash2, changePath } from 'lib/navigation';
 import { PluginInfo } from 'types/info';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
@@ -465,10 +465,10 @@ export default class Body extends Component<BodyProps, BodyState> {
             new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <About {...this.props} {...props} />;
             }),
-            new Route('gallery', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('gallery', { authenticationRequired: false }, (props: RouteProps) => {
                 return <Gallery {...props} {...this.props} />;
             }),
-            new Route('gallery/:name', { authenticationRequired: true }, (props: RouteProps) => {
+            new Route('gallery/:name', { authenticationRequired: false }, (props: RouteProps) => {
                 return <Gallery {...props} {...this.props} />;
             }),
             // new Route('about', { authenticationRequired: false }, (props: RouteProps) => {
@@ -525,8 +525,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 '^(dashboard|narratives)$',
                 { authenticationRequired: true },
                 () => {
-                    changePath('narratives', { replace: true });
-                    return <Loading message="Loading Narratives Navigator 2..." />;
+                    return this.gotoDefaultPath();
                 }
             ),
 
@@ -537,9 +536,7 @@ export default class Body extends Component<BodyProps, BodyState> {
                 // Direct redirect to /narratives; something is preventing a hashchange then
                 // pathchange in CI. Does not occur locally, so may be a race condition triggered
                 // by slightly slower connection to CI compared to local.
-                changePath('narratives', { replace: true });
-                // changeHash2('narratives', { replace: true });
-                return <Loading message="Loading Narratives Navigator 1..." />;
+                return this.gotoDefaultPath()
             }),
         ];
 
@@ -575,6 +572,16 @@ export default class Body extends Component<BodyProps, BodyState> {
                     }
                 }
             }
+        }
+    }
+
+    gotoDefaultPath(): React.ReactNode {
+        const defaultPath = this.props.config.ui.defaults.path.value;
+        if (defaultPath.startsWith('#')) {
+            changeHash2(defaultPath);
+        } else {
+            changePath(defaultPath, { replace: true })
+            return <Loading message="Loading Default Path..." />;
         }
     }
 

@@ -253,14 +253,11 @@ export default class AlertMessageGallery extends Component<AlertMessageGalleryPr
                                 {this.renderAlertMessage("dark")}
                                 {this.renderAlertMessage("warning")}
                                 {this.renderAlertMessage("danger")}
-
-
                             </Stack>
                         </Col>
                     </Row>
                 </Well.Body>
             </Well>
-
         </Stack>
     }
 }

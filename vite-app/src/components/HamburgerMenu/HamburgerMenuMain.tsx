@@ -8,9 +8,31 @@ import { arraysIntersect } from '../../lib/utils';
 import { Config, HamburgerMenuDefintion } from '../../types/config';
 import { Menu, MenuItem } from '../../types/menu';
 import HamburgerMenu from './HamburgerMenuLogo';
-import menuRaw from './menu.json';
 
-const menuDefinition = menuRaw as unknown as HamburgerMenuDefintion;
+import { MENU } from '../menus/menu';
+
+const menuDefinition: HamburgerMenuDefintion = {
+    narrative: {
+        items: MENU.hamburger.narrative.map((item) => {
+            return MENU.itemsMap.get(item)!
+        })
+    },
+    search: {
+        items: MENU.hamburger.search.map((item) => {
+            return MENU.itemsMap.get(item)!
+        })
+    },
+    developer: {
+        items: MENU.hamburger.developer.map((item) => {
+            return MENU.itemsMap.get(item)!
+        })
+    },
+    help: {
+        items: MENU.hamburger.help.map((item) => {
+            return MENU.itemsMap.get(item)!
+        })
+    },
+}
 
 export interface HamburgerMenuMainProps {
     authState: AuthenticationState;
@@ -23,81 +45,12 @@ export default class HamburgerMenuMain extends Component<
     HamburgerMenuMainProps,
     HamburgerMenuMainState
 > {
-    // menu: Menu | null;
     constructor(props: HamburgerMenuMainProps) {
         super(props);
-        // this.menuService = this.props.runtime.service('menu');
-        // this.menu = null;
-
         this.state = {
             isLoaded: true,
-            // menu: this.computeMenu(),
         };
-
-        // TODO: dropping the message listener necessary?
-        // after all, the hamburger menu lives for the lifetime of the
-        // web app.
-        // this.props.runtime.receive('session', 'change', () => {
-        //     this.setState({
-        //         menu: this.computeMenu(),
-        //     });
-        // });
-
-        // this.menuService.onChange(() => {
-        //     this.setState({
-        //         menu: this.computeMenu()
-        //     });
-        // });
     }
-
-    // componentDidMount() {
-    //     this.computeMenu();
-    // }
-
-    // computeMenu() {
-    //     // const hamburgerMenu = this.menuService.getHamburgerMenu();
-    //     const allowedTags = this.props.config.ui.allow;
-    //     const isLoggedIn =
-    //         this.props.authState.status === AuthenticationStatus.AUTHENTICATED;
-
-    //     const userRoles: Array<string> = (() => {
-    //         if (
-    //             this.props.authState.status ===
-    //             AuthenticationStatus.AUTHENTICATED
-    //         ) {
-    //             return this.props.authState.authInfo.account.roles.map(
-    //                 (role) => {
-    //                     return role.id;
-    //                 }
-    //             );
-    //         } else {
-    //             return [];
-    //         }
-    //     })();
-
-    //     const filterMenu = (menu: Menu) => {
-    //         return menu.items.filter((item: MenuItem) => {
-    //             if (!isLoggedIn && item.requiresAuth) {
-    //                 return false;
-    //             }
-    //             if (item.allowedTags) {
-    //                 return arraysIntersect(item.allowedTags, allowedTags);
-    //             }
-    //             if (item.allowedRoles) {
-    //                 return arraysIntersect(item.allowedRoles, userRoles);
-    //             }
-    //             return true;
-    //         });
-    //     };
-
-    //     const menu = this.props.config.ui.menus.hamburger;
-
-    //     return {
-    //         main: filterMenu(menu.main),
-    //         developer: filterMenu(menu.developer),
-    //         help: filterMenu(menu.help),
-    //     };
-    // }
 
     renderAuthenticated(authState: AuthenticationStateAuthenticated) {
         const userRoles: Array<string> = authState.authInfo.account.roles.map(
@@ -118,8 +71,6 @@ export default class HamburgerMenuMain extends Component<
                 return true;
             });
         };
-
-        // const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
             narrative: filterMenu(menuDefinition.narrative),
@@ -145,8 +96,6 @@ export default class HamburgerMenuMain extends Component<
                 return true;
             });
         };
-
-        // const menuDefinition = this.props.config.ui.menus.hamburger;
 
         const menu = {
             narrative: filterMenu(menuDefinition.narrative),

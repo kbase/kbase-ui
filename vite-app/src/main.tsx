@@ -8,17 +8,6 @@ import './antd.css';
 import './bootstrap-custom.scss';
 import './main.css';
 
-// function forceSlashAfterHash() {
-//     const hash = window.location.hash;
-//     if (hash[1] && hash[1] != '/') {
-//         const newURL = new URL(window.location.href);
-//         newURL.hash = `#/${hash.slice(1)}`;
-//         window.location.href = newURL.toString();
-//     }
-// }
-// forceSlashAfterHash();
-// window.addEventListener('hashchange', forceSlashAfterHash);
-
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
     <React.StrictMode>

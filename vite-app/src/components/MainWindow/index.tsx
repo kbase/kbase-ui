@@ -17,8 +17,8 @@ export interface ControllerProps {
 }
 
 export interface LoadingInfo {
-    // showHeader: boolean;
-    // showNavigation: boolean;
+    hideHeader: boolean;
+    hideNavigation: boolean;
     hideUI: boolean;
 }
 
@@ -49,7 +49,9 @@ export default class Controller extends Component<ControllerProps, ControllerSta
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
                     // showHeader, showNavigation
-                    hideUI
+                    hideUI,
+                    hideHeader: this.props.config.ui.defaults.hideHeader,
+                    hideNavigation: this.props.config.ui.defaults.hideNavigation
                 }
             }
         });
@@ -63,9 +65,11 @@ export default class Controller extends Component<ControllerProps, ControllerSta
         return <ErrorMessage message={message} />
     }
 
-    renderSuccess({ hideUI }: LoadingInfo) {
+    renderSuccess({ hideUI, hideHeader, hideNavigation }: LoadingInfo) {
         return <MainWindow {...this.props}
             hideUI={hideUI}
+            hideHeader={hideHeader}
+            hideNavigation={hideNavigation}
         />
     }
 

@@ -1,142 +1,14 @@
 import { Component } from 'react';
-import { arraysIntersect } from '../../lib/utils';
-// import { FeedsNotification } from '../../services/feeds';
-import rawMenuData from 'assets/menu.json';
 import {
     AuthenticationState, AuthenticationStateAuthenticated,
     AuthenticationStatus
 } from '../../contexts/Auth';
+import { arraysIntersect } from '../../lib/utils';
 import { Config } from '../../types/config';
 import { MenuItem } from '../../types/menu';
 import SidebarMenu from '../SidebarMenu/SidebarMenu';
 
-export interface MenuData {
-    menu: Array<MenuItem>;
-    itemsMap: Map<string, MenuItem>;
-    sidebar: Array<string>;
-    hamburger: {
-        narrative: Array<string>;
-        search: Array<string>;
-        developer: Array<string>;
-        help: Array<string>;
-    }
-}
-
-
-export interface Menu extends MenuData {
-    itemsMap: Map<string, MenuItem>;
-}
-
-const menuData: MenuData = rawMenuData as unknown as MenuData;
-
-const MENU: Menu = {
-    ...menuData,
-    itemsMap: new Map(menuData.menu.map((item) => {
-        return [item.name, item];
-    }))
-}
-
-// export class Menu {
-//     items: Array<MenuItem>;
-//     itemsMap: 
-//     constructor(menuItems: Array<MenuItem>) {
-//         this.items = menuItems;
-
-//     }
-// }
-
-
-// const menu: Array<MenuItem> = [
-//     {
-//         "name": "narratives",
-//         "label": "Navigator",
-//         "tooltip": "Narrative Navigator - browse and search Narratives",
-//         "type": "internal",
-//         "path": "narratives",
-//         "newWindow": false,
-//         "icon": "compass",
-//         "requiresAuth": true
-//     },
-//     {
-//         "name": "orgs",
-//         "type": "internal",
-//         "tooltip": "Browse, search, join and manage KBase Organizations",
-//         "path": "orgs",
-//         "newWindow": false,
-//         "label": "Orgs",
-//         "icon": "users",
-//         "requiresAuth": true
-//     },
-//     {
-//         "name": "catalog",
-//         "type": "internal",
-//         "tooltip": "Browse and search a catalog of KBase Narrative Apps and Workspace Types",
-//         "path": "catalog/apps",
-//         "newWindow": false,
-//         "label": "Catalog",
-//         "icon": "book",
-//         "requiresAuth": false,
-//         "syncHash": true
-//     },
-//     {
-//         "name": "search",
-//         "type": "internal",
-//         "tooltip": "Search KBase data objects in Narratives and Reference Workspaces",
-//         "path": "search",
-//         "newWindow": false,
-//         "label": "Search",
-//         "icon": "search",
-//         "requiresAuth": true
-//     },
-//     {
-//         "name": "jobbrowser",
-//         "type": "internal",
-//         "tooltip": "Browse and manage jobs spawned in your Narratives",
-//         "path": "jobbrowser",
-//         "newWindow": false,
-//         "label": "Jobs",
-//         "icon": "suitcase",
-//         "requiresAuth": true
-//     },
-//     {
-//         "name": "account",
-//         "type": "internal",
-//         "tooltip": "Manage your KBase Account",
-//         "path": "account",
-//         "newWindow": false,
-//         "label": "Account",
-//         "icon": "drivers-license",
-//         "requiresAuth": true
-//     },
-//     {
-//         "name": "feeds",
-//         "type": "internal",
-//         "tooltip": "Browse and manage notifications from your KBase Feeds",
-//         "path": "feeds",
-//         "newWindow": false,
-//         "label": "Feeds",
-//         "icon": "bullhorn",
-//         "requiresAuth": true,
-//         "renderBadge": () => {
-//             return <FeedsBadgeWrapper />;
-//         }
-//     }
-// ];
-
-
-// function routeToPath(route) {
-//     const path = [];
-//     if (route.route.path) {
-//         for (let i = 0; i < route.route.path.length; i += 1) {
-//             const pathElement = route.route.path[i];
-//             if (pathElement.type !== 'literal') {
-//                 break;
-//             }
-//             path.push(pathElement.value);
-//         }
-//     }
-//     return path.join('/');
-// }
+import { MENU } from '../menus/menu';
 
 export interface SidebarProps {
     authState: AuthenticationState;
@@ -144,7 +16,6 @@ export interface SidebarProps {
 }
 
 interface SidebarState {
-    // feedStatus: FeedsNotification | null;
     path: string;
 }
 

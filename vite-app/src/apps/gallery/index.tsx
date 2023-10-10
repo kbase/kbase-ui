@@ -14,7 +14,6 @@ export interface GalleryProps extends RouteProps {
 }
 
 export default class Gallery extends Component<GalleryProps> {
-
     componentDidMount() {
         this.props.setTitle('Component Gallery');
     }
