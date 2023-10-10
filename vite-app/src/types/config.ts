@@ -144,6 +144,11 @@ export interface CookieConfig {
     }
 }
 
+export interface DefaultPath {
+    type: 'hash' | 'path',
+    value: string
+}
+
 // export interface CookieConfig {
 //     name: string;
 //     domain: string | null;
@@ -232,10 +237,9 @@ export interface DeployConfig {
         //     sidebar: Menu;
         // };
         defaults: {
-            path: {
-                type: "path" | "hash";
-                value: string;
-            }
+            path: DefaultPath,
+            hideHeader: boolean,
+            hideNavigation: boolean
         }
     };
     services: {

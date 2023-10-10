@@ -410,8 +410,10 @@
         "defaults": {
             "path": {
                 "type": "path",
-                "value": "/narratives"
-            }
+                "value": "{{ default "/narratives" .Env.DEFAULT_PATH }}"
+            },
+            "hideHeader": {{ default "false" .Env.HIDE_HEADER }},
+            "hideNavigation": {{ default "false" .Env.HIDE_NAVIGATION }}
         }
     },
     "services": {

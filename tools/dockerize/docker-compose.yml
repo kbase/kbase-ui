@@ -5,5 +5,10 @@ services:
         image: powerman/dockerize
         container_name: dockerize
         dns: 8.8.8.8
+        environment:
+          - DEFAULT_PATH
+          - HIDE_HEADER
+          - HIDE_NAVIGATION
+          - deploy_name
         volumes:
             - $DIR:/app
