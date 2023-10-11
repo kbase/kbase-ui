@@ -6,12 +6,12 @@ import { Config } from 'types/config';
 
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import Well from 'components/Well';
+import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
 import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
 import { changeHash2 } from 'lib/navigation';
 import { Button } from 'react-bootstrap';
 import { LinkInfo, Model } from '../lib/Model';
 import { ErrorCode, ReturnInstruction } from '../lib/ORCIDLinkClient';
-import { ServiceError } from '../lib/ServiceClient';
 import View from './View';
 
 export interface HomeControllerProps {
@@ -72,58 +72,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
         const linkInfo = await model.getLinkInfo();
         return linkInfo;
-
-        // // TODO: combine all these calls into 1!
-        // //       or at least call them in parallel.
-
-        // const isLinked = await model.isLinked();
-
-        // if (!isLinked) {
-        //     return null;
-        // }
-
-        // const link = await model.getLink();
-
-        // const {
-        //     created_at,
-        //     orcid_auth: {
-        //         expires_in, orcid, scope
-        //     }
-        // } = link;
-
-        // // Name is the one stored from the original linking, may have changed.
-        // const profile = await model.getProfile();
-
-        // const realname = ((): string => {
-        //     if (profile.nameGroup.private) {
-        //         return '<private>';
-        //     }
-        //     const { fields: { firstName, lastName } } = profile.nameGroup;
-        //     if (lastName) {
-        //         return `${firstName} ${lastName}`
-        //     }
-        //     return firstName;
-        // })();
-
-        // const creditName = ((): string => {
-        //     if (profile.nameGroup.private) {
-        //         return '<private>';
-        //     }
-        //     if (!profile.nameGroup.fields.creditName) {
-        //         return '<n/a>';
-        //     }
-        //     return profile.nameGroup.fields.creditName;
-        // })();
-
-        // // normalize for ui:
-        // return {
-        //     createdAt: created_at,
-        //     expiresAt: Date.now() + expires_in * 1000,
-        //     realname,
-        //     creditName,
-        //     orcidID: orcid,
-        //     scope
-        // }
     }
 
     async getURL(): Promise<string> {
@@ -158,15 +106,15 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     handleError(ex: unknown) {
-        if (ex instanceof ServiceError) {
+        if (ex instanceof JSONRPC20Exception) {
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        code: ex.code,
+                        code: ex.error.code,
                         message: ex.message,
-                        title: ex.title || 'Error',
-                        data: ex.data
+                        title: 'Error',
+                        data: ex.error.data
                     }
                 }
             });
@@ -207,6 +155,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             });
         });
         try {
+
             // The user's ORCID Link
             const value = await this.fetchLink();
 
@@ -214,7 +163,8 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             const url = await this.getURL();
 
             // Link to the ORCID Link repo
-            const { 'service-description': { repoURL },
+            const {
+                'service-description': { repoURL },
                 runtime_info: {
                     orcid_api_url, orcid_oauth_url, orcid_site_url
                 } } = await this.getInfo();
@@ -226,6 +176,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 }
             });
         } catch (ex) {
+            console.error('ERROR', ex);
             this.handleError(ex);
         }
     }
@@ -236,7 +187,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     renderError(error: StandardError) {
         switch (error.code) {
-            case ErrorCode.authorization_required:
+            case ErrorCode.orcid_unauthorized_client:
                 return <Well variant="danger">
                     <Well.Header>
                         Error

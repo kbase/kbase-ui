@@ -1,4 +1,4 @@
-import { JSONObject } from 'lib/json';
+import { JSONValue } from 'lib/json';
 import { Component, PropsWithChildren } from 'react';
 import { Accordion } from 'react-bootstrap';
 import PresentableJSON from './PresentableJSON';
@@ -9,7 +9,7 @@ export interface StandardError {
     code: number;
     message: string;
     title?: string;
-    data?: JSONObject;
+    data?: JSONValue;
 }
 
 export type StandardErrorViewProps = PropsWithChildren<{

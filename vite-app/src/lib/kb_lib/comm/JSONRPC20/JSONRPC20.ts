@@ -36,10 +36,10 @@ export interface JSONPayload {
 }
 
 export interface JSONRPC20Error {
-    name: string;
+    // name: string;
     code: number;
     message: string;
-    error: JSONValue;
+    data: JSONValue;
 }
 
 export type JSONRPCError = JSONRPC20Error;
@@ -117,13 +117,13 @@ export class JSONRPCClient {
             try {
                 return JSON.parse(responseText) as JSONRPCResponse;
             } catch (ex) {
-                console.error('error', ex);
+                console.error('ERROR', ex);
                 throw new JSONRPC20Exception({
-                    name: 'parse error',
+                    // name: 'parse error',
                     code: 100,
                     message:
                         'The response from the service could not be parsed',
-                    error: {
+                    data: {
                         originalMessage:
                             ex instanceof Error ? ex.message : 'Unknown error',
                         responseText,
@@ -134,10 +134,10 @@ export class JSONRPCClient {
 
         if ('error' in rpcResponse) {
             throw new JSONRPC20Exception({
-                name: rpcResponse.error.name,
+                // name: rpcResponse.error.name,
                 code: rpcResponse.error.code,
                 message: rpcResponse.error.message,
-                error: rpcResponse.error.error,
+                data: rpcResponse.error.data,
             });
         }
 

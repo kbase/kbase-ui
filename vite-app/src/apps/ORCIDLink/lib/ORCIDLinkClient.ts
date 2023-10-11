@@ -52,18 +52,20 @@ export enum ErrorCode {
     authorization_required = 1010,
     not_authorized = 1011,
     not_found = 1020,  // something was not found
-    internal_server_error = 1030,
+    // internal_server_error = 1030,
     json_decode_error = 1040,
     content_type_error = 1041,
     upstream_error = 1050,
-    upstream_jsonrpc_error = 1051,
-    upstream_orcid_error = 1052,
-    fastapi_error = 1060,
-    request_validation_error = 1070,
-    linking_session_continue_invalid_param = 1080,
-    linking_session_error = 1081,
-    linking_session_already_linked_orcid = 1082,
-    impossible_error = 10099
+    // upstream_jsonrpc_error = 1051,
+    // upstream_orcid_error = 1052,
+    // fastapi_error = 1060,
+    // request_validation_error = 1070,
+    // linking_session_continue_invalid_param = 1080,
+    // linking_session_error = 1081,
+    // linking_session_already_linked_orcid = 1082,
+    // impossible_error = 10099
+    orcid_profile_name_private = 1100,
+    orcid_unauthorized_client = 1101
 
 }
 
