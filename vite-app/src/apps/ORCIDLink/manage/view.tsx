@@ -4,6 +4,7 @@ import { XCircle } from 'react-bootstrap-icons';
 import QueryLinkingSessionsContext from "./linkingSessions";
 import OverviewContext from "./overview";
 import QueryLinks from "./queryLinks/index";
+import ServiceInfoContext from "./serviceInfo";
 import './view.css';
 
 export interface ORCIDLinkManageProps {
@@ -84,7 +85,9 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                     <p>TO DO</p>
                 </Tab>
 
-
+                <Tab eventKey="serviceInfo" title="Service Info">
+                    <ServiceInfoContext />
+                </Tab>
 
                 {/* <Tab eventKey="tasks" title="Maintenance Tasks">
                     <ListGroup style={{ marginTop: '1rem' }}>

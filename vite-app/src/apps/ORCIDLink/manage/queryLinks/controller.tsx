@@ -1,4 +1,5 @@
 import ErrorMessage from "components/ErrorMessage";
+import Loading from "components/Loading";
 import { SimpleError } from "components/MainWindow";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
@@ -79,11 +80,15 @@ export default class QueryLinksController extends Component<QueryLinksController
         });
     }
 
+    renderLoading() {
+        return <Loading message="Loading links..." />
+    }
+
     render() {
         switch (this.state.manageState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return;
+                return this.renderLoading();
             case AsyncProcessStatus.ERROR:
                 return <ErrorMessage message={this.state.manageState.error.message} />
             case AsyncProcessStatus.SUCCESS:

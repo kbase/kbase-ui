@@ -7,6 +7,7 @@ import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
 import { Accordion, Button, Table } from "react-bootstrap";
 import { Gear } from "react-bootstrap-icons";
+import styles from './index.module.css';
 
 export interface QueryLinkingSessionsViewProps {
     linkingSessions: GetLinkingSessionsResult;
@@ -215,7 +216,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
         </Accordion>
     }
     render() {
-        return <div style={{ marginTop: '1rem' }}>
+        return <div style={{ marginTop: '1rem' }} className={styles.main}>
             {this.renderTools()}
             <h2 style={{ marginTop: '1rem' }}>Initial</h2>
             {this.renderInitial()}

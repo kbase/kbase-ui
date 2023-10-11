@@ -2,6 +2,7 @@ import { Tooltip } from "antd";
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
+import Empty from "components/Empty";
 import RelativeTimeClock from "components/RelativeTimeClock";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
@@ -34,7 +35,11 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
         </a>
     }
 
-    render() {
+    renderEmpty() {
+        return <Empty message="No links in the system!" />
+    }
+
+    renderLinks() {
         const columns: Array<ColumnDef<LinkRecordPublic>> = [
             {
                 id: 'username',
@@ -88,5 +93,19 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
         ]
         const dataSource: Array<LinkRecordPublic> = this.props.links;
         return <DataBrowser heights={{ header: 40, row: 40 }} columns={columns} dataSource={dataSource} />
+    }
+
+    renderState() {
+        if (this.props.links.length === 0) {
+            return this.renderEmpty();
+        }
+        return this.renderLinks();
+
+    }
+
+    render() {
+        return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', marginTop: '1rem' }}>
+            {this.renderState()}
+        </div>
     }
 }
