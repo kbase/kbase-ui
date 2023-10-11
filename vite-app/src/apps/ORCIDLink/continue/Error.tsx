@@ -5,7 +5,6 @@ import { Component } from 'react';
 import { Button, Col, Container, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon } from '../common';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
-import { ORCID_URL } from '../lib/constants';
 import { ContinueLinkingError, ErrorType } from './ContinueController';
 
 export interface ErrorViewProps {
@@ -15,7 +14,7 @@ export interface ErrorViewProps {
 }
 
 export default class ErrorView extends Component<ErrorViewProps> {
-    renderORCIDUserRecord({ orcid, name }: { orcid: string, name: string }) {
+    renderORCIDUserRecord({ orcid, name }: { orcid: string, name: string }, orcidSiteURL: string) {
         return (
             <Well variant="light">
                 <Well.Body>
@@ -24,7 +23,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                             <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">ORCID® iD</Col>
                             <Col md="auto">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcid}`} target="_blank">
+                                    <a href={`${orcidSiteURL}/${orcid}`} target="_blank">
                                         {renderORCIDIcon()}
                                         {orcid}
                                     </a>
@@ -98,22 +97,22 @@ export default class ErrorView extends Component<ErrorViewProps> {
             case ErrorType.ALREADY_LINKED:
                 return <div>
                     <p>Your KBase account is already linked to the following ORCID® account:</p>
-                    {this.renderORCIDUserRecord(this.props.error.link.orcid_auth)}
+                    {this.renderORCIDUserRecord(this.props.error.link.orcid_auth, this.props.error.serviceInfo.runtime_info.orcid_site_url)}
                     <p style={{ marginTop: '1em' }}>Each KBase account may only be linked to a single ORCID® account.</p>
                     <p>Conversely, an ORCID® account may be linked to only one KBase account.</p>
                 </div>
-            case ErrorType.ORCID_ALREADY_LINKED:
-                return <div>
-                    <p>A KBase account is already linked to the KBase ORCID® Link you have selected.</p>
+            // case ErrorType.ORCID_ALREADY_LINKED:
+            //     return <div>
+            //         <p>A KBase account is already linked to the KBase ORCID® Link you have selected.</p>
 
-                    <p>The ORCID® Account is:</p>
-                    {this.renderORCIDUserRecord(this.props.error.info.orcid)}
+            //         <p>The ORCID® Account is:</p>
+            //         {this.renderORCIDUserRecord(this.props.error.info.orcid)}
 
-                    <p className="mt-3">The KBase account is:</p>
-                    {this.renderMiniUserProfile(this.props.error.info.kbase.userProfile)}
-                    <p style={{ marginTop: '1em' }}>An ORCID® account may be linked to only a single KBase account.</p>
-                    <p>Conversely, a KBase account may only be linked to a single ORCID® Account.</p>
-                </div>
+            //         <p className="mt-3">The KBase account is:</p>
+            //         {this.renderMiniUserProfile(this.props.error.info.kbase.userProfile)}
+            //         <p style={{ marginTop: '1em' }}>An ORCID® account may be linked to only a single KBase account.</p>
+            //         <p>Conversely, a KBase account may only be linked to a single ORCID® Account.</p>
+            //     </div>
             case ErrorType.FETCH_LINK_SESSION_ERROR:
                 return <div>
                     {this.props.error.message}

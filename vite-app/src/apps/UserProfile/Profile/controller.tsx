@@ -4,7 +4,7 @@ import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
-import ORCIDLinkAPI from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import ORCIDLinkAPI, { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { Component } from "react";
 import { Config } from "types/config";
 import {
@@ -20,6 +20,7 @@ import ProfileViewer from "./ProfileViewer";
 
 export type ORCIDView = {
     orcidId: string | null;
+    serviceInfo: InfoResult;
 }
 
 export interface SimpleError {
@@ -281,41 +282,50 @@ export default class ProfileController extends Component<ProfileControllerProps,
             const orcidLinkURL = new URL(baseURL);
             orcidLinkURL.pathname = '/services/orcidlink';
 
-            const { orcid_auth: { orcid: orcidId } } = await new ORCIDLinkAPI({
+            const orcidLinkAPI = new ORCIDLinkAPI({
                 url: `${orcidLinkURL.toString()}/api/v1`,
                 timeout: SERVICE_CALL_TIMEOUT,
                 token
-            }).getOtherLink({ username });
+            });
 
-            this.setState({
-                orcidState: {
-                    status: AsyncProcessStatus.SUCCESS,
-                    value: {
-                        orcidId
+            const serviceInfo = await orcidLinkAPI.info();
+
+            try {
+                const { orcid_auth: { orcid: orcidId } } = await orcidLinkAPI.getOtherLink({ username });
+                this.setState({
+                    orcidState: {
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: {
+                            orcidId, serviceInfo
+                        }
+                    }
+                })
+            } catch (ex) {
+                if (ex instanceof JSONRPC20Exception) {
+                    if (ex.error.code === ErrorCode.not_found) {
+                        this.setState({
+                            orcidState: {
+                                status: AsyncProcessStatus.SUCCESS,
+                                value: {
+                                    orcidId: null, serviceInfo
+                                }
+                            }
+                        })
+                        return;
                     }
                 }
-            })
+                throw ex;
+            }
         } catch (ex) {
             if (ex instanceof JSONRPC20Exception) {
-                if (ex.error.code === ErrorCode.not_found) {
-                    this.setState({
-                        orcidState: {
-                            status: AsyncProcessStatus.SUCCESS,
-                            value: {
-                                orcidId: null
-                            }
+                this.setState({
+                    orcidState: {
+                        status: AsyncProcessStatus.ERROR,
+                        error: {
+                            message: ex.message
                         }
-                    })
-                } else {
-                    this.setState({
-                        orcidState: {
-                            status: AsyncProcessStatus.ERROR,
-                            error: {
-                                message: ex.message
-                            }
-                        }
-                    });
-                }
+                    }
+                });
             } else if (ex instanceof Error) {
                 this.setState({
                     orcidState: {

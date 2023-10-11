@@ -28,8 +28,6 @@ export const timeParts: { [timePart: string]: { normal: string, compact: string,
     },
 }
 
-
-
 function niceRelativeTimeRange({
     at,
     now,

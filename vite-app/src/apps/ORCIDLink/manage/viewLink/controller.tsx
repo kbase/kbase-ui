@@ -2,6 +2,7 @@ import ErrorMessage from "components/ErrorMessage";
 import { SimpleError } from "components/MainWindow";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
 import { Config } from "types/config";
@@ -16,7 +17,8 @@ export interface ViewLinkControllerProps {
 }
 
 export interface ViewLinkState {
-    link: LinkRecordPublic
+    link: LinkRecordPublic;
+    serviceInfo: InfoResult;
 }
 
 interface ViewLinkControllerState {
@@ -48,12 +50,13 @@ export default class ViewLinkController extends Component<ViewLinkControllerProp
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
         const link = await model.manageGetLink(this.props.username);
+        const serviceInfo = await model.getInfo();
 
         this.setState({
             manageState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    link
+                    link, serviceInfo
                 }
             }
         });
@@ -67,7 +70,9 @@ export default class ViewLinkController extends Component<ViewLinkControllerProp
             case AsyncProcessStatus.ERROR:
                 return <ErrorMessage message={this.state.manageState.error.message} />
             case AsyncProcessStatus.SUCCESS:
-                return <ViewLinkView link={this.state.manageState.value.link} />
+                return <ViewLinkView
+                    link={this.state.manageState.value.link}
+                    orcidSiteURL={this.state.manageState.value.serviceInfo.runtime_info.orcid_site_url} />
         }
 
     }

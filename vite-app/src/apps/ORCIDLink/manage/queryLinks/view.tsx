@@ -1,7 +1,6 @@
 import { Tooltip } from "antd";
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 
-import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
 import RelativeTimeClock from "components/RelativeTimeClock";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
@@ -11,6 +10,7 @@ import { Button } from "react-bootstrap";
 
 export interface ORCIDLinkManageProps {
     links: Array<LinkRecordPublic>
+    orcidServiceURL: string;
     viewLink: (linkId: string) => void;
 }
 
@@ -18,18 +18,20 @@ interface ORCIDLinkManageState {
 
 }
 
-function renderORCIDLink(orcidId: string) {
-    return <a href={`${ORCID_URL}/${orcidId}`} target="_blank">
-        {renderORCIDIcon()}
-        {ORCID_URL}/{orcidId}
-    </a>
-}
+
 
 export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
 
     viewLink(username: string) {
         const url = `/#orcidlink/manage/link/${username}`;
         window.open(url, '_blank');
+    }
+
+    renderORCIDLink(orcidId: string) {
+        return <a href={`${this.props.orcidServiceURL}/${orcidId}`} target="_blank">
+            {renderORCIDIcon()}
+            {this.props.orcidServiceURL}/{orcidId}
+        </a>
     }
 
     render() {
@@ -47,9 +49,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                 label: 'ORCID® iD',
                 flex: '2 0 0',
                 render: (linkRecord: LinkRecordPublic) => {
-                    return renderORCIDLink(linkRecord.orcid_auth.orcid);
-                    // return <a href={`ORCID_URL/${linkRecord.orcid_auth.orcid}`} target="_blank">{linkRecord.orcid_auth.orcid}</a>
-                    // linkRecord.orcid_auth.orcid;
+                    return this.renderORCIDLink(linkRecord.orcid_auth.orcid);
                 }
             },
             {

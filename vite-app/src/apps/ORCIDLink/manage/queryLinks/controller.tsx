@@ -2,6 +2,7 @@ import ErrorMessage from "components/ErrorMessage";
 import { SimpleError } from "components/MainWindow";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import Poller, { makePoller } from "lib/poller";
 import { Component } from "react";
@@ -17,6 +18,7 @@ export interface QueryLinksControllerProps {
 
 export interface QueryLinksState {
     links: Array<LinkRecordPublic>
+    serviceInfo: InfoResult
 }
 
 interface QueryLinksControllerState {
@@ -66,11 +68,12 @@ export default class QueryLinksController extends Component<QueryLinksController
     async loadData() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         const { links } = await model.manageQueryLinks({});
+        const serviceInfo = await model.getInfo();
         this.setState({
             manageState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    links
+                    links, serviceInfo
                 }
             }
         });
@@ -86,7 +89,9 @@ export default class QueryLinksController extends Component<QueryLinksController
             case AsyncProcessStatus.SUCCESS:
                 return <ORCIDLinkManageView
                     links={this.state.manageState.value.links}
-                    viewLink={this.props.viewLink} />
+                    viewLink={this.props.viewLink}
+                    orcidServiceURL={this.state.manageState.value.serviceInfo.runtime_info.orcid_site_url}
+                />
         }
 
     }

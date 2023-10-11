@@ -11,6 +11,7 @@ import styles from './ViewLink.module.css';
 
 export interface AlreadyLinkedProps {
     link: LinkInfo
+    orcidSiteURL: string;
     returnInstruction?: ReturnInstruction;
     returnFromWhence: () => void;
 }
@@ -40,7 +41,7 @@ export default class AlreadyLinked extends Component<AlreadyLinkedProps> {
                         Your KBase account is already linked to an ORCID® account.
                     </p>
 
-                    <LinkInfoView link={this.props.link} />
+                    <LinkInfoView link={this.props.link} orcidSiteURL={this.props.orcidSiteURL} />
                     <p style={{ marginTop: '1em' }}>
                         Each KBase account may have only a single ORCID® iD linked. Conversely, an ORCID® iD may
                         only be linked to one KBase account.

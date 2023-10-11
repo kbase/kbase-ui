@@ -23,7 +23,6 @@ import { changeHash2 } from 'lib/navigation';
 import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
 import { UserProfileAffiliation } from '../API';
-import { ORCID_URL } from '../constants';
 import Area from './Area';
 import Orgs from './Orgs/controller';
 import './Profile.css';
@@ -222,7 +221,7 @@ function ProfileViewer(props: ProfileProps) {
         return statement;
     }
 
-    function renderAffiliationsView() {
+    function renderAffiliations() {
         const affiliations = props.profileView.profile.userdata.affiliations;
 
         // non-empty array
@@ -283,10 +282,6 @@ function ProfileViewer(props: ProfileProps) {
                 </tbody>
             </table>
         );
-    }
-
-    function renderAffiliations() {
-        return renderAffiliationsView();
     }
 
     /**
@@ -547,25 +542,25 @@ function ProfileViewer(props: ProfileProps) {
             style={{ height: '24px', marginRight: '0.25em', flex: '0 0 auto' }} />
     }
 
-    function renderORCIDIdLink(orcidId: string) {
-        return <Link href={`${ORCID_URL}/${orcidId}`} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    function renderORCIDIdLink(orcidId: string, orcidSiteURL: string) {
+        return <Link href={`${orcidSiteURL}/${orcidId}`} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             {renderORCIDIcon()}
             <div style={{ flex: '1 1 0' }}>
-                {ORCID_URL}/{orcidId}
+                {orcidSiteURL}/{orcidId}
             </div>
         </Link>;
     }
 
-    function renderORCIDIdLinkView(orcidId: string) {
+    function renderORCIDIdLinkView(orcidId: string, orcidSiteURL: string) {
         if (!props.profileView.profile.preferences?.showORCIDId.value) {
             return;
         }
-        return renderORCIDIdLink(orcidId);
+        return renderORCIDIdLink(orcidId, orcidSiteURL);
     }
 
-    function renderORCIDId(orcidId: string | null) {
+    function renderORCIDId(orcidId: string | null, orcidSiteURL: string) {
         if (orcidId) {
-            return renderORCIDIdLinkView(orcidId);
+            return renderORCIDIdLinkView(orcidId, orcidSiteURL);
         }
     }
 
@@ -597,7 +592,7 @@ function ProfileViewer(props: ProfileProps) {
                             ORCID® iD
                         </th>
                         <td>
-                            {renderORCIDId(orcidState.value.orcidId)}
+                            {renderORCIDId(orcidState.value.orcidId, orcidState.value.serviceInfo.runtime_info.orcid_site_url)}
                         </td>
                     </tr>
                 }
@@ -699,14 +694,14 @@ function ProfileViewer(props: ProfileProps) {
                             {renderResearchInterests()}
                         </Area>
                     </Col>
-                    <Col span={10} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col span={showORCIDId() ? 8 : 10} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Area title='Organizations' scroll="auto">
                             <Orgs orgsState={props.orgsState} />
                         </Area>
                     </Col>
                 </Row>
                 <Row gutter={8} style={{ marginTop: '1rem' }}>
-                    <Col span={7} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col span={6} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Area >
                             {renderUserNutshell()}
                         </Area>
@@ -716,7 +711,7 @@ function ProfileViewer(props: ProfileProps) {
                             {renderResearchStatement()}
                         </Area>
                     </Col>
-                    <Col span={showORCIDId() ? 10 : 12} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col span={9} style={{ display: 'flex', flexDirection: 'column' }}>
                         <Area title='Affiliations'>
                             {renderAffiliations()}
                         </Area>

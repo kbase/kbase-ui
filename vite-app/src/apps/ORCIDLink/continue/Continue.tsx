@@ -9,7 +9,6 @@ import { Alert, Button, Col, Container, Form, Row, Spinner, Stack } from 'react-
 import { CheckLg } from 'react-bootstrap-icons';
 import { renderORCIDIcon, renderScope } from '../common';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
-import { ORCID_URL } from '../lib/constants';
 import styles from './Continue.module.css';
 import { CreateLinkState } from './ContinueController';
 
@@ -18,7 +17,8 @@ export interface ContinueProps {
     showInProfile: boolean;
     setShowInProfile: (show: boolean) => void;
     returnInstruction?: ReturnInstruction;
-    createLinkState: CreateLinkState
+    createLinkState: CreateLinkState;
+    orcidSiteURL: string;
     confirmLink: () => Promise<void>;
     cancelLink: () => Promise<void>;
     onExpired: () => void;
@@ -37,9 +37,9 @@ export default class Continue extends Component<ContinueProps> {
                             <div className={`flex-col ${styles['-col1']}`} style={{ flex: '0 0 5rem' }}>ORCID® iD</div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcid}`} target="_blank">
+                                    <a href={`${this.props.orcidSiteURL}/${orcid}`} target="_blank">
                                         {renderORCIDIcon()}
-                                        {ORCID_URL}/{orcid}
+                                        {this.props.orcidSiteURL}/{orcid}
                                     </a>
                                 </div>
                             </div>

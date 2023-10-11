@@ -15,6 +15,7 @@ export interface ViewProps {
     isManager: boolean;
     docURL: string;
     repoURL: string;
+    orcidSiteURL: string;
     revoke: () => void
 }
 
@@ -139,7 +140,7 @@ export default class View extends Component<ViewProps> {
     // INFO
 
     renderLinked(link: LinkInfo) {
-        return <LinkView link={link} />
+        return <LinkView link={link} orcidSiteURL={this.props.orcidSiteURL} />
     }
 
     renderUnlinked() {
@@ -189,7 +190,7 @@ export default class View extends Component<ViewProps> {
                 </p>
 
                 <p>Please note that after you remove the link at KBase, you may also
-                    want to <a href="https://sandbox.orcid.org/trusted-parties" target="_blank" rel="noreferrer">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
+                    want to <a href={`${this.props.orcidSiteURL}/trusted-parties`} target="_blank" rel="noreferrer">revoke the permissions granted to KBase at ORCID®</a> as well.</p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
                 <Button variant="outline-danger" onClick={this.props.revoke}>

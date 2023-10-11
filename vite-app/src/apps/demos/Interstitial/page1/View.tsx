@@ -1,5 +1,5 @@
 import { ORCIDBiographyFieldGroup, ORCIDFieldGroup, ORCIDNameFieldGroup } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
-import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
+// import { ORCID_URL } from 'apps/ORCIDLink/lib/constants';
 import Well from 'components/Well';
 import { Component, ReactNode } from 'react';
 import { Alert, Button } from 'react-bootstrap';
@@ -194,7 +194,7 @@ export default class View extends Component<ViewProps, ViewState> {
                                 </div>
                                 <div className="flex-col -col2">
                                     <div className="flex-row" style={{ alignItems: 'center' }}>
-                                        <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
+                                        <a href={`FIX_ME/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
                                             {renderORCIDIcon()}
                                             {orcidProfile.orcidId}
                                         </a>
@@ -251,7 +251,7 @@ export default class View extends Component<ViewProps, ViewState> {
                             </div>
                             <div className="flex-col -col2">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
+                                    <a href={`FIX_ME/${orcidProfile.orcidId}`} target="_blank" rel="noreferrer">
                                         {renderORCIDIcon()}
                                         {orcidProfile.orcidId}
                                     </a>

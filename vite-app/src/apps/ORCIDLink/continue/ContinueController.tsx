@@ -2,7 +2,7 @@ import Loading from "components/Loading";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
-import { LinkingSessionPublicComplete } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import { InfoResult, LinkingSessionPublicComplete } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
 import { changeHash2 } from "lib/navigation";
 import { Component } from "react";
@@ -34,13 +34,14 @@ export interface ErrorBase {
 
 export enum ErrorType {
     ALREADY_LINKED = "ALREADY LINKED",
-    ORCID_ALREADY_LINKED = "ORCID ALREADY LINKED",
+    // ORCID_ALREADY_LINKED = "ORCID ALREADY LINKED",
     FETCH_LINK_SESSION_ERROR = "FETCH LINK SESSION ERROR",
     SESSION_EXPIRED = "SESSION_EXPIRED"
 }
 
 export interface AlreadyLinkedError extends ErrorBase {
     type: ErrorType.ALREADY_LINKED,
+    serviceInfo: InfoResult,
     link: LinkRecordPublic
 }
 
@@ -56,10 +57,10 @@ export interface MinimalORCIDAccountInfo {
     }
 }
 
-export interface ORCIDAlreadyLinkedError extends ErrorBase {
-    type: ErrorType.ORCID_ALREADY_LINKED,
-    info: MinimalORCIDAccountInfo
-}
+// export interface ORCIDAlreadyLinkedError extends ErrorBase {
+//     type: ErrorType.ORCID_ALREADY_LINKED,
+//     info: MinimalORCIDAccountInfo
+// }
 
 
 export interface FetchLinkSessionError extends ErrorBase {
@@ -72,16 +73,21 @@ export interface SessionExpiredError extends ErrorBase {
 
 export type ContinueLinkingError =
     AlreadyLinkedError |
-    ORCIDAlreadyLinkedError |
+    // ORCIDAlreadyLinkedError |
     FetchLinkSessionError |
     SessionExpiredError;
 
-export type ContinueLinkingState = AsyncProcess<LinkingSessionPublicComplete, ContinueLinkingError>;
+export interface ContinueLinkingState {
+    linkingSession: LinkingSessionPublicComplete;
+    serviceInfo: InfoResult
+}
+
+export type ContinueLinkingStateProcess = AsyncProcess<ContinueLinkingState, ContinueLinkingError>;
 
 export type CreateLinkState = AsyncProcess<true, { message: string }>;
 
 interface ContinueControllerState {
-    continueState: ContinueLinkingState
+    continueState: ContinueLinkingStateProcess
     createLinkState: CreateLinkState
     showInProfile: boolean;
 }
@@ -123,6 +129,7 @@ export default class ContinueController extends Component<ContinueControllerProp
 
         try {
             const link = await model.getLink();
+            const serviceInfo = await model.getInfo();
             if (link) {
                 this.setState({
                     continueState: {
@@ -130,7 +137,8 @@ export default class ContinueController extends Component<ContinueControllerProp
                         error: {
                             type: ErrorType.ALREADY_LINKED,
                             message: 'Already linked; each user may have a single KBase ORCID® Link',
-                            link
+                            link,
+                            serviceInfo
                         }
                     }
                 });
@@ -178,30 +186,13 @@ export default class ContinueController extends Component<ContinueControllerProp
         }
 
         try {
-            // if (linkingSession.kind !== 'complete') {
-            //     this.setState({
-            //         continueState: {
-            //             status: AsyncProcessStatus.ERROR,
-            //             error: {
-            //                 message: `Incorrect linking session state, expected "complete", have "${linkingSession.kind}"`
-            //             }
-            //         }
-            //     })
-            // } else {
-            //     this.setState({
-            //         continueState: {
-            //             status: AsyncProcessStatus.SUCCESS,
-            //             value: linkingSession
-            //         }
-            //     });
-            // }
-
             const linkingSession = await model.fetchLinkingSession(this.props.linkingSessionId);
+            const serviceInfo = await model.getInfo();
 
             this.setState({
                 continueState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: linkingSession
+                    value: { linkingSession, serviceInfo }
                 }
             });
         } catch (ex) {
@@ -294,7 +285,6 @@ export default class ContinueController extends Component<ContinueControllerProp
             const model = new Model({ config: this.props.config, auth: this.props.auth });
 
             await model.confirmLink(this.props.linkingSessionId);
-
             await model.setShowORCIDIdPreference(this.state.showInProfile);
 
             // const response = await fetch(`${FINISH_LINK_URL}/${this.props.token}`, {
@@ -415,7 +405,7 @@ export default class ContinueController extends Component<ContinueControllerProp
         this.handleReturnLink();
     }
 
-    renderSuccess(linkingSession: LinkingSessionPublicComplete) {
+    renderSuccess({ linkingSession, serviceInfo }: ContinueLinkingState) {
         return <Continue
             linkingSession={linkingSession}
             returnInstruction={this.props.returnInstruction}
@@ -425,6 +415,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             showInProfile={this.state.showInProfile}
             setShowInProfile={this.setShowInProfile.bind(this)}
             onExpired={this.onExpired.bind(this)}
+            orcidSiteURL={serviceInfo.runtime_info.orcid_site_url}
         />;
     }
 

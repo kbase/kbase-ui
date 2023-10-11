@@ -3,11 +3,11 @@ import { Component } from 'react';
 import { Col, Row, Stack } from 'react-bootstrap';
 import { renderORCIDIcon, renderScope } from '../common';
 
-import { ORCID_URL } from '../lib/constants';
 import { LinkInfo } from '../lib/Model';
 
 export interface LinkViewProps {
     link: LinkInfo;
+    orcidSiteURL: string;
 }
 
 const LABEL_COL_STYLE: React.CSSProperties = {
@@ -16,9 +16,9 @@ const LABEL_COL_STYLE: React.CSSProperties = {
 
 export default class LinkView extends Component<LinkViewProps> {
     renderORCIDId(link: LinkInfo) {
-        return <a href={`${ORCID_URL}/${link.orcidID}`} target="_blank" rel="noreferrer">
+        return <a href={`${this.props.orcidSiteURL}/${link.orcidID}`} target="_blank" rel="noreferrer">
             {renderORCIDIcon()}
-            {ORCID_URL}/{link.orcidID}
+            {this.props.orcidSiteURL}/{link.orcidID}
         </a>
     }
     render() {

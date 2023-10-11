@@ -1,5 +1,4 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
-import { ORCID_URL } from "apps/ORCIDLink/lib/constants";
 import Well from "components/Well";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
@@ -10,6 +9,7 @@ import styles from './view.module.css';
 
 export interface ORCIDLinkManageProps {
     link: LinkRecordPublic
+    orcidSiteURL: string;
 }
 
 interface ORCIDLinkManageState {
@@ -27,7 +27,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                         </div>
                         <div className="flex-col -col2">
                             <div className="flex-row" style={{ alignItems: 'center' }}>
-                                <a href={`${ORCID_URL}/${this.props.link.orcid_auth.orcid}`} target="_blank">
+                                <a href={`${this.props.orcidSiteURL}/${this.props.link.orcid_auth.orcid}`} target="_blank">
                                     {renderORCIDIcon()}
                                     {this.props.link.orcid_auth.orcid}
                                 </a>
@@ -86,7 +86,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             <Well.Body>
                 <Stack gap={2}>
                     <Button href={`/#people/${this.props.link.username}`} target="_blank" variant="secondary">View KBase User Profile</Button>
-                    <Button href={`${ORCID_URL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View ORCID® Profile</Button>
+                    <Button href={`${this.props.orcidSiteURL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View ORCID® Profile</Button>
                 </Stack>
             </Well.Body>
         </Well>

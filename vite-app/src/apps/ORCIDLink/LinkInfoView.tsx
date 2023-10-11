@@ -2,13 +2,11 @@ import Well from 'components/Well';
 import { Component } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { renderORCIDIcon } from './common';
-
-
-import { ORCID_URL } from './lib/constants';
 import { LinkInfo } from './lib/Model';
 
 export interface LinkInfoViewProps {
     link: LinkInfo;
+    orcidSiteURL: string
 }
 
 export default class LinkInfoView extends Component<LinkInfoViewProps> {
@@ -24,7 +22,7 @@ export default class LinkInfoView extends Component<LinkInfoViewProps> {
                             <Col md={3}>ORCID® iD</Col>
                             <Col md={9}>
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`${ORCID_URL}/${orcidID}`} target="_blank">
+                                    <a href={`${this.props.orcidSiteURL}/${orcidID}`} target="_blank">
                                         {renderORCIDIcon()}
                                         {orcidID}
                                     </a>

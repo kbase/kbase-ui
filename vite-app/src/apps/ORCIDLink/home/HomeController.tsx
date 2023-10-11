@@ -6,6 +6,7 @@ import { Config } from 'types/config';
 
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import Well from 'components/Well';
+import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
 import { changeHash2 } from 'lib/navigation';
 import { Button } from 'react-bootstrap';
 import { LinkInfo, Model } from '../lib/Model';
@@ -35,11 +36,20 @@ export interface GetNameResult {
 
 export type RevokeResult = null;
 
+export interface LinkState {
+    link: LinkInfo | null,
+    url: string,
+    repoURL: string,
+    orcid_api_url: string,
+    orcid_oauth_url: string
+    orcid_site_url: string
+}
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null, url: string, repoURL: string }, StandardError>
+
+export type LinkStateProcess = AsyncProcess<LinkState, StandardError>
 
 interface HomeControllerState {
-    linkState: LinkState
+    linkState: LinkStateProcess
 }
 
 export default class HomeController extends Component<HomeControllerProps, HomeControllerState> {
@@ -121,10 +131,9 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         return model.getDocURL();
     }
 
-    async getRepoURL(): Promise<string> {
+    async getInfo(): Promise<InfoResult> {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        const { 'service-description': { repoURL } } = await model.getInfo();
-        return repoURL;
+        return model.getInfo();
     }
 
 
@@ -205,12 +214,15 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             const url = await this.getURL();
 
             // Link to the ORCID Link repo
-            const repoURL = await this.getRepoURL();
+            const { 'service-description': { repoURL },
+                runtime_info: {
+                    orcid_api_url, orcid_oauth_url, orcid_site_url
+                } } = await this.getInfo();
 
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value, url, repoURL }
+                    value: { link: value, url, repoURL, orcid_api_url, orcid_oauth_url, orcid_site_url }
                 }
             });
         } catch (ex) {
@@ -257,7 +269,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     }
 
-    renderSuccess({ link, url, repoURL }: { link: LinkInfo | null, url: string, repoURL: string }) {
+    renderSuccess({ link, url, repoURL, orcid_site_url }: LinkState) {
         const isDeveloper = this.props.auth.authInfo.account.roles.some((role) => {
             return role.id === 'DevToken'
         });
@@ -266,7 +278,14 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             return role === 'orcidlink_admin'
         });
 
-        return <View link={link} revoke={this.revokeLink.bind(this)} isDeveloper={isDeveloper} isManager={isManager} docURL={url} repoURL={repoURL} />
+        return <View link={link}
+            revoke={this.revokeLink.bind(this)}
+            isDeveloper={isDeveloper}
+            isManager={isManager}
+            docURL={url}
+            repoURL={repoURL}
+            orcidSiteURL={orcid_site_url}
+        />
     }
 
     render() {

@@ -65,11 +65,17 @@ export interface GitInfo {
     tag: string | null;
 }
 
+export interface RuntimeInfo {
+    current_time: number;
+    orcid_api_url: string;
+    orcid_oauth_url: string;
+    orcid_site_url: string;
+}
+
 export interface InfoResult {
     'service-description': ServiceDescription;
-    config: Config;
     'git-info': GitInfo
-
+    runtime_info: RuntimeInfo
 }
 
 export interface ErrorInfo {

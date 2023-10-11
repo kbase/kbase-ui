@@ -6,6 +6,7 @@ import { Component } from 'react';
 import { Config } from 'types/config';
 
 import { SimpleError } from 'components/MainWindow';
+import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
 import { LinkInfo, Model } from '../lib/Model';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import AlreadyLinked from './AlreadyLinked';
@@ -40,13 +41,17 @@ export interface GetNameResult {
 
 export type RevokeResult = null;
 
+export interface LinkState {
+    link: LinkInfo | null,
+    serviceInfo: InfoResult
+}
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
+export type LinkStateProcess = AsyncProcess<LinkState, { message: string }>
 
 export type StartLinkState = AsyncProcess<true, SimpleError>
 
 interface LinkControllerState {
-    linkState: LinkState;
+    linkState: LinkStateProcess;
     startLinkState: StartLinkState
     // started: boolean;
 }
@@ -75,13 +80,20 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async revokeLink() {
+        if (this.state.linkState.status !== AsyncProcessStatus.SUCCESS) {
+            return;
+        }
+
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.deleteLink();
 
         this.setState({
             linkState: {
                 status: AsyncProcessStatus.SUCCESS,
-                value: { link: null }
+                value: {
+                    ...this.state.linkState.value,
+                    link: null
+                }
             }
         });
 
@@ -138,11 +150,15 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
             });
         });
         try {
-            const value = await this.fetchLink();
+            const model = new Model({ config: this.props.config, auth: this.props.auth });
+
+            const linkInfo = await model.getLinkInfo()
+            const serviceInfo = await model.getInfo();
+
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value }
+                    value: { link: linkInfo, serviceInfo }
                 }
             });
         } catch (ex) {
@@ -196,7 +212,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         }
     }
 
-    renderSuccess({ link }: { link: LinkInfo | null }) {
+    renderSuccess({ link, serviceInfo: { runtime_info: { orcid_site_url } } }: LinkState) {
         if (link === null) {
             return <CreateLink
                 start={this.startLink.bind(this)}
@@ -209,6 +225,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         return <AlreadyLinked
             link={link}
             returnInstruction={this.props.returnInstruction}
+            orcidSiteURL={orcid_site_url}
             returnFromWhence={this.returnFromWhence.bind(this)}
         />;
     }
