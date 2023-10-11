@@ -7,6 +7,7 @@ import { Config } from 'types/config';
 
 import { LinkInfo, Model } from '../../ORCIDLink/lib/Model';
 // import { ReturnLink } from '../RequestDOI/Model';
+import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
 import Demos from './Home';
 
 
@@ -38,11 +39,15 @@ export interface GetNameResult {
 
 export type RevokeResult = null;
 
+export interface LinkState {
+    link: LinkInfo | null,
+    serviceInfo: InfoResult
+}
 
-export type LinkState = AsyncProcess<{ link: LinkInfo | null }, { message: string }>
+export type LinkStateProcess = AsyncProcess<LinkState, { message: string }>
 
 interface HomeControllerState {
-    linkState: LinkState
+    linkState: LinkStateProcess
 }
 
 export default class HomeController extends Component<HomeControllerProps, HomeControllerState> {
@@ -128,11 +133,14 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             });
         });
         try {
-            const value = await this.fetchLink();
+            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const linkInfo = await model.getLinkInfo();
+            const serviceInfo = await model.getInfo();
+
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value }
+                    value: { link: linkInfo, serviceInfo }
                 }
             });
         } catch (ex) {
@@ -166,8 +174,8 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
         return <ErrorAlert message={message} />
     }
 
-    renderSuccess({ link }: { link: LinkInfo | null }) {
-        return <Demos link={link} />
+    renderSuccess({ link, serviceInfo }: LinkState) {
+        return <Demos link={link} orcidSiteURL={serviceInfo.runtime_info.orcid_site_url} />
     }
 
     render() {

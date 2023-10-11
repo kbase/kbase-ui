@@ -7,6 +7,7 @@ import { Accordion, Col, ListGroup, Nav, Row, Stack } from 'react-bootstrap';
 
 export interface ViewProps {
     link: LinkInfo | null;
+    orcidSiteURL: string;
 }
 
 export default class View extends Component<ViewProps> {
@@ -123,7 +124,7 @@ export default class View extends Component<ViewProps> {
     }
 
     renderLinkInfo(link: LinkInfo) {
-        return <LinkView link={link} />
+        return <LinkView link={link} orcidSiteURL={this.props.orcidSiteURL} />
     }
 
 
