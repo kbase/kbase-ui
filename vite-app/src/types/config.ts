@@ -88,31 +88,48 @@ export interface DynamicServiceConfig {
     version: "auto" | "dev" | "beta" | "release";
 }
 
+// export interface GitInfo {
+//     commitHash: string;
+//     commitAbbreviatedHash: string;
+//     authorName: string;
+//     authorDate: string;
+//     committerName: string;
+//     committerDate: string;
+//     reflogSelector: string;
+//     subject: string;
+//     commitNotes: string;
+//     originUrl: string;
+//     branch: string;
+//     tag: string;
+//     version: string;
+// }
+
 export interface GitInfo {
-    commitHash: string;
-    commitAbbreviatedHash: string;
-    authorName: string;
-    authorDate: string;
-    committerName: string;
-    committerDate: string;
-    reflogSelector: string;
-    subject: string;
-    commitNotes: string;
-    originUrl: string;
-    branch: string;
-    tag: string;
-    version: string;
+    hash: {
+        full: string
+        abbreviated: string
+    }
+    subject: string
+    notes: string
+    author: {
+        name: string
+        date: string
+    }
+    committer: {
+        name: string
+        date: string
+    },
+    originURL: string
+    account: string
+    repoName: string
+    branch: string
+    tag?: string
+    version?: string
 }
 
 export type ISODateTimeString = string;
 
 export interface BuildInfo {
-    target: string;
-    stats: {
-        start: number;
-    };
-    git: GitInfo;
-    hostInfo: string | null;
     builtAt: number;
 }
 
@@ -270,6 +287,7 @@ export interface DeployConfig {
 }
 
 export interface Config extends DeployConfig {
-    build: BuildInfo;
+    buildInfo: BuildInfo;
+    gitInfo: GitInfo;
     plugins: Array<PluginInfo>;
 }

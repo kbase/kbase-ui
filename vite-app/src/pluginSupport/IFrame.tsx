@@ -1,7 +1,24 @@
 import { Component } from 'react';
 import * as uuid from 'uuid';
-import { BuildInfo, Config } from '../types/config';
+import { Config, GitInfo } from '../types/config';
 import './IFrame.css';
+
+
+export interface PluginGitInfo {
+    commitHash: string;
+    commitAbbreviatedHash: string;
+    authorName: string;
+    authorDate: string;
+    committerName: string;
+    committerDate: string;
+    reflogSelector: string;
+    subject: string;
+    commitNotes: string;
+    originUrl: string;
+    branch: string;
+    tag: string;
+    version: string;
+}
 
 export interface IFrameProps {
     pathRoot: string;
@@ -65,7 +82,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         this.loaded(element as HTMLIFrameElement);
     }
 
-    cacheBusterKey(buildInfo: BuildInfo, developMode: boolean) {
+    cacheBusterKey(gitInfo: GitInfo, developMode: boolean) {
         // NB developMode not implemented yet, so always defaults
         // to the gitCommitHash
 
@@ -74,13 +91,13 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         if (developMode) {
             return String(new Date().getTime());
         } else {
-            return buildInfo.git.commitHash;
+            return gitInfo.hash.abbreviated
         }
     }
 
     cacheBuster() {
         // TODO: get develop mode from runtime
-        return '?cb=' + this.cacheBusterKey(this.props.config.build, false);
+        return '?cb=' + this.cacheBusterKey(this.props.config.gitInfo, false);
     }
 
     loaded(element: HTMLIFrameElement) {
@@ -110,11 +127,35 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         }
     }
 
+    gitInfoToPluginGitInfo(gitInfo: GitInfo): PluginGitInfo {
+        return {
+            authorDate: gitInfo.author.date,
+            authorName: gitInfo.author.name,
+            committerDate: gitInfo.committer.date,
+            committerName: gitInfo.committer.name,
+            branch: gitInfo.branch, // unused?
+            commitAbbreviatedHash: gitInfo.hash.abbreviated,
+            commitHash: gitInfo.hash.full,
+            commitNotes: "",
+            originUrl: gitInfo.originURL,
+            reflogSelector: "",
+            subject: "",
+            tag: gitInfo.tag || "n/a",
+            version: gitInfo.version || "n/a"
+        }
+    }
+
     render() {
+
+        const buildInfo = {
+            git: this.gitInfoToPluginGitInfo(this.props.config.gitInfo),
+            builtAt: this.props.config.buildInfo.builtAt,
+        }
+
         const params = {
             frameId: this.id,
             parentHost: document.location.origin,
-            buildInfo: this.props.config.build,
+            buildInfo,
             developMode: false,
             params: this.props.params,
             channelId: this.props.hostChannelId,

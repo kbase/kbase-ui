@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 
-import { Config, BuildInfo as ConfigBuildInfo, GitInfo as ConfigGitInfo, PluginInfo as ConfigPluginInfo, DeployConfig } from '../types/config';
+import { Config, PluginInfo as ConfigPluginInfo, DeployConfig } from '../types/config';
 import { BuildInfo, GitInfo, PluginsInfo } from '../types/info';
 
 /**
@@ -37,23 +37,7 @@ interface ConfigWrapperState {
     configState: ConfigState;
 }
 
-function gitInfoToConfig(gitInfo: GitInfo): ConfigGitInfo {
-    return {
-        authorDate: gitInfo.author.date,
-        authorName: gitInfo.author.name,
-        committerDate: gitInfo.committer.date,
-        committerName: gitInfo.committer.name,
-        branch: "foo", // unused?
-        commitAbbreviatedHash: gitInfo.hash.abbreviated,
-        commitHash: gitInfo.hash.full,
-        commitNotes: "",
-        originUrl: gitInfo.originURL,
-        reflogSelector: "",
-        subject: "",
-        tag: gitInfo.tag || "n/a",
-        version: gitInfo.version || "n/a"
-    }
-}
+
 
 function hostURL(path: string) {
     const baseURL = new URL(window.location.href);
@@ -117,18 +101,11 @@ export default class ConfigWrapper extends React.Component<
                 await fetch(hostURL('plugins/plugin-manifest.json'))
             ).json() as PluginsInfo;
 
+            console.log('CONFIG???', rawConfig, gitInfo, buildInfo, pluginsInfo);
+
 
             // Note that this build info is used by plugins, so we have to maintain it.
-            const configBuildInfo: ConfigBuildInfo = {
-                builtAt: buildInfo.builtAt,
-                // These are unused, but may be necessary (TODO: determine if we can remove them.)
-                hostInfo: null,
-                target: "",
-                stats: {
-                    start: 0
-                },
-                git: gitInfoToConfig(gitInfo)
-            }
+
             const configPluginsInfo: Array<ConfigPluginInfo> = pluginsInfo.map((pluginInfo) => {
                 return {
                     name: pluginInfo.configs.plugin.package.name,
@@ -142,7 +119,7 @@ export default class ConfigWrapper extends React.Component<
                     version: pluginInfo.configs.ui.version
                 }
             });
-            const config: Config = { ...rawConfig, build: configBuildInfo, plugins: configPluginsInfo };
+            const config: Config = { ...rawConfig, buildInfo, gitInfo, plugins: configPluginsInfo };
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.SUCCESS,
