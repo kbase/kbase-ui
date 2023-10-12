@@ -77,13 +77,6 @@ plugins:
       source:
           github:
               account: kbase
-    # - name: react-profile-view
-    #   globalName: kbase-ui-plugin-react-profile-view
-    #   version: 2.0.0-alpha.10
-    #   source:
-    #       github:
-    #           account: kbase
-    #           release: true
     - name: samples
       globalName: kbase-ui-plugin-samples
       version: 1.1.3
