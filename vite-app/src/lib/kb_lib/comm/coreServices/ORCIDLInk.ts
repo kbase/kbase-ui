@@ -311,8 +311,8 @@ export default class ORCIDLinkAPI extends ServiceClient2 {
         return result as unknown as LinkRecordPublicNonOwner;
     }
 
-    async deleteLink(params: DeleteLinkParams): Promise<void> {
-        await this.callMethod('delete-link', params);
+    async deleteOwnLink(params: DeleteLinkParams): Promise<void> {
+        await this.callMethod('delete-own-link', params);
     }
 
     async createLinkingSession(params: CreateLinkingSessionParams): Promise<CreateLinkingSessionResult> {

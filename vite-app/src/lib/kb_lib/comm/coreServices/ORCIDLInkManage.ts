@@ -139,6 +139,10 @@ export interface GetStatsResult {
     }
 }
 
+export interface DeleteLinkParams extends JSONObject {
+    username: string;
+}
+
 export default class ORCIDLinkManageAPI extends ServiceClient2 {
     async isManager(params: IsManagerParams): Promise<IsManagerResult> {
         const result = await this.callMethod('is-manager', params);
@@ -171,6 +175,9 @@ export default class ORCIDLinkManageAPI extends ServiceClient2 {
     }
     async deleteLinkingSessionCompleted(params: DeleteLinkingSessionCompletedParams): Promise<void> {
         await this.callMethod('delete-linking-session-completed', params);
+    }
+    async deleteLink(params: DeleteLinkParams): Promise<void> {
+        await this.callMethod('delete-link', params);
     }
 
     async getStats(): Promise<GetStatsResult> {

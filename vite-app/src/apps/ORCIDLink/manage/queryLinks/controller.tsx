@@ -125,8 +125,8 @@ export default class QueryLinksController extends Component<QueryLinksController
             case AsyncProcessStatus.SUCCESS:
                 return <ORCIDLinkManageView
                     links={this.state.manageState.value.links}
-                    viewLink={this.props.viewLink}
-                    deleteLink={this.deleteLink}
+                    viewLink={this.props.viewLink.bind(this)}
+                    deleteLink={this.deleteLink.bind(this)}
                     orcidServiceURL={this.state.manageState.value.serviceInfo.runtime_info.orcid_site_url}
                 />
         }

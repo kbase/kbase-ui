@@ -8,7 +8,6 @@ import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
 import { Button } from "react-bootstrap";
 
-
 export interface ORCIDLinkManageProps {
     links: Array<LinkRecordPublic>
     orcidServiceURL: string;
@@ -17,10 +16,7 @@ export interface ORCIDLinkManageProps {
 }
 
 interface ORCIDLinkManageState {
-
 }
-
-
 
 export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
 
@@ -33,9 +29,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
         Modal.confirm({
             title: `Delete link for ${username}?`,
             onOk: () => {
-                // resetForm();
-                // disableEditing();
-                alert('OK!')
+                this.props.deleteLink(username);
             }
         });
     }

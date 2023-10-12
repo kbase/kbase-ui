@@ -290,11 +290,7 @@ export class Model {
 
     async deleteOwnLink() {
         const username = this.auth.authInfo.account.user;
-        return this.orcidLinkAPI.deleteLink({ username });
-    }
-
-    async deleteLink(username: string) {
-        return this.orcidLinkAPI.deleteLink({ username });
+        return this.orcidLinkAPI.deleteOwnLink({ username });
     }
 
     /**
@@ -556,5 +552,9 @@ export class Model {
     async manageGetLink(username: string): Promise<LinkRecordPublic> {
         const { link } = await this.orcidLinkManageAPI.getLink({ username });
         return link;
+    }
+
+    async deleteLink(username: string) {
+        return this.orcidLinkManageAPI.deleteLink({ username });
     }
 }
