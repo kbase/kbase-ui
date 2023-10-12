@@ -109,6 +109,10 @@ function remove-dev-cert {
     rm tools/proxy/contents/ssl/*
 }
 
+function start-local-server {
+	docker compose up 
+}
+
 function help {
     echo "$0 <task> <args>"
     echo "Runs the tasks listed below."
