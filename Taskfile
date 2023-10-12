@@ -70,7 +70,7 @@ function test {
 # dev prepares everything to enable local development
 # generate-config prepares the config file for the deploy environment set in ENV
 #
-function create-dev-environment {
+function build-setup {
     prepare-build
     git-info
     build-info
@@ -79,11 +79,8 @@ function create-dev-environment {
 }
 
 function build-kbase-ui {
-    prepare-build
-    git-info
-    build-info
+    build-setup
     build
-    install-plugins
     create-deploy
 }
 
