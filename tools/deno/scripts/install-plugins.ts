@@ -5,6 +5,8 @@ import { parse } from 'https://esm.sh/yaml@2.3.1';
 import { ensureDir, ensureDirSync, ensureFile } from 'https://deno.land/std@0.192.0/fs/mod.ts';
 import { Buffer } from 'https://deno.land/std@0.192.0/io/buffer.ts';
 import { copyN } from 'https://deno.land/std@0.192.0/io/copy_n.ts';
+
+import { copy } from 'https://deno.land/std@0.192.0/fs/copy.ts';
 import { readerFromStreamReader } from 'https://deno.land/std@0.192.0/streams/mod.ts';
 import { Git, log } from './common.ts';
 import { PluginConfig, PluginInfoRelease, PluginInfoRepo, PluginInfoType, PluginUIConfig, PluginsInfo, UIPluginsConfig } from './info.ts';
@@ -24,13 +26,46 @@ function fetchRepo(account: string, name: string, version: string, dest: string)
     );
 }
 
-async function fetchPlugins(config: string, dest: string) {
+const exists = async (filename: string): Promise<boolean> => {
+    try {
+        await Deno.stat(filename);
+        // successful, file or directory must exist
+        return true;
+    } catch (error) {
+        if (error instanceof Deno.errors.NotFound) {
+            // file or directory does not exist
+            return false;
+        } else {
+            // unexpected error, maybe permissions, pass it along
+            throw error;
+        }
+    }
+};
+
+
+async function fetchPlugins(config: string, downloadDest: string, installDest: string, cacheDir: string) {
+    log('Fetching legacy plugins...', 'fetchPlugins');
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
     for (const pluginConfig of pluginsConfig.plugins) {
         if (pluginConfig.source.github.release === true) {
             continue;
         }
+        log(
+            `Considering plugin "${pluginConfig.source.github.account}/${pluginConfig.name}" ...`,
+            'fetchPluginsReleaseDist'
+        );
+
+        const cacheSource = `${cacheDir}/${pluginConfig.name}`
+        if (await exists(cacheSource)) {
+            log('Found in cache, copying...', 'fetchPlugins');
+            await copy(cacheSource, `${installDest}/${pluginConfig.name}`)
+            continue
+        } else {
+            log('Not found in cache', 'fetchPlugins');
+        }
+
+
         log(
             `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name}...`,
             'fetchPlugins'
@@ -41,7 +76,7 @@ async function fetchPlugins(config: string, dest: string) {
                 pluginConfig.source.github.account,
                 pluginConfig.name,
                 branch,
-                dest
+                downloadDest
             );
             console.log(`fetch result: ${result}`);
         } catch (ex) {
@@ -52,13 +87,29 @@ async function fetchPlugins(config: string, dest: string) {
     }
 }
 
-async function fetchPluginsReleaseDist(config: string, dest: string, ghToken: string) {
+async function fetchPluginsReleaseDist(config: string, downloadDest: string, installDest: string, cacheDir: string, ghToken: string) {
+    log('Fetching release dist plugins...', 'fetchPluginsReleaseDist');
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
     for (const pluginConfig of pluginsConfig.plugins) {
         if (pluginConfig.source.github.release !== true) {
             continue;
         }
+
+        log(
+            `Considering plugin "${pluginConfig.source.github.account}/${pluginConfig.name}" ...`,
+            'fetchPluginsReleaseDist'
+        );
+
+        const cacheSource = `${cacheDir}/${pluginConfig.name}`
+        if (await exists(cacheSource)) {
+            log('Found in cache, copying...', 'fetchPlugins');
+            await copy(cacheSource, `${installDest}/${pluginConfig.name}`)
+            continue;
+        } else {
+            log('Not found in cache', 'fetchPlugins');
+        }
+
         log(
             `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name} ...`,
             'fetchPluginsReleaseDist'
@@ -68,7 +119,7 @@ async function fetchPluginsReleaseDist(config: string, dest: string, ghToken: st
             const result = await fetchReleaseDist(
                 pluginConfig.source.github.account,
                 pluginConfig.name,
-                dest,
+                downloadDest,
                 tag,
                 ghToken
             );
@@ -274,7 +325,7 @@ async function main() {
     const destinationDir = Deno.args[1];
     const ghToken = Deno.args[2];
 
-
+    const cacheDir = `${destinationDir}/cache/plugins`;
     const downloadDest = `${destinationDir}/download`;
     const installDest = `${destinationDir}/plugins`;
 
@@ -288,8 +339,9 @@ async function main() {
     ensureDirSync(installDest);
 
 
-    await fetchPlugins(config, downloadDest);
-    await fetchPluginsReleaseDist(config, downloadDest, ghToken);
+    await fetchPlugins(config, downloadDest, installDest, cacheDir);
+    await fetchPluginsReleaseDist(config, downloadDest, installDest, cacheDir, ghToken);
+
     await unpackPlugins(downloadDest, installDest);
     await generatePluginsManifest(config, downloadDest, installDest);
     await deleteDirectory(downloadDest);
