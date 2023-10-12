@@ -18,6 +18,7 @@ export default class QueryLinksContext extends Component<QueryLinksContextProps>
                             config={value.config}
                             auth={value.authState}
                             viewLink={this.props.viewLink}
+                            notify={value.addNotification}
                         />
                     }
                 }

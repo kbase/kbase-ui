@@ -140,7 +140,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
 
         try {
             const model = new Model({ config: this.props.config, auth: this.props.auth });
-            await model.deleteLink();
+            await model.deleteOwnLink();
             await model.removeShowORCIDIdPreference();
 
             this.setState({

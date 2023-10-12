@@ -1,4 +1,4 @@
-import { Tooltip } from "antd";
+import { Modal, Tooltip } from "antd";
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
 
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
@@ -12,7 +12,8 @@ import { Button } from "react-bootstrap";
 export interface ORCIDLinkManageProps {
     links: Array<LinkRecordPublic>
     orcidServiceURL: string;
-    viewLink: (linkId: string) => void;
+    viewLink: (username: string) => void;
+    deleteLink: (username: string) => void;
 }
 
 interface ORCIDLinkManageState {
@@ -26,6 +27,17 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
     viewLink(username: string) {
         const url = `/#orcidlink/manage/link/${username}`;
         window.open(url, '_blank');
+    }
+
+    confirmDeleteLink(username: string) {
+        Modal.confirm({
+            title: `Delete link for ${username}?`,
+            onOk: () => {
+                // resetForm();
+                // disableEditing();
+                alert('OK!')
+            }
+        });
     }
 
     renderORCIDLink(orcidId: string) {
@@ -87,7 +99,15 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                 label: 'View',
                 flex: '0 0 5rem',
                 render: (linkRecord: LinkRecordPublic) => {
-                    return <Button onClick={() => { this.viewLink(linkRecord.username) }}>View</Button>;
+                    return <Button variant="secondary" onClick={() => { this.viewLink(linkRecord.username) }}>View</Button>;
+                }
+            },
+            {
+                id: 'delete',
+                label: 'Delete',
+                flex: '0 0 5rem',
+                render: (linkRecord: LinkRecordPublic) => {
+                    return <Button variant="danger" onClick={() => { this.confirmDeleteLink(linkRecord.username) }}>Delete</Button>;
                 }
             }
         ]

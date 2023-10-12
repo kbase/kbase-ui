@@ -85,7 +85,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         }
 
         const model = new Model({ config: this.props.config, auth: this.props.auth });
-        await model.deleteLink();
+        await model.deleteOwnLink();
 
         this.setState({
             linkState: {

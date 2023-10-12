@@ -2,6 +2,7 @@ import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
 import { SimpleError } from "components/MainWindow";
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { Notification, NotificationKind } from "contexts/RuntimeContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
 import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
@@ -15,6 +16,7 @@ export interface QueryLinksControllerProps {
     auth: AuthenticationStateAuthenticated;
     config: Config;
     viewLink: (username: string) => void;
+    notify: (n: Notification) => void;
 }
 
 export interface QueryLinksState {
@@ -80,6 +82,35 @@ export default class QueryLinksController extends Component<QueryLinksController
         });
     }
 
+    async deleteLink(username: string) {
+        // On the cheap...
+        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        try {
+            await model.deleteLink(username);
+            this.props.notify({
+                kind: NotificationKind.AUTODISMISS,
+                dismissAfter: 3000,
+                id: 'deletedLink',
+                message: `Deleted link for user ${username}`,
+                startedAt: Date.now(),
+                type: 'success',
+            });
+            this.loadData();
+        } catch (ex) {
+            console.error('ERROR deleting link for user', ex);
+            const message = ex instanceof Error ? ex.message : 'Unknown error';
+            this.props.notify({
+                kind: NotificationKind.AUTODISMISS,
+                dismissAfter: 3000,
+                id: 'deletedLink',
+                message: `Error deleting link for user ${username}; check console`,
+                description: message,
+                startedAt: Date.now(),
+                type: 'error',
+            });
+        }
+    }
+
     renderLoading() {
         return <Loading message="Loading links..." />
     }
@@ -95,6 +126,7 @@ export default class QueryLinksController extends Component<QueryLinksController
                 return <ORCIDLinkManageView
                     links={this.state.manageState.value.links}
                     viewLink={this.props.viewLink}
+                    deleteLink={this.deleteLink}
                     orcidServiceURL={this.state.manageState.value.serviceInfo.runtime_info.orcid_site_url}
                 />
         }

@@ -97,7 +97,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     async removeLink() {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         try {
-            await model.deleteLink();
+            await model.deleteOwnLink();
             // changeHash2('orcidlink');
             this.loadData();
         } catch (ex) {

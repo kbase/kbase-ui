@@ -1,3 +1,4 @@
+import { Modal } from "antd";
 import DataBrowser, { ColumnDef } from "components/DataBrowser";
 import Empty from "components/Empty";
 import RelativeTimeClock from "components/RelativeTimeClock";
@@ -44,8 +45,19 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
         ]
         const dataSource: Array<LinkRecordPublic> = [];
         return <DataBrowser heights={{ header: 40, row: 40 }} columns={columns} dataSource={dataSource} />
-
     }
+
+    confirmDeleteStartedSession(sessionId: string): void {
+        const onConfirm = () => {
+            this.props.deleteStartedSession(sessionId)
+        }
+
+        Modal.confirm({
+            title: `Delete session with id ${sessionId}?`,
+            onOk: onConfirm
+        })
+    }
+
     renderInitial() {
         if (this.props.linkingSessions.initial_linking_sessions.length === 0) {
             return <Empty message="No initial linking sessions" size="compact" style={{ marginBottom: '1rem' }} />
@@ -123,7 +135,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
                 </td>
                 <td>
-                    <Button variant="danger" onClick={() => { this.props.deleteStartedSession(session_id) }}>Delete</Button>
+                    <Button variant="danger" onClick={() => { this.confirmDeleteStartedSession(session_id) }}>Delete</Button>
                 </td>
             </tr>
         });
@@ -152,6 +164,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
             </tbody>
         </Table>
     }
+
     renderCompleted() {
         if (this.props.linkingSessions.completed_linking_sessions.length === 0) {
             return <Empty message="No completed linking sessions" size="compact" style={{ marginBottom: '1rem' }} />

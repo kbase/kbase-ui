@@ -288,8 +288,12 @@ export class Model {
     //     return this.orcidLinkClient.getLinkForORCIDId(orcidId);
     // }
 
-    async deleteLink() {
+    async deleteOwnLink() {
         const username = this.auth.authInfo.account.user;
+        return this.orcidLinkAPI.deleteLink({ username });
+    }
+
+    async deleteLink(username: string) {
         return this.orcidLinkAPI.deleteLink({ username });
     }
 
