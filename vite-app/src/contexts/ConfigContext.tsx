@@ -101,9 +101,6 @@ export default class ConfigWrapper extends React.Component<
                 await fetch(hostURL('plugins/plugin-manifest.json'))
             ).json() as PluginsInfo;
 
-            console.log('CONFIG???', rawConfig, gitInfo, buildInfo, pluginsInfo);
-
-
             // Note that this build info is used by plugins, so we have to maintain it.
 
             const configPluginsInfo: Array<ConfigPluginInfo> = pluginsInfo.map((pluginInfo) => {

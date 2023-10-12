@@ -578,7 +578,11 @@ export default class Body extends Component<BodyProps, BodyState> {
     gotoDefaultPath(): React.ReactNode {
         const defaultPath = this.props.config.ui.defaults.path.value;
         if (defaultPath.startsWith('#')) {
-            changeHash2(defaultPath);
+            // seems to avoid a race condition
+            window.setTimeout(() => {
+                changeHash2(defaultPath);
+            }, 0);
+            return <Loading message="Loading Default Path..." />;
         } else {
             changePath(defaultPath, { replace: true })
             return <Loading message="Loading Default Path..." />;
