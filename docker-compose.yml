@@ -14,6 +14,8 @@ services:
         dns: 8.8.8.8
         networks:
             - kbase-dev
+        environment:
+          - DEFAULT_PATH=${DEFAULT_PATH}
         command: 
           - "-template"
           - "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf"
@@ -25,7 +27,6 @@ services:
     kbase-ui-proxy:
         build:
             context: ./tools/proxy
-
         image: local/kbase-ui-proxy:dev
         depends_on:
             - kbase-ui
@@ -36,5 +37,4 @@ services:
             - '80:80'
             - '443:443'
         dns: 8.8.8.8
-
         env_file: tools/proxy/conf/${DEPLOY_ENV:-ci}.env
