@@ -88,22 +88,6 @@ export interface DynamicServiceConfig {
     version: "auto" | "dev" | "beta" | "release";
 }
 
-// export interface GitInfo {
-//     commitHash: string;
-//     commitAbbreviatedHash: string;
-//     authorName: string;
-//     authorDate: string;
-//     committerName: string;
-//     committerDate: string;
-//     reflogSelector: string;
-//     subject: string;
-//     commitNotes: string;
-//     originUrl: string;
-//     branch: string;
-//     tag: string;
-//     version: string;
-// }
-
 export interface GitInfo {
     hash: {
         full: string
@@ -166,11 +150,6 @@ export interface DefaultPath {
     value: string
 }
 
-// export interface CookieConfig {
-//     name: string;
-//     domain: string | null;
-// }
-
 export interface DeployConfig {
     deploy: {
         id: string;
@@ -184,7 +163,6 @@ export interface DeployConfig {
         };
         services: {
             urlBase: string;
-            dynamicServiceProxies: Array<string>;
         };
         basePath: string;
     };
@@ -239,9 +217,6 @@ export interface DeployConfig {
                 disabled?: boolean;
             }>;
         };
-        coreServices: {
-            disabled: Array<string>;
-        };
         constants: {
             clientTimeout: number;
             serviceCheckTimeouts: {
@@ -249,10 +224,6 @@ export interface DeployConfig {
                 hard: number;
             };
         };
-        // menus: {
-        //     hamburger: HamburgerMenuDefintion;
-        //     sidebar: Menu;
-        // };
         defaults: {
             path: DefaultPath,
             hideHeader: boolean,
@@ -280,9 +251,6 @@ export interface DeployConfig {
         JobBrowserBFF: DynamicServiceConfig;
         OntologyAPI: DynamicServiceConfig;
         TaxonomyAPI: DynamicServiceConfig;
-    };
-    release: {
-        version: string;
     };
 }
 

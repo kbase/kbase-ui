@@ -51,21 +51,10 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             })
             .join('/')
 
-        // const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#/${hashPath}`
-
         const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`
-
-        // const indexPath = [
-        //     this.props.pathRoot,
-        //     '/iframe_root/index.html',
-        //     this.cacheBuster(),
-        //     '#/',
-        //     this.props.original,
-        // ].join('');
 
         // Make an absolute url to this.
         const url = `${document.location.origin}/${indexPath}`;
-        // this.url = '/' + indexPath;
         this.url = url;
         this.hashListener = null;
     }
@@ -85,8 +74,6 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     cacheBusterKey(gitInfo: GitInfo, developMode: boolean) {
         // NB developMode not implemented yet, so always defaults
         // to the gitCommitHash
-
-        // return 'foo';
 
         if (developMode) {
             return String(new Date().getTime());
@@ -146,7 +133,6 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
     }
 
     render() {
-
         const buildInfo = {
             git: this.gitInfoToPluginGitInfo(this.props.config.gitInfo),
             builtAt: this.props.config.buildInfo.builtAt,
