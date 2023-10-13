@@ -135,7 +135,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
                     {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
                 </td>
                 <td>
-                    <Button variant="danger" onClick={() => { this.confirmDeleteStartedSession(session_id) }}>Delete</Button>
+                    <Button variant="outline-danger" onClick={() => { this.confirmDeleteStartedSession(session_id) }}>Delete</Button>
                 </td>
             </tr>
         });

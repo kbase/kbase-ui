@@ -90,18 +90,20 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             },
             {
                 id: 'view',
-                label: 'View',
+                label: '',
                 flex: '0 0 5rem',
                 render: (linkRecord: LinkRecordPublic) => {
-                    return <Button variant="secondary" onClick={() => { this.viewLink(linkRecord.username) }}>View</Button>;
+                    return <Button variant="outline-primary" onClick={() => { this.viewLink(linkRecord.username) }}>View</Button>;
                 }
             },
             {
                 id: 'delete',
-                label: 'Delete',
+                label: '',
                 flex: '0 0 5rem',
                 render: (linkRecord: LinkRecordPublic) => {
-                    return <Button variant="danger" onClick={() => { this.confirmDeleteLink(linkRecord.username) }}>Delete</Button>;
+                    return <Button variant="outline-danger" onClick={() => { this.confirmDeleteLink(linkRecord.username) }}>
+                        Delete
+                    </Button>;
                 }
             }
         ]
