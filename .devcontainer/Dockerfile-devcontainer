@@ -2,4 +2,4 @@ FROM node:18
 
 RUN apt-get update && \
     apt-get install -y npm python3 git make bash && \
-    npm install --location=global npm@9.6.4
+    npm install --location=global npm@10.2.0
