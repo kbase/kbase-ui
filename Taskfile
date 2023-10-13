@@ -110,6 +110,38 @@ function start-local-server {
 	docker compose up 
 }
 
+#
+# TO PORT
+#
+
+# docker-network:
+# 	@:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+# 	bash tools/docker/create-docker-network.sh $(net)
+
+# docker-ignore:
+# 	@echo "> Syncing .dockerignore from .gitignore"
+# 	@$(TOPDIR)/node_modules/.bin/dockerignore
+# docker-network-clean:
+# 	# @:$(call check_defined, net, "the docker custom network: defaults to 'kbase-dev'")
+# 	bash tools/docker/clean-docker-network.sh
+
+# get-gitlab-config: 
+# 	mkdir -p dev/gitlab-config; \
+# 	# git clone -b develop ssh://git@gitlab.kbase.us/devops/kbase_ui_config.git dev/gitlab-config
+#   git clone -b develop https://gitlab.kbase.us/devops/kbase_ui_config.git
+#   dev/gitlab-config
+# # check_defined variable-name message
+# # Ensures that the given variable 'variable-name' is defined; if not
+# # prints 'message' and the process exits with 1.
+# # thanks https://stackoverflow.com/questions/10858261/abort-makefile-if-variable-not-set
+# check_defined = \
+#     $(strip $(foreach 1,$1, \
+#         $(call __check_defined,$1,$(strip $(value 2)))))
+# __check_defined = \
+#     $(if $(value $1),, \
+#         $(error Undefined "$1"$(if $2, ($2))$(if $(value @), \
+#                 required by target `$@')))
+
 function help {
     echo "$0 <task> <args>"
     echo "Runs the tasks listed below."
