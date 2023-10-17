@@ -1,16 +1,16 @@
 import { Component } from 'react';
+import { Form } from 'react-bootstrap';
 import { AuthenticationState } from '../../contexts/Auth';
 import { RuntimeContext } from '../../contexts/RuntimeContext';
 import { Config } from '../../types/config';
 import Body from '../Body';
 import Deployment from '../Deployment';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenuMain';
+import { Logo } from '../Logo/Logo';
+import Notifications from '../Notifications/NotificationsMain';
 import Sidebar from '../Sidebar/Sidebar';
 import Signin from '../Signin/SigninMain';
 import Title from '../Title';
-// import { Logo } from '../Logo/Logo';
-import { Form } from 'react-bootstrap';
-import Notifications from '../Notifications/NotificationsMain';
 import styles from './style.module.css';
 // import { Ping } from '../Ping';
 
@@ -50,6 +50,15 @@ export default class MainWindow extends Component<MainWindowProps> {
     //     `;
     // }
 
+    renderLogo() {
+        if (this.props.config.ui.defaults.integratedHamburgerAndLogo) {
+            return;
+        }
+        return <div className={styles.cellLogo}>
+            <Logo {...this.props} />
+        </div>
+    }
+
     renderHeader() {
         if (this.props.hideUI || this.props.hideHeader) {
             return;
@@ -60,9 +69,7 @@ export default class MainWindow extends Component<MainWindowProps> {
                     <div className={styles.hamburgerMenu}>
                         <HamburgerMenu {...this.props} />
                     </div>
-                    {/* <div className={styles.cellLogo}>
-                    <Logo {...this.props} />
-                </div> */}
+                    {this.renderLogo()}
                     <div className={styles.cellTitle}>
                         <RuntimeContext.Consumer>
                             {(value) => {

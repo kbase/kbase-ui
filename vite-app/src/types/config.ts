@@ -227,7 +227,8 @@ export interface DeployConfig {
         defaults: {
             path: DefaultPath,
             hideHeader: boolean,
-            hideNavigation: boolean
+            hideNavigation: boolean,
+            integratedHamburgerAndLogo: boolean
         }
     };
     services: {

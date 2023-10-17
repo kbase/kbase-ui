@@ -177,7 +177,9 @@
                 "value": "{{ default "/narratives" .Env.DEFAULT_PATH }}"
             },
             "hideHeader": {{ default "false" .Env.HIDE_HEADER }},
-            "hideNavigation": {{ default "false" .Env.HIDE_NAVIGATION }}
+            "hideNavigation": {{ default "false" .Env.HIDE_NAVIGATION }},
+            "integratedHamburgerAndLogo": {{ default "false"
+            .Env.INTEGRATED_HAMBURGER_AND_LOGO }}
         }
     },
     "services": {

@@ -29,7 +29,9 @@ export default class HamburgerMenu extends Component<HamburgerMenuProps,
                 );
             } else if (menuItem.image) {
                 // Note we trust that it is a valid image name
-                icon = <img src={image(menuItem.image as ImageName)} className="navbar-image" style={{ width: '26px' }} />
+                icon = <div className={styles.navbarIconWrapper} key={menuItem.name}>
+                    <img src={image(menuItem.image as ImageName)} className="navbar-image" style={{ width: '100%' }} />
+                </div>
             }
             if (menuItem.type === 'internal') {
                 return (

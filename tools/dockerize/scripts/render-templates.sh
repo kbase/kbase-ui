@@ -6,6 +6,7 @@ echo "  DIR=${DIR}"
 echo "  DEFAULT_PATH=${DEFAULT_PATH}"
 echo "  HIDE_HEADER=${HIDE_HEADER}"
 echo "  HIDE_NAVIGATION=${HIDE_NAVIGATION}"
+echo "  INTEGRATED_HAMBURGER_AND_LOGO=${INTEGRATED_HAMBURGER_AND_LOGO}"
 echo ""
 docker compose \
     -f ${DIR}/tools/dockerize/docker-compose.yml \

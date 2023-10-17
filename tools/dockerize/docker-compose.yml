@@ -9,6 +9,7 @@ services:
           - DEFAULT_PATH
           - HIDE_HEADER
           - HIDE_NAVIGATION
+          - INTEGRATED_HAMBURGER_AND_LOGO
           - deploy_name
         volumes:
             - $DIR:/app

@@ -7,7 +7,8 @@ import {
 import { arraysIntersect } from '../../lib/utils';
 import { Config, HamburgerMenuDefintion } from '../../types/config';
 import { Menu, MenuItem } from '../../types/menu';
-import HamburgerMenu from './HamburgerMenuLogo';
+import HamburgerMenu from './HamburgerMenu';
+import HamburgerMenuLogo from './HamburgerMenuLogo';
 
 import { MENU } from '../menus/menu';
 
@@ -78,6 +79,10 @@ export default class HamburgerMenuMain extends Component<
             developer: filterMenu(menuDefinition.developer),
             help: filterMenu(menuDefinition.help),
         };
+
+        if (this.props.config.ui.defaults.integratedHamburgerAndLogo) {
+            return <HamburgerMenuLogo menu={menu} />;
+        }
 
         return <HamburgerMenu menu={menu} />;
     }
