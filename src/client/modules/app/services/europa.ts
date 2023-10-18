@@ -3,10 +3,7 @@ import { Runtime } from '../../lib/types';
 // This line assumes kbase-ui is running on a direct subdomain on the Europa instance
 // this subdomain relationship is _required_ for CORS security policy reasons
 // i.e. legacy.ci-europa.kbase.us --> ci-europa.kbase.us
-const europaTargetOrigin = window.location.hostname
-    .split('.')
-    .slice(1)
-    .join('.');
+const europaTargetOrigin = window.location.origin.replace('legacy.', '');
 
 // This variable is undefined by default but will be set if
 // the iframe receives a 'europa.identify' message from a parent
