@@ -48,6 +48,17 @@ export const initEuropa = (runtime: Runtime) => {
             );
         }
     });
+    runtime.receive('session', 'loggedout', () => {
+        if (window.parent && !insecureParent) {
+            window.parent.postMessage(
+                {
+                    source: 'kbase-ui.session.loggedout',
+                    payload: undefined,
+                },
+                europaTargetOrigin
+            );
+        }
+    });
     window.addEventListener('message', (message) => {
         // only look at messages which come from the iframe parent
         if (message.source !== window.parent || !message?.data?.source) return;
