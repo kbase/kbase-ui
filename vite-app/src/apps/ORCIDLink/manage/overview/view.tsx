@@ -1,10 +1,10 @@
-import { ManageStatsResult } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import PropTable, { PropTableRow } from "components/PropTable";
 import Well from "components/Well";
+import { GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import { Component } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 
-export type ORCIDLinkManageProps = ManageStatsResult
+export type ORCIDLinkManageProps = GetStatsResult
 
 
 interface ORCIDLinkManageState {

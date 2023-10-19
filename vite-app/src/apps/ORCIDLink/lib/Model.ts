@@ -1,42 +1,18 @@
 import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import ORCIDLinkAPI, { InfoResult, StatusResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
+import ORCIDLinkAPI, { InfoResult, StatusResult, Work } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import ORCIDLinkManageAPI, { FindLinksParams, FindLinksResult, GetLinkingSessionsResult, GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
-import { LinkRecordPublic, LinkRecordPublicNonOwner } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
+import { LinkRecordPublic, LinkRecordPublicNonOwner, ORCIDProfile } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { SDKBoolean } from "lib/kb_lib/comm/types";
 import { hasOwnProperty } from "lib/utils";
 import { Config } from "types/config";
 import {
     ErrorInfo,
-    GetNameResult,
-    ORCIDLinkServiceClient, ORCIDProfile, ReturnInstruction,
-    Work
+    // GetNameResult,
+    ORCIDLinkServiceClient,
+    ReturnInstruction,
 } from "./ORCIDLinkClient";
 import { SCOPE } from "./constants";
-// import CitationsForm from "./demos/RequestDOI/steps/CitationsForm";
-
-
-// const START_LINKING_SESSION_PATH = 'start-linking-session';
-
-// const GET_TEMP_LINK_RECORD_PATH = 'get-temp-link';
-
-/*
-{
-    "kind": "complete",
-    "session_id": "cc40bfdb-de2c-44ef-a449-35292b2d4a90",
-    "username": "eapearson",
-    "created_at": 1675900173092,
-    "expires_at": 1675900773092,
-    "return_link": null,
-    "skip_prompt": "false",
-    "orcid_auth": {
-        "name": "Erik Pearson",
-        "scope": "/read-limited openid /activities/update",
-        "expires_in": 631138518,
-        "orcid": "0000-0003-4997-3076"
-    }
-}
-*/
 
 // EXCEPTIONS
 
@@ -221,6 +197,11 @@ export interface JournalAbbreviationsMap {
     [title: string]: Array<string>
 }
 
+export interface GetNameResult {
+    firstName: string;
+    lastName: string | null;
+}
+
 // MODEL
 
 export class Model {
@@ -309,7 +290,11 @@ export class Model {
     }
 
     async getWork(putCode: string): Promise<Work> {
-        return this.orcidLinkClient.getWork(putCode);
+        const { work } = await this.orcidLinkAPI.getWork({
+            username: this.auth.authInfo.account.user,
+            put_code: putCode
+        });
+        return work;
     }
 
     // async createWork(work: EditableWork): Promise<Work> {

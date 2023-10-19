@@ -1,48 +1,43 @@
-import { JSONObject } from "lib/json";
-import { JSONLikeObject, toJSON } from "lib/jsonLike";
 import { ServiceClient } from "./ServiceClient";
 
-
-const WORKS_PATH = 'orcid/works';
 const LINKING_SESSIONS_PATH = 'linking-sessions';
 
+// export type LinkingSesssionType = 'initial' | 'started' | 'complete';
 
-export type LinkingSesssionType = 'initial' | 'started' | 'complete';
+// export interface LinkingSessionBase {
+//     kind: LinkingSesssionType;
+//     session_id: string;
+//     username: string;
+//     created_at: number;
+//     expires_at: number;
+// }
 
-export interface LinkingSessionBase {
-    kind: LinkingSesssionType;
-    session_id: string;
-    username: string;
-    created_at: number;
-    expires_at: number;
-}
+// // TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+// export interface LinkingSessionInitial extends LinkingSessionBase {
+//     // kind: 'initial'
+// }
 
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionInitial extends LinkingSessionBase {
-    // kind: 'initial'
-}
+// // TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+// export interface LinkingSessionStarted extends LinkingSessionBase {
+//     // kind: 'started';
+//     return_link: string;
+//     skip_prompt: boolean;
+// }
 
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionStarted extends LinkingSessionBase {
-    // kind: 'started';
-    return_link: string;
-    skip_prompt: boolean;
-}
+// // TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
+// export interface LinkingSessionComplete extends LinkingSessionBase {
+//     // kind: 'complete'
+//     return_link: string;
+//     skip_prompt: boolean;
+//     orcid_auth: ORCIDAuth;
+// }
 
-// TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionComplete extends LinkingSessionBase {
-    // kind: 'complete'
-    return_link: string;
-    skip_prompt: boolean;
-    orcid_auth: ORCIDAuth;
-}
-
-export interface LinkingSessionPublicComplete extends LinkingSessionBase {
-    // kind: 'complete'
-    return_link: string;
-    skip_prompt: boolean;
-    orcid_auth: ORCIDAuthPublic;
-}
+// export interface LinkingSessionPublicComplete extends LinkingSessionBase {
+//     // kind: 'complete'
+//     return_link: string;
+//     skip_prompt: boolean;
+//     orcid_auth: ORCIDAuthPublic;
+// }
 
 // Errors
 
@@ -71,37 +66,7 @@ export enum ErrorCode {
 
 // ORCID User Profile (our version)
 
-export interface Affiliation {
-    name: string;
-    role: string;
-    startYear: string;
-    endYear: string | null;
-}
-
-export interface ORCIDFieldGroupBase {
-    private: boolean;
-}
-
-export interface ORCIDFieldGroupPrivate extends ORCIDFieldGroupBase {
-    private: true;
-}
-
-export interface ORCIDFieldGroupAccessible<T> extends ORCIDFieldGroupBase {
-    private: false;
-    fields: T
-}
-
-export type ORCIDFieldGroup<T> = ORCIDFieldGroupPrivate | ORCIDFieldGroupAccessible<T>;
-
-export interface ORCIDNameFieldGroup {
-    firstName: string;
-    lastName: string | null;
-    creditName: string | null;
-}
-
-export interface ORCIDBiographyFieldGroup {
-    bio: string;
-}
+// export inter /
 
 // export interface ORCIDActivitiesFieldGroup {
 //     employments: Array<Affiliation>
@@ -109,44 +74,44 @@ export interface ORCIDBiographyFieldGroup {
 //     // huh? missing some fields, and what is works doing here?
 // }
 
-export interface ORCIDEmailFieldGroup {
-    emailAddresses: Array<string>
-}
+// export interface ORCIDEmailFieldGroup {
+//     emailAddresses: Array<string>
+// }
 
-export interface ORCIDProfile {
-    // TODO: split into profile and info? E.g. id in info, profile info in profile...
-    orcidId: string;
-    nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>
-    biographyGroup: ORCIDFieldGroup<ORCIDBiographyFieldGroup>;
-    // activitiesGroup: ORCIDFieldGroup<ORCIDActivitiesFieldGroup>;
-    emailGroup: ORCIDFieldGroup<ORCIDEmailFieldGroup>;
-    employments: Array<Affiliation>
-}
+// export interface ORCIDProfile {
+//     // TODO: split into profile and info? E.g. id in info, profile info in profile...
+//     orcidId: string;
+//     nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>
+//     biographyGroup: ORCIDFieldGroup<ORCIDBiographyFieldGroup>;
+//     // activitiesGroup: ORCIDFieldGroup<ORCIDActivitiesFieldGroup>;
+//     emailGroup: ORCIDFieldGroup<ORCIDEmailFieldGroup>;
+//     employments: Array<Affiliation>
+// }
 
 // 
 
-export interface CreateLinkingSessionResult {
-    session_id: string
-}
+// export interface CreateLinkingSessionResult {
+//     session_id: string
+// }
 
 // ORCID User Profile (our version)
-export interface ExternalId {
-    type: string;
-    value: string;
-    url: string;
-    relationship: string;
-}
+// export interface ExternalId {
+//     type: string;
+//     value: string;
+//     url: string;
+//     relationship: string;
+// }
 
-export interface Citation {
-    type: string;
-    value: string;
-}
+// export interface Citation {
+//     type: string;
+//     value: string;
+// }
 
-export interface ContributorORCIDInfo {
-    uri: string;
-    path: string;
-    // host: string | null;
-}
+// export interface ContributorORCIDInfo {
+//     uri: string;
+//     path: string;
+//     // host: string | null;
+// }
 
 // export interface ContributorAttributes {
 //     'contributor-sequence': string | null
@@ -160,21 +125,21 @@ export interface ContributorORCIDInfo {
 //     'contributor-attributes': ContributorAttributes
 // }
 
-export interface ContributorRole {
-    role: string;
-}
+// export interface ContributorRole {
+//     role: string;
+// }
 
-export interface Contributor {
-    orcidId: string | null;
-    name: string;
-    roles: Array<ContributorRole>
-}
+// export interface Contributor {
+//     orcidId: string | null;
+//     name: string;
+//     roles: Array<ContributorRole>
+// }
 
-export interface SelfContributor {
-    orcidId: string;
-    name: string;
-    roles: Array<ContributorRole>
-}
+// export interface SelfContributor {
+//     orcidId: string;
+//     name: string;
+//     roles: Array<ContributorRole>
+// }
 
 /*
 
@@ -240,30 +205,30 @@ class Work(PersistedWorkBase):
     contributors: Optional[ContributorWrapper] = Field(default=None)
 */
 
-export interface WorkBase {
-    title: string;
-    journal: string;
-    date: string;
-    workType: string;
-    url: string;
-    doi: string;
-    externalIds: Array<ExternalId>
-    citation: Citation | null;
-    shortDescription: string;
-    selfContributor: SelfContributor;
-    otherContributors: Array<Contributor> | null;
-}
+// export interface WorkBase {
+//     title: string;
+//     journal: string;
+//     date: string;
+//     workType: string;
+//     url: string;
+//     doi: string;
+//     externalIds: Array<ExternalId>
+//     citation: Citation | null;
+//     shortDescription: string;
+//     selfContributor: SelfContributor;
+//     otherContributors: Array<Contributor> | null;
+// }
 
-export interface NewWork extends WorkBase {
-}
+// export interface NewWork extends WorkBase {
+// }
 
-export interface PersistedWork extends WorkBase {
-    putCode: string;
-}
+// export interface PersistedWork extends WorkBase {
+//     putCode: string;
+// }
 
-export interface WorkUpdate extends PersistedWork {
+// export interface WorkUpdate extends PersistedWork {
 
-}
+// }
 
 // export interface Work extends NewWork {
 //     putCode: string;
@@ -277,39 +242,39 @@ export interface WorkUpdate extends PersistedWork {
 // }
 
 
-export interface Work extends PersistedWork {
-    createdAt: number;
-    updatedAt: number;
-    source: string;
-}
+// export interface Work extends PersistedWork {
+//     createdAt: number;
+//     updatedAt: number;
+//     source: string;
+// }
 
 
 
-export interface GetNameResult {
-    firstName: string;
-    lastName: string | null;
-}
+// export interface GetNameResult {
+//     firstName: string;
+//     lastName: string | null;
+// }
 
 
-export interface ORCIDLinkResult {
-    orcidLink: {
-        orcidId: string | null
-    }
-}
+// export interface ORCIDLinkResult {
+//     orcidLink: {
+//         orcidId: string | null
+//     }
+// }
 
 
-export interface DeleteWorkResult {
-    ok: true
-}
+// export interface DeleteWorkResult {
+//     ok: true
+// }
 
-export interface JournalAbbreviation {
-    title: string;
-    abbreviation: string
-}
+// export interface JournalAbbreviation {
+//     title: string;
+//     abbreviation: string
+// }
 
-export interface GetDOICitationResult {
-    citation: string;
-}
+// export interface GetDOICitationResult {
+//     citation: string;
+// }
 
 export type ReturnInstructionType = "link" | "window";
 
@@ -340,122 +305,122 @@ export interface StatusResponse {
     start_time: number;
 }
 
-export interface ServiceDescription {
-    name: string;
-    title: string;
-    version: string;
-    language: string;
-    description: string;
-    repoURL: string;
-}
+// export interface ServiceDescription {
+//     name: string;
+//     title: string;
+//     version: string;
+//     language: string;
+//     description: string;
+//     repoURL: string;
+// }
 
-export interface ServiceConfig {
-    url: string;
-}
+// export interface ServiceConfig {
+//     url: string;
+// }
 
-export interface Auth2Config extends ServiceConfig {
-    tokenCacheLifetime: number;
-    tokenCacheMaxSize: number;
-}
+// export interface Auth2Config extends ServiceConfig {
+//     tokenCacheLifetime: number;
+//     tokenCacheMaxSize: number;
+// }
 
-export interface Config {
-    services: {
-        Auth2: Auth2Config;
-        ORCIDLink: ServiceConfig;
-    }
-    ui: {
-        origin: string;
-    }
-    orcid: {
-        oauthBaseURL: string;
-        apiBaseURL: string;
-        clientId: string;
-        clientSecret: string;
-    }
-    mongo: {
-        host: string;
-        port: number;
-        database: string;
-        username: string;
-        password: string;
-    }
-    module: {
-        serviceRequestTimeout: number
-    }
-}
+// export interface Config {
+//     services: {
+//         Auth2: Auth2Config;
+//         ORCIDLink: ServiceConfig;
+//     }
+//     ui: {
+//         origin: string;
+//     }
+//     orcid: {
+//         oauthBaseURL: string;
+//         apiBaseURL: string;
+//         clientId: string;
+//         clientSecret: string;
+//     }
+//     mongo: {
+//         host: string;
+//         port: number;
+//         database: string;
+//         username: string;
+//         password: string;
+//     }
+//     module: {
+//         serviceRequestTimeout: number
+//     }
+// }
 
-export interface GitInfo {
-    commit_hash: string;
-    commit_hash_abbreviated: string;
-    author_name: string;
-    committer_name: string;
-    committer_date: number;
-    url: string;
-    branch: string;
-    tag: string | null;
-}
+// export interface GitInfo {
+//     commit_hash: string;
+//     commit_hash_abbreviated: string;
+//     author_name: string;
+//     committer_name: string;
+//     committer_date: number;
+//     url: string;
+//     branch: string;
+//     tag: string | null;
+// }
 
-export interface InfoResponse {
-    'service-description': ServiceDescription;
-    config: Config;
-    'git-info': GitInfo
+// export interface InfoResponse {
+//     'service-description': ServiceDescription;
+//     config: Config;
+//     'git-info': GitInfo
 
-}
+// }
 
-export type GetWorksResult = Array<{
-    externalIds: Array<ExternalId>;
-    updatedAt: number;
-    works: Array<Work>;
-}>
+// export type GetWorksResult = Array<{
+//     externalIds: Array<ExternalId>;
+//     updatedAt: number;
+//     works: Array<Work>;
+// }>
 
-export interface ORCIDAuth {
-    access_token: string;
-    expires_in: number;
-    id_token: string;
-    name: string;
-    orcid: string;
-    refresh_token: string;
-    scope: string
-    token_type: string;
+// export interface ORCIDAuth {
+//     access_token: string;
+//     expires_in: number;
+//     id_token: string;
+//     name: string;
+//     orcid: string;
+//     refresh_token: string;
+//     scope: string
+//     token_type: string;
 
-}
+// }
 
-export interface LinkRecord {
-    created_at: number,
-    expires_at: number;
-    retires_at: number;
-    username: string;
-    orcid_auth: ORCIDAuth
-}
+// export interface LinkRecord {
+//     created_at: number,
+//     expires_at: number;
+//     retires_at: number;
+//     username: string;
+//     orcid_auth: ORCIDAuth
+// }
 
-export interface ORCIDAuthPublic {
-    expires_in: number;
-    name: string;
-    orcid: string;
-    scope: string
-}
+// export interface ORCIDAuthPublic {
+//     expires_in: number;
+//     name: string;
+//     orcid: string;
+//     scope: string
+// }
 
-export interface LinkRecordPublic {
-    created_at: number,
-    expires_at: number;
-    retires_at: number;
-    username: string;
-    orcid_auth: ORCIDAuthPublic
-}
+// export interface LinkRecordPublic {
+//     created_at: number,
+//     expires_at: number;
+//     retires_at: number;
+//     username: string;
+//     orcid_auth: ORCIDAuthPublic
+// }
 
-export interface ORCIDAuthPublicNonOwner {
-    orcid: string;
-    name: string;
-}
+// export interface ORCIDAuthPublicNonOwner {
+//     orcid: string;
+//     name: string;
+// }
 
-export interface LinkRecordPublicNonOwner {
-    username: string;
-    orcid_auth: ORCIDAuthPublicNonOwner
-}
+// export interface LinkRecordPublicNonOwner {
+//     username: string;
+//     orcid_auth: ORCIDAuthPublicNonOwner
+// }
 
-export interface LinkShareRecord {
-    orcidId: string;
-}
+// export interface LinkShareRecord {
+//     orcidId: string;
+// }
 
 export interface ErrorInfo {
     code: number;
@@ -477,31 +442,12 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         return `${url}/docs`;
     }
 
-    // ORICD Account works
-
-    async getWork(putCode: string): Promise<Work> {
-        return await this.get<Work>(`${WORKS_PATH}/${putCode}`)
-    }
-
-    async getWorks(): Promise<GetWorksResult> {
-        return await this.get<GetWorksResult>(`${WORKS_PATH}`)
-    }
-
-    async saveWork(work: WorkUpdate): Promise<Work> {
-        return await this.put<Work>(`${WORKS_PATH}`, toJSON(work))
-    }
-
-    async createWork(work: NewWork): Promise<Work> {
-        return await this.post<Work>(`${WORKS_PATH}`, toJSON(work))
-    }
-
-    async deleteWork(putCode: string): Promise<void> {
-        return await this.delete(`${WORKS_PATH}/${putCode}`);
-    }
-
     // Linking Sessions
 
-    async startLinkingSession(sessionId: string, returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string): Promise<void> {
+    async startLinkingSession(sessionId: string,
+        returnInstruction?: ReturnInstruction,
+        skipPrompt?: boolean,
+        uiOptions?: string): Promise<void> {
         const baseURL = await this.getURL();
         const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`);
         // startURL.searchParams.set('session_id', sessionId);
@@ -529,39 +475,39 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
 
 
-export interface IsManagerResponse {
-    is_manager: boolean
-}
+// export interface IsManagerResponse {
+//     is_manager: boolean
+// }
 
 // Manage api query links
 
-export interface FilterString extends JSONObject {
-    eq: string
-}
+// export interface FilterString extends JSONObject {
+//     eq: string
+// }
 
-export interface FilterNumber extends JSONLikeObject {
-    eq?: number;
-    gte?: number;
-    gt?: number;
-    lte?: number;
-    lt?: number;
-}
+// export interface FilterNumber extends JSONLikeObject {
+//     eq?: number;
+//     gte?: number;
+//     gt?: number;
+//     lte?: number;
+//     lt?: number;
+// }
 
-export interface LinkQueryFind extends JSONLikeObject {
-    username?: FilterString;
-    orcid?: FilterString;
-    created?: FilterNumber;
-    expires?: FilterNumber;
-}
+// export interface LinkQueryFind extends JSONLikeObject {
+//     username?: FilterString;
+//     orcid?: FilterString;
+//     created?: FilterNumber;
+//     expires?: FilterNumber;
+// }
 
-export interface QuerySortSpec extends JSONLikeObject {
-    field_name: string;
-    descending?: boolean;
-}
+// export interface QuerySortSpec extends JSONLikeObject {
+//     field_name: string;
+//     descending?: boolean;
+// }
 
-export interface QuerySort extends JSONLikeObject {
-    specs: Array<QuerySortSpec>;
-}
+// export interface QuerySort extends JSONLikeObject {
+//     specs: Array<QuerySortSpec>;
+// }
 
 // export interface LinkQuery extends JSONLikeObject {
 //     find?: LinkQueryFind;
@@ -570,32 +516,32 @@ export interface QuerySort extends JSONLikeObject {
 //     limit?: number;
 // }
 
-export interface Query<FilterT extends JSONLikeObject> extends JSONLikeObject {
-    find?: FilterT;
-    sort?: QuerySort;
-    offset?: number;
-    limit?: number;
-}
-
-export type LinksQuery = Query<LinkQueryFind>
-
-// export interface ManageLinksParams extends JSONLikeObject {
-//     query: LinkQuery
+// export interface Query<FilterT extends JSONLikeObject> extends JSONLikeObject {
+//     find?: FilterT;
+//     sort?: QuerySort;
+//     offset?: number;
+//     limit?: number;
 // }
 
-export type ManageLinksParams = LinksQuery;
+// export type LinksQuery = Query<LinkQueryFind>
 
-export interface ManageLinksResponse {
-    links: Array<LinkRecord>;
-}
+// // export interface ManageLinksParams extends JSONLikeObject {
+// //     query: LinkQuery
+// // }
 
-// Manage Linking Sessions Query
+// export type ManageLinksParams = LinksQuery;
 
-export interface LinkingSessionsFilter extends JSONLikeObject {
+// export interface ManageLinksResponse {
+//     links: Array<LinkRecord>;
+// }
 
-}
+// // Manage Linking Sessions Query
 
-export type LinkingSessionsQuery = Query<LinkingSessionsFilter>
+// export interface LinkingSessionsFilter extends JSONLikeObject {
+
+// }
+
+// export type LinkingSessionsQuery = Query<LinkingSessionsFilter>
 
 // export interface LinkingSessionsQuery extends JSONLikeObject {
 //     find?: LinkingSessionsQueryFind;
@@ -611,26 +557,26 @@ export type LinkingSessionsQuery = Query<LinkingSessionsFilter>
 //     completed_linking_sessions: Array<LinkingSessionPuComplete>
 // }
 
-export interface LinkStats {
-    last_24_hours: number
-    last_7_days: number
-    last_30_days: number
-    all_time: number
-}
+// export interface LinkStats {
+//     last_24_hours: number
+//     last_7_days: number
+//     last_30_days: number
+//     all_time: number
+// }
 
-export interface LinkSessionStats {
-    active: number
-    expired: number
-}
+// export interface LinkSessionStats {
+//     active: number
+//     expired: number
+// }
 
-export interface ManageStatsResult {
-    stats: {
-        links: LinkStats,
-        linking_sessions_initial: LinkSessionStats,
-        linking_sessions_started: LinkSessionStats,
-        linking_sessions_completed: LinkSessionStats
-    }
-}
+// export interface ManageStatsResult {
+//     stats: {
+//         links: LinkStats,
+//         linking_sessions_initial: LinkSessionStats,
+//         linking_sessions_started: LinkSessionStats,
+//         linking_sessions_completed: LinkSessionStats
+//     }
+// }
 
 // export class ORCIDLinkServiceManageClient extends ServiceClient {
 //     module = 'ORCIDLink';

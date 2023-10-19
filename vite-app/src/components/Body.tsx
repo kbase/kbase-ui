@@ -16,7 +16,6 @@ import { PluginInfo } from 'types/info';
 import NarrativeManagerNew from '../apps/NarrativeManager/New';
 import NarrativeManagerStart from '../apps/NarrativeManager/Start';
 import ORCIDLink from '../apps/ORCIDLink/ORCIDLink';
-import ORCIDLinkDemos from '../apps/demos/Demos';
 // import ORCIDWorks from '../apps/ORCIDWorks/ORCIDWorks';
 import UserProfile from 'apps/UserProfile';
 import Gallery from 'apps/gallery';
@@ -115,9 +114,6 @@ export default class Body extends Component<BodyProps, BodyState> {
         // }
 
         this.routes = [
-            new Route('demos/*', { authenticationRequired: false }, (props: RouteProps) => {
-                return <ORCIDLinkDemos {...props} {...this.props} />;
-            }),
             new Route('orcidlink/*', { authenticationRequired: false }, (props: RouteProps) => {
                 return <ORCIDLink {...props} {...this.props} />;
             }),

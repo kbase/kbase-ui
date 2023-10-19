@@ -69,15 +69,6 @@
             "requiresAuth": true
         },
         {
-            "name": "orcidlinkdemos",
-            "label": "Credit Engine Demos",
-            "icon": "code",
-            "type": "internal",
-            "path": "demos",
-            "newWindow": false,
-            "requiresAuth": true
-        },
-        {
             "name": "about-services",
             "label": "KBase Services Status",
             "icon": "server",
@@ -247,7 +238,6 @@
             "dashboard4",
             "navigator",
             "orcidlink",
-            "orcidlinkdemos",
             "componentgallery",
             "about-services",
             "about-plugins"

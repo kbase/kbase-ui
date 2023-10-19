@@ -101,15 +101,6 @@
                 "requiresAuth": true
             },
             {
-                "name": "orcidlinkdemos",
-                "label": "Credit Engine Demos",
-                "type": "internal",
-                "path": "demos",
-                "newWindow": false,
-                "icon": "code",
-                "requiresAuth": true
-            },
-            {
                 "name": "componentgallery",
                 "label": "Component Gallery",
                 "type": "internal",
