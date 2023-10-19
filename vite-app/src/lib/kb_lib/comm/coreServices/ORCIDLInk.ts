@@ -59,7 +59,7 @@ export interface GitInfo {
     commit_hash_abbreviated: string;
     author_name: string;
     committer_name: string;
-    committer_date: string;
+    committer_date: number;
     url: string;
     branch: string;
     tag: string | null;
