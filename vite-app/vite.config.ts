@@ -1,8 +1,6 @@
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-
 import { defineConfig } from 'vitest/config';
-
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,17 +9,11 @@ export default defineConfig({
     build: {
         commonjsOptions: {
             include: ['node_modules/**'],
-            // esmExternals: true,
-            // requireReturnsDefault: 'namespace',
         },
         rollupOptions: {
             output: {
                 experimentalMinChunkSize: 500_000,
                 manualChunks(id) {
-                    // console.log('MANUAL CHUNK', typeof id);
-                    // if (id.includes('node_modules')) {
-                    //     return id.toString().split('node_modules/')[1].split('/')[0].toString();
-                    // }
                     if (id.includes('node_modules')) {
                         return 'vendor';
                     }
@@ -32,11 +24,6 @@ export default defineConfig({
     optimizeDeps: {
         disabled: 'build'
     },
-    // resolve: {
-    //     alias: {
-    //         '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
-    //     }
-    // },
     server: {
         port: 3000,
         host: '0.0.0.0',
@@ -45,29 +32,12 @@ export default defineConfig({
                 target: 'https://ci.kbase.us',
                 changeOrigin: true,
                 secure: false,
-
-                // configure: (proxy, options) => {
-                //     proxy.on('error', (error, request, response) => {
-                //         console.log('PROXY ERROR', error);
-                //     });
-                //     proxy.on('proxyReq', (proxyRequest, request, response) => {
-                //         console.log('PROXY Request', request.method, request.url);
-                //     });
-                //     proxy.on('proxyRes', (proxyResponse, request, response) => {
-                //         console.log('PROXY Response', proxyResponse.statusCode, request.url);
-                //     });
-                // }
             },
             '/dynserv': {
                 target: 'https://ci.kbase.us',
                 changeOrigin: true,
                 secure: false
             },
-            // '/index.html/deploy/plugins/': {
-            //     target: 'http://kbase-ui-deploy:80/plugins/',
-            //     changeOrigin: true,
-            //     pathRewrite: { [`^/index.html/deploy/plugins/`]: '' }
-            // },
             '/modules/plugins': {
                 target: 'http://kbase-ui-deploy:80/plugins',
                 changeOrigin: true,
@@ -96,35 +66,14 @@ export default defineConfig({
             '/plugins': {
                 target: 'http://kbase-ui-deploy:80',
                 changeOrigin: true,
-                // rewrite: (path: string) => {
-                //     return path.replace(/^\/plugins/, '');
-                // }
             },
             '/deploy': {
                 target: 'http://kbase-ui-deploy:80/',
                 changeOrigin: true,
-                // rewrite: (path: string) => {
-                //     console.log('deploy rewrite?', path);
-                //     return path.replace('^/deploy', '');
-                // },
-                // configure: (proxy, options) => {
-                //     proxy.on('error', (error, request, response) => {
-                //         console.log('PROXY ERROR', error);
-                //     });
-                //     proxy.on('proxyReq', (proxyRequest, request, response) => {
-                //         console.log('PROXY Request', request.method, request.url);
-                //     });
-                //     proxy.on('proxyRes', (proxyResponse, request, response) => {
-                //         console.log('PROXY Response', proxyResponse.statusCode, request.url);
-                //     });
-                // }
             },
             '/build': {
                 target: 'http://kbase-ui-deploy:80',
                 changeOrigin: true,
-                // rewrite: (path: string) => {
-                //     return path.replace(/^\/build/, '');
-                // }
             }
         }
     },
@@ -137,5 +86,4 @@ export default defineConfig({
             all: true
         }
     },
-
 })
