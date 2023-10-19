@@ -43,6 +43,7 @@ export interface LinkState {
     orcid_api_url: string,
     orcid_oauth_url: string
     orcid_site_url: string
+    isManager: boolean;
 }
 
 
@@ -163,16 +164,19 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             const url = await this.getURL();
 
             // Link to the ORCID Link repo
+            const model = new Model({ config: this.props.config, auth: this.props.auth });
             const {
                 'service-description': { repoURL },
                 runtime_info: {
                     orcid_api_url, orcid_oauth_url, orcid_site_url
-                } } = await this.getInfo();
+                } } = await model.getInfo();
+
+            const isManager = await model.isManager();
 
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: value, url, repoURL, orcid_api_url, orcid_oauth_url, orcid_site_url }
+                    value: { link: value, url, repoURL, orcid_api_url, orcid_oauth_url, orcid_site_url, isManager }
                 }
             });
         } catch (ex) {
@@ -219,13 +223,9 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     }
 
-    renderSuccess({ link, url, repoURL, orcid_site_url }: LinkState) {
+    renderSuccess({ link, url, repoURL, orcid_site_url, isManager }: LinkState) {
         const isDeveloper = this.props.auth.authInfo.account.roles.some((role) => {
             return role.id === 'DevToken'
-        });
-
-        const isManager = this.props.auth.authInfo.account.customroles.some((role) => {
-            return role === 'orcidlink_admin'
         });
 
         return <View link={link}

@@ -14,7 +14,7 @@ export interface ORCIDLinkManageControllerProps {
 }
 
 export interface ManageState {
-    isAdmin: true;
+    isManager: true;
 }
 
 interface ORCIDLinkManageControllerState {
@@ -45,18 +45,6 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
             }
         });
 
-        if (!this.props.auth.authInfo.account.customroles.includes('orcidlink_admin')) {
-            this.setState({
-                manageState: {
-                    status: AsyncProcessStatus.ERROR,
-                    error: {
-                        message: 'Management tools only available to KBase ORCID® Link administrators'
-                    }
-                }
-            });
-            return;
-        }
-
         const model = new Model({ config: this.props.config, auth: this.props.auth });
 
         try {
@@ -75,7 +63,7 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
                     manageState: {
                         status: AsyncProcessStatus.SUCCESS,
                         value: {
-                            isAdmin: true
+                            isManager: true
                         }
                     }
                 });
