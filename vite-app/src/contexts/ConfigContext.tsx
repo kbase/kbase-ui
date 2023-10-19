@@ -1,8 +1,10 @@
 import React, { PropsWithChildren } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 
 import { Config, PluginInfo as ConfigPluginInfo, DeployConfig } from '../types/config';
 import { BuildInfo, GitInfo, PluginsInfo } from '../types/info';
+
 
 /**
  * Holds the current config information
@@ -45,6 +47,13 @@ function hostURL(path: string) {
         .split('/')
         .filter((pathElement) => { return pathElement.trim() !== '' }).join('/');
     baseURL.pathname = newPath;
+    // We have a dilemma here -- we can't use the version as the cache buster as 
+    // it we don't know it yet (it is in the config files!) -- so we use a uuid
+    // but this means that the config is loaded fresh each time. They are small, so 
+    // that is okay for now.
+    // TODO: configs can be installed into the source tree so that we can simply
+    // import them. This will require changes to the dev proxies.
+    baseURL.searchParams.set('cb', uuidv4());
     return baseURL;
 }
 
