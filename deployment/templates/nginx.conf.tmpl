@@ -63,7 +63,7 @@ http {
         listen      {{ default "80" .Env.nginx_listen }} default_server;
         server_name {{ default "localhost" .Env.nginx_server_name }};
   
-        location {{ default "" .Env.base_path }}/ {
+        location {{ default "" .Env.BASE_PATH }}/ {
             # Ensure that index.html is invoked even if a path is
             # specified and doesn't exist.
             # try_files $uri /$uri /index.html;
@@ -79,18 +79,18 @@ http {
             root /kb/deployment/app;
         }
         
-        location {{ default "" .Env.base_path }}/__ping__ {
+        location {{ default "" .Env.BASE_PATH }}/__ping__ {
             default_type text/html;
             return 204;
         }
 
-        location {{ default "" .Env.base_path }}/data/__perf__ {
+        location {{ default "" .Env.BASE_PATH }}/data/__perf__ {
             gzip off;
             add_header Cache-Control 'no-cache';
             root /kb/deployment/app;
         }
 
-        location {{ default "" .Env.base_path }}/modules/plugins/ {
+        location {{ default "" .Env.BASE_PATH }}/modules/plugins/ {
             ssi_silent_errors off;
             allow all;
             add_header Cache-Control 'no-cache';
@@ -98,7 +98,7 @@ http {
         }
 
         # Format is /__poke/https://www.example.com/some/path
-        location ~* ^{{ default "" .Env.base_path }}/__poke/docs/(.*)$ {
+        location ~* ^{{ default "" .Env.BASE_PATH }}/__poke/docs/(.*)$ {
             proxy_hide_header Content-Security-Policy;
             proxy_hide_header X-Content-Security-Policy;
             proxy_hide_header X-Webkit-Csp;
@@ -135,7 +135,7 @@ http {
             error_page 301 302 307 = @handle_redirect_docs;
         }
 
-        location ~* ^{{ default "" .Env.base_path }}/__poke/marketing/(.*)$ {
+        location ~* ^{{ default "" .Env.BASE_PATH }}/__poke/marketing/(.*)$ {
             proxy_pass https://marketing/$1;
             proxy_http_version 1.1;
             proxy_set_header Connection "";

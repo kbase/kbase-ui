@@ -44,6 +44,7 @@ services:
     environment:
       # - PORT=80
       - DEPLOY_ENV=${DEPLOY_ENV:-ci}
+      # - BASE_PATH=
     # Required for a devcontainer -- keeps the container running.
     # Don't worry, our main interaction with the container is through the 
     # VSC terminal, which for a devcontainer opens a shell within the
@@ -93,11 +94,13 @@ services:
       - 9.9.9.9
       - 1.1.1.1
       - 208.67.222.222
+    environment:
+      - BASE_PATH=/
       
 
     # note that this is really a docker env file and is relative to the docker-compose file 
     # TODO: I think we may need to use an entrypoint which selects the deploy environment
-    # config (env) file based on the DEPLOY_ENV. Can't 
+    # config (env) file based on the DEPLOY_ENV. 
     
     env_file: 
       - ../tools/proxy/conf/ci.env
