@@ -313,7 +313,7 @@ function main() {
 
         const auth = await getAuth();
         if (auth) {
-            pageView.user_id = auth.user;
+            pageView.user_id = auth.anonid;
         }
 
         pushGTag('event', 'page_view', pageView);
