@@ -57,12 +57,12 @@ export default class Signin extends Component<SigninProps, SigninState> {
 
     renderAvatar(userProfile: UserProfile) {
         const avatarURL = this.renderAvatarUrl(userProfile);
-
         return (
             <img
                 src={avatarURL}
                 style={{ width: '40px' }}
                 className="login-button-avatar"
+                data-k-b-testhook-image="avatar"
                 alt={`Avatar for user ${userProfile.user.username}`}
                 data-element="avatar"
             />
@@ -80,7 +80,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
 
     renderLoggedIn(authState: AuthenticationStateAuthenticated) {
         return (
-            <Dropdown>
+            <Dropdown data-k-b-testhook-menu="signed-in">
                 <Dropdown.Toggle variant="default">
                     {this.renderAvatar(authState.userProfile)}
                 </Dropdown.Toggle>

@@ -349,7 +349,7 @@ export default class Body extends Component<BodyProps, BodyState> {
             // Samples
             new Route(
                 'samples/view/:sampleId/:sampleVersion?',
-                { authenticationRequired: true },
+                { authenticationRequired: false },
                 (props: RouteProps) => {
                     return (
                         <PluginWrapper2
