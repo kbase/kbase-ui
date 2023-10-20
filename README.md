@@ -1,69 +1,30 @@
-# KBase User Interface
-
-## Current Status
-
-This would have been the next major release, but see [the release notes](release-notes/RELEASE_NOTES_3.x.x.md).
-
-Since another effort has been underway for the last few months, and by all
-accounts nearly complete, I've not updated the documentation, though there is a
-working doc for the [new build process](docs/new-build.md).
-
-The TLDR is:
-
-- ensure deploy env is mapped to localhost in /etc/hosts; assume CI
-
-    ```text
-    127.0.0.1 ci.kbase.us
-    ```
-
-- after cloning this repo, open the repo root in VSC (required for dev workflow)
-
-- open a terminal window, create the dev environment
-
-    ```shell
-    make dev
-    ```
-
-- open the project in a devcontainer
-    - Open the command browser: Shift + Command + P
-    - enter "Reopen in Container" or enough until
-      "Remote Containers: Reopen in Container" appears in the list
-    - select "Remote Containers: Reopen in Container"
-    - the first time make take a couple of minutes to fetch the images and build
-      the containers
-    - when complete you'll be in a shell inside the devcontainer (Ubuntu)
-
-- work with the CRA web app just like at the local command line:
-
-    ```shell
-    root@3fd37706bf4d:/workspace# cd react-app
-    root@3fd37706bf4d:/workspace/react-app# npm install
-    root@3fd37706bf4d:/workspace/react-app# npm run start
-    ...
-    webpack compiled with 19 warnings
-    Files successfully emitted, waiting for typecheck results...
-    Issues checking in progress...
-    No issues found.
-    ```
-
-- open browser to <https://ci.kbase.us>
+# `kbase-ui` - a KBase User Interface
 
 ## About
 
-The KBase User Interface (_kbase-ui_) is a web browser Single Page App (SPA) providing tools for [KBase](http://www.base.us) users. It is a partner to the [KBase Narrative Interface](https://github.com/kbase/narrative), with which it shares code yet runs as a separate web app.
+The KBase User Interface (_kbase-ui_) is a web browser Single Page App (SPA) providing
+tools for [KBase](http://www.base.us) users. It is one of several user-facing interfaces
+at KBase.
 
-Current user features include:
+`kbase-ui` has traditionally served as a container for various "plugins" which provide most of the
+functionality of the interface. The current set of plugins may be found in [the plugins
+config](conig/plugins.yml).
 
-- _Dashboard_, for an overview of a user's narratives and activities, and those of their colleagues
-- _User Profile_, for viewing any user profile and editing their own,
+Some examples include:
+
+
 - _Data Viewer_, for inspecting any data object a user has access to (aka "landing pages"),
 - _Type Viewer_, for inspecting the attributes of any data type,
 - _Authenticator_, for logging into and out of user's KBase Account and granting authorization to the web app,
 - _Catalog_, for browsing, searching and (for developers) managing KBase Narrative Apps.
 
-> If you have stumbled up on this project, you may first want to
-> [find out about KBase](http://www.kbase.us). The _KBase UI_ is not a general
-> purpose tool -- it is designed to work inside the KBase ecosystem.
+More recently functionality has been added directly to the `kbase-ui` codebase,
+including:
+
+- _User Profile_, for viewing any user profile and editing their own,
+- _KBASE ORCID Link_, for creating a link between a KBase account and ORCID account.
+
+## Intended Audience
 
 The primary audience for this project is:
 
@@ -73,20 +34,24 @@ testing, deployment
 - _KBase Contributors_ - who wish to know more about the architecture and
 "sausage making" of KBase.
 
-Most KBase users will be exposed to the KBase UI by ... [using KBase](https://narrative.kbase.us) :)
+> If you have stumbled up on this project, you may first want to
+> [find out about KBase](http://www.kbase.us). The _KBase UI_ is not a general
+> purpose tool -- it is designed to work inside the KBase ecosystem.
 
 ## Documentation
 
-`kbase-ui` documentation is available at [https://kbase.github.io/kbase-ui](https://kbase.github.io/kbase-ui).
+Generally, see [the internal documentation](docs/index.md).
 
-General "ui at kbase" documentation is available at [https://kbaseincubator.github.io/kbase-ui-docs](https://kbaseincubator.github.io/kbase-ui-docs).
+Quick starts are a great place to ... start!
 
-> Note that all of the documentation is incomplete and in progress.
+- [Deployment](docs/quick-starts//deployment.md)
+- [Development](docs/quick-starts/development.md)
 
 ## Contributing
 
-The KBase UI is an open source project, managed through GitHub. As such,
-contributions, even internally within KBase, are conducted through fork and PR.
+The KBase UI is an open source project, managed through GitHub. Generally this is
+maintained by [KBase](https://www.kbase.us) staff, through feature or fix branches which
+are then incorpporated through a Pull Request process.
 
 ## Release Notes
 
