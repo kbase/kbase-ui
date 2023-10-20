@@ -66,11 +66,13 @@ function test {
 }
 
 # 
-# Development work support.
-# dev prepares everything to enable local development
-# generate-config prepares the config file for the deploy environment set in ENV
+# Build
 #
-function build-setup {
+
+#
+# Sets up the project for either development or image-building
+#
+function setup-for-build-or-dev {
     prepare-build
     git-info
     build-info
@@ -78,10 +80,23 @@ function build-setup {
     render-templates
 }
 
+#
+# Prepare a build for an image
+# After this is complete, everything will be in place for the image
+# to be built.
+#
 function build-kbase-ui {
-    build-setup
+    setup-for-build-or-dev
     build
     create-deploy
+}
+
+#
+# Prepare project for development.
+# After this is complete, the repo is ready for live development
+#
+function dev-setup {
+    setup-for-build-or-dev
 }
 
 #
