@@ -1,5 +1,5 @@
 ---
-name: PR to develop opened
+name: Push to feature or fix branch 
 on:
   push:
     branches:

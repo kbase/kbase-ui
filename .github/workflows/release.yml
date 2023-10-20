@@ -3,8 +3,7 @@ name: Release - Test, Build & Push Image
 on:
   release:
     branches:
-      - main
-      - master
+      - main3
     types: [ published ]
 jobs:
   validate-release-tag:

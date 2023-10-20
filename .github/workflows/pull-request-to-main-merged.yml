@@ -1,9 +1,9 @@
 ---
-name: PR to develop closed and merged
+name: PR To main3 merged
 on:
   pull_request:
     branches:
-      - develop
+      - main3
     types:
       - closed
 jobs:
@@ -15,6 +15,6 @@ jobs:
     needs: test
     uses: ./.github/workflows/reusable_build-push.yml
     with:
-      name: '${{ github.event.repository.name }}-develop'
-      tags: latest
+      name: '${{ github.event.repository.name }}'
+      tags: latest-rc
     secrets: inherit
