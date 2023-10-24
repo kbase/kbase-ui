@@ -38,7 +38,7 @@ export default class AboutKBaseUI extends Component<
                     <li>
                         The{' '}
                         <a
-                            href="/#narrativemanager/start"
+                            href="#narrativemanager/start"
                             target="_blank"
                             style={{ fontWeight: 'bold' }}
                         >
@@ -179,7 +179,7 @@ export default class AboutKBaseUI extends Component<
             'http://kbaseincubator.github.io/kbase-ui-docs';
         const documentationURL = this.props.config.ui.urls.documentation.url;
 
-        const [githubContent, githubUrl,relNotesUrl]  = this.renderGitInfo();
+        const [githubContent, githubUrl, relNotesUrl] = this.renderGitInfo();
 
         const kbaseGithubOrgURL = 'https://github.com/kbase';
 

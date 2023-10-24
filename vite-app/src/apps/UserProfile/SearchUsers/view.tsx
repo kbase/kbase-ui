@@ -48,7 +48,7 @@ export default class SearchUsersView extends Component<SearchUsersViewProps, Sea
         if (value.length === 0) {
             return;
         }
-        const url = `/#user/${value}`;
+        const url = `#user/${value}`;
         window.open(url, '_blank');
     }
 

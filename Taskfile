@@ -108,7 +108,7 @@ function format {
 }
 
 function render-templates {
-    env DIR="${PWD}" ENV="${ENV:-ci}" DEFAULT_PATH="${DEFAULT_PATH}" bash tools/dockerize/scripts/render-templates.sh
+    env DIR="${PWD}" ENV="${ENV:-ci}" DEFAULT_PATH="${DEFAULT_PATH}" BASE_PATH="${BASE_PATH}" bash tools/dockerize/scripts/render-templates.sh
 }
 
 # Optional dev tooling:

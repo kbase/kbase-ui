@@ -131,7 +131,7 @@ export default class View extends Component<ViewProps> {
             <Well.Header icon="briefcase">For Service Managers and Admins</Well.Header>
             <Well.Body>
                 <ul>
-                    <li><a href="/#orcidlink/manage">Management Interface</a></li>
+                    <li><a href="#orcidlink/manage">Management Interface</a></li>
                 </ul>
             </Well.Body>
         </Well>
@@ -155,7 +155,7 @@ export default class View extends Component<ViewProps> {
                 </p>
             </Well.Body>
             <Well.Footer style={{ justifyContent: 'center' }}>
-                <Button variant="primary" href="/#orcidlink/link">
+                <Button variant="primary" href="#orcidlink/link">
                     <span className="fa fa-lg fa-plus" /> Create your KBase ORCID® Link …
                 </Button>
             </Well.Footer>

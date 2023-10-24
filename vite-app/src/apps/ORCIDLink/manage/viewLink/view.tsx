@@ -85,7 +85,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             <Well.Header>Tools</Well.Header>
             <Well.Body>
                 <Stack gap={2}>
-                    <Button href={`/#people/${this.props.link.username}`} target="_blank" variant="secondary">View KBase User Profile</Button>
+                    <Button href={`#people/${this.props.link.username}`} target="_blank" variant="secondary">View KBase User Profile</Button>
                     <Button href={`${this.props.orcidSiteURL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View ORCID® Profile</Button>
                 </Stack>
             </Well.Body>
@@ -97,7 +97,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             <Stack gap={2}>
                 <Row>
                     <Col md={12}>
-                        <Button href={`/#orcidlink/manage`} variant="secondary">
+                        <Button href={`#orcidlink/manage`} variant="secondary">
                             <Stack direction="horizontal" gap={2}>
                                 <ArrowReturnLeft />
                                 <span>KBase ORCID® Link - Manager</span>

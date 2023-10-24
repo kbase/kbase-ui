@@ -153,12 +153,12 @@ http {
             return 413 "Request entity is too large (> 5GB)";
         }
 
-        location /__ping__ {
+        location {{ .Env.BASE_PATH }}/__ping__ {
             default_type "text/html";
             return 204;
         }
 
-        location /data/__perf__ {
+        location {{ .Env.BASE_PATH }}/data/__perf__ {
             gzip off;
             gunzip on;
             add_header Cache-Control 'no-cache, no-transform';
@@ -226,7 +226,7 @@ http {
             #     proxy_pass https://kbase_navigator/narratives/;
             # {{ end }}
 
-             {{ if .Env.deploy_ui_hostname }}
+            {{ if .Env.deploy_ui_hostname }}
                 proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
             {{ else }}
                 proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
@@ -241,6 +241,20 @@ http {
         }
 
         location {{ .Env.BASE_PATH }} {
+            proxy_pass http://kbase_ui;
+            #proxy_set_header Cache-Control 'no-store';
+            #proxy_set_header Cache-Control 'no-cache';
+            #expires 0;
+            # proxy_set_header Connection "";
+            # proxy_set_header Upgrade $http_upgrade;
+            # proxy_set_header Connection "upgrade";
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+
+        # This one to handle legacy plugin /modules/plugins paths in dev
+        location / {
             proxy_pass http://kbase_ui;
             #proxy_set_header Cache-Control 'no-store';
             #proxy_set_header Cache-Control 'no-cache';
@@ -415,7 +429,7 @@ http {
         # host name as services.
         {{ if not .Env.deploy_ui_hostname }}
 
-        location /__ping__ {
+        location {{ .Env.BASE_PATH }}/__ping__ {
             default_type "text/html";
             return 204;
         }
@@ -485,6 +499,15 @@ http {
         # }
 
         location {{ .Env.BASE_PATH }} {
+            proxy_pass http://kbase_ui;
+            proxy_set_header Connection "";
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+
+        # legacy plugins
+        location / {
             proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
             proxy_http_version 1.1;

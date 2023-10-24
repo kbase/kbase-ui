@@ -145,7 +145,7 @@ export default class NotFound extends Component<
                     'redirect-to-www'
                 )
             ) {
-                this.redirect('/#login');
+                this.redirect('#login');
                 return;
             }
             // this.props.setTitle('Redirecting to h...');
@@ -225,7 +225,7 @@ export default class NotFound extends Component<
                         messages: [
                             ...this.state.messages.slice(0, -1),
                             this.state.messages[
-                                this.state.messages.length - 1
+                            this.state.messages.length - 1
                             ] + 'nope',
                         ],
                     },
@@ -474,10 +474,10 @@ export default class NotFound extends Component<
                         </a>
                     </li>
                     <li>
-                        <a href="/#narrativemanager/start">Narrative</a>
+                        <a href="#narrativemanager/start">Narrative</a>
                     </li>
                     <li>
-                        <a href="/#dashboard">Dashboard</a>
+                        <a href="/#dashboard">Narratives Navigator</a>
                     </li>
                 </ul>
 

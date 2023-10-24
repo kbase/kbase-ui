@@ -326,7 +326,7 @@ const LinkedOrg = (props: LinkedOrgProps) => {
         <div className="">
             <a
                 className=""
-                href={`/#orgs/${props.id}`}
+                href={`#orgs/${props.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
             >
