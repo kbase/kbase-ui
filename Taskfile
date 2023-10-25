@@ -125,6 +125,14 @@ function start-local-server {
 	docker compose up 
 }
 
+function build-image {
+    ./scripts/host/build-image.sh
+}
+
+function run-image {
+    ./scripts/host/run-image.sh
+}
+
 #
 # TO PORT
 #
