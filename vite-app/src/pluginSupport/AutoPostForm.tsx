@@ -6,7 +6,7 @@ export interface AutoPostFormProps {
     action: string;
 }
 
-interface AutoPostFormState {}
+interface AutoPostFormState { }
 
 export default class AutoPostForm extends Component<
     AutoPostFormProps,
@@ -43,6 +43,7 @@ export default class AutoPostForm extends Component<
                 ref={this.ref}
                 id={formID}
                 action={action}
+                target="_top"
                 style={{ display: 'hidden' }}
             >
                 {paramInputs}
