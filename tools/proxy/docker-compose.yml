@@ -15,5 +15,7 @@ services:
       - '80:80'
       - '443:443'
     dns: 8.8.8.8
+    environment:
+      - BASE_PATH=${BASE_PATH}
     # note that this is really a docker env file and is relative to the docker-compose file
     env_file: ./conf/${DEPLOY_ENV}.env

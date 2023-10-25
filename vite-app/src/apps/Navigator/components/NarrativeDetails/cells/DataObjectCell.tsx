@@ -23,7 +23,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
         return (
             <div className={styles.ObjectInfo}>
                 <Button
-                    href={`/#dataview/${info.ref}`}
+                    href={`#dataview/${info.ref}`}
                     target="_blank"
                     variant="outline-info"
                 >
@@ -49,7 +49,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                             <th>Type</th>
                             <td>
                                 <a
-                                    href={`/#spec/type/${info.type}`}
+                                    href={`#spec/type/${info.type}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
@@ -90,7 +90,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                             <th>By</th>
                             <td>
                                 <a
-                                    href={`/#user/${info.saved_by}`}
+                                    href={`#user/${info.saved_by}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

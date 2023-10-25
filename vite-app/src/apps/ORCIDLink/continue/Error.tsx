@@ -74,7 +74,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                             <Col style={{ flex: "0 0 11rem" }} className="fw-bold text-secondary">Username</Col>
                             <Col md="auto">
                                 <div className="flex-row" style={{ alignItems: 'center' }}>
-                                    <a href={`/#people/${userProfile.user.username}`} target="_blank">
+                                    <a href={`#people/${userProfile.user.username}`} target="_blank">
                                         {userProfile.user.username}
                                     </a>
                                 </div>

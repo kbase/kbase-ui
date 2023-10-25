@@ -21,7 +21,7 @@ interface ORCIDLinkManageState {
 export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
 
     viewLink(username: string) {
-        const url = `/#orcidlink/manage/link/${username}`;
+        const url = `#orcidlink/manage/link/${username}`;
         window.open(url, '_blank');
     }
 
@@ -52,7 +52,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                 label: 'Username',
                 flex: '1 0 0',
                 render: (linkRecord: LinkRecordPublic) => {
-                    return <a href={`/#people/${linkRecord.username}`} target="_blank">{linkRecord.username}</a>
+                    return <a href={`#people/${linkRecord.username}`} target="_blank">{linkRecord.username}</a>
                 }
             },
             {

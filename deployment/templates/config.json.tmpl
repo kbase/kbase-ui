@@ -2,7 +2,7 @@
     "deploy": {
         "id": "kbase-ui",
         "target": "/kb/deployment/app",
-        "basePath":  "{{ default "" .Env.deploy_basepath }}",
+        "basePath":  "{{ default "" .Env.BASE_PATH }}",
         "environment": "{{ .Env.deploy_environment }}",
         "displayEnvironment": {{ eq .Env.deploy_environment "prod" | ternary true false }},
         "hostname": "{{ .Env.deploy_hostname }}",
@@ -174,7 +174,7 @@
         "defaults": {
             "path": {
                 "type": "path",
-                "value": "{{ default "/narratives" .Env.DEFAULT_PATH }}"
+                "value": "{{ default "#about" .Env.DEFAULT_PATH }}"
             },
             "hideHeader": {{ default "false" .Env.HIDE_HEADER }},
             "hideNavigation": {{ default "false" .Env.HIDE_NAVIGATION }},

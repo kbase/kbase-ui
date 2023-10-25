@@ -35,7 +35,7 @@ export default class Signin extends Component<SigninProps, SigninState> {
 
     render() {
         const url = new URL(window.location.href);
-        url.pathname = '';
+        // url.pathname = '';
         url.hash = '#login';
 
         const nextRequest = this.props.nextRequest; //  || this.makeNextRequstFromHere();

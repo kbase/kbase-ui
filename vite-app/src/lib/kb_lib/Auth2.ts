@@ -132,6 +132,7 @@ export interface Account {
     local: boolean;
     roles: Array<Role>;
     user: string;
+    anonid: string;
 }
 
 export interface LoginCreateResponse {

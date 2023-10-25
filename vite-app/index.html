@@ -2,18 +2,16 @@
 <html lang="en">
 
 <head>
+    <!-- <base href="/foo" /> -->
+    <base href="/">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- <base href="%PUBLIC_URL%" /> -->
-    <base href="/" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <link rel="stylesheet" href="/index.css" />
     <!-- no longer works, so commented out for now -->
     <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXZCE6YQFZ"></script> -->
-    <script src="/js/gtagSupport.js"></script>
-    <script src="/js/mustard.js"></script>
+    <!-- <script src="./js/gtagSupport.js"></script> -->
+    <!-- <script src="./js/mustard.js"></script> -->
     <title>KBase</title>
 </head>
 
@@ -25,14 +23,14 @@
                 <div
                     style="display: inline-block; background-color: #FFF; padding: 20px; line-height: 20px; vertical-align: middle;">
                     <div style="margin-bottom: 10px;">Loading KBase UI ...</div>
-                    <img src="/images/kbase_animated_logo.gif" alt="KBase animated logo">
+                    <img src="./images/kbase_animated_logo.gif" alt="KBase animated logo">
                 </div>
             </div>
         </div>
         <div id="error"></div>
         <div id="status"></div>
     </div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
 </body>
 
 </html>

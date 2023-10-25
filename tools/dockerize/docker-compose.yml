@@ -6,6 +6,7 @@ services:
         container_name: dockerize
         dns: 8.8.8.8
         environment:
+          - BASE_PATH
           - DEFAULT_PATH
           - HIDE_HEADER
           - HIDE_NAVIGATION

@@ -56,7 +56,7 @@ function countCellTypes(narrative: NarrativeSearchDoc): CellTypesInfo {
 }
 
 const profileLink = (username: string, realname: string) => (
-    <a key={username} href={`/#user/${username}`} title={username}>
+    <a key={username} href={`#user/${username}`} title={username}>
         {realname}
     </a>
 );

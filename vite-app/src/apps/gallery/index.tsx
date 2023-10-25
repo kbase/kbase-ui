@@ -48,13 +48,13 @@ export default class Gallery extends Component<GalleryProps> {
             <div className={styles.sidebar}>
                 <Nav defaultActiveKey={this.props.params.get('name') || 'home'} className="flex-column" variant="pills">
                     <Nav.Item>
-                        <Nav.Link eventKey="home" href="/#gallery/home">Home</Nav.Link>
+                        <Nav.Link eventKey="home" href="#gallery/home">Home</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="alertmessage" href="/#gallery/alertmessage">AlertMessage</Nav.Link>
+                        <Nav.Link eventKey="alertmessage" href="#gallery/alertmessage">AlertMessage</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="empty" href="/#gallery/empty">Empty</Nav.Link>
+                        <Nav.Link eventKey="empty" href="#gallery/empty">Empty</Nav.Link>
                     </Nav.Item>
                 </Nav>
             </div>

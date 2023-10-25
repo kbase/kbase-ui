@@ -1,4 +1,4 @@
-import {Component, Fragment} from 'react';
+import { Component, Fragment } from 'react';
 import { ConfigContext } from '../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess';
 
@@ -42,10 +42,10 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
                                 </a>
                             </li>
                             <li>
-                                <a href="/#narrativemanager/start">Narrative</a>
+                                <a href="#narrativemanager/start">Narrative</a>
                             </li>
                             <li>
-                                <a href="/#dashboard">Dashboard</a>
+                                <a href="#dashboard">Narratives Navigator</a>
                             </li>
                         </ul>
 
@@ -64,7 +64,7 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
                 );
             }}
         </ConfigContext.Consumer>
-        
+
     }
 
 }

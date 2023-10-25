@@ -30,6 +30,7 @@ yarn.lock
 # /react-app/public/data
 # !/react-app/public/data/README.md
 _working/
+_todo/
 
 # General purpose temp directory
 /temp/*

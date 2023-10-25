@@ -3,6 +3,7 @@ echo "Rendering kbase-ui config file from template for environment '${ENV}' usin
 echo "Parameters (Environment Variables):"
 echo "  ENV=${ENV}"
 echo "  DIR=${DIR}"
+echo "  BASE_PATH=${BASE_PATH}"
 echo "  DEFAULT_PATH=${DEFAULT_PATH}"
 echo "  HIDE_HEADER=${HIDE_HEADER}"
 echo "  HIDE_NAVIGATION=${HIDE_NAVIGATION}"

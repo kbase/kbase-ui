@@ -53,7 +53,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
             <>
                 <div className={styles.id}>
                     <a
-                        href={`/#spec/type/${id}`}
+                        href={`#spec/type/${id}`}
                         target="_blank"
                         rel="noreferrer"
                     >

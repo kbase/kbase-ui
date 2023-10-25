@@ -6,7 +6,7 @@ export interface CategoryMenuProps {
     category?: string;
 }
 
-interface CategoryMenuState {}
+interface CategoryMenuState { }
 
 export default class CategoryMenu extends Component<
     CategoryMenuProps,
@@ -67,7 +67,7 @@ export default class CategoryMenu extends Component<
                 {/* <div>
                                 <a
                                     className="btn btn-primary narrative-new"
-                                    href="/#narrativemanager/new"
+                                    href="#narrativemanager/new"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >

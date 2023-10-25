@@ -65,7 +65,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
         const rows = this.props.linkingSessions.initial_linking_sessions.map(({ username, session_id, created_at, expires_at }) => {
             return <tr key={session_id}>
                 <td>
-                    <a href={`/#people/${username}`} target="_blank" >{username}</a>
+                    <a href={`#people/${username}`} target="_blank" >{username}</a>
                 </td>
                 <td>
                     {session_id}
@@ -114,7 +114,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
         const rows = this.props.linkingSessions.started_linking_sessions.map(({ username, session_id, created_at, expires_at }) => {
             return <tr key={session_id}>
                 <td>
-                    <a href={`/#people/${username}`} target="_blank" >{username}</a>
+                    <a href={`#people/${username}`} target="_blank" >{username}</a>
                 </td>
                 <td>
                     {session_id}
@@ -172,7 +172,7 @@ export default class QueryLinkingSessionsView extends Component<QueryLinkingSess
         const rows = this.props.linkingSessions.completed_linking_sessions.map(({ username, session_id, created_at, expires_at }) => {
             return <tr key={session_id}>
                 <td>
-                    <a href={`/#people/${username}`} target="_blank">{username}</a>
+                    <a href={`#people/${username}`} target="_blank">{username}</a>
                 </td>
                 <td>
                     {session_id}

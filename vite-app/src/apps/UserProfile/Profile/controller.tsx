@@ -148,7 +148,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
             .map(({ name, id, custom }) => {
                 return {
                     name,
-                    url: "/#orgs/" + id,
+                    url: "#orgs/" + id,
                     logoURL: custom.logourl,
                 };
             });

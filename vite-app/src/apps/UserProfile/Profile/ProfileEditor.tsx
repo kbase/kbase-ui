@@ -1261,7 +1261,7 @@ function Profile(props: ProfileProps) {
 
         const message = <div>
             <p>Organizations are not editable in your profile.</p>
-            <p>Please visit the <a href="/#organizations" target="_blank" rel="noopener noreferrer">Organizations page</a> to manage your Organization memberships.</p>
+            <p>Please visit the <a href="#organizations" target="_blank" rel="noopener noreferrer">Organizations page</a> to manage your Organization memberships.</p>
         </div>
         return <Alert message={message} />
     }

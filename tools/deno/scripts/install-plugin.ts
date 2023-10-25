@@ -286,14 +286,6 @@ async function updatePluginManifest(
     log('done!', 'updatePluginManifest');
 }
 
-// async function savePluginManifest(path) {
-//   const root = state.environment.path;
-//   const configDest = root.concat(['build', 'client', 'modules', 'config']);
-//   const manifestPath = configDest.concat(['plugins-manifest.json']);
-//   await mutant.saveJson(manifestPath, state.pluginsManifest);
-//   return state;
-// }
-
 async function main() {
     if (Deno.args.length < 4) {
         log(`Incorrect number of args ${Deno.args.length}`)
