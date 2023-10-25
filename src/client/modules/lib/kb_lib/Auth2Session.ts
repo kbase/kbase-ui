@@ -674,19 +674,6 @@ export class Auth2Session {
             new Cookie(this.cookieName, '').setPath('/')
         );
 
-        // Also remove the domain level cookie in case it was in advertently
-        // created. This can be a cause for a corrupt token, since the old auth
-        // system tokens are invalid, and it could create domain level cookies.
-        // New auth code does not (other than the backup cookie.)
-        const domainParts = window.location.hostname.split('.');
-        let domain;
-        for (let len = 2; len <= domainParts.length; len += 1) {
-            domain = domainParts.slice(-len).join('.');
-            this.cookieManager.removeItem(
-                new Cookie(this.cookieName, '').setPath('/').setDomain(domain)
-            );
-        }
-
         if (this.extraCookies) {
             this.extraCookies.forEach((cookieConfig) => {
                 this.cookieManager.removeItem(
