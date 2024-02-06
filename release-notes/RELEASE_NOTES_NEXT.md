@@ -1,6 +1,6 @@
 # KBase kbase-ui NEXT Release Notes
 
-none
+The main change here is to update the call to Google Analytics to anonymize the user id sent.
 
 ## CHANGES
 
@@ -18,7 +18,7 @@ none
 
 ### IMPROVEMENTS
 
-none
+- UIP-35: sends an anonymous id to Google Analytics instead of a user name
 
 ### FIXES
 
