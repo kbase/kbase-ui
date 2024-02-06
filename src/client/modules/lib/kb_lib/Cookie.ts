@@ -216,8 +216,11 @@ export class CookieManager {
         return cookie[0].value;
     }
 
-    getItems(key: string): Array<string> {
-        const cookie = this.findCookies(key);
+    getItems(key: string, domain?: string): Array<string> {
+        let cookie = this.findCookies(key);
+        if (domain) {
+            cookie = cookie.filter((item) => item.domain === domain);
+        }
         if (cookie.length === 0) {
             return [];
         }
