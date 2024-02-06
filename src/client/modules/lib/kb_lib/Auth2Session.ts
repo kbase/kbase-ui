@@ -431,7 +431,10 @@ export class Auth2Session {
     }
 
     getAuthCookie(): string | null {
-        let cookies = this.cookieManager.getItems(this.cookieName);
+        let cookies = this.cookieManager.getItems(
+            this.cookieName,
+            document.location.hostname
+        );
 
         // Expected case, just a single session cookie.
         if (cookies.length === 1) {
@@ -451,7 +454,10 @@ export class Auth2Session {
         if (cookies.length === 2) {
             this.removeSessionCookie();
         }
-        cookies = this.cookieManager.getItems(this.cookieName);
+        cookies = this.cookieManager.getItems(
+            this.cookieName,
+            document.location.hostname
+        );
         if (cookies.length > 0) {
             throw new Error(
                 'Duplicate session cookie detected and cannot remove it. Please delete your browser cookies for this site.'
@@ -649,6 +655,7 @@ export class Auth2Session {
     setSessionCookie(token: string, expiration: number) {
         const sessionCookie = new Cookie(this.cookieName, token)
             .setPath('/')
+            .setDomain(document.location.hostname)
             .setSecure(true);
 
         sessionCookie.setExpires(new Date(expiration).toUTCString());
@@ -671,7 +678,9 @@ export class Auth2Session {
     removeSessionCookie(): void {
         // Remove host-based cookie.
         this.cookieManager.removeItem(
-            new Cookie(this.cookieName, '').setPath('/')
+            new Cookie(this.cookieName, '')
+                .setPath('/')
+                .setDomain(document.location.hostname)
         );
 
         if (this.extraCookies) {
