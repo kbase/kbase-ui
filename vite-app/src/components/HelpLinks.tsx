@@ -2,13 +2,7 @@ import { Component, Fragment } from 'react';
 import { ConfigContext } from '../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../lib/AsyncProcess';
 
-export interface AuthProblemProps {
-}
-
-interface AuthProblemState {
-}
-
-export default class NotFound extends Component<AuthProblemProps, AuthProblemState> {
+export default class HelpLinks extends Component {
     render() {
         return <ConfigContext.Consumer>
             {(value) => {
@@ -64,7 +58,5 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
                 );
             }}
         </ConfigContext.Consumer>
-
     }
-
 }

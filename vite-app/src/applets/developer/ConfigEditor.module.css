@@ -1,0 +1,7 @@
+.main {
+    overflow-y: auto;
+}
+
+.main .path {
+    font-style: italic;
+}

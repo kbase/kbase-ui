@@ -1,9 +1,8 @@
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { Notification, NotificationKind } from "contexts/RuntimeContext";
+import { AuthenticationStateAuthenticated, NotifyOptions } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { StatusResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { GetLinkingSessionsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import Poller, { makePoller } from "lib/poller";
@@ -15,7 +14,7 @@ import ORCIDLinkManageView from "./view";
 export interface QueryLinkingSessionsControllerProps {
     auth: AuthenticationStateAuthenticated;
     config: Config;
-    notify: (n: Notification) => void;
+    notify: (options: NotifyOptions) => void;
 }
 
 export interface QueryLinksState {
@@ -114,41 +113,46 @@ export default class QueryLinkingSessionsController extends Component<QueryLinki
         // TODO: yeah, need to handle this.
         await model.deleteExpiredSessions()
         this.props.notify({
-            kind: NotificationKind.AUTODISMISS,
-            dismissAfter: 3000,
-            id: 'foo',
+            title: 'Success',
             message: 'Expired Sessions, if any, have been deleted',
-            startedAt: Date.now(),
-            type: 'success',
+            variant: 'success'
         });
+        // this.props.notify({
+        //     kind: NotificationKind.AUTODISMISS,
+        //     dismissAfter: 3000,
+        //     id: 'foo',
+        //     message: 'Expired Sessions, if any, have been deleted',
+        //     startedAt: Date.now(),
+        //     type: 'success',
+        // });
         return this.loadData();
     }
 
     async deleteStartedSession(sessionId: string) {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.deleteLinkingSessionStarted(sessionId);
-        this.props.notify({
-            kind: NotificationKind.AUTODISMISS,
-            dismissAfter: 3000,
-            id: 'foo',
-            message: 'The session has been deleted',
-            startedAt: Date.now(),
-            type: 'success',
-        });
+        // this.props.notify({
+        //     kind: NotificationKind.AUTODISMISS,
+        //     dismissAfter: 3000,
+        //     id: 'foo',
+        //     message: 'The session has been deleted',
+        //     startedAt: Date.now(),
+        //     type: 'success',
+        // });
         return this.loadData();
     }
 
     async deleteCompletedSession(sessionId: string) {
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         await model.deleteLinkingSessionCompleted(sessionId);
-        this.props.notify({
-            kind: NotificationKind.AUTODISMISS,
-            dismissAfter: 3000,
-            id: 'foo',
-            message: 'The session has been deleted',
-            startedAt: Date.now(),
-            type: 'success',
-        });
+        // this.props.notify({
+        //     kind: NotificationKind.AUTODISMISS,
+        //     dismissAfter: 3000,
+        //     id: 'foo',
+        //     message: 'The session has been deleted',
+        //     startedAt: Date.now(),
+        //     type: 'success',
+        // });
         return this.loadData();
     }
 

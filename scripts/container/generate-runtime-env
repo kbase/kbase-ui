@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+
+# KBase UI Config and Nginx Server Environment Variables
+#
+# Used to generate config.json and nginx.conf.
+#
+# Input environment variables:
+#
+# required:
+#
+# DEPLOY_ENV
+#
+# Created env vars for config.json.tmpl:
+#
+# BASE_PATH
+# DEFAULT_PATH
+# DEFAULT_PATH_TYPE
+# UI_DOMAIN
+# KBASE_ENDPOINT
+# FEATURE_SWITCHES_ENABLED
+# FEATURE_SWITCHES_DISABLED
+# AUTH2_PROVIDERS
+#
+
+if [ -z "${DEPLOY_ENV}" ]
+then
+    echo 'The "DEPLOY_ENV" environment variable is required to generate config env'
+    exit 1
+fi
+
+
+# 
+# These rarely, if ever, change, so they have defaults.
+#
+BASE_PATH="${BASE_PATH}"
+DEFAULT_PATH="narratives"
+DEFAULT_PATH_TYPE="europaui"
+
+#
+# These change per environment, with the special case for prod.
+#
+
+# Domain all other user intefaces
+UI_DOMAIN="${DEPLOY_ENV}.kbase.us"
+
+# Domain for kbase-ui
+# TODO: is this used? if it is, we need the subdomain hostname; if not, remove.
+if [ -z "${KBASE_UI_HOSTNAME}" ]
+then
+    KBASE_UI_DOMAIN="${DEPLOY_ENV}.kbase.us"
+else
+    KBASE_UI_DOMAIN="${KBASE_UI_HOSTNAME}.${DEPLOY_ENV}.kbase.us"
+fi
+
+# Base URL for services
+# KBASE_ENDPOINT="https://${DEPLOY_ENV}.kbase.us/services/"
+
+# Well, maybe it don't really work like that? (old prod)
+
+if [ "${DEPLOY_ENV}" = "narrative" ]
+then
+    KBASE_ENDPOINT="https://kbase.us/services/"
+elif [ "${DEPLOY_ENV}" = "narrative2" ]
+then
+    KBASE_ENDPOINT="https://kbase.us/services/"
+else
+    KBASE_ENDPOINT="https://${DEPLOY_ENV}.kbase.us/services/"
+fi
+
+#
+# Auth providers
+#
+if [ "$DEPLOY_ENV" = "appdev" ]
+then
+    AUTH2_PROVIDERS="Google,Globus"
+else
+    AUTH2_PROVIDERS="Google,Globus,OrcID"
+fi
+
+#
+# Feature switches.
+#
+# TODO: remove "similar_genomes" feature switch from kbase-ui and landing pages. 
+#       let's do that soon, as we can then get rid of a lot of config below and make
+#       deployment easier.
+#
+if [ "$DEPLOY_ENV" = "ci" ]
+then
+    FEATURE_SWITCHES_ENABLED=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+elif [ "$DEPLOY_ENV" = "ci-europa" ]
+then
+    FEATURE_SWITCHES_ENABLED=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+elif [ "$DEPLOY_ENV" = "narrative-dev" ]
+then
+    FEATURE_SWITCHES_ENABLED=similar_genomes
+elif [ "$DEPLOY_ENV" = "next" ]
+then
+    FEATURE_SWITCHES_ENABLED=similar_genomes
+elif [ "$DEPLOY_ENV" = "appdev" ]
+then
+    FEATURE_SWITCHES_ENABLED=similar_genomes
+elif [ "$DEPLOY_ENV" = "narrative2" ]
+then
+    FEATURE_SWITCHES_ENABLED=similar_genomes
+elif [ "$DEPLOY_ENV" = "narrative" ]
+then
+    FEATURE_SWITCHES_ENABLED=similar_genomes
+fi
+
+
+#
+# Created env vars for nginx.json.tmpl:
+# Note that these may not be used, but we generate them anyway.
+#
+# BASE_PATH
+# NGINX_LOG_SYSLOG
+# NGINX_LOG_STDOUT
+# NGINX_LOG_STDERR
+# NGINX_LOG_LEVEL
+# NGINX_LISTEN
+# NGINX_SERVER_NAME
+
+
+# Note that nginx env vars, NGINX_*, are not used for development, but we generate the
+# nginx config file anyway.
+NGINX_LOG_SYSLOG=
+NGINX_LOG_STDOUT=true
+NGINX_LOG_STDERR=true
+NGINX_LOG_LEVEL=error
+NGINX_LISTEN=80
+NGINX_SERVER_NAME=localhost
+
+
+# Generates a temporary env file for usage in generating the runtime template
+# config.json and nginx.conf
+
+cat << EOF > ./.devcontainer/runtime.env
+BASE_PATH="${BASE_PATH}"
+DEFAULT_PATH="${DEFAULT_PATH}"
+DEFAULT_PATH_TYPE="${DEFAULT_PATH_TYPE}"
+UI_DOMAIN="${UI_DOMAIN}"
+KBASE_UI_DOMAIN="${KBASE_UI_DOMAIN}"
+FEATURE_SWITCHES_ENABLED="${FEATURE_SWITCHES_ENABLED}"
+FEATURE_SWITCHES_DISABLED="${FEATURE_SWITCHES_DISABLED}"
+AUTH2_PROVIDERS="${AUTH2_PROVIDERS}"
+KBASE_ENDPOINT="${KBASE_ENDPOINT}"
+NGINX_LOG_SYSLOG="${NGINX_LOG_SYSLOG}"
+NGINX_LOG_STDOUT="${NGINX_LOG_STDOUT}"
+NGINX_LOG_STDERR="${NGINX_LOG_STDERR}"
+NGINX_LOG_LEVEL="${NGINX_LOG_LEVEL}"
+NGINX_LISTEN="${NGINX_LISTEN}"
+NGINX_SERVER_NAME="${NGINX_SERVER_NAME}"
+EOF

@@ -69,7 +69,7 @@ export default class Features extends Component<FeaturesProps, FeaturesState> {
 
     render() {
         return (
-            <div className={styles.Main}>
+            <div className={styles.main}>
                 <p>Welcome to the Features Editor</p>
                 <div>
                     {this.renderFeatures()}

@@ -1,11 +1,12 @@
 import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+// import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
 import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
 import { InfoResult, LinkingSessionPublicComplete } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
-import { changeHash2 } from "lib/navigation";
+import { navigate, navigate2 } from "lib/navigation";
 import { Component } from "react";
 import { Config } from "types/config";
 import { Model } from "../lib/Model";
@@ -303,41 +304,64 @@ export default class ContinueController extends Component<ContinueControllerProp
             const returnInstruction = this.props.returnInstruction;
 
             if (typeof returnInstruction !== 'undefined') {
-                switch (returnInstruction.type) {
-                    case 'link': {
-                        // If the url is local, we make a navigation-friendly
-                        // hash.
-                        // TODO: catch error in URL construction.
-                        let url;
-                        try {
-                            url = new URL(returnInstruction.url);
-                        } catch (ex) {
-                            this.setState({
-                                createLinkState: {
-                                    status: AsyncProcessStatus.ERROR,
-                                    error: {
-                                        message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
-                                    }
-                                }
-                            });
-                            return;
+                // If the url is local, we make a navigation-friendly
+                // hash.
+                // TODO: catch error in URL construction.
+                let url;
+                try {
+                    url = new URL(returnInstruction.url);
+                } catch (ex) {
+                    this.setState({
+                        createLinkState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
+                            }
                         }
-                        if (url.origin === document.location.origin) {
-                            const hashPath = `${url.hash}${url.search}`;
-                            changeHash2(hashPath);
-                        } else {
-                            window.open(url.toString(), '_parent');
-                        }
-                        break;
-                    }
-                    case 'window': {
-                        const { id, origin } = returnInstruction;
-                        window.opener.postMessage({ id }, origin);
-                    }
+                    });
+                    return;
                 }
+                if (url.origin === document.location.origin) {
+                    const hashPath = `${url.hash}${url.search}`;
+                    navigate(hashPath);
+                } else {
+                    window.open(url.toString(), '_parent');
+                }
+                // switch (returnInstruction.type) {
+                //     case 'link': {
+                //         // If the url is local, we make a navigation-friendly
+                //         // hash.
+                //         // TODO: catch error in URL construction.
+                //         let url;
+                //         try {
+                //             url = new URL(returnInstruction.url);
+                //         } catch (ex) {
+                //             this.setState({
+                //                 createLinkState: {
+                //                     status: AsyncProcessStatus.ERROR,
+                //                     error: {
+                //                         message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
+                //                     }
+                //                 }
+                //             });
+                //             return;
+                //         }
+                //         if (url.origin === document.location.origin) {
+                //             const hashPath = `${url.hash}${url.search}`;
+                //             navigate(hashPath);
+                //         } else {
+                //             window.open(url.toString(), '_parent');
+                //         }
+                //         break;
+                //     }
+                //     case 'window': {
+                //         const { id, origin } = returnInstruction;
+                //         window.opener.postMessage({ id }, origin);
+                //     }
+                // }
             } else {
                 // This is the case of linking from the tool itself.
-                changeHash2('#orcidlink')
+                navigate('#orcidlink')
             }
             // this.setState({
             //     createLinkState: {
@@ -368,22 +392,14 @@ export default class ContinueController extends Component<ContinueControllerProp
         }
     }
 
+    // TODO: is this really a thing still?
     handleReturnLink() {
         const returnInstruction = this.props.returnInstruction;
         if (typeof returnInstruction !== 'undefined') {
-            switch (returnInstruction.type) {
-                case 'link':
-                    window.open(returnInstruction.url, '_parent');
-                    return;
-                case 'window': {
-                    const { id, origin } = returnInstruction;
-                    window.opener.postMessage({ id }, origin);
-                }
-            }
+            window.open(returnInstruction.url, '_parent');
         } else {
-            // TODO: what is this use case? Is it real?
-            // TODO: get from config, this is for rapid dev.
-            window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
+            // without a return instruction, we simply return to the orcidlink main page
+            navigate2({type: 'kbaseui', path: 'orcidlink'});
         }
     }
 

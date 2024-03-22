@@ -42,10 +42,9 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                     return null;
             }
         }
-
         return this.props.icon || null;
-
     }
+
     defaultTitle() {
         if (!this.props.showTitle) {
             return;
@@ -63,6 +62,7 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                 return;
         }
     }
+
     renderIcon() {
         const iconClass = this.iconClass();
         if (iconClass === null) {
@@ -70,6 +70,7 @@ export default class AlertMessage extends Component<AlertMessageProps> {
         }
         return <span className={`fa fa-${iconClass}`} style={{ marginRight: '0.25em' }} />
     }
+
     renderTitle() {
         const title = this.props.title || this.defaultTitle();
         if (!title) {

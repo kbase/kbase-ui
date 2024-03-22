@@ -1,3 +1,9 @@
+/**
+ * react-select was not exporting these types
+ * If this is no longer the case, please refactor and remove this file, or any
+ * unnecessary types from it.
+ */
+
 
 export interface Option<T> {
     value: T;

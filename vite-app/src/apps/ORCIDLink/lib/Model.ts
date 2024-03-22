@@ -1,4 +1,4 @@
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import ORCIDLinkAPI, { InfoResult, StatusResult, Work } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import ORCIDLinkManageAPI, { FindLinksParams, FindLinksResult, GetLinkingSessionsResult, GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
@@ -216,17 +216,17 @@ export class Model {
         this.auth = auth;
         this.orcidLinkClient = new ORCIDLinkServiceClient({
             url: this.config.services.ORCIDLink.url,
-            timeout: 1000,
+            timeout: this.config.ui.constants.clientTimeout,
             token: auth.authInfo.token
         });
         this.orcidLinkAPI = new ORCIDLinkAPI({
             url: `${this.config.services.ORCIDLink.url}/api/v1`,
-            timeout: 1000,
+            timeout: this.config.ui.constants.clientTimeout,
             token: auth.authInfo.token
         });
         this.orcidLinkManageAPI = new ORCIDLinkManageAPI({
             url: `${this.config.services.ORCIDLink.url}/api/v1`,
-            timeout: 1000,
+            timeout: this.config.ui.constants.clientTimeout,
             token: auth.authInfo.token
         })
     }

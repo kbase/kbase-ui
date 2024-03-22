@@ -48,7 +48,8 @@
     overflow-x: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    /* font-weight: bold; */
+    font-weight: bold;
+    color: rgb(125, 125, 125);
 
 }
 

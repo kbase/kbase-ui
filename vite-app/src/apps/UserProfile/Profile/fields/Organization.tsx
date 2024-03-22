@@ -9,6 +9,7 @@ import { noScriptTag } from '../../utils';
 export interface OrganizationProps {
     name: number | string | Array<number | string>;
     label?: string
+    hasFeedback?: boolean;
     required: boolean;
 }
 
@@ -66,6 +67,7 @@ export default class Organization extends React.Component<OrganizationProps, Org
             name={this.props.name}
             label={this.props.label}
             required={this.props.required}
+            hasFeedback={this.props.hasFeedback}
             rules={[
                 { required: false, message: 'an organization is required' },
                 {

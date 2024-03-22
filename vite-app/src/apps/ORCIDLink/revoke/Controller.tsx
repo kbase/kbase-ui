@@ -1,9 +1,9 @@
-import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { changeHash2 } from 'lib/navigation';
+import { navigate } from 'lib/navigation';
 import { Model, ORCIDLinkInfo } from '../lib/Model';
 import View from './View';
 
@@ -171,7 +171,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     cancel() {
-        changeHash2("orcidlink");
+        navigate("orcidlink");
     }
 
     // Load state

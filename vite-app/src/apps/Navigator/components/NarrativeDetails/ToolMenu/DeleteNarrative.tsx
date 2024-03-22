@@ -73,6 +73,7 @@ export default class DeleteNarrative extends Component<
             const client = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
                 token: this.props.authInfo.token,
+                timeout: this.props.config.ui.constants.clientTimeout
             });
             const perm = await client.getUserPermission(
                 this.props.narrative.access_group,
@@ -121,6 +122,7 @@ export default class DeleteNarrative extends Component<
             await workspaceClient.delete_workspace(
                 { id: this.props.narrative.access_group }
             );
+            // TODO: force an immediate refresh of the search.
             this.setState({
                 status: DeleteNarrativeStatus.SUCCESS,
             });

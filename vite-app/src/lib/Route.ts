@@ -48,6 +48,7 @@ export type Params = Map<string, string>;
 export interface RouteOptions {
     authenticationRequired?: boolean;
     rolesRequired?: Array<Role>;
+    label?: string;
 }
 
 export interface SimpleRouteSpec {
@@ -59,13 +60,20 @@ export interface SimplePluginRouteSpec extends SimpleRouteSpec {
     view: string
 }
 
+export interface MatchedHashPath {
+    hashPath: string;  // The hash path with any matched params removed, and attached search removed
+    params: Params;    // The combined params - hash path matched params, hash search, url search
+}
+
 export class Route {
     rawRouteSpec: string;
+    label?: string;
     routeSpec: RouteSpec;
     render: RouteRenderer;
     routeOptions: RouteOptions;
     constructor(rawRouteSpec: string, routeOptions: RouteOptions, render: RouteRenderer) {
         this.rawRouteSpec = rawRouteSpec;
+        this.label = routeOptions.label;
         this.render = render;
         this.routeOptions = routeOptions;
         this.routeSpec = this.parseRouteSpec();
@@ -135,7 +143,7 @@ export class Route {
         return routeSpec;
     }
 
-    pathToParams(hashPath: HashPath): null | Params {
+    matchHashPath({ hash, params }: HashPath): MatchedHashPath | null {
 
         // First match the param literals.
 
@@ -149,10 +157,17 @@ export class Route {
                 If all goes well,
             */
         const literalPathElements: Array<string> = [];
-        const params: Params = new Map();
+        const hashParams: Map<string, string> = new Map();
+
+        const hashAsPath = hash.split('/')
+            // special handling here - only real use case is an empty string, as other
+            // code ensures that there are no empty elements.
+            .filter((element: string) => {
+                return element.length > 0;
+            })
 
         for (const [index, routeElement] of this.routeSpec.entries()) {
-            const pathElement = hashPath.path[index];
+            const pathElement = hashAsPath[index];
             switch (routeElement.type) {
                 case RouteSpecElementType.REGEXP:
                     // Early exit if there are no more elements but more route.
@@ -172,7 +187,7 @@ export class Route {
                             continue;
                         }
                     } else {
-                        params.set(routeElement.name, pathElement);
+                        hashParams.set(routeElement.name, pathElement);
                     }
                     break;
                 case RouteSpecElementType.SOME:
@@ -180,7 +195,7 @@ export class Route {
                     if (typeof pathElement === 'undefined') {
                         return null;
                     }
-                    for (const pathElement of hashPath.path.slice(index)) {
+                    for (const pathElement of hashAsPath.slice(index)) {
                         literalPathElements.push(pathElement);
                     }
                     break;
@@ -192,10 +207,9 @@ export class Route {
                     // can say this is not a match!
 
 
-                    for (const pathElement of hashPath.path.slice(index)) {
+                    for (const pathElement of hashAsPath.slice(index)) {
                         literalPathElements.push(pathElement);
                     }
-
             }
         }
 
@@ -203,15 +217,30 @@ export class Route {
             If we get to the end, and there are more hash path elements not covered by the
             route, consider this a failure to match.
         */
-        if (literalPathElements.length + params.size !== hashPath.path.length) {
+       
+        if (literalPathElements.length + hashParams.size !== hashAsPath.length) {
             return null;
         }
 
-        // Finally, since we have a match, extract params from the search part of the url.
-        hashPath.query.forEach((value, key) => {
-            params.set(key, value);
-        });
+        // NOTE: for now we ignore the search params; we used to enforce hash params
+        // (basically whitelisting them), but this seemed more trouble than worth.
+        // And filtering on search params also seems like an invitation to confusion.
 
-        return params;
+        // Finally, since we have a match, copy the params from the query, which
+        // includes both the real url search and the fake hash search.
+        // hashPath.query.forEach((value, key) => {
+        //     params.set(key, value);
+        // });
+        if (params) {
+            for (const [key, value] of Object.entries(params)) {
+                hashParams.set(key, value);
+            }
+        }
+
+        // return params;
+        return {
+            hashPath: literalPathElements.join('/'),
+            params: hashParams
+        }
     }
 }

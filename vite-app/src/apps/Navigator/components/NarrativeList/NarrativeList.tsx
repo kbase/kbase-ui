@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
 // Components
-import { updateHistory } from 'lib/navigation';
+import { navigate2, updateHistory } from 'lib/navigation';
 import IconSpinner from '../IconSpinner';
 import NarrativeDetailsWrapper from '../NarrativeDetails/NarrativeDetailsWrapper';
 import { SearchInput } from '../SearchInput';
@@ -145,7 +145,9 @@ export default class NarrativeList extends Component<
     }
 
     newNarrative() {
-        window.open("#narrativemanager/new", "_blank")
+        navigate2({path: 'narrativemanager/new', type: 'kbaseui', newWindow: true});
+
+        // window.open("#narrativemanager/new", "_blank")
     }
 
     render() {

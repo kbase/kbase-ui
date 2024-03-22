@@ -1,4 +1,5 @@
 {
+    "window.title": "kbase-ui/${activeRepositoryBranchName}",
     "editor.detectIndentation": false,
     "editor.quickSuggestionsDelay": 1000,
     "eslint.format.enable": true,
@@ -29,5 +30,7 @@
         "latex",
         "plaintext",
         "typescript"
-    ]
+    ],
+    "typescript.tsserver.log": "verbose",
+    "peacock.remoteColor": "#42b883"
 }

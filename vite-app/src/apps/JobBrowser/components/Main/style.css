@@ -1,0 +1,48 @@
+.Main {
+    margin: 1rem;
+}
+
+.FlexTabs {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FlexTabs .ant-tabs-top-bar {
+    flex: 0 0 auto;
+}
+
+.FlexTabs .ant-tabs-content {
+    flex: 1 1 0px;
+    overflow-y: auto;
+}
+
+
+.Row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.Row-fullheight {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: row;
+}
+
+.Row-scrollable {
+    min-height: 0;
+    min-width: 0;
+}
+
+.Col-scrollable {
+    min-height: 0;
+    min-width: 0;
+}
+
+.Col {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}

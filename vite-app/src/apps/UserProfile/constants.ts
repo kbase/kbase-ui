@@ -17,9 +17,4 @@ export const DEFAULT_MAX_TEXT_LENGTH = 1000;
 
 export const SERVICE_CALL_TIMEOUT = 10000;
 
-
-
 export const MINIMUM_SEARCH_CHARS = 3;
-
-// TODO: move to config?
-export const ORCID_URL = 'https://sandbox.orcid.org';

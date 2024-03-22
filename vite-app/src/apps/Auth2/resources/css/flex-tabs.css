@@ -1,0 +1,94 @@
+.flex-tabs {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0px;
+}
+
+.flex-tabs>.-tabs {
+    flex: 0 0 2.8em;
+    text-align: bottom;
+    display: flex;
+    flex-direction: row;
+    /* padding-left: 2em; */
+    /* border-bottom: 1px rgba(200, 200, 200, 0.5) solid; */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.flex-tabs>.-tabs>.-tab {
+    cursor: pointer;
+    padding: 0 8px 0 8px;
+    background-color: transparent;
+    user-select: none;
+    border: 1px transparent solid;
+    border-radius: 4px 4px 0 0;
+    line-height: 2.8em;
+    border-bottom: 1px solid #ddd;
+}
+
+.flex-tabs>.-tabs>.-tab-rest {
+    flex: 1 1 0px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* .flex-tabs>.-tabs>.-tab:nth-child(1) {
+    padding-left: 0px;
+} */
+
+.flex-tabs>.-tabs>.-tab>.-label {
+    line-height: 2.8em;
+    padding: 0 8px;
+    /* display: inline-block;
+vertical-align: middle; */
+    white-space: nowrap;
+    color: #337ab7;
+}
+
+
+.flex-tabs>.-tabs>.-tab:hover {
+    background-color: #eeeeee;
+}
+
+.flex-tabs>.-tabs>.-tab.-active:hover {
+    background-color: transparent;
+}
+
+
+.flex-tabs>.-tabs>.-tab.-active>.-label {
+    color: #555555;
+}
+
+.flex-tabs>.-tabs>.-tab.-active {
+    /*border: 2px rgba(200, 200, 200, 0.5) solid;*/
+    /* background-color: rgba(200, 200, 200, 0.5); */
+    color: #000;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+}
+
+/* .flex-tabs>.-tabs>.-tab.-inactive {
+    background-color: transparent;
+} */
+
+/* Panels */
+
+.flex-tabs>.-panels {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-tabs .-panel {
+    padding: 3px;
+    background-color: transparent;
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.flex-tabs>.-panels>.-panel.-inactive {
+    display: none;
+}
+
+.flex-tabs>.-panels>.-panel.-active {}

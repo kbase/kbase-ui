@@ -16,14 +16,13 @@ import {
     Tooltip
 } from 'antd';
 import Link from 'antd/es/typography/Link';
+import Well from 'components/Well';
 import { image } from 'components/images';
 import DOMPurify from 'dompurify';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
-import { changeHash2 } from 'lib/navigation';
+import { navigate2 } from 'lib/navigation';
 import { marked } from 'marked';
-import { v4 as uuidv4 } from 'uuid';
 import { UserProfileAffiliation } from '../API';
-import Area from './Area';
 import Orgs from './Orgs/controller';
 import './Profile.css';
 import { ORCIDState, OrgsState, ProfileView } from './controller';
@@ -33,7 +32,6 @@ export interface ProfileProps {
     profileView: ProfileView;
     orcidState: ORCIDState;
     orgsState: OrgsState;
-    uiOrigin: string;
     checkORCID: (username: string) => void;
     fetchProfile: (username: string) => void;
     toggleEditing: () => void;
@@ -214,7 +212,7 @@ function ProfileViewer(props: ProfileProps) {
             marked.use({
                 breaks: true
             });
-            const content = DOMPurify.sanitize(marked.parse(researchStatement));
+            const content = DOMPurify.sanitize(marked.parse(researchStatement, {async: false}) as string);
             statement = <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
@@ -344,92 +342,23 @@ function ProfileViewer(props: ProfileProps) {
             </div>
         </div>
     }
+
     function onORCIDLink() {
-        // open window, without much or any window decoration.
-        const eventId = uuidv4();
-        // const url = new URL(`${document.location.origin}#orcidlink/link`);
-        // TODO: for better ergonomics in development, should be able to get the
-        // kbase environment host from the config...
+        const params: Record<string, string> = {};
 
-        const url = new URL(props.uiOrigin);
-        // const url = new URL(window.location.href);
-        url.hash = '#orcidlink/link';
-
-        // TODO: if this works, we can give the window a unique uuid name when the app loads.
-        window.name = "FOOBAR";
-
-        // {id: string} is the ReturnFromWindow type expected by ORCIDLink.
-        const origin = window.location.origin;
-        // const origin = "https://ci.kbase.us";
-        url.searchParams.set('ui_options', "hide-ui");
-        url.searchParams.set('return_link', JSON.stringify({
-            type: 'window',
-            origin,
-            id: eventId,
-            label: 'User Profile'
-        }));
-        const newWindow = window.open(url.toString(), '_blank', "popup,width=1079,height=960");
-        if (newWindow === null) {
-            // what to do?
-            // return <Alert type="error" message="Cannot open new window for linking" />
-            console.error('Cannot open new window for linking');
-            return;
-        }
-
-        const handleEvent = ({ data }: MessageEvent<ReturnLink>) => {
-            if (typeof data === 'object' && data !== null) {
-                const { id } = data;
-                if (eventId === id) {
-                    // this.evaluate();
-                    // do something here...
-                    props.checkORCID(props.profileView.user.username);
-                    props.fetchProfile(props.profileView.user.username);
-                    if (newWindow) {
-                        newWindow.close();
-                        window.removeEventListener('message', handleEvent);
-                    }
-                }
-            }
-        };
-        window.addEventListener('message', handleEvent);
-    }
-
-    function getLinkingLink() {
-        const linkingURL = new URL(`${props.uiOrigin}/#orcidlink/link`);
-        const returnURL = (() => {
-            if (window.parent) {
-                return new URL(window.parent.location.href);
-            } else {
-                return new URL(window.location.href);
-            }
-        })();
+        const returnURL = new URL(window.location.href);
         const returnLink = {
-            type: 'link',
             url: returnURL.toString(),
             label: 'User Profile'
         }
-        linkingURL.searchParams.set('return_link', JSON.stringify(returnLink));
-        const hash = linkingURL.hash;
-        const query = linkingURL.search;
-        return `${hash}${query}`
-    }
+        params.return_link = JSON.stringify(returnLink);
 
-    function onORCIDLink2() {
-        // const onOk = () => {
-        //     window.location.href = getLinkingLink();
-        // }
-
-        // Modal.confirm({
-        //     title: 'Proceed to ORCID Link',
-        //     onOk,
-        //     content: <>
-        //         <p>
-        //             In order to create your ORCID Link, your browser will leave this page, then return
-        //             to it when you have completed the linking process.
-        //         </p>
-        //     </>
-        // });
-        changeHash2(window.location.href = getLinkingLink());
+        navigate2({
+            path: 'orcidlink/link',
+            type: 'kbaseui',
+            params,
+            newWindow: false
+        });
     }
 
     function renderControls() {
@@ -457,28 +386,14 @@ function ProfileViewer(props: ProfileProps) {
 
         let button;
 
-        // const orcidLinkButton = (() => {
-        //     if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
-        //         if (props.orcidState.value.orcidId) {
-        //             return;
-        //         }
-        //         return <Tooltip title="Click this button to link your KBase account to your ORCID account">
-        //             <Button onClick={onORCIDLink}>Link to ORCID (popup)</Button>
-        //         </Tooltip>
-        //     }
-        // })();
         const orcidLinkButton2 = (() => {
             if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
                 if (props.orcidState.value.orcidId) {
                     return;
                 }
                 return <Tooltip title="Click this button to link your KBase account to your ORCID® account">
-                    <Button onClick={(ev) => {
-                        if (ev.altKey) {
-                            onORCIDLink()
-                        } else {
-                            onORCIDLink2()
-                        }
+                    <Button onClick={() => {
+                        onORCIDLink();
                     }} >Create KBase ORCID® Link...</Button>
                 </Tooltip>
             }
@@ -487,11 +402,9 @@ function ProfileViewer(props: ProfileProps) {
             <Button
                 icon={<EditOutlined />}
                 type="primary"
-                // style={{ display: 'inline-flex', alignItems: 'center' }}
                 onClick={enableEditing}>
                 Edit Profile
             </Button>
-            {/* {orcidLinkButton} */}
             {orcidLinkButton2}
             {warnings}
         </Space>;
@@ -678,43 +591,91 @@ function ProfileViewer(props: ProfileProps) {
             <div className="Profile-control-area" style={{ marginBottom: '10px' }}>
                 {renderControls()}
             </div >
-            <div className="Profile-content-area">
-
+                {/* Padding below to fix antd rows with gutters. */}
+            <div className="Profile-content-area" style={{padding: '0 4px'}}>
                 <Row gutter={8} >
                     <Col span={showORCIDId() ? 8 : 6}>
-                        <Area title={props.profileView.user.realname} >
+                        <Well variant="secondary" style={{ flex: '1 1 0' }}>
+                            <Well.Header className="justify-content-center">
+                                {props.profileView.user.realname}
+                            </Well.Header>
+                            <Well.Body>
+                                <div style={{ marginBottom: '1rem' }}>
+                                    {renderIdentityView()}
+                                </div>
+                                {renderAvatar()}
+                            </Well.Body>
+                        </Well>
+                        {/* <Area title={props.profileView.user.realname} >
                             <div style={{ marginBottom: '1rem' }}>
                                 {renderIdentityView()}
                             </div>
                             {renderAvatar()}
-                        </Area>
+                        </Area> */}
                     </Col>
                     <Col span={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Area title="Research Interests">
+                        <Well variant="secondary" style={{ flex: '1 1 0' }}>
+                            <Well.Header className="justify-content-center">
+                                Research Interests
+                            </Well.Header>
+                            <Well.Body>
+                                {renderResearchInterests()}
+                            </Well.Body>
+                        </Well>
+                        {/* <Area title="Research Interests">
                             {renderResearchInterests()}
-                        </Area>
+                        </Area> */}
                     </Col>
-                    <Col span={showORCIDId() ? 8 : 10} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Area title='Organizations' scroll="auto">
+                    <Col span={showORCIDId() ? 10 : 12} style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Well variant="secondary" style={{ flex: '1 1 0' }}>
+                            <Well.Header className="justify-content-center">
+                                KBase Organizations
+                            </Well.Header>
+                            <Well.Body style={{flex: '1 1 0', overflowY: 'auto'}}>
+                                <Orgs orgsState={props.orgsState} />
+                            </Well.Body>
+                        </Well>
+                        {/* <Area title='Organizations' scroll="auto">
                             <Orgs orgsState={props.orgsState} />
-                        </Area>
+                        </Area> */}
                     </Col>
                 </Row>
                 <Row gutter={8} style={{ marginTop: '1rem' }}>
                     <Col span={6} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Area >
+                        <Well variant="secondary">
+                            <Well.Body>
+                                {renderUserNutshell()}
+                            </Well.Body>
+                        </Well>
+                        {/* <Area >
                             {renderUserNutshell()}
-                        </Area>
+                        </Area> */}
                     </Col>
                     <Col span={7} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Area title='Research or Personal Statement'>
+                        <Well variant="secondary">
+                            <Well.Header className="justify-content-center">
+                                Research or Personal Statement
+                            </Well.Header>
+                            <Well.Body>
+                                {renderResearchStatement()}
+                            </Well.Body>
+                        </Well>
+                        {/* <Area title='Research or Personal Statement'>
                             {renderResearchStatement()}
-                        </Area>
+                        </Area> */}
                     </Col>
-                    <Col span={9} style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Area title='Affiliations'>
+                    <Col span={11} style={{ display: 'flex', flexDirection: 'column' }}>
+                        <Well variant="secondary">
+                            <Well.Header className="justify-content-center">
+                                Affiliations
+                            </Well.Header>
+                            <Well.Body >
+                                {renderAffiliations()}
+                            </Well.Body>
+                        </Well>
+                        {/* <Area title='Affiliations'>
                             {renderAffiliations()}
-                        </Area>
+                        </Area> */}
                     </Col>
                 </Row >
             </div>

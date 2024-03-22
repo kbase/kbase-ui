@@ -1,4 +1,5 @@
 import { isJSONObject, traverse } from '@kbase/ui-lib/lib/json';
+import { resultOrThrow } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
 import GenericClient11 from '../../lib/kb_lib/comm/JSONRPC11/GenericClient';
 import GenericClient20 from '../../lib/kb_lib/comm/JSONRPC20/GenericClient';
 import { Config } from '../../types/config';
@@ -26,6 +27,29 @@ export interface PerformanceMetrics {
     total: number;
     average: number;
 }
+
+export enum PerformanceMeasurementsStatus {
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
+}
+
+export interface PerformanceMeasurementsBase {
+    status: PerformanceMeasurementsStatus
+}
+
+export interface PerformanceMeasurementsSuccess extends PerformanceMeasurementsBase{
+    status: PerformanceMeasurementsStatus.SUCCESS,
+    version: string;
+    measurements: PerformanceMetrics;
+}
+
+export interface PerformanceMeasurementsError extends PerformanceMeasurementsBase { 
+    status: PerformanceMeasurementsStatus.ERROR,
+    message: string;
+}
+
+export type PerformanceMeasurements = PerformanceMeasurementsSuccess | PerformanceMeasurementsError;
+
 
 export default class ServicePerformance {
     params: ServicePerformanceParams
@@ -63,7 +87,7 @@ export default class ServicePerformance {
                 return await next(itersLeft - 1);
                 // return null;
             } catch (ex) {
-                console.error('ERROR', expect);
+                console.error('ERROR', ex);
                 return await next(itersLeft - 1);
             }
         };
@@ -121,7 +145,8 @@ export default class ServicePerformance {
             prefix: false,
         });
         return async () => {
-            const result = await client.callFunc(service.method);
+            const response = await client.callFunc(service.method);
+            const result = resultOrThrow(response);
             if (service.versionKey) {
                 if (isJSONObject(result)) {
                     const result2 = traverse(result, service.versionKey);
@@ -184,8 +209,15 @@ export default class ServicePerformance {
         }
     }
 
-    async measure() {
+    async measure(): Promise<PerformanceMeasurements> {
         const ver = this.getAPICall();
-        return await Promise.all([ver(), this.measurePerformance(ver)]);
+        try {
+            const [version, measurements] =  await Promise.all([ver(), this.measurePerformance(ver)]);
+            return {status: PerformanceMeasurementsStatus.SUCCESS, version, measurements}
+        } catch (ex) {
+            return {status: PerformanceMeasurementsStatus.ERROR, 
+                message: ex instanceof Error ? ex.message : 'Unknown error'
+            }
+        }
     }
 }

@@ -5,6 +5,27 @@
 # Note that lower case environment variables are taken from conf/*.env, where * is the 
 # deploy environment, taken from DEPLOY_ENV.
 
+# Environment Variables:
+# BASE_PATH = {{ .Env.BASE_PATH }}
+# UI_DOMAIN = {{ .Env.UI_DOMAIN }}
+# KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
+# KBASE_UI_HOST = {{ .Env.KBASE_UI_HOST }} 
+# EUROPA_UI_HOST = {{ .Env.EUROPA_UI_HOST }}
+# LOCAL_NARRATIVE = {{ .Env.LOCAL_NARRATIVE }}
+# SERVICE_PROXIES = {{ .Env.SERVICE_PROXIES }}
+# DYNAMIC_SERVICE_PROXIES = {{ .Env.DYNAMIC_SERVICE_PROXIES }}
+# SERVICES_DOMAIN = {{ .Env.SERVICES_DOMAIN }}
+
+
+
+{{ $subhost := not (eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN) }}
+
+{{ if $subhost }}
+# Configured for SUBHOST {{ .Env.KBASE_UI_DOMAIN }}
+{{ else }}
+# Configured for SAME HOST
+{{ end }}
+
 daemon off;
 error_log /dev/stdout info;
 worker_processes auto;
@@ -13,7 +34,6 @@ pid /var/run/nginx.pid;
 events {
 	worker_connections 1024;
 }
-
 
 http {
 	sendfile on;
@@ -57,54 +77,31 @@ http {
         ''      close;
     }
 
-
-    # Define upstream servers, for convenience.
     upstream kbase_ui {
-        # Use 80 for image; 3000 for devcontainer
-        # server {{ .Env.kbase_ui_host }}:80;
-        server {{ .Env.kbase_ui_host }}:3000;
+        server {{ .Env.KBASE_UI_HOST }}:3000;
         # allows the proxy to start up even though the 
-        # dev server may not be running yet
-        server {{ .Env.kbase_ui_host }}:80 backup;
+        # target may not be running yet
+        server {{ .Env.KBASE_UI_HOST }}:80 backup;
         keepalive 16;
     }
 
-    # upstream services {
-    #     server {{ .Env.deploy_hostname }};
-    #     keepalive 16;
-    # }
-
-    # upstream dynamic_services {
-    #     server {{ .Env.deploy_hostname }};
-    #     keepalive 16;
-    # }
+     upstream europa_ui {
+        server {{ .Env.EUROPA_UI_HOST }}:8080;
+        # allows the proxy to start up even though the 
+        # target may not be running yet
+        server {{ .Env.EUROPA_UI_HOST }}:80 backup;
+        keepalive 16;
+    }
 
     upstream narrative {
-        {{ if .Env.local_narrative }}
+        {{ if eq .Env.LOCAL_NARRATIVE "t" }}
             server narrative:8888;
         {{ else }}
-            {{ if .Env.deploy_ui_hostname }}
-                server {{ .Env.deploy_ui_hostname }};
-            {{ else }}
-                server {{ .Env.deploy_hostname }};
-            {{ end }}
+            server {{ .Env.UI_DOMAIN }};
         {{ end }}
     }
 
-    upstream kbase_navigator {
-        {{ if .Env.local_navigator }}
-            server navigator:5000;
-        {{ else }}
-            {{ if .Env.deploy_ui_hostname }}
-                server {{ .Env.deploy_ui_hostname }};
-            {{ else }}
-                server {{ .Env.deploy_hostname }};
-            {{ end }}
-        {{ end }}
-    }
-
-    log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length upstream_http_location $upstream_http_location msec $msec request_time $request_time';
-
+    log_format upstream_log '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time proxy_host $proxy_host upstream_status $upstream_status upstream_response_length $upstream_response_length upstream_http_location $upstream_http_location msec $msec request_time $request_time http_origin $http_origin';
 
 	# Logging Settings
 	access_log /var/log/nginx/access.log;
@@ -114,166 +111,12 @@ http {
     server {
         listen 80 default_server;
         listen [::]:80 default_server;
-        server_name {{ default  .Env.deploy_hostname .Env.deploy_ui_hostname }};
-        return 301 https://{{ default .Env.deploy_hostname .Env.deploy_ui_hostname }}$request_uri;
-    }
-    
-    
-    # If there is a separate ui hostname provided in the configuration,
-    # we need to listen for this separately.
-    # The only real usage of this is for production, in which kbase-ui and
-    # the narrative operate at narrative.kbase.us, but services at kbase.us.
-    {{ if .Env.deploy_ui_hostname }}
-
-    # server {
-    #     server_name {{ .Env.deploy_ui_hostname }};
-    #     listen 3000 ssl;
-    #     ssl_certificate /kb/deployment/ssl/test.crt;
-    #     ssl_certificate_key /kb/deployment/ssl/test.key;
-    #     ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-    #     location /ws/ {
-    #         client_max_body_size 300M;
-    #         proxy_connect_timeout 10s;
-    #         proxy_pass http://kbase_ui/ws/;
-    #         proxy_set_header Upgrade $http_upgrade;
-    #         proxy_set_header Connection "Upgrade";
-    #         proxy_set_header Host {{ .Env.deploy_ui_hostname }};
-    #     }
-    # }
-
-    server {
-        listen 443 ssl;
-        server_name {{ .Env.deploy_ui_hostname }};
-        ssl_certificate /kb/deployment/ssl/test.crt;
-        ssl_certificate_key /kb/deployment/ssl/test.key;
-        ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-
-        location @request_entity_too_large {
-            default_type text/plain;
-            return 413 "Request entity is too large (> 5GB)";
-        }
-
-        location /__ping__ {
-            default_type "text/html";
-            return 204;
-        }
-
-        location /data/__perf__ {
-            gzip off;
-            gunzip on;
-            add_header Cache-Control 'no-cache, no-transform';
-            proxy_pass http://kbase_ui;
-        }
-
-        # Needed for running narratives
-        location /narrative/ {
-            access_log /var/log/nginx/narrative.log upstream_log;
-
-            include /etc/nginx/cors.conf;
-            {{ if .Env.local_narrative }}
-                proxy_pass http://narrative/narrative/; 
-            {{ else }}
-                {{ if .Env.deploy_ui_hostname }}
-                    proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative/;
-                {{ else }}
-                    proxy_pass https://{{ .Env.deploy_hostname }}/narrative/;
-                {{ end }}
-                # proxy_pass https://narrative/narrative/;
-            {{ end }}
-
-            proxy_connect_timeout 10s;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-            proxy_set_header Origin https://{{ .Env.deploy_ui_hostname }};
-            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
-        }
-
-        location /ui-assets/ {
-            proxy_pass https://{{ .Env.deploy_ui_hostname }};
-            proxy_set_header Connection "";
-        }
-
-         location /sn/ {
-            proxy_pass https://{{ .Env.deploy_ui_hostname }};
-            proxy_set_header Connection "";
-        }
-
-        location /narratives/ {
-            # {{ if .Env.local_navigator }}
-            #     proxy_pass http://navigator/narratives/;
-            # {{ else }}
-            #     proxy_pass https://kbase_navigator/narratives/;
-            # {{ end }}
-
-            {{ if .Env.deploy_ui_hostname }}
-                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
-            {{ else }}
-                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
-            {{ end }}
-
-            access_log /var/log/nginx/navigator.log upstream_log;
-
-            proxy_set_header Connection "";
-            proxy_read_timeout 10m;
-            proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
-            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
-        }
-
-         location /navigator/ {
-            # {{ if .Env.local_navigator }}
-            #     proxy_pass http://navigator/narratives/;
-            # {{ else }}
-            #     proxy_pass https://kbase_navigator/narratives/;
-            # {{ end }}
-
-             {{ if .Env.deploy_ui_hostname }}
-                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
-            {{ else }}
-                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
-            {{ end }}
-
-            access_log /var/log/nginx/navigator.log upstream_log;
-
-            proxy_set_header Connection "";
-            proxy_read_timeout 10m;
-            proxy_set_header Origin  https://{{ .Env.deploy_ui_hostname }};
-            proxy_set_header Host {{ .Env.deploy_ui_hostname }};
-        }
-
-        location {{ .Env.base_path }} {
-            proxy_pass http://kbase_ui;
-            #proxy_set_header Cache-Control 'no-store';
-            #proxy_set_header Cache-Control 'no-cache';
-            #expires 0;
-            # proxy_set_header Connection "";
-            # proxy_set_header Upgrade $http_upgrade;
-            # proxy_set_header Connection "upgrade";
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-        }
+        server_name {{ .Env.UI_DOMAIN }};
+        return 301 https://{{ .Env.UI_DOMAIN }}$request_uri;
     }
 
-    {{ end }}
-
-    # server {
-    #     server_name {{ .Env.deploy_hostname }};
-    #     listen 3000 ssl;
-    #     ssl_certificate /kb/deployment/ssl/test.crt;
-    #     ssl_certificate_key /kb/deployment/ssl/test.key;
-    #     ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
-    #     proxy_http_version 1.1;
-    #     location /ws/ {
-    #         proxy_connect_timeout 10s;
-    #         proxy_pass http://kbase_ui/ws/;
-    #         proxy_set_header Upgrade $http_upgrade;
-    #         proxy_set_header Connection "Upgrade";
-    #         proxy_set_header Host {{ .Env.deploy_hostname }};
-    #     }
-    # }
-
-    server {
-        server_name {{ .Env.deploy_hostname }};
+     server {
+        server_name {{ .Env.UI_DOMAIN }};
         listen 443 ssl;
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
@@ -289,22 +132,25 @@ http {
         keepalive_timeout 0;
         proxy_socket_keepalive off;
 
+        # Include service and dynamic service proxying here if the ui host
+        # is the same as the service host.
+
         # Service proxying
         # specified as a list of service modules
         # note should put the service module name in /etc/hosts and map to localhost
-        {{ if .Env.service_proxies }}
-        {{ range splitList " " .Env.service_proxies }}
+        {{ if .Env.SERVICE_PROXIES }}
+        {{ range splitList " " .Env.SERVICE_PROXIES }}
 
         {{ if eq . "searchapi2" }}
             location /services/searchapi2/legacy {
-                {{ if $.Env.deploy_ui_hostname }}
+                {{ if $subhost }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
                 proxy_pass http://searchapi2:5000/legacy;
                 proxy_set_header Connection "";
             }
             location /services/searchapi2/rpc {
-                {{ if $.Env.deploy_ui_hostname }}
+                {{ if $subhost }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
                 proxy_pass http://searchapi2:5000/rpc;
@@ -321,16 +167,16 @@ http {
                 # client_max_body_size 5000001000;
 
                 error_page 413 @request_entity_too_large;
-                {{ if $.Env.deploy_ui_hostname }}
-                include /etc/nginx/cors.conf;
-                {{ end }}
+
+                # include /etc/nginx/cors.conf;
+
                 proxy_pass http://{{ . }}:3000/;
                 proxy_set_header Connection "";
                 proxy_read_timeout 10m;
             }
         {{ else }}
             location /services/{{ . }}/ {
-                {{ if $.Env.deploy_ui_hostname }}
+                {{ if $subhost }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
                 proxy_pass http://{{ . }}:5000/;
@@ -338,7 +184,7 @@ http {
                 proxy_read_timeout 10m;
             }
             location /services/{{ . }} {
-                {{ if $.Env.deploy_ui_hostname }}
+                {{ if $subhost }}
                 include /etc/nginx/cors.conf;
                 {{ end }}
                 proxy_pass http://{{ . }}:5000;
@@ -350,18 +196,20 @@ http {
         {{ end }}
         {{ end }}
 
-     
         # Proxy all service calls, including auth2, to the real CI
         location /services {
             access_log /var/log/nginx/services_proxy.log upstream_log;
 
-            # The cookie path rewriting is just for auth2
-            {{ if .Env.deploy_ui_hostname }}
+            # need cors because kbase-ui will be on a different host.
+            
+            {{ if $subhost }}
             include /etc/nginx/cors.conf;
             {{ end }}
+
+            # The cookie path rewriting is just for auth2
             proxy_cookie_path /login /services/auth/login;
             proxy_cookie_path /link /services/auth/link;
-            proxy_pass https://{{ .Env.deploy_hostname }}/services;
+            proxy_pass https://{{ .Env.SERVICES_DOMAIN }}/services;
             proxy_set_header Connection "";
             proxy_read_timeout 10m;
         }
@@ -375,8 +223,8 @@ http {
         # where XXX is a random-appearing string component provided by the service wizard
         # and Module is the dynamic service module name.
 
-        {{ if .Env.dynamic_service_proxies }}
-        {{ range splitList " " .Env.dynamic_service_proxies }}
+        {{ if .Env.DYNAMIC_SERVICE_PROXIES }}
+        {{ range splitList " " .Env.DYNAMIC_SERVICE_PROXIES }}
 
         # note that the elements of the list must match the service path used in the ui call,
         # and also the hostname assigned to the docker container.
@@ -384,9 +232,10 @@ http {
         #    without punctuation will work, but if they contain a / or something, maybe not.
 
         location ~ ^/dynserv/[^.]+[.]{{ . }}.*$ {
-            {{ if $.Env.deploy_ui_hostname }}
+            
+                {{ if $subhost }}
                 include /etc/nginx/cors.conf;
-            {{ end }}
+                {{ end }}
 
             # This handles plain dynamic service calls, which don't have any path following the module name
             rewrite ^/dynserv/[^.]+[.]{{ . }}$ / break;
@@ -403,33 +252,25 @@ http {
         # Un-trapped dynamic service calls are routed to the real dynamic service
         # endpoints.
         location /dynserv {
-            {{ if .Env.deploy_ui_hostname }}
-                include /etc/nginx/cors.conf;
+            # need cors because kbase-ui will be on a different host.
+           
+            {{ if $subhost }}
+            include /etc/nginx/cors.conf;
             {{ end }}
-            proxy_pass https://{{ .Env.deploy_hostname }}/dynserv;
+            proxy_pass https://{{ .Env.SERVICES_DOMAIN }}/dynserv;
             proxy_set_header Connection "";
             proxy_read_timeout 10m;
         }
 
-        # Repeat the ui proxying for the case in which they reside on the same
-        # host name as services.
-        {{ if not .Env.deploy_ui_hostname }}
-
-        location /__ping__ {
-            default_type "text/html";
-            return 204;
-        }
-
         location /narrative/ {
-            {{ if .Env.local_narrative }}
+            {{ if eq .Env.LOCAL_NARRATIVE "t" }}
                 proxy_pass http://narrative/narrative/;
             {{ else }}
-                {{ if .Env.deploy_ui_hostname }}
-                    proxy_pass https://{{ .Env.deploy_ui_hostname }}/narrative/;
-                {{ else }}
-                    proxy_pass https://{{ .Env.deploy_hostname }}/narrative/;
-                {{ end }}
-                # proxy_pass https://narrative/narrative/;
+                proxy_pass https://{{ .Env.UI_DOMAIN }}/narrative/;
+            {{ end }}
+
+            {{ if $subhost }}
+            include /etc/nginx/cors.conf;
             {{ end }}
 
             access_log /var/log/nginx/narrative.log upstream_log;
@@ -437,61 +278,78 @@ http {
             proxy_connect_timeout 10s;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
-            proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
-            proxy_set_header Host {{ .Env.deploy_hostname }};
+            proxy_set_header Origin  https://{{ .Env.UI_DOMAIN }};
+            proxy_set_header Host {{ .Env.UI_DOMAIN }};
         }
 
         location /ui-assets/ {
-            proxy_pass https://{{ .Env.deploy_hostname }};
+            proxy_pass https://{{ .Env.UI_DOMAIN }};
             proxy_set_header Connection "";
         }
 
         location /sn/ {
-            proxy_pass https://{{ .Env.deploy_hostname }};
+            proxy_pass https://{{ .Env.UI_DOMAIN }};
             proxy_set_header Connection "";
         }
 
         location /n/ {
-            proxy_pass https://{{ .Env.deploy_hostname }};
+            proxy_pass https://{{ .Env.UI_DOMAIN }};
             proxy_set_header Connection "";
         }
 
-        location /narratives/ {
-            # {{ if .Env.local_navigator }}
-            #     proxy_pass http://navigator/narratives/;
-            # {{ else }}
-            #     proxy_pass https://kbase_navigator/narratives/;
-            # {{ end }}
-            {{ if .Env.deploy_ui_hostname }}
-                proxy_pass https://{{ .Env.deploy_ui_hostname }}/narratives/;
-            {{ else }}
-                proxy_pass https://{{ .Env.deploy_hostname }}/narratives/;
-            {{ end }}
+        # kbase-ui will be located on a path
+        # disable this if the subdomain is used instead.
+        # in this case, BASE_PATH had better not be empty or /.
+        {{ if eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN }}
 
-            access_log /var/log/nginx/navigator.log upstream_log;
-
+        {{ if .Env.BASE_PATH }}
+        location /{{ .Env.BASE_PATH }}/ {
+            proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
-            proxy_read_timeout 10m;
-            proxy_set_header Origin  https://{{ .Env.deploy_hostname }};
-            proxy_set_header Host {{ .Env.deploy_hostname }};
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        } 
+        {{ else }}
+        location / {
+            proxy_pass http://kbase_ui;
+            proxy_set_header Connection "";
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        } 
+        {{ end }}
+
+        {{ end }}
+
+        # Europa is always at the root.
+        location / {
+            proxy_pass http://europa_ui;
+            proxy_set_header Connection "";
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
         }
+    }
 
-        # location /vite_hms {
-        #     proxy_pass http://{{ .Env.deploy_hostname }}:3001/vite_hms;
-        #     proxy_http_version 1.1;
-        #     proxy_set_header Upgrade $http_upgrade;
-        #     proxy_set_header Connection "Upgrade";
-        #     proxy_set_header Host {{ .Env.deploy_hostname }};
-        # }
+    # This is invoked to run kbase-ui on a subdomain if specified
+    # This is de-facto always the case in the current Europa implementation.
+    {{ if $subhost }}
+    server {
+        server_name {{ .Env.KBASE_UI_DOMAIN }};
+        listen 443 ssl;
+        ssl_certificate /kb/deployment/ssl/test.crt;
+        ssl_certificate_key /kb/deployment/ssl/test.key;
+        ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
 
-        location {{ .Env.base_path }} {
+        location {{ .Env.BASE_PATH }}/ {
+            include /etc/nginx/cors.conf;
             proxy_pass http://kbase_ui;
             proxy_set_header Connection "";
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
         }
-
-        {{ end }}
     }
+    {{ end }}
 }

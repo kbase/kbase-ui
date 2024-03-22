@@ -1,18 +1,16 @@
+import Well from 'components/Well';
 import { Component } from 'react';
 import DataBrowser, {
     ColumnDef
 } from '../../../components/DataBrowser';
-import { PluginsInfo, PluginInfo } from '../../../types/info';
+import { PluginInfo, PluginsInfo } from '../../../types/info';
 
 export interface AboutPluginsProps {
     pluginsInfo: PluginsInfo;
 }
 
-interface AboutPluginsState { }
-
 export default class AboutPlugins extends Component<
-    AboutPluginsProps,
-    AboutPluginsState
+    AboutPluginsProps
 > {
     renderPlugins() {
         const columns: Array<ColumnDef<PluginInfo>> = [
@@ -102,10 +100,10 @@ export default class AboutPlugins extends Component<
     }
 
     render() {
-        return <div className="well main">
-            <div className="well-body">
+        return <Well variant="secondary" stretch>
+            <Well.Body>
                 {this.renderPlugins()}
-            </div>
-        </div>;
+            </Well.Body>
+        </Well>;
     }
 }

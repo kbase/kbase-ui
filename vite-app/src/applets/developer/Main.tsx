@@ -14,7 +14,7 @@ export default class Main extends Component<MainProps, MainState> {
 
     render() {
         return (
-            <div className={styles.Main}>
+            <div className={styles.main}>
                 <p>Welcome to the Developer Tools.</p>
                 <p>
                     Currently this tool just lets you edit the runtime config.

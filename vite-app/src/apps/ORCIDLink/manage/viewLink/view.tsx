@@ -1,4 +1,5 @@
 import { renderORCIDIcon } from "apps/ORCIDLink/common";
+import UILinkButton from "components/UILinkButton";
 import Well from "components/Well";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import { Component } from "react";
@@ -85,7 +86,10 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
             <Well.Header>Tools</Well.Header>
             <Well.Body>
                 <Stack gap={2}>
-                    <Button href={`#people/${this.props.link.username}`} target="_blank" variant="secondary">View KBase User Profile</Button>
+                    <UILinkButton path={{path: `people/${this.props.link.username}`, type: 'kbaseui'}}
+                            newWindow={true} variant="secondary">
+                        View KBase User Profile
+                    </UILinkButton>
                     <Button href={`${this.props.orcidSiteURL}/${this.props.link.orcid_auth.orcid}`} target="_blank" variant="secondary">View ORCID® Profile</Button>
                 </Stack>
             </Well.Body>

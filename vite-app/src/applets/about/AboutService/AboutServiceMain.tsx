@@ -1,4 +1,5 @@
 import { isJSONObject, traverse } from 'lib/json';
+import { resultOrThrow } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
 import { Component } from 'react';
 import ErrorAlert from '../../../components/ErrorAlert';
 import Loading from '../../../components/Loading';
@@ -45,14 +46,8 @@ export default class AboutServiceMain extends Component<
     AboutServiceMainProps,
     AboutServiceMainState
 > {
-    // method : string;
     constructor(props: AboutServiceMainProps) {
         super(props);
-        // const method = props.service.statusMethod  || props.service.versionMethod;
-        // if (typeof method === 'undefined') {
-        //     throw new Error('Neither status nor version method provided')
-        // }
-        // this.method = method;
         this.state = {
             load: {
                 status: AsyncProcessStatus.NONE,
@@ -152,7 +147,9 @@ export default class AboutServiceMain extends Component<
             prefix: false,
         });
         return async () => {
-            const result = await client.callFunc(service.method);
+            const response = await client.callFunc(service.method);
+            const result = resultOrThrow(response);
+            console.log('WEll, weLL', result);
             if (service.versionKey) {
                 if (isJSONObject(result)) {
                     const result2 = traverse(result, service.versionKey);

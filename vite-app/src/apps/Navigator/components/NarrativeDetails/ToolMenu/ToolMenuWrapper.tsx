@@ -1,8 +1,8 @@
+import ErrorMessage from 'components/ErrorMessage';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import WorkspaceClient, { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
-import ErrorMessage from '../../../../../components/ErrorMessage';
-import { AuthInfo } from '../../../../../contexts/Auth';
 import {
     AsyncProcess,
     AsyncProcessStatus,
@@ -62,7 +62,7 @@ export default class ToolMenUWrapper extends Component<
         // get shared perms from workspace
         const ws = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
             token: this.props.authInfo.token
         });
         const result = await ws.get_permissions_mass(

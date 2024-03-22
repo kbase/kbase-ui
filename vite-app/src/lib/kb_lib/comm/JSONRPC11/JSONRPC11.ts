@@ -163,10 +163,12 @@ export class JSONRPCClient {
                 method: 'POST',
                 body: JSON.stringify(payload),
                 headers,
+                mode: 'cors',
                 signal: controller.signal
             });
         } catch (ex) {
             if (ex instanceof DOMException) {
+                console.error('ERROR', this.url, ex);
                 throw new ConnectionError(`Connection error ${ex.name}: ${ex.message}`);
             } else if (ex instanceof TypeError) {
                 throw new RequestError(`Request error: ${ex.message}`)

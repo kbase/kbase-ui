@@ -1,0 +1,61 @@
+.FlexTabs {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FlexTabs-header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+    display: flex;
+    flex-direction: row;
+}
+
+.FlexTabs-body {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    transition: opacity 0.5s;
+    position: relative;
+    /* padding-top: 4px; */
+}
+
+/* .FlexTabs-body {
+    visibility: none;
+}
+
+.FlexTabs-body-active {
+    visibility: visible;
+} */
+
+/* Colors mimic ant design */
+
+.FlexTabs-tab {
+    padding: 6px 8x;
+    border-bottom: 2px solid transparent;
+    margin-right: 32px;
+}
+
+.FlexTabs-tab .ant-btn-link {
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.FlexTabs-tab:hover .ant-btn-link {
+    color: #1663ba;
+}
+
+/* .FlexTabs-tab:hover {
+    border-bottom: 2px solid #1663ba;
+    color: #1663ba;
+} */
+
+.FlexTabs-tab-active {
+    border-bottom: 2px solid #1663ba;
+    color: #1663ba;
+}
+
+.FlexTabs-tab-active .ant-btn-link {
+    color: #1663ba;
+}

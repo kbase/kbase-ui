@@ -1,6 +1,6 @@
 import { JSONArrayOf, JSONObject } from 'lib/json';
 import { JSONLikeObject } from 'lib/jsonLike';
-import { ServiceClient2 } from '../JSONRPC20/ServiceClient2';
+import { ServiceClient } from '../JSONRPC20/ServiceClient';
 import { LinkingSessionInitial, LinkingSessionPublicComplete, LinkingSessionStarted } from './ORCIDLInk';
 import { LinkRecordPublic } from './orcidLinkCommon';
 
@@ -143,45 +143,47 @@ export interface DeleteLinkParams extends JSONObject {
     username: string;
 }
 
-export default class ORCIDLinkManageAPI extends ServiceClient2 {
+export default class ORCIDLinkManageAPI extends ServiceClient {
+    module = 'ORCIDLInk';
+    prefix = false;
     async isManager(params: IsManagerParams): Promise<IsManagerResult> {
-        const result = await this.callMethod('is-manager', params);
+        const result = await this.callFunc('is-manager', params);
         return result as unknown as IsManagerResult;
     }
 
     async findLinks(params: FindLinksParams): Promise<FindLinksResult> {
-        const result = await this.callMethod('find-links', params);
+        const result = await this.callFunc('find-links', params);
         return result as unknown as FindLinksResult;
     }
 
     async getLink(params: GetLinkParams): Promise<GetLinkResult> {
-        const result = await this.callMethod('get-link', params);
+        const result = await this.callFunc('get-link', params);
         return result as unknown as GetLinkResult;
     }
 
     async getLinkingSessions(): Promise<GetLinkingSessionsResult> {
-        const result = await this.callMethod('get-linking-sessions');
+        const result = await this.callFunc('get-linking-sessions');
         return result as unknown as GetLinkingSessionsResult;
     }
 
     async deleteExpiredLinkingSessions(): Promise<void> {
-        await this.callMethod('delete-expired-linking-sessions');
+        await this.callFunc('delete-expired-linking-sessions');
     }
     async deleteLinkingSessionInitial(params: DeleteLinkingSessionInitialParams): Promise<void> {
-        await this.callMethod('delete-linking-session-initial', params);
+        await this.callFunc('delete-linking-session-initial', params);
     }
     async deleteLinkingSessionStarted(params: DeleteLinkingSessionStartedParams): Promise<void> {
-        await this.callMethod('delete-linking-session-started', params);
+        await this.callFunc('delete-linking-session-started', params);
     }
     async deleteLinkingSessionCompleted(params: DeleteLinkingSessionCompletedParams): Promise<void> {
-        await this.callMethod('delete-linking-session-completed', params);
+        await this.callFunc('delete-linking-session-completed', params);
     }
     async deleteLink(params: DeleteLinkParams): Promise<void> {
-        await this.callMethod('delete-link', params);
+        await this.callFunc('delete-link', params);
     }
 
     async getStats(): Promise<GetStatsResult> {
-        const result = await this.callMethod('get-stats');
+        const result = await this.callFunc('get-stats');
         return result as unknown as GetStatsResult;
     }
 }

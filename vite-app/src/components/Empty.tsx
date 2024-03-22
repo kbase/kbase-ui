@@ -4,13 +4,21 @@ import styles from './Empty.module.css';
 export interface EmptyProps extends PropsWithChildren {
     message?: string;
     icon?: string;
-    size?: 'normal' | 'compact' | 'inline'
-    style?: React.CSSProperties
+    size?: 'normal' | 'compact' | 'inline';
+    noBorder?: boolean;
+    style?: React.CSSProperties;
+    className?: string;
 }
 
 export default class Empty extends React.Component<EmptyProps> {
     render() {
         const mainClasses = [styles.main];
+        if (this.props.className) {
+            mainClasses.push(this.props.className);
+        }
+        if (this.props.noBorder) {
+            mainClasses.push(styles.noBorder);
+        }
         const iconClasses = [styles.icon];
         switch (this.props.size || 'normal') {
             case 'normal':
@@ -37,8 +45,7 @@ export default class Empty extends React.Component<EmptyProps> {
                 <div className={iconClasses.join(' ')}>
                     <span className="fa-stack fa-lg">
                         <i
-                            className={`fa fa-stack-1x fa-${this.props.icon || 'database'
-                                }`}
+                            className={`fa fa-stack-1x fa-${this.props.icon || 'database'}`}
                         ></i>
                         <i
                             className="fa fa-ban fa-stack-2x text-danger"

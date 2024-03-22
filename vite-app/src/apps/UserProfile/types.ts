@@ -7,8 +7,6 @@ export interface JSONObject {
     [x: string]: JSONValue;
 }
 
-
-
 export enum ValidationStatus {
     NONE,
     SUCCESS,

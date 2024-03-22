@@ -1,11 +1,17 @@
-version: '3.6'
+version: '3.8'
+name: kbase-dev
+networks:
+    kbase-dev:
+        name: kbase-dev
 services:
-    node:
+    node-tool:
         working_dir: /app
         build:
           context: .
           dockerfile: Dockerfile
         container_name: node-builder
         dns: 8.8.8.8
+        networks:
+          - kbase-dev
         volumes:
             - $DIR:/app

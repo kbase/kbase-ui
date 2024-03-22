@@ -1,0 +1,112 @@
+# National Labs
+---
+-
+  name: Ames Laboratory
+  city: Ames
+  state: Iowa
+  initials: Ames
+  type: OSL
+-
+  name: Argonne National Laboratory
+  city: Argonne
+  state: Illinois
+  initials: ANL
+  type: OSL
+-
+  name: Brookhaven National Laboratory
+  city: Upton
+  state: New York
+  initials: BNL
+  type: OSL
+-
+  name: Fermi National Accelerator Laboratory
+  city: Berkeley
+  state: California
+  initials: FERMILAB
+  type: OSL
+-
+  name: Oak Ridge National Laboratory
+  city: Oak Ridge
+  state: Tennessee
+  initials: ORNL
+  type: OSL
+-
+  name: Lawrence Berkeley National Laboratory
+  city: Berkeley
+  state: California
+  initials: LBNL
+  type: OSL
+-
+  name: Pacific Northwest National Laboratory
+  city: Richland
+  state: Washington
+  initials: PNNL
+  type: OSL
+-
+  name: Princeton Plasma Physics Laboratory
+  city: Princeton
+  state: New Jersey
+  initials: PPPL
+  type: OSL
+-
+  name: SLAC National Accelerator Laboratory
+  city: Newport News
+  state: Virginia
+  initials: SLAC
+  type: OSL
+-
+  name: Idaho National Laboratory
+  city: Idaho Falls
+  state: Idaho
+  initials: INL
+  type: OTHER
+-
+  name: National Energy Technology Laboratory
+  locations:
+    -
+      city: Morgantown
+      state: West Virginia
+    -
+      city: Pittsburgh
+      state: Pennsylvania
+    -
+      city: Albany
+      state: Orgegon
+  initials: NETL
+  type: OTHER
+-
+  name: National Renewable Energy Laboratory
+  city: Golden
+  state: Colorado
+  initials: NREL
+  type: OTHER
+-
+  name: Savannah River National Laboratory
+  city: Aiken
+  state: South Carolina
+  initials: SRNL
+  type: OTHER
+
+-
+  name: Lawrence Livermore National Laboratory
+  city: Livermore
+  state: California
+  initials: LLNL
+  type: NNSA
+-
+  name: Los Alamos National Laboratory
+  city: Los Alamos
+  state: New Mexico
+  initials: LANL
+  type: NNSA
+-
+  name: Sandia National Laboratory
+  locations:
+    -
+      city: Albequerque
+      state: New Mexico
+    -
+      city: Livermore
+      state: California
+  initials: SNL
+  type: NNSA

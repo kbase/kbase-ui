@@ -60,7 +60,9 @@ export enum ErrorCode {
     // linking_session_already_linked_orcid = 1082,
     // impossible_error = 10099
     orcid_profile_name_private = 1100,
-    orcid_unauthorized_client = 1101
+    orcid_unauthorized_client = 1101,
+    orcid_not_found = 1102,
+    orcid_not_authorized = 1103
 
 }
 
@@ -276,28 +278,33 @@ class Work(PersistedWorkBase):
 //     citation: string;
 // }
 
-export type ReturnInstructionType = "link" | "window";
+// export type ReturnInstructionType = "link" | "window";
 
-export interface ReturnInstructionBase {
-    type: ReturnInstructionType
-}
+// export interface ReturnInstructionBase {
+//     type: ReturnInstructionType
+// }
 
-export interface ReturnInstructionLink extends ReturnInstructionBase {
-    type: 'link'
+// export interface ReturnInstructionLink extends ReturnInstructionBase {
+//     type: 'link'
+//     url: string
+//     label: string
+// }
+
+// export interface ReturnInstructionWindow extends ReturnInstructionBase {
+//     type: 'window'
+//     origin: string;
+//     id: string
+//     label: string
+// }
+
+// export type ReturnInstruction =
+//     ReturnInstructionLink |
+//     ReturnInstructionWindow;
+
+export interface ReturnInstruction {
     url: string
     label: string
 }
-
-export interface ReturnInstructionWindow extends ReturnInstructionBase {
-    type: 'window'
-    origin: string;
-    id: string
-    label: string
-}
-
-export type ReturnInstruction =
-    ReturnInstructionLink |
-    ReturnInstructionWindow;
 
 export interface StatusResponse {
     status: string;

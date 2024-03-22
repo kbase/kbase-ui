@@ -1,3 +1,4 @@
+import { NavigationPath } from "lib/navigation";
 import { Menu } from "./menu";
 
 export interface UIServiceConfig {
@@ -40,10 +41,20 @@ export interface JSONRPC20ServiceConfig extends CoreServiceConfig {
     };
 }
 
+export interface IDProvider {
+    id: string;
+    label: string;
+    logoutUrl: string;
+    priority: number;
+    confirmSignin: boolean;
+    description: string;
+}
+
 export interface Auth2ServiceConfig extends RestServiceConfig {
     cookieName: string;
     extraCookieNames: Array<CookieConfig>;
     providers: Array<string>;
+    supportedProviders: Array<IDProvider>;
 }
 
 export type CatalogServiceConfig = JSONRPC11ServiceConfig;
@@ -138,33 +149,59 @@ export interface HamburgerMenuDefintion {
 export interface CookieConfig {
     name: string;
     maxAge: number;
-    backup: {
-        name: string;
-        domain: string | null;
-        enabled: boolean;
-    }
 }
 
-export interface DefaultPath {
-    type: 'hash' | 'path',
-    value: string
-}
+// // A kbase-ui endpoint
+// export interface NavigationEndpointInternal {
+//     hash: string;
+//     params?: Record<string, string>;
+//     newWindow?: boolean;
+// }
+
+// // Another ui endpoint on the same host
+// export interface NavigationEndpointExternal {
+//     path: string;
+//     hash?: string;
+//     params?: Record<string, string>;
+//     newWindow?: boolean;
+// }
+
+
+// export interface NavigationEndpoint {
+//     hash?: string;
+//     path?: string;
+//     params?: Record<string, string>;
+//     external?: boolean;
+//     newWindow?: boolean;
+// }
+
+// export interface DefaultPath {
+//     type: 'hash' | 'path',
+//     value: string
+// }
+
+// export interface DefaultNavigationPathKBaseUI {
+//     hash: string;
+//     params?: Record<string, string>
+// }
+
+// export interface DefaultNavigationPathEuropa {
+//     pathname: string;
+//     params?: Record<string, string>
+// }
+
+// export type DefaultNavigationPath = DefaultNavigationPathKBaseUI | DefaultNavigationPathEuropa;
+
 
 export interface DeployConfig {
     deploy: {
         id: string;
         target: string;
-        environment: string;
+        // basePath: string;
         hostname: string;
-        icon: string;
-        name: string;
         ui: {
             origin: string;
         };
-        services: {
-            urlBase: string;
-        };
-        basePath: string;
     };
     ui: {
         apps: {
@@ -225,10 +262,7 @@ export interface DeployConfig {
             };
         };
         defaults: {
-            path: DefaultPath,
-            hideHeader: boolean,
-            hideNavigation: boolean,
-            integratedHamburgerAndLogo: boolean
+            path: NavigationPath,
         }
     };
     services: {

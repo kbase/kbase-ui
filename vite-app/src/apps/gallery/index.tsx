@@ -1,5 +1,5 @@
 import { RouteProps } from "components/Router2";
-import { AuthenticationState } from "contexts/Auth";
+import { AuthenticationState } from "contexts/EuropaContext";
 import { Component } from "react";
 import Nav from "react-bootstrap/esm/Nav";
 import { Config } from "types/config";
@@ -33,7 +33,7 @@ export default class Gallery extends Component<GalleryProps> {
     }
 
     renderBody() {
-        switch (this.props.params.get('name') || 'home') {
+        switch (this.props.match.params.get('name') || 'home') {
             case 'home':
                 return this.renderHome();
             case 'alertmessage':
@@ -46,7 +46,7 @@ export default class Gallery extends Component<GalleryProps> {
     render() {
         return <div className={styles.main}>
             <div className={styles.sidebar}>
-                <Nav defaultActiveKey={this.props.params.get('name') || 'home'} className="flex-column" variant="pills">
+                <Nav defaultActiveKey={this.props.match.params.get('name') || 'home'} className="flex-column" variant="pills">
                     <Nav.Item>
                         <Nav.Link eventKey="home" href="#gallery/home">Home</Nav.Link>
                     </Nav.Item>

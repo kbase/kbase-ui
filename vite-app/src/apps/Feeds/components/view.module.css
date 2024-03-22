@@ -1,0 +1,152 @@
+.Main {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.Header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.Col {
+    flex: 1 1 0;
+}
+
+.HeaderRow {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.HeaderLabel {
+    flex: 1 1 0;
+    font-weight: bold;
+    font-size: 120%;
+    /* background-color: rgba(200, 200,200, 0.5); */
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.HeaderToolbar {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-right: 1rem;
+    padding: 0.5rem;
+}
+
+.Body {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: row;
+    /* for overflow in child */
+    min-height: 0;
+    margin-top: 0.5rem;
+}
+
+
+.NavCol {
+    flex: 1 1 0;
+}
+
+.ContentCol {
+    flex: 3 1 0;
+    margin-left: 1rem;
+}
+
+
+
+
+.NavCol {
+    flex: 1 1 0;
+    overflow-y: auto;
+    /* background-color: rgba(200, 200, 200, 0.5); */
+}
+.NavColHeader {
+    flex: 
+}
+.NavColFeeds {
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+
+.BodyCol {
+    flex: 3 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.BodyHeaderRow {
+    flex: 0 0 auto;
+    background-color: rgba(200, 200, 200, 0.2);
+}
+
+.BodyNotificationsRow {
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+
+.unseen {
+    font-weight: bold;
+}
+
+.FeedsNavigator {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    cursor: pointer;
+}
+
+.FeedsNavigatorItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.FeedsNavigatorItem:hover {
+    background-color: rgba(200, 200, 200, 0.5);
+}
+
+.FeedsNavigatorItemSelected {
+    background-color: rgba(150, 150, 150, 0.5);
+}
+
+.FeedsNavigatorItemSelected:hover {
+    background-color: rgba(150, 150, 150, 1.0);
+}
+
+
+.FeedsNavigatorTitleCol {
+    flex: 1 1 0;
+    overflow-x: hidden;
+    /* background-color: rgba(200, 200, 200, 0.5); */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.FeedsNavigatorFeedHasUnseen {
+    font-weight: bold;
+}
+
+.FeedsNavigatorTotalCol {
+    flex: 0 0 3rem
+}
+
+.FeedsNavigatorNewCol {
+    flex: 0 0 2rem;
+}

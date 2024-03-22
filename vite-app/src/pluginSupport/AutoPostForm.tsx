@@ -2,7 +2,7 @@ import { Component, createRef, RefObject } from 'react';
 import * as uuid from 'uuid';
 
 export interface AutoPostFormProps {
-    params: { [key: string]: string };
+    params: Record<string, string>;
     action: string;
 }
 
@@ -31,9 +31,7 @@ export default class AutoPostForm extends Component<
 
         const paramInputs = Array.from(Object.entries(params)).map(
             ([name, value]) => {
-                return (
-                    <input type="hidden" key={name} name={name} value={value} />
-                );
+                return  <input type="hidden" key={name} name={name} value={value} />;
             }
         );
 

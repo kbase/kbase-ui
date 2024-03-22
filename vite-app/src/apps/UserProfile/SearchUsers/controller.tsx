@@ -1,5 +1,5 @@
-import { SimpleError } from "components/MainWindow";
 import { AsyncSearchProcess, AsyncSearchProcessStatus } from "lib/AsyncSearchProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { Component } from "react";
 import { UserProfileUser, filteredUserAPI } from '../API';
 import { MINIMUM_SEARCH_CHARS } from "../constants";

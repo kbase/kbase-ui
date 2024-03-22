@@ -73,14 +73,14 @@ export default class SortControl extends Component<
                         value={sortOption}
                         placeholder="Sort by..."
                         options={sortOptions}
-                        styles={{
-                            container: (base) => {
-                                return {
-                                    ...base,
-                                    width: '14em',
-                                };
-                            },
-                        }}
+                        // styles={{
+                        //     control: (base) => {
+                        //         return {
+                        //             ...base,
+                        //             width: '14em',
+                        //         };
+                        //     },
+                        // }}
                         onChange={this.handleSortChange.bind(this)}
                     />
                 </div>

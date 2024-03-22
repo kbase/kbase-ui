@@ -1,3 +1,7 @@
+/**
+ * The page title.
+ */
+
 import { Component } from 'react';
 import styles from './Title.module.css';
 

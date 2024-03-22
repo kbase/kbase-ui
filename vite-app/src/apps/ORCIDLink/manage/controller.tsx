@@ -1,7 +1,7 @@
 import ErrorMessage from "components/ErrorMessage";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { Component } from "react";
 import { Config } from "types/config";
 import { Model } from "../lib/Model";

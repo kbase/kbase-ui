@@ -1,19 +1,23 @@
+import EuropaWrapper, { EuropaContext, EuropaState } from 'contexts/EuropaContext';
 import { Component } from 'react';
-import AuthWrapper, { AuthContext, AuthState } from '../contexts/Auth';
 import ConfigWrapper, { ConfigContext, ConfigState } from '../contexts/ConfigContext';
-import RuntimeWrapper, { RuntimeContext } from '../contexts/RuntimeContext';
-import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
-import { Config } from '../types/config';
+import { AsyncProcessStatus } from '../lib/AsyncProcess';
+import ErrorAlert from './ErrorAlert';
 import ErrorMessage from './ErrorMessage';
-import MainWindow from './MainWindow';
+import MainWindow from './MainWindow/view';
 
-export type AppLoadState = AsyncProcess<Config, string>;
-
-export interface AppProps { }
-
-interface AppState { }
-
-export default class App extends Component<AppProps, AppState> {
+/**
+ * Main entry point (other than the simple `main.tsx` for the kbase-ui web app.)
+ * 
+ * The primary app design is a set of nested contexts, each depending up on the success
+ * of the prior one. The order is:
+ * - ConfigContext
+ * - EuropaContext
+ * 
+ * Each context has a "Wrapper" which is responsible for managing the initialization of
+ * the Context. That is, they do some work, and then populate the context via its Provider.
+ */
+export default class App extends Component {
     render() {
         return (
             <ConfigWrapper>
@@ -26,56 +30,37 @@ export default class App extends Component<AppProps, AppState> {
                             case AsyncProcessStatus.ERROR:
                                 return <ErrorMessage message={configValue.error} />;
                             case AsyncProcessStatus.SUCCESS:
+                                // New! Europa wrapper, which will succeed when it is
+                                // fully initialized wrt Europa
                                 return (
-                                    <AuthWrapper config={configValue.value.config}>
-                                        <AuthContext.Consumer>
-                                            {(value: AuthState) => {
+                                    <EuropaWrapper config={configValue.value.config}>
+                                        <EuropaContext.Consumer>
+                                            {(value: EuropaState) => {
                                                 switch (value.status) {
                                                     case AsyncProcessStatus.NONE:
                                                     case AsyncProcessStatus.PENDING:
                                                         return;
                                                     case AsyncProcessStatus.ERROR:
-                                                        return (
-                                                            <div>
-                                                                Error [AuthContext.Consumer]!{' '}
-                                                                {value.error}
-                                                            </div>
-                                                        );
+                                                        return <ErrorAlert message={value.error.message} />;
                                                     case AsyncProcessStatus.SUCCESS:
                                                         return (
-                                                            <RuntimeWrapper
-                                                                authState={value.value}
-                                                                config={configValue.value.config}
-                                                                pluginsInfo={
-                                                                    configValue.value.pluginsInfo
+                                                            <MainWindow
+                                                                authState={
+                                                                    value.value.authState
                                                                 }
-                                                            >
-                                                                <RuntimeContext.Consumer>
-                                                                    {(value) => {
-                                                                        if (value === null) {
-                                                                            return;
-                                                                        }
-                                                                        return (
-                                                                            <MainWindow
-                                                                                authState={
-                                                                                    value.authState
-                                                                                }
-                                                                                config={
-                                                                                    value.config
-                                                                                }
-                                                                                setTitle={
-                                                                                    value.setTitle
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    }}
-                                                                </RuntimeContext.Consumer>
-                                                            </RuntimeWrapper>
+                                                                config={
+                                                                    configValue.value.config
+                                                                }
+                                                                setTitle={
+                                                                    value.value.setTitle
+                                                                }
+                                                                isHosted={value.value.isHosted}
+                                                            />
                                                         );
                                                 }
                                             }}
-                                        </AuthContext.Consumer>
-                                    </AuthWrapper>
+                                        </EuropaContext.Consumer>
+                                    </EuropaWrapper>
                                 );
                         }
                     }}

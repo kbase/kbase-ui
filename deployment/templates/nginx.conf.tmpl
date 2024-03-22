@@ -4,6 +4,25 @@ worker_processes auto;
 pid /var/run/nginx.pid;
 user kbmodule;
 
+# Build Environment Variables:
+# UI_DOMAIN = {{ .Env.UI_DOMAIN }}
+# KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
+# BASE_PATH = {{ .Env.BASE_PATH }}
+# NGINX_LOG_SYSLOG = {{ .Env.NGINX_LOG_SYSLOG }}
+# NGINX_LOG_STDOUT = {{ .Env.NGINX_LOG_STDOUT }}
+# NGINX_LOG_STDERR = {{ .Env.NGINX_LOG_STDERR }}
+# NGINX_LOG_LEVEL = {{ .Env.NGINX_LOG_LEVEL }}
+# NGINX_LISTEN = {{ .Env.NGINX_LISTEN }}
+# NGINX_SERVER_NAME = {{ .Env.NGINX_SERVER_NAME }}
+
+{{ $subhost := not (eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN) }}
+
+{{ if $subhost }}
+# Configured for SUBHOST {{ .Env.KBASE_UI_DOMAIN }}
+{{ else }}
+# Configured for SAME HOST
+{{ end }}
+
 events {
     worker_connections 256;
     # multi_accept on;
@@ -27,19 +46,19 @@ http {
     # as optional
 
     # If the template is passed an nginx syslog path via nginx_log_syslog env var, log to there
-    {{ if .Env.nginx_log_syslog }}
-    access_log {{ .Env.nginx_log_syslog }} combined;
+    {{ if (default "" .Env.NGINX_LOG_SYSLOG) }}
+    access_log {{ .Env.NGINX_LOG_SYSLOG }} combined;
     {{ end }}
     # If nginx_log_stdout env var isn't false or empty, log to stdout
-    {{ if isTrue (default "true" .Env.nginx_log_stdout) }}
+    {{ if isTrue (default "true" .Env.NGINX_LOG_STDOUT) }}
     access_log /dev/stdout;
     {{ end }}
     access_log /var/log/nginx/access.log;
 
-    {{ if isTrue (default "true" .Env.nginx_log_stderr) }}
-    error_log /dev/stderr {{ default "error" .Env.nginx_loglevel }};
+    {{ if isTrue (default "true" .Env.NGINX_LOG_STDERR) }}
+    error_log /dev/stderr {{ default "error" .Env.NGINX_LOG_LEVEL }};
     {{ end }}
-    error_log /var/log/nginx/error.log {{ default "error" .Env.nginx_loglevel }};
+    error_log /var/log/nginx/error.log {{ default "error" .Env.NGINX_LOG_LEVEL }};
 
     ##
     # Gzip settings
@@ -51,19 +70,29 @@ http {
     gzip_types text/plain text/css text/xml text/javascript application/json application/x-javascript application/xml;
     gzip_disable "MSIE [1-6]\.";
 
-    upstream docs {
-        server docs.kbase.us:443;
-    }
-
-    upstream marketing {
-        server  www.kbase.us:443;
-    }
-
     server {
-        listen      {{ default "80" .Env.nginx_listen }} default_server;
-        server_name {{ default "localhost" .Env.nginx_server_name }};
+        listen      {{ default "80" .Env.NGINX_LISTEN }} default_server;
+        server_name {{ default "localhost" .Env.NGINX_SERVER_NAME }};
+
+        # Matches the root - the index page.
+        # TODO: this won't work if the base path is empty - fix that.
+        location = /{{ default "" .Env.BASE_PATH }}/ {
+            allow all;
+            # this ensures that a downstream cache service will revalidate.
+            add_header Cache-Control 'no-cache';
+
+            {{ if $subhost }}
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.UI_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            {{ else }}
+            add_header Content-Security-Policy "frame-ancestors 'self';" always; 
+            add_header X-Frame-Options "SAMEORIGIN" always;
+            {{ end }}
+
+            root /kb/deployment/app;
+            try_files /index.html =404;
+        }
   
-        location {{ default "" .Env.BASE_PATH }}/ {
+        location ~ /{{ default "" .Env.BASE_PATH }} {
             # Ensure that index.html is invoked even if a path is
             # specified and doesn't exist.
             # try_files $uri /$uri /index.html;
@@ -73,95 +102,43 @@ http {
             add_header Cache-Control 'no-cache';
             # add_header Cache-Control 'no-store';
             # expires 0;
+
+            {{ if $subhost }}
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.UI_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            {{ else }}
+            add_header Content-Security-Policy "frame-ancestors 'self';" always; 
             add_header X-Frame-Options "SAMEORIGIN" always;
-            add_header Content-Security-Policy "frame-ancestors 'self';" always;
+            {{ end }}
 
             root /kb/deployment/app;
+            rewrite ^/{{ default "" .Env.BASE_PATH }}(/.*)$ $1 break;  
         }
         
+        # Used as a simple endpoint to determine the health of the connection
+        # to kbase.
         location {{ default "" .Env.BASE_PATH }}/__ping__ {
             default_type text/html;
             return 204;
         }
 
+        # Used by a performance measuring tool, about/connection
+        # Inside the __perf__ directory are files of specific sizes 
+        # which can be fetched, and their download time measured as a
+        # rough estimate of network performance.
         location {{ default "" .Env.BASE_PATH }}/data/__perf__ {
             gzip off;
             add_header Cache-Control 'no-cache';
             root /kb/deployment/app;
         }
 
+        # Catches references to old "modules/plugins" path; used by
+        # some plugins to fetch resources from within themselves.
+        # We just map it to the new canonical location for plugins.
         location {{ default "" .Env.BASE_PATH }}/modules/plugins/ {
             ssi_silent_errors off;
             allow all;
             add_header Cache-Control 'no-cache';
             alias /kb/deployment/app/plugins/;
-        }
-
-        # Format is /__poke/https://www.example.com/some/path
-        location ~* ^{{ default "" .Env.BASE_PATH }}/__poke/docs/(.*)$ {
-            proxy_hide_header Content-Security-Policy;
-            proxy_hide_header X-Content-Security-Policy;
-            proxy_hide_header X-Webkit-Csp;
-            proxy_pass https://docs/$1;
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-            proxy_buffer_size 128k;
-            proxy_buffers 4 256k;
-            proxy_busy_buffers_size 256k;
-            proxy_set_header Host docs.kbase.us;
-            proxy_intercept_errors on;
-            recursive_error_pages on;
-            error_page 301 302 307 = @handle_redirect_docs;
-        }
-
-        location @handle_redirect_docs {
-            set $saved_redirect_location  '$upstream_http_location';
-
-            # These header fields are massive in gitbook.
-            proxy_hide_header Content-Security-Policy;
-            proxy_hide_header X-Content-Security-Policy;
-            proxy_hide_header X-Webkit-Csp;
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-            proxy_buffer_size 128k;
-            proxy_buffers 4 256k;
-            proxy_busy_buffers_size 256k;
-            proxy_set_header Host docs.kbase.us;
-            proxy_pass $saved_redirect_location;
-            proxy_intercept_errors on;
-            recursive_error_pages on;
-            error_page 301 302 307 = @handle_redirect_docs;
-        }
-
-        location ~* ^{{ default "" .Env.BASE_PATH }}/__poke/marketing/(.*)$ {
-            proxy_pass https://marketing/$1;
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-            proxy_set_header Host www.kbase.us;
-            proxy_intercept_errors on;
-            recursive_error_pages on;
-            error_page 301 302 307 = @handle_redirect_marketing;
-        }
-
-        location @handle_redirect_marketing {
-            set $saved_redirect_location  '$upstream_http_location';
-            set $path $saved_redirect_location;
-
-            if ($saved_redirect_location ~* ^https://www.kbase.us/(.*)$) {
-                set $path $1;
-            }
-
-            proxy_http_version 1.1;
-            proxy_set_header Connection "";
-            client_max_body_size 300M;
-            proxy_set_header Host www.kbase.us;
-            proxy_pass https://marketing/$path;
-            proxy_intercept_errors on;
-            recursive_error_pages on;
-            error_page 301 302 307 = @handle_redirect_marketing;
         }
     }
 }

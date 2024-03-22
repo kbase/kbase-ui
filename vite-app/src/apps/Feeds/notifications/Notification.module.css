@@ -1,0 +1,39 @@
+.Notification {
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.Notification + .Notification {
+    margin-top: 1rem;
+}
+
+.NotificationIcon {
+    flex: 0 0 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 120%;
+}
+
+.NotificationControls {
+    flex: 0 0 5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: center; */
+}
+
+.NotificationMessage {
+    flex: 1 1 0;
+}
+
+.NotificationTypeMessage {
+
+}
+
+.NotificationTime {
+    font-size: 90%;
+}

@@ -6,10 +6,12 @@ function niceRelativeTimeRange({
     now,
     startAt,
     endAt,
+    places
 }: {
     now: number;
     startAt: number;
     endAt: number;
+    places: number;
 }) {
     let startDate;
     if (startAt === null || startAt === undefined) {
@@ -110,6 +112,7 @@ function niceRelativeTimeRange({
     return [
         // prefix ? prefix + ' ' : '',
         measures
+            .slice(0, places)
             .map(([measure, unit]) => {
                 if (measure !== 1) {
                     unit += 's';
@@ -152,6 +155,11 @@ export default class CountdownClock extends Component<
         return now > this.props.endAt;
     }
 
+    remaining(): number {
+        const now = Date.now();
+        return now - this.props.endAt;
+    }
+
     componentDidMount() {
         this.timer = window.setInterval(() => {
             const now = Date.now();
@@ -179,6 +187,6 @@ export default class CountdownClock extends Component<
         if (this.state.expired) {
             className += 'text-danger'
         }
-        return <span className={className}>{niceRelativeTimeRange({ startAt, endAt, now })}</span>;
+        return <span className={className}>{niceRelativeTimeRange({ startAt, endAt, now, places: 1 })}</span>;
     }
 }

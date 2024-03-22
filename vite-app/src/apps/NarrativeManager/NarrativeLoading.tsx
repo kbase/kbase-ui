@@ -2,6 +2,7 @@ import Well, { Variant } from 'components/Well';
 import { Component } from 'react';
 import Spinner from 'react-bootstrap/esm/Spinner';
 import { Config } from 'types/config';
+import styles from './NarrativeLoading.module.css';
 
 export interface NarrativeLoadingProps {
     detectSlow?: boolean;
@@ -68,8 +69,8 @@ export default class NarrativeLoading extends Component<
 
     renderLoadingMessage() {
         return (
-            <div className="-message">
-                <Spinner /> {this.props.message}
+            <div className={styles.message}>
+                <Spinner style={{marginRight: '1rem'}} /> {this.props.message}
             </div>
         );
     }

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+DIR="${PWD}" docker compose -f tools/node/docker-compose.yml run --rm node-tool "$@"

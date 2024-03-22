@@ -1,7 +1,7 @@
 import { JSONValue } from '@kbase/ui-lib/lib/json';
 import PresentableJSON from 'components/PresentableJSON';
 import Well from 'components/Well';
-import { changeHash2 } from 'lib/navigation';
+import { navigate } from 'lib/navigation';
 import { Component, PropsWithChildren } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import styles from '../Error.styles';
@@ -71,7 +71,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
     }
 
     onClose() {
-        changeHash2("orcidlink");
+        navigate("orcidlink");
     }
 
     renderDescription(description: Array<string>) {

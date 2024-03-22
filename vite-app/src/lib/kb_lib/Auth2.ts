@@ -6,15 +6,14 @@ import { HttpQuery } from "./HttpUtils";
 
 const TIMEOUT = 60000;
 
+const WITH_CREDENTIALS = true;
+
 interface AuthProvider {
     id: string;
     label: string;
     logoutUrl: string;
 }
 
-export interface AuthConfig {
-    baseUrl: string;
-}
 
 interface AuthEndpoints {
     root: string;
@@ -83,7 +82,7 @@ export interface UnlinkOptions {
 
 export interface UserPolicy {
     id: string;
-    agreed_on: number;
+    agreedon: number;
 }
 
 export interface RootInfo {
@@ -97,24 +96,49 @@ export interface LoginCreateOptions {
     display: string;
     email: string;
     linkall: boolean;
-    policyids: Array<UserPolicy>;
+    policyids: Array<string>;
 }
 
+// The first one is definitely returned by /token, but don't know where the other comes
+// into play...
+
 export interface TokenInfo {
+    cachefor: number; // TODO: does not appear to always be present; e.g. in login pick result
     created: number;
+    custom: Record<string, string>,
     expires: number;
     id: string;
     name: string | null;
-    token: string;
-    type: string;
+    type: string; // TODO: type this: Login, Dev, Serv ?
     user: string;
-    cachefor: number;
 }
 
+export interface TokenInfoFull {
+    cachefor: number; // TODO: does not appear to always be present; e.g. in login pick result
+    created: number;
+    custom: Record<string, string>,
+    expires: number;
+    id: string;
+    name: string | null;
+    type: string; // TODO: type this: Login, Dev, Serv ?
+    user: string;
+
+    token: string;
+    device: string;
+    os: string;
+    osver: string;
+    agent: string;
+    agentver: string;
+    ip: string;
+}
+
+
+// TODO: inspect
 export interface Identity {
     id: string;
     provider: string;
     username: string;
+    provusername: string;
 }
 
 export interface Role {
@@ -125,10 +149,11 @@ export interface Role {
 export interface Account {
     created: number;
     customroles: Array<string>;
+    policyids: Array<UserPolicy>;
     display: string;
     email: string;
     idents: Array<Identity>;
-    lastLogin: number;
+    lastlogin: number;
     local: boolean;
     roles: Array<Role>;
     user: string;
@@ -141,7 +166,8 @@ export interface LoginCreateResponse {
 }
 
 export interface Tokens {
-    tokens: Array<TokenInfo>;
+    tokens: Array<TokenInfoFull>;
+    current: TokenInfoFull;
     dev: boolean;
     serv: boolean;
 }
@@ -152,15 +178,18 @@ export interface CreateChoice {
     provusername: string;
     provfullname: string;
     provemail: string;
+    expires: number;
 }
 
-export interface LoginChoice {
+export interface LoginChoiceLogin {
     id: string;
     provusernames: Array<string>;
     user: string;
     loginallowed: boolean;
     disabled: boolean;
     adminonly: boolean;
+    // TODO: double check this
+    policyids: Array<UserPolicy>
 }
 
 export interface LoginChoice {
@@ -171,11 +200,12 @@ export interface LoginChoice {
     state: string;
     creationallowed: string;
     create: Array<CreateChoice>;
-    login: Array<LoginChoice>;
+    login: Array<LoginChoiceLogin>;
     token?: string;
     logged_in: boolean;
     // TODO: this is in here twice, bug.
     redirect?: string;
+    expires: number;
 }
 
 export interface LinkChoice {
@@ -205,10 +235,36 @@ export interface PolicyAgreement {
     version: number;
 }
 
-export interface LoginPick {
+export interface LoginPickParams {
     identityId: string;
     linkAll: boolean;
     agreements: Array<PolicyAgreement>;
+}
+
+// TODO: check the actual result
+export interface LoginPickResult {
+    redirecturl: string,
+    token: TokenInfoFull
+}
+
+export interface LoginCreateResult {
+    token: TokenInfoFull
+    // {
+    //     agent: string,
+    //     agentver: string,
+    //     created: number,
+    //     custom: Record<string, string>,
+    //     device: string,
+    //     expires: number;
+    //     id: string,
+    //     ip: string,
+    //     name: string | null,
+    //     os: string,
+    //     osver: string,
+    //     user: string,
+    //     type: string,
+    //     token: string
+    // }
 }
 
 export interface CreateTokenInput {
@@ -240,6 +296,11 @@ export interface PutMeInput {
 
 // Classes
 
+
+export interface AuthConfig {
+    baseUrl: string;
+}
+
 export class Auth2 {
     config: AuthConfig;
 
@@ -247,6 +308,7 @@ export class Auth2 {
         this.config = config;
     }
 
+    // TODO: use this whenever need provider assets...
     getProviders(): Array<AuthProvider> {
         return [
             {
@@ -273,7 +335,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     Accept: "application/json",
                 }),
@@ -342,8 +404,18 @@ export class Auth2 {
                     },
                     [],
                 ),
+                input(
+                    {
+                        type: "hidden",
+                        name: "environment",
+                        value: "bar",
+                    },
+                    [],
+                ),
             ],
         );
+
+        console.log('HERE!!', content);
         const donorNode = document.createElement("div");
 
         // xss safe (all values internal)
@@ -429,7 +501,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "POST",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
                     "content-type": "application/json",
@@ -449,7 +521,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "POST",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
                     "content-type": "application/json",
@@ -469,7 +541,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "DELETE",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
                     "content-type": "application/json",
@@ -488,7 +560,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "DELETE",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
                     "content-type": "application/json",
@@ -507,7 +579,7 @@ export class Auth2 {
             .request({
                 method: "GET",
                 url: this.makePath([endpoints.tokenInfo]),
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
                     accept: "application/json",
@@ -524,7 +596,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.apiMe),
                 header: new HttpHeader({
                     authorization: token,
@@ -542,7 +614,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "PUT",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.me),
                 header: new HttpHeader({
                     authorization: token,
@@ -569,7 +641,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.tokens]),
                 header: new HttpHeader({
                     authorization: token,
@@ -585,12 +657,12 @@ export class Auth2 {
     createToken(
         token: string,
         create: CreateTokenInput,
-    ): Promise<NewTokenInfo> {
+    ): Promise<TokenInfoFull> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: "POST",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.tokens),
                 header: new HttpHeader({
                     authorization: token,
@@ -601,7 +673,7 @@ export class Auth2 {
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200) as NewTokenInfo;
+                return this.processResult(result, 200) as TokenInfoFull;
             });
     }
 
@@ -612,7 +684,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginChoice),
                 header: new HttpHeader({
                     accept: "application/json",
@@ -629,7 +701,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "DELETE",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginCancel),
                 header: new HttpHeader({
                     accept: "application/json",
@@ -646,7 +718,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "DELETE",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkCancel),
                 header: new HttpHeader({
                     accept: "application/json",
@@ -658,7 +730,7 @@ export class Auth2 {
             });
     }
 
-    loginPick(arg: LoginPick): Promise<any> {
+    async loginPick(arg: LoginPickParams): Promise<LoginPickResult> {
         const data = {
             id: arg.identityId,
             linkall: arg.linkAll,
@@ -667,29 +739,27 @@ export class Auth2 {
             }),
         };
         const httpClient = new AuthClient();
-        return httpClient
-            .request({
-                method: "POST",
-                withCredentials: true,
-                url: this.makePath([endpoints.loginPick]),
-                data: JSON.stringify(data),
-                header: new HttpHeader({
-                    "content-type": "application/json",
-                    accept: "application/json",
-                }),
-                timeout: TIMEOUT,
-            })
-            .then((result) => {
-                return this.processResult(result, 200);
-            });
+        const result = await httpClient.request({
+            method: "POST",
+            withCredentials: WITH_CREDENTIALS,
+            url: this.makePath([endpoints.loginPick]),
+            data: JSON.stringify(data),
+            header: new HttpHeader({
+                "content-type": "application/json",
+                accept: "application/json",
+            }),
+            timeout: TIMEOUT,
+        })
+    
+        return this.processResult(result, 200);
     }
 
-    loginCreate(data: LoginCreateOptions): Promise<any> {
+    async loginCreate(data: LoginCreateOptions): Promise<LoginCreateResult> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
                 method: "POST",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginCreate),
                 data: JSON.stringify(data),
                 header: new HttpHeader({
@@ -708,7 +778,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.loginUsernameSuggest, username]),
                 header: new HttpHeader({
                     accept: "application/json",
@@ -726,7 +796,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkChoice),
                 header: new HttpHeader({
                     accept: "application/json",
@@ -777,7 +847,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "POST",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkPick),
                 data: JSON.stringify(data),
                 header: new HttpHeader({
@@ -941,7 +1011,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url,
                 header: new HttpHeader({
                     authorization: token,
@@ -970,7 +1040,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url,
                 header: new HttpHeader({
                     authorization: token,
@@ -988,7 +1058,7 @@ export class Auth2 {
         return httpClient
             .request({
                 method: "GET",
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.adminUser, username]),
                 header: new HttpHeader({
                     authorization: token,

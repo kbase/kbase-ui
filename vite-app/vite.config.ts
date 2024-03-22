@@ -8,25 +8,11 @@ export default defineConfig(({ command, mode }) => {
 
     const env = loadEnv(mode, process.cwd(), '');
 
-    // console.log('ENV', basePath);
+    // const basePath = env.BASE_PATH;
 
-    // const basePath = env.BASE_PATH;;
-    // const basePath = '/foo';
-    const basePath = "./";
-
-    const basetPathForProxy = basePath === './' ? '' : basePath;
+    const base = env.BASE_PATH ? `/${env.BASE_PATH}` : '';
 
     const proxy = {
-        '/services': {
-            target: 'https://ci.kbase.us',
-            changeOrigin: true,
-            secure: false,
-        },
-        '/dynserv': {
-            target: 'https://ci.kbase.us',
-            changeOrigin: true,
-            secure: false
-        },
         '/modules/plugins': {
             target: 'http://kbase-ui-deploy:80/plugins',
             changeOrigin: true,
@@ -52,11 +38,18 @@ export default defineConfig(({ command, mode }) => {
     };
 
     // This is for plugins; kbase-ui uses just /plugins
-    proxy[`^${basePath}/modules/plugins/.*`] = {
+    proxy[`^${base}/modules/plugins/.*`] = {
         target: 'http://kbase-ui-deploy:80/plugins',
         changeOrigin: true,
         rewrite: (path: string) => {
-            return path.replace(new RegExp(`^${basePath}/modules/plugins/`), '');
+            if (base) {
+                return path.replace(new RegExp(`^${base}/modules/plugins/`), '');
+                // return path.replace(new RegExp(`^${basePath}`), '');
+            } else {
+                return path.replace(new RegExp(`/modules/plugins/`), '');
+            }
+
+            
         }
     };
 
@@ -97,46 +90,61 @@ export default defineConfig(({ command, mode }) => {
     //     },
     // };
 
-    proxy[`^${basetPathForProxy}/plugins/.*`] = {
+    proxy[`^${base}/plugins/.*`] = {
         target: 'http://kbase-ui-deploy:80',
         changeOrigin: true,
         rewrite: (path: string) => {
-            return path.replace(new RegExp(`^${basePath}`), '');
+            if (base) {
+                return path.replace(new RegExp(`^${base}`), '');
+            } else {
+                return path;
+            }
+
         },
     };
 
-    proxy[`^${basetPathForProxy}/deploy/.*`] = {
+    proxy[`^${base}/deploy/.*`] = {
         target: 'http://kbase-ui-deploy:80',
         changeOrigin: true,
         rewrite: (path: string) => {
-            return path.replace(new RegExp(`^${basePath}`), '');
-        },
+            if (base) {
+                return path.replace(new RegExp(`^${base}`), '');
+            } else {
+                return path;
+            }
+        }
     };
 
-
-    proxy[`^${basetPathForProxy}/build/.*`] = {
+    proxy[`^${base}/build/.*`] = {
         target: 'http://kbase-ui-deploy:80',
         changeOrigin: true,
         rewrite: (path: string) => {
-            return path.replace(new RegExp(`^${basePath}`), '');
+            if (base) {
+                return path.replace(new RegExp(`^${base}`), '');
+            } else {
+                return path;
+            }
         },
     };
 
     // What uses this?
-    proxy[`^${basetPathForProxy}/deploy/plugins/.`] = {
+    proxy[`^${base}/deploy/plugins/.`] = {
         target: 'http://kbase-ui-deploy:80',
         changeOrigin: true,
         rewrite: (path: string) => {
-            return path.replace(/^\/deploy\/plugins/, '');
+            // return path.replace(/^\/deploy\/plugins/, '');
+            if (base) {
+                return path.replace(new RegExp(`^${base}/deploy/plugins/`), '');
+            } else {
+                return path;
+            }
         }
     };
-
-    console.log('PROXY', proxy);
 
     return {
         plugins: [react(), tsconfigPaths()],
         // base: '/foo',
-        base: basePath,
+        base,
         build: {
             commonjsOptions: {
                 include: ['node_modules/**'],
@@ -151,9 +159,6 @@ export default defineConfig(({ command, mode }) => {
                     }
                 }
             }
-        },
-        optimizeDeps: {
-            disabled: 'build'
         },
         server: {
             port: 3000,

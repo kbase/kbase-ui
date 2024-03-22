@@ -1,0 +1,113 @@
+
+.header {
+    flex: 0 0 auto;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.4);
+    padding: 1em;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+    /* color: rgb(150 150 150); */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+.body {
+    flex: 0 0 auto;
+    /* padding: 1em; */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.body.fullHeight {
+    flex: 1 1 0;
+}
+
+.body.stretch {
+    flex: 1 1 0;
+}
+
+.section {
+    flex: 0 0 auto;
+    padding: 1em;
+}
+
+.title {
+    flex: 0 0 auto;
+    border-top: 1px solid rgba(200, 200, 200, 0.4);
+    border-bottom: 1px solid rgba(200, 200, 200, 0.4);
+    padding: 1em;
+    font-weight: bold;
+    color: rgb(150 150 150);
+}
+
+.footer {
+    flex: 0 0 auto;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+}
+
+.variantNone {}
+
+/* 
+    Vertical orientation
+*/
+
+.well-vertical {
+    border-radius: 12px;
+    border: 3px solid rgba(200, 200, 200, 0.4);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+}
+
+.well-vertical.stretch { 
+    flex: 1 1 0;
+}
+
+.DisabledOverlay {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0; 
+    bottom: 0;
+    background-color: rgba(200, 200, 200, 0.6);
+    /* NB this matches the well coutainer - the negative margin
+       so that the overlay can reach to the edge of the well container 
+       and its borders, and the border radius to match that of the well 
+       ... as well!*/
+    margin: -4px -4px -4px -4px;
+    border-radius: 12px;
+}
+
+.footer-vertical {
+    flex: 0 0 auto;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+}
+
+/*
+    Horizontal orientation
+*/
+
+.well-horizontal {
+    border-radius: 12px;
+    border: 3px solid rgba(200, 200, 200, 0.4);
+    display: flex;
+    flex-direction: row;
+    min-height: 0;
+}
+
+.footer-horizontal {
+    flex: 0 0 auto;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.4); */
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}

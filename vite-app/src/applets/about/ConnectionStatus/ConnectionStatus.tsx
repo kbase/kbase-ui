@@ -1,4 +1,6 @@
+import ErrorAlert from 'components/ErrorAlert';
 import { Component } from 'react';
+import { Table } from 'react-bootstrap';
 import { AsyncProcess, AsyncProcessStatus } from '../../../lib/AsyncProcess';
 import ConnectionMonitor from '../../../lib/ConnectionMonitor';
 import styles from './ConnectionStatus.module.css';
@@ -264,28 +266,57 @@ export class ConnectionStatus extends Component<ConnectionStatusProps, Connectio
     //     return `${size}b`;
     // }
 
+    renderSuccess({stats}: ConnectionStats) {
+        const ping = stats[2].measure.totalMeasure / this.pingCount;
+        const overhead = stats[1].measure.totalMeasure / this.pingCount - ping;
+
+        console.log('STATS', stats, this.configs);
+
+        const rows = stats.map(({ size, measure }, index) => {
+            return <tr style={{ color: this.configs[index].color, margin: '0 1em' }} key={index + 1}>
+                <th>
+                    {this.renderSize(size)}
+                </th>
+                <th>
+                    {this.renderPing2(ping + overhead, size, measure)}
+                </th>
+            </tr>;
+        });
+        return <Table>
+            <tbody>
+            <tr>
+                    <th>
+                        Pings
+                    </th>
+                    <td>
+                        {this.pingCount}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Overhead
+                    </th>
+                    <td>
+                        {this.niceNumber(overhead)}ms
+                    </td>
+                </tr>
+                {rows}
+            </tbody>
+            {/* [{this.pingCount}] P {this.niceNumber(ping)}ms: */}
+            {/* OH {this.niceNumber(overhead)}ms: */}
+            {/* {content} */}
+        </Table>
+    }
+
     renderState() {
         switch (this.state.connectionStats.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
                 return;
             case AsyncProcessStatus.ERROR:
-                return <div>{this.state.connectionStats.error}</div>
+                return <ErrorAlert message={this.state.connectionStats.error} />
             case AsyncProcessStatus.SUCCESS:
-                const stats = this.state.connectionStats.value.stats;
-                const ping = stats[0].measure.totalMeasure / this.pingCount;
-                const overhead = stats[1].measure.totalMeasure / this.pingCount - ping;
-
-                const content = stats.slice(2).map(({ size, measure }, index) => {
-                    return <span style={{ color: this.configs[index + 1].color, margin: '0 1em' }} key={index + 1}>
-                        {this.renderSize(size)} = {this.renderPing2(ping + overhead, size, measure)}
-                    </span>;
-                });
-                return <div>
-                    [{this.pingCount}] P {this.niceNumber(ping)}ms:
-                    OH {this.niceNumber(overhead)}ms:
-                    {content}
-                </div>
+                return this.renderSuccess(this.state.connectionStats.value);
         }
     }
 

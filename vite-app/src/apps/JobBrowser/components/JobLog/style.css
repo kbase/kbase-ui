@@ -1,0 +1,55 @@
+.JobLog {
+    flex: 1 1 0px;
+    /* min-height: 4em; */
+    /* overflow-y: auto; */
+    padding: 4px;
+    min-height: 0;
+
+    /* border: 1px solid silver; */
+    /* max-height: 20em; */
+    /* overflow-y: auto; */
+    display: flex;
+    flex-direction: column;
+}
+
+.JobLog-line {
+    border-bottom: 1px solid silver;
+}
+
+.JobLog-col {
+    display: inline-block;
+    vertical-align: top;
+    font-family: monospace;
+}
+
+.JobLog-errorText {
+    color: red;
+}
+
+.JobLog-errorRow {
+    background-color: transparent;
+}
+
+.JobLog-normalRow {
+    background-color: transparent;
+}
+
+.JobLog .FlexTable-col.lineNumber {
+    flex: 0 0 4em;
+}
+
+.JobLog .FlexTable-col.loggedAt {
+    flex: 0 0 7em;
+}
+
+.JobLog .FlexTable-body .FlexTable-col.message {
+    font-family: monospace;
+    font-size: 90%;
+    white-space: pre-wrap
+}
+
+/* antd tweak */
+
+.JobLog .ant-btn.ant-btn-icon-only {
+    font-size: inherit;
+}

@@ -7,7 +7,7 @@ import {
     JSONValue,
 } from '../../lib/json';
 import { Config } from '../../types/config';
-import './ConfigEditor.css';
+import styles from './ConfigEditor.module.css';
 
 type Path = Array<string | number>;
 
@@ -40,7 +40,7 @@ export default class ConfigEditor extends Component<
                         />
                     </div>
                 </div>
-                <div className="path">{path.join('.')}</div>
+                <div className={styles.path}>{path.join('.')}</div>
             </div>
         );
     }
@@ -50,7 +50,7 @@ export default class ConfigEditor extends Component<
                 <div>
                     <input value={value} className="form-control" />
                 </div>
-                <div className="path">{path.join('.')}</div>
+                <div className={styles.path}>{path.join('.')}</div>
             </div>
         );
     }
@@ -67,7 +67,7 @@ export default class ConfigEditor extends Component<
                         </option>
                     </select>
                 </div>
-                <div className="path">{path.join('.')}</div>
+                <div className={styles.path}>{path.join('.')}</div>
             </div>
         );
     }
@@ -77,7 +77,7 @@ export default class ConfigEditor extends Component<
                 <div>
                     <input value="" className="form-control" />
                 </div>
-                <div className="path">{path.join('.')}</div>
+                <div className={styles.path}>{path.join('.')}</div>
             </div>
         );
     }
@@ -141,7 +141,7 @@ export default class ConfigEditor extends Component<
     }
     render() {
         return (
-            <div className="ConfigEditor">
+            <div className="main">
                 <div>{this.renderEditor()}</div>
             </div>
         );

@@ -1,15 +1,14 @@
 import Loading from 'components/Loading';
-import { AuthenticationStateAuthenticated } from 'contexts/Auth';
-import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
-import { Component } from 'react';
-import { Config } from 'types/config';
-
 import StandardErrorView, { StandardError } from 'components/StandardErrorView';
 import Well from 'components/Well';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
 import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
-import { changeHash2 } from 'lib/navigation';
+import { navigate } from 'lib/navigation';
+import { Component } from 'react';
 import { Button } from 'react-bootstrap';
+import { Config } from 'types/config';
 import { LinkInfo, Model } from '../lib/Model';
 import { ErrorCode, ReturnInstruction } from '../lib/ORCIDLinkClient';
 import View from './View';
@@ -28,7 +27,6 @@ export enum LinkStatus {
     LINKED = 'LINKED'
 }
 
-
 export interface GetNameResult {
     first_name: string;
     last_name: string;
@@ -45,7 +43,6 @@ export interface LinkState {
     orcid_site_url: string
     isManager: boolean;
 }
-
 
 export type LinkStateProcess = AsyncProcess<LinkState, StandardError>
 
@@ -65,7 +62,21 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     componentDidMount() {
         this.props.setTitle('KBase ORCID® Link');
-        this.loadData();
+        this.setState({
+            linkState: {
+                status: AsyncProcessStatus.ERROR,
+                error: {
+                    code: ErrorCode.unknown,
+                    message: `Unknown error: FOO`,
+                    title: 'Error',
+                    data: {
+                        some: 'more',
+                        detail: 123
+                    }
+                }
+            }
+        });
+        // this.loadData();
     }
 
     async fetchLink(): Promise<LinkInfo | null> {
@@ -87,7 +98,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
 
     async revokeLink() {
-        changeHash2('orcidlink/revoke');
+        navigate('orcidlink/revoke');
     }
 
     async startLink() {
@@ -119,7 +130,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                     }
                 }
             });
-
         } else if (ex instanceof Error) {
             this.setState({
                 linkState: {
@@ -156,7 +166,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             });
         });
         try {
-
             // The user's ORCID Link
             const value = await this.fetchLink();
 
@@ -171,6 +180,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                     orcid_api_url, orcid_oauth_url, orcid_site_url
                 } } = await model.getInfo();
 
+
             const isManager = await model.isManager();
 
             this.setState({
@@ -180,7 +190,10 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
                 }
             });
         } catch (ex) {
-            console.error('ERROR', ex);
+            console.error('ERROR here', ex);
+            if (ex instanceof JSONRPC20Exception) {
+                console.error('MORE INFO', ex.error.code, ex.error.data);
+            }
             this.handleError(ex);
         }
     }
@@ -191,6 +204,7 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
 
     renderError(error: StandardError) {
         switch (error.code) {
+            case ErrorCode.orcid_not_authorized:
             case ErrorCode.orcid_unauthorized_client:
                 return <Well variant="danger">
                     <Well.Header>
@@ -220,7 +234,6 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
             default:
                 return <StandardErrorView error={error} />
         }
-
     }
 
     renderSuccess({ link, url, repoURL, orcid_site_url, isManager }: LinkState) {

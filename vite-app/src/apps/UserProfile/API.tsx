@@ -9,8 +9,6 @@ import { hasOwnProperty } from './utils';
 
 // TODO: replace the BFF calls with a regular dynamic service call!
 export async function getBFFServiceUrl(token: string, serviceWizardURL: string) {
-    // TODO: for dev, the baseUrl will be whatever works for the CRA workflow, which is ''.
-    // baseURL = 'https://ci.kbase.us/services'; // for dev
     const body = {
         method: 'ServiceWizard.get_service_status',
         version: '1.1',

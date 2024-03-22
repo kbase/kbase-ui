@@ -1,0 +1,19 @@
+
+.TypeView-Overview  table.table th {
+    width: 11em;
+}
+
+.TypeView-Overview pre.-description {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.TypeView-Overview table.table.-moduleVersions {
+    width: auto;
+}
+
+
+.TypeView-Overview {
+    flex: 1 1 0;
+    overflow-y: auto;
+}

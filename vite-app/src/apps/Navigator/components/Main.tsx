@@ -1,8 +1,7 @@
 import { Component } from 'react';
 
 // Components
-import { AuthInfo } from '../../../contexts/Auth';
-import { RuntimeContext } from '../../../contexts/RuntimeContext';
+import { AuthInfo, EuropaContext } from 'contexts/EuropaContext';
 import { NavigatorContext } from '../context/NavigatorContext';
 import styles from './Main.module.css';
 import NarrativeList from './NarrativeList/NarrativeList';
@@ -16,7 +15,7 @@ export default class Main extends Component<MainProps> {
     render() {
         return (
             <section className={styles.Main}>
-                <RuntimeContext.Consumer>
+                <EuropaContext.Consumer>
                     {(value) => {
                         if (value === null) {
                             return null;
@@ -41,7 +40,7 @@ export default class Main extends Component<MainProps> {
                             </NavigatorContext.Consumer>
                         );
                     }}
-                </RuntimeContext.Consumer>
+                </EuropaContext.Consumer>
             </section>
         );
     }

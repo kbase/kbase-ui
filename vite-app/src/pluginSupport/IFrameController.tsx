@@ -1,19 +1,18 @@
-import { changeHash2 } from 'lib/navigation';
+import { AuthenticationState, AuthenticationStatus } from 'contexts/EuropaContext';
+import { navigate } from 'lib/navigation';
 import { Component } from 'react';
 import { Alert } from 'react-bootstrap';
 import ReactDOM from 'react-dom/client';
 import * as uuid from 'uuid';
 import ErrorView, { ErrorInfo } from '../components/ErrorView';
-import { AuthenticationState, AuthenticationStatus } from '../contexts/Auth';
 import { isEqual } from '../lib/kb_lib/Utils';
 import { WindowChannel, WindowChannelInit } from '../lib/kb_lib/windowChannel';
 import { Messenger } from '../lib/messenger';
 import { Config } from '../types/config';
 import AutoPostForm from './AutoPostForm';
 import IFrame, { IFrameProps } from './IFrame';
-import { Params } from './Plugin';
-
 import styles from './IFrameController.module.css';
+import { Params } from './Plugin';
 
 export enum PluginLoadingStatus {
     NONE = 'NONE',
@@ -308,13 +307,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 return to.params;
             })();
 
-            changeHash2(path, params);
-
-            // this.props.messenger.send({
-            //     channel: 'app',
-            //     message: 'navigate',
-            //     payload: to,
-            // });
+            navigate(path, params);
         });
 
         this.channel.on('post-form', (config) => {
@@ -333,43 +326,43 @@ export default class IFrameController extends Component<IFrameControllerProps,
             this.props.setTitle(title);
         });
 
-        this.channel.on('ui-auth-navigate', async (message) => {
-            const {
-                nextRequest,
-                tokenInfo: { token, expires },
-            } = message;
-            try {
-                // Set the auth
-                switch (this.props.authState.status) {
-                    case AuthenticationStatus.NONE:
-                        return;
-                    case AuthenticationStatus.UNAUTHENTICATED:
-                        await this.props.authState.login(token, expires);
-                        break;
-                    case AuthenticationStatus.AUTHENTICATED:
-                        await this.props.authState.logout();
-                        break;
-                }
+        // this.channel.on('ui-auth-navigate', async (message) => {
+        //     const {
+        //         nextRequest,
+        //         tokenInfo: { token, expires },
+        //     } = message;
+        //     try {
+        //         // Set the auth
+        //         switch (this.props.authState.status) {
+        //             case AuthenticationStatus.NONE:
+        //                 return;
+        //             case AuthenticationStatus.UNAUTHENTICATED:
+        //                 await this.props.authState.login(token, expires);
+        //                 break;
+        //             case AuthenticationStatus.AUTHENTICATED:
+        //                 await this.props.authState.logout();
+        //                 break;
+        //         }
 
-                // Redirect
-                // TODO: respect search query too
-                const path = (() => {
-                    if (!nextRequest) {
-                        return null;
-                    } else if (typeof nextRequest === 'string') {
-                        return nextRequest;
-                    } else if (typeof nextRequest.path === 'string') {
-                        return nextRequest.path;
-                    } else {
-                        return nextRequest.path.join('/');
-                    }
-                })();
-                changeHash2(path || 'dashboard', {cleanNextRequest: true});
-            } catch (ex) {
-                // TODO: something
-                console.error('YIKES! Error in auth navigation out.', ex);
-            }
-        });
+        //         // Redirect
+        //         // TODO: respect search query too
+        //         const path = (() => {
+        //             if (!nextRequest) {
+        //                 return null;
+        //             } else if (typeof nextRequest === 'string') {
+        //                 return nextRequest;
+        //             } else if (typeof nextRequest.path === 'string') {
+        //                 return nextRequest.path;
+        //             } else {
+        //                 return nextRequest.path.join('/');
+        //             }
+        //         })();
+        //         navigate(path || 'dashboard', { cleanNextRequest: true });
+        //     } catch (ex) {
+        //         // TODO: something
+        //         console.error('YIKES! Error in auth navigation out.', ex);
+        //     }
+        // });
 
         /*
             examples:
@@ -390,19 +383,19 @@ export default class IFrameController extends Component<IFrameControllerProps,
             }
             */
         this.channel.on('notification', (notification) => {
-            this.props.messenger.send({
+            this.props.messenger.publish({
                 channel: 'notification',
                 message: 'notify',
                 payload: notification,
             });
         });
 
-        this.channel.on('reload-profile', () => {
-            // this.runtime.send('profile', 'reload', null);
-            if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
-                this.props.authState.sync();
-            }
-        });
+        // this.channel.on('reload-profile', () => {
+        //     // this.runtime.send('profile', 'reload', null);
+        //     if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
+        //         this.props.authState.sync();
+        //     }
+        // });
 
         this.channel.start();
     }
@@ -412,7 +405,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
         params,
     }: {
         action: string;
-        params: { [_: string]: string };
+        params: Record<string, string>;
     }) {
         const donorNode = document.createElement('div');
         document.body.appendChild(donorNode);
@@ -559,6 +552,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                         view: this.props.view,
                         params: this.props.routeParams,
                     };
+
                     this.channel!.send('start', startMessage);
                     // Any sends to the channel should only be enabled after the
                     // start message is received.
@@ -591,7 +585,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 this.channel!.send('navigate', {
                     view: this.props.view,
                     to: this.props.view,
-                    params: this.props.routeParams,
+                    // NB: the "view" param provided for compatability with some plugins.
+                    params: {...this.props.routeParams, view: this.props.view},
                     path: this.props.original,
                 });
                 resolve();
@@ -786,8 +781,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 return;
         }
         return (
-            <div className={styles['-cover']}>
-                <Alert variant="warning" className={styles.PluginLoading}>
+            <div className={styles.cover}>
+                <Alert variant="warning" className={styles.loading}>
                     <span
                         className="fa fa-rotate-225 fa-2x fa-plug"
                         style={{ marginRight: '8px', color: color }}
@@ -821,7 +816,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
 
     render() {
         return (
-            <div className={styles.IFrameController}>
+            <div className={styles.main}>
                 {this.renderState()}
                 {this.renderIFrame()}
             </div>

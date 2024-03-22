@@ -6,13 +6,9 @@ export interface AboutBuildProps {
     buildInfo: BuildInfo;
 }
 
-interface AboutBuildState { }
-
 export default class AboutBuild extends Component<
-    AboutBuildProps,
-    AboutBuildState
+    AboutBuildProps
 > {
-   
     renderCommit() {
         return (
             <table className="table">

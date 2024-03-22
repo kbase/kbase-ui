@@ -1,9 +1,9 @@
 import Loading from "components/Loading";
-import { SimpleError } from "components/MainWindow";
 import Well from "components/Well";
 import { AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { Component } from "react";
-import { Button, ButtonToolbar, Col, Row, Stack } from "react-bootstrap";
+import { Button, ButtonToolbar, Col, Container, Row } from "react-bootstrap";
 import { LinkState, RevokeState, RevokeStatus } from "./Controller";
 import Revoker from "./Revoker";
 
@@ -177,7 +177,7 @@ export default class View extends Component<ViewProps, ViewState> {
     }
 
     render() {
-        return <Stack>
+        return <Container fluid className="p-0 overflow-x-hidden">
             <Row>
                 <Col>
                     {this.renderState()}
@@ -186,6 +186,6 @@ export default class View extends Component<ViewProps, ViewState> {
                     {this.renderAbout()}
                 </Col>
             </Row>
-        </Stack>
+        </Container>
     }
 }

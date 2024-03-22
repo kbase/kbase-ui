@@ -1,0 +1,9 @@
+.UseAgreements {
+
+}
+
+.UseAgreements .-agreementMessage {
+    font-style: "italic";
+    text-align: "center";
+    margin-top: "20px"
+}

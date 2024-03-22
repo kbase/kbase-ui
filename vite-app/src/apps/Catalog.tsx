@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
 import { RouteProps, Router } from '../components/Router2';
-import { AuthenticationState } from '../contexts/Auth';
+import { AuthenticationState } from '../contexts/EuropaContext';
 import { Route, SimplePluginRouteSpec } from '../lib/Route';
 import { Config } from '../types/config';
+import { SignIn } from './Auth2/SignIn/SignIn';
 
 export interface CatalogProps extends RouteProps {
     config: Config;
@@ -14,10 +15,7 @@ export interface CatalogProps extends RouteProps {
 interface CatalogState {
 }
 
-
 export default class Catalog extends Component<CatalogProps, CatalogState> {
-
-
     render() {
         const common = {
             name: "catalog",
@@ -60,7 +58,7 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
             {
                 path: 'catalog/stats',
                 auth: false,
-                view: 'catalogStatus'
+                view: 'catalogStats'
             },
             {
                 path: '^(appcatalog|catalog)$/^(app|apps)$/:namespace/:id/:tag?',
@@ -110,7 +108,21 @@ export default class Catalog extends Component<CatalogProps, CatalogState> {
             });
         });
 
-        return <Router routes={routes} hashPath={this.props.hashPath} />
+        const authRoute = new Route(
+            '^login|signin|signup$', 
+            {authenticationRequired: false}, 
+            (props: RouteProps) => {
+                return <SignIn 
+                    {...props} 
+                    key={props.hashPath.hash} 
+                    source="authorization"
+                    config={this.props.config}
+                    authState={this.props.authState}
+                    setTitle={this.props.setTitle}
+                />
+            }
+        )
 
+        return <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute} />
     }
 }

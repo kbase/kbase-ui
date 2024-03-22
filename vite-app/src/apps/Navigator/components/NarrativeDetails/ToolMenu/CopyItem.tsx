@@ -85,7 +85,7 @@ export default class CopyItem extends Component<
         const narrativeService = new NarrativeService({
             url: this.props.config.services.ServiceWizard.url,
             token: this.props.authInfo.token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
             await narrativeService.copy_narrative({

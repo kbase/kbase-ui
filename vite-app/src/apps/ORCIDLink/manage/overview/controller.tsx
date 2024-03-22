@@ -1,8 +1,8 @@
 // import { ManageStatsResult } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import ErrorMessage from "components/ErrorMessage";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
 import Poller, { makePoller } from "lib/poller";
 import { Component } from "react";

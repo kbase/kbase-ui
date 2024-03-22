@@ -2,7 +2,8 @@ import { JSONValue } from 'lib/json';
 import { Component, PropsWithChildren } from 'react';
 import { Accordion } from 'react-bootstrap';
 import PresentableJSON from './PresentableJSON';
-import './StandardErrorView.css';
+import PropTable, { PropTableRow } from './PropTable';
+import styles from './StandardErrorView.module.css';
 import Well from './Well';
 
 export interface StandardError {
@@ -21,12 +22,16 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
         return this.props.error.title || 'Error!';
     }
 
-    renderMessage() {
-        return (
-            <p>
-                {this.props.error.message} ({this.props.error.code})
-            </p>
-        );
+    renderInfo() {
+        const errorProps: Array<PropTableRow> = [
+            ['message', this.props.error.message],
+            ['code', String(this.props.error.code)]
+        ];
+
+        return <div className={styles.info}>
+            <PropTable rows={errorProps} styles={{col1: {flex: '0 0 8rem'}}} />
+        </div>;
+       
     }
 
     renderData() {
@@ -37,7 +42,7 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
         return (
             <Accordion>
                 <Accordion.Item eventKey="0">
-                    <Accordion.Header>Additional Info</Accordion.Header>
+                    <Accordion.Header>Additional Data</Accordion.Header>
                     <Accordion.Body>
                         <PresentableJSON data={this.props.error.data} tableStyle="" />
                     </Accordion.Body>
@@ -51,10 +56,9 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
             <Well variant="danger">
                 <Well.Header>{this.renderTitle()}</Well.Header>
                 <Well.Body>
-                    {this.renderMessage()}
+                    {this.renderInfo()}
                     {this.renderData()}
                 </Well.Body>
-                <Well.Footer></Well.Footer>
             </Well>
         );
     }

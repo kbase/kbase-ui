@@ -1,0 +1,111 @@
+.DataTable7 {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+}
+
+.DataTable7.-bordered {
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 1em;
+    padding: 0.5em;
+}
+
+
+.DataTable7-header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    font-weight: bold;
+    color: gray;
+    /* border-top: 1px solid rgba(200, 200, 200, 0.5); */
+    /* border-bottom: 2px solid rgba(200, 200, 200, 0.5); */
+    /* Force scrollbar so it aligns w/body*/
+    border-bottom: 1px dashed rgb(200, 200, 200);
+    overflow-y: scroll;
+}
+
+.DataTable7-header::-webkit-scrollbar-track {
+    background-color: white;
+}
+
+.DataTable7-header::-webkit-scrollbar-thumb {
+    background-color: white;
+}
+
+.DataTable7-header-col {
+    flex: 1 1 0px;
+    padding: 4px;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.DataTable7-body {
+    flex: 1 1 0px;
+    /* display: flex; */
+    /* flex-direction: column; */
+    min-height: 0;
+    min-width: 0;
+    overflow-y: scroll;
+}
+
+.DataTable7-grid {
+    position: relative;
+}
+
+.DataTable7-grid-row {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+.DataTable7-grid-row:hover {
+    background-color: rgba(200, 200, 200, 0.2);
+    cursor: pointer;
+}
+
+.DataTable7-grid-cell {
+    position: absolute;
+}
+
+.DataTable7-row-wrapper {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    /* border-bottom: 1px solid rgba(200, 200, 200, 0.5); */
+}
+
+.DataTable7-row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.DataTable7-row-detail {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.DataTable7-row-highlighted {
+    background-color: rgba(200, 200, 200, 0.5);
+}
+
+.DataTable7-col {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    justify-content: center;
+}
+
+.DataTable7-col-content {
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 4px;
+}
