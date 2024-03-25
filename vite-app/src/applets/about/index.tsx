@@ -10,7 +10,7 @@ import AboutKBaseUI from './AboutKBaseUI';
 import AboutMenu from './AboutMenu';
 import AboutPlugins from './AboutPlugins';
 import AboutServices from './AboutServices';
-import AboutSessionController from './AboutSession/controller';
+import AboutSessionController from './AboutSession';
 import { ConnectionStatus } from './ConnectionStatus/ConnectionStatus';
 import styles from './index.module.css';
 
@@ -88,7 +88,7 @@ export default class About extends Component<AboutProps, AboutState> {
 
         return <div className={styles.main}>
             <div className={styles.menu}>
-                <AboutMenu tab={this.props.match.params.get('name') || 'kbase-ui'}/>
+                <AboutMenu tab={this.props.match.params.get('name') || 'kbase-ui'} authState={this.props.authState} />
             </div>
             <div className={styles.body}>
                 <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
