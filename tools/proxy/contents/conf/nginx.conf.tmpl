@@ -10,12 +10,14 @@
 # UI_DOMAIN = {{ .Env.UI_DOMAIN }}
 # KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
 # KBASE_UI_HOST = {{ .Env.KBASE_UI_HOST }} 
+# KBASE_UI_PORT = {{ .Env.KBASE_UI_PORT }}
 # EUROPA_UI_HOST = {{ .Env.EUROPA_UI_HOST }}
-# LOCAL_NARRATIVE = {{ .Env.LOCAL_NARRATIVE }}
+# EUROPA_UI_PORT = {{ .Env.EUROPA_UI_PORT }}
+# NARRATIVE_HOST = {{ .Env.NARRATIVE_HOST }}
+# NARRATIVE_PORT = {{ .Env.NARRATIVE_PORT }}
 # SERVICE_PROXIES = {{ .Env.SERVICE_PROXIES }}
 # DYNAMIC_SERVICE_PROXIES = {{ .Env.DYNAMIC_SERVICE_PROXIES }}
 # SERVICES_DOMAIN = {{ .Env.SERVICES_DOMAIN }}
-
 
 
 {{ $subhost := not (eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN) }}
@@ -78,24 +80,38 @@ http {
     }
 
     upstream kbase_ui {
-        server {{ .Env.KBASE_UI_HOST }}:3000;
-        # allows the proxy to start up even though the 
-        # target may not be running yet
-        server {{ .Env.KBASE_UI_HOST }}:80 backup;
-        keepalive 16;
+        {{ if .Env.KBASE_UI_HOST }}
+            server {{ .Env.KBASE_UI_HOST }}:{{ or .Env.KBASE_UI_PORT "3000" }};
+            # allows the proxy to start up even though the 
+            # target may not be running yet
+            server {{ .Env.KBASE_UI_HOST }}:80 backup;
+            keepalive 16;
+        {{ else }}
+            server {{ .Env.KBASE_UI_DOMAIN }};
+        {{ end }}
     }
 
      upstream europa_ui {
-        server {{ .Env.EUROPA_UI_HOST }}:8080;
+        {{ if .Env.EUROPA_UI_HOST }}
+            server {{ .Env.EUROPA_UI_HOST }}:{{ or .Env.EUROPA_UI_PORT "8080" }};
+            # allows the proxy to start up even though the 
+            # target may not be running yet
+            server {{ .Env.EUROPA_UI_HOST }}:80 backup;
+            keepalive 16;
+        {{ else }}
+            server {{ .Env.UI_DOMAIN }};
+        {{ end }}
+
+        #server {{ .Env.EUROPA_UI_HOST }}:8080;
         # allows the proxy to start up even though the 
         # target may not be running yet
-        server {{ .Env.EUROPA_UI_HOST }}:80 backup;
-        keepalive 16;
+        #server {{ .Env.EUROPA_UI_HOST }}:80 backup;
+        #keepalive 16;
     }
 
     upstream narrative {
-        {{ if eq .Env.LOCAL_NARRATIVE "t" }}
-            server narrative:8888;
+        {{ if .Env.NARRATIVE_HOST }}
+            server {{ .Env.NARRATIVE_HOST }}:{{ or .Env.NARRATIVE_PORT "8888" }};
         {{ else }}
             server {{ .Env.UI_DOMAIN }};
         {{ end }}
@@ -263,11 +279,12 @@ http {
         }
 
         location /narrative/ {
-            {{ if eq .Env.LOCAL_NARRATIVE "t" }}
-                proxy_pass http://narrative/narrative/;
-            {{ else }}
-                proxy_pass https://{{ .Env.UI_DOMAIN }}/narrative/;
-            {{ end }}
+            proxy_pass http://narrative/narrative/;
+            #{{ if eq .Env.LOCAL_NARRATIVE "t" }}
+            #    proxy_pass http://narrative/narrative/;
+            #{{ else }}
+            #    proxy_pass https://{{ .Env.UI_DOMAIN }}/narrative/;
+            #{{ end }}
 
             {{ if $subhost }}
             include /etc/nginx/cors.conf;
@@ -300,7 +317,7 @@ http {
         # kbase-ui will be located on a path
         # disable this if the subdomain is used instead.
         # in this case, BASE_PATH had better not be empty or /.
-        {{ if eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN }}
+        {{ if not $subhost }}
 
         {{ if .Env.BASE_PATH }}
         location /{{ .Env.BASE_PATH }}/ {
@@ -311,13 +328,10 @@ http {
             proxy_set_header Connection $connection_upgrade;
         } 
         {{ else }}
-        location / {
-            proxy_pass http://kbase_ui;
-            proxy_set_header Connection "";
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-        } 
+         
+            # not a valid configuration, because it will always conflict with Europa.
+            NOT VALID CONFIGURATION
+
         {{ end }}
 
         {{ end }}

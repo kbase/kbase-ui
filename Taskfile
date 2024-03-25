@@ -125,10 +125,15 @@ function generate-proxy-env {
         -e DEPLOY_ENV \
         -e BASE_PATH \
         -e KBASE_UI_HOSTNAME \
-        -e LOCAL_NARRATIVE \
         -e SERVICE_PROXIES \
         -e DYNAMIC_SERVICE_PROXIES \
         -e SERVICES_DOMAIN \
+        -e KBASE_UI_HOST \
+        -e KBASE_UI_PORT \
+        -e NARRATIVE_HOST \
+        -e NARRATIVE_PORT \
+        -e EUROPA_UI_HOST \
+        -e EUROPA_UI_PORT \
         --rm \
     node-tool ./scripts/container/generate-proxy-env
 }
@@ -191,6 +196,10 @@ function build-image {
 
 function run-image {
     ./scripts/host/run-image.sh
+}
+
+function run-proxy {
+    ./scripts/host/run-proxy.sh
 }
 
 function create-docker-network {
