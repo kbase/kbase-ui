@@ -343,6 +343,22 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
         },
       );
     } catch (ex) {
+      // We have code to consider this an exception - to receive a token from Europa
+      // which is invalid (should be by far the most common reason for an error).
+      // Now, how can this happen, as Europa will validate the token before setting it
+      // (which in turn triggers europa.authenticated to be sent?)
+      // This occurs commonly during development, but should not occur in productino.
+      //
+      // The reason is the usage of "StrictMode" which duplicates all renders
+      // and effects. This causes trouble as  Europa depends to some degree upon
+      // noticing changes in state to trigger asynchronous effects (e.g. during
+      // sign in and sign out).
+      // For example, during sign
+      const message = ex instanceof Error ? ex.message : 'Unknown error';
+      console.warn(`eruopa.authenticate message contained invalid token: ${message}`);
+      //   return {
+      //     status: AuthenticationStatus.UNAUTHENTICATED,
+      //   };
       if (ex instanceof JSONRPC11Exception) {
         switch (ex.error.code) {
           case 10020:
@@ -508,7 +524,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
    * @param token A kbase Login Token
    * @returns
    */
-  async authenticateFromEuropa(token: string): Promise<AuthenticationStateAuthenticated> {
+  async authenticateFromEuropa(token: string): Promise<AuthenticationState> {
     const auth = new Auth2({
       baseUrl: this.props.config.services.Auth2.url,
     });
@@ -533,6 +549,9 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
         userProfile,
       };
     } catch (ex) {
+      //   return {
+      //     status: AuthenticationStatus.UNAUTHENTICATED,
+      //   };
       if (ex instanceof JSONRPC11Exception) {
         switch (ex.error.code) {
           case 10020:
@@ -809,7 +828,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
     });
     const spy = (() => {
       return (message: ChannelMessage) => {
-        console.log('kbase-ui RECEIVE ->', message);
+        console.info('kbase-ui RECEIVE ->', message);
       };
     })();
 
