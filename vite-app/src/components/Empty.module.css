@@ -5,6 +5,10 @@
     align-items: center;
 }
 
+.main.noBorder {
+    border: none;
+}
+
 .normalSize {
     border-radius: 1rem;
     padding: 1rem;

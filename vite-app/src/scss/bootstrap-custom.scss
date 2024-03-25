@@ -1,0 +1,20 @@
+/**
+* Bootstrap and bootstrap customization styles.
+*
+* Is applied globally to all bootstrap components. Should be imported at the top level
+* of the application.
+*/
+
+/**
+ * Custom variables for bootstrap 5.3
+*/
+$font-size-base: 0.9rem;
+$spinner-animation-speed: 1.25s;
+$form-label-font-weight: bold;
+$form-label-color: rgb(150, 150, 150);
+
+@import "bootstrap/scss/bootstrap";
+
+.table.subdued-headers th {
+    color: rgba(125, 125, 125);
+}

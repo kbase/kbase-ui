@@ -1,0 +1,226 @@
+{
+    "methods": {
+        "method": [
+            "fa-cube"
+        ],
+        "app": [
+            "fa-cubes"
+        ]
+    },
+    "data": {
+        "DEFAULT": [
+            "fa-file-o"
+        ],
+        "AssemblyInput": [
+            "icon icon-reads"
+        ],
+        "Assembly": [
+            "fa-align-justify"
+        ],
+        "ChromatographyMatrix": [
+            "fa-table"
+        ],
+        "Collection": [
+            "fa-list-ul"
+        ],
+        "ContigSet": [
+            "fa-align-justify"
+        ],
+        "DomainAlignment": [
+            "fa-sliders"
+        ],
+        "EstimateKResult": [
+            "fa-area-chart"
+        ],
+        "ExpressionMatrix": [
+            "fa-th"
+        ],
+        "ExpressionSample": [
+            "fa-tachometer"
+        ],
+        "ExpressionSeries": [
+            "fa-tachometer"
+        ],
+        "FBA": [
+            "icon icon-metabolism"
+        ],
+        "FBAModel": [
+            "icon icon-metabolism"
+        ],
+        "FeatureClusters": [
+            "fa-th-list"
+        ],
+        "FeatureSet": [
+            "fa-list-ul"
+        ],
+        "FunctionalMatrix": [
+            "fa-table"
+        ],
+        "Genome": [
+            "icon icon-genome"
+        ],
+        "GenomeAnnotation": [
+            "icon icon-genome"
+        ],
+        "GenomeComparison": [
+            "icon icon-compare"
+        ],
+        "GenomeSet": [
+            "fa-list-ul"
+        ],
+        "Heatmap": [
+            "fa-th"
+        ],
+        "Media": [
+            "fa-flask"
+        ],
+        "AnnotatedMetagenomeAssembly": [
+            "icon icon-metagenome"
+        ],
+        "Metagenome": [
+            "icon icon-metagenome"
+        ],
+        "Network": [
+            "fa-code-fork"
+        ],
+        "PairedEndLibrary": [
+            "icon icon-reads"
+        ],
+        "Pangenome": [
+            "fa-bullseye"
+        ],
+        "PhenotypeSet": [
+            "fa-list-ul"
+        ],
+        "PhenotypeSimulationSet": [
+            "fa-list-ul"
+        ],
+        "ProteomeComparison": [
+            "fa-arrows-h"
+        ],
+        "ReadsSet": [
+            "icon icon-reads"
+        ],
+        "ReferenceAssembly": [
+            "fa-book"
+        ],
+        "SingleEndLibrary": [
+            "icon icon-reads"
+        ],
+        "TaxonomicMatrix": [
+            "fa-table"
+        ],
+        "Taxon": [
+            "fa-table"
+        ],
+        "Tree": [
+            "icon icon-tree"
+        ],
+        "SampleSet": [
+            "fa-list-ul"
+        ]
+    },
+    "colors": [
+        "#F44336",
+        "#1D7EEA",
+        "#E91E63",
+        "#9C27B0",
+        "#3F51B5",
+        "#2196F3",
+        "#673AB7",
+        "#FFC107",
+        "#0277BD",
+        "#00BCD4",
+        "#009688",
+        "#4CAF50",
+        "#33691E",
+        "#2E7D32",
+        "#AEEA00",
+        "#03A9F4",
+        "#FF9800",
+        "#FF5722",
+        "#795548",
+        "#006064",
+        "#607D8B",
+        "#316A4E"
+    ],
+    "color_mapping": {
+        "AmpliconMatrix": "#C1CD23",
+        "AnnotatedMetagenomeAssembly": "#006630",
+        "Assembly": "#66B1DB",
+        "AssemblyFile": "#66B1DB",
+        "AssemblyInput": "##66B1DB",
+        "AssemblyReport": "#795548",
+        "AssemblySet": "#66B1DB",
+        "Associations": "#FFDB33",
+        "AttributeMapping": "#C1CD23",
+        "BinnedContigs": "#66B1DB",
+        "Biom": "#006630",
+        "Bowtie2Indexes": "#B8D4EC",
+        "ChemicalAbundanceMatrix": "#AAE0E4",
+        "ClusterSet": "#66489D",
+        "Collection": "#D2232A",
+        "CompoundSet": "#AAE0E4",
+        "ContigSet": "#66B1DB",
+        "DifferentialExpressionMatrix": "#FFDB33",
+        "DifferentialExpressionMatrixSet": "#FFDB33",
+        "DomainAnnotation": "#66489D",
+        "DomainLibrary": "#66489D",
+        "DomainModelSet": "#66489D",
+        "EscherMap": "#AAE0E4",
+        "EstimateKResult": "#FFDB33",
+        "ExpressionMatrix": "#FFDB33",
+        "ExpressionSample": "#FFDB33",
+        "ExpressionSeries": "#FFDB33",
+        "ExpressionSet": "#FFDB33",
+        "FBA": "#AAE0E4",
+        "FBAModel": "#AAE0E4",
+        "FBAModelAttribureMapping": "#AAE0E4",
+        "FBAModelSet": "#AAE0E4",
+        "FBAPathwayAnalysis": "#AAE0E4",
+        "FeatureClusters": "#D2232A",
+        "FeatureSet": "#D2232A",
+        "FeatureSetSet": "#D2232A",
+        "FigureProperties": "#AAE0E4",
+        "FloatTable": "#F58423",
+        "FunctionalMatrix": "#C1CD23",
+        "FunctionalProfile": "#C1CD23",
+        "Genome": "#D2232A",
+        "GenomeComparison": "#66489D",
+        "GenomeSet": "#D2232A",
+        "GFFAnnotation": "#D2232A",
+        "Heatmap": "#AAE0E4",
+        "Media": "#AAE0E4",
+        "MetaboliteMatrix": "#AAE0E4",
+        "Metagenome": "#006630",
+        "ModelComparison": "#AAE0E4",
+        "MSA": "#B8D4EC",
+        "Network": "#795548",
+        "NewModelTemplate": "#AAE0E4",
+        "PairedEndLibrary": "#EDA7AA",
+        "Pangenome": "#66489D",
+        "PCAMatrix": "#C1CD23",
+        "PhenotypeSet": "#AAE0E4",
+        "PhenotypeSimulationSet": "#AAE0E4",
+        "ProteomeComparison": "#66489D",
+        "RNASeqAlignment": "#B8D4EC",
+        "RNASeqAlignmentSet": "#B8D4EC",
+        "RNASeqExpression": "#FFDB33",
+        "RNASeqSampleSet": "#FFDB33",
+        "ReactionMatrix": "#AAE0E4",
+        "ReadsAlignmentSet": "#B8D4EC",
+        "ReadsSet": "#EDA7AA",
+        "ReferenceAssembly": "#D2232A",
+        "ReferenceAnnotation": "#D2232A",
+        "Report": "#795548",
+        "SampleSet": "#C1CD23",
+        "SequenceSet": "#B8D4EC",
+        "SingleEndLibrary": "#EDA7AA",
+        "StringDataTable": "#F58423",
+        "Taxon": "#795548",
+        "TaxonomicMatrix": "#66489D",
+        "TraitMatrix": "#66489D",
+        "Tree": "#66489D",
+        "Variations": "#B8D4EC"
+    }
+}

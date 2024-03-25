@@ -1,0 +1,15 @@
+.title {
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1);
+    margin-top: 6px;
+    font-size: 110%;
+}
+.code {
+    font-family: monospace;
+}
+.description {
+
+}
+.message {
+    
+}

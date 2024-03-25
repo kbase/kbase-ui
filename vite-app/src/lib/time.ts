@@ -337,3 +337,34 @@ export function niceElapsed(elapsedTime: number, options: NiceDurationOptions = 
         };
     }
 }
+
+export function niceTime(dateObj: Date) {
+    let date, time;
+    if (typeof dateObj === 'string') {
+        date = new Date(dateObj);
+    } else if (typeof dateObj === 'number') {
+        date = new Date(dateObj);
+    } else {
+        date = dateObj;
+    }
+
+    let shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let minutes = (() => {
+        const minutes = date.getMinutes();
+        if (minutes < 10) {
+            return `0${minutes}`;
+        }
+        return `${minutes}`;
+    })();
+
+    if (date.getHours() >= 12) {
+        if (date.getHours() !== 12) {
+            time = (date.getHours() - 12) + ':' + minutes + 'pm';
+        } else {
+            time = '12:' + minutes + 'pm';
+        }
+    } else {
+        time = date.getHours() + ':' + minutes + 'am';
+    }
+    return shortMonths[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at ' + time;
+}

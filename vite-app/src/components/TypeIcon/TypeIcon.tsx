@@ -28,10 +28,6 @@ export interface TypeIconProps {
 interface TypeIconState { }
 
 export default class TypeIcon extends Component<TypeIconProps, TypeIconState> {
-    // constructor(props: TypeIconProps) {
-    //     super(props);
-    // }
-
     getDefaultIcon(typeName: string) {
         return {
             type: 'fontAwesome',

@@ -1,7 +1,7 @@
 import { JSONObject } from '@kbase/ui-lib/lib/json';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { Component, PropsWithChildren } from 'react';
 import { RouteProps } from '../../../components/Router2';
-import { AuthInfo } from '../../../contexts/Auth';
 import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
 import { Config } from '../../../types/config';
 import Tasks from '../components/NarrativeList/Tasks';

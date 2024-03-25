@@ -1,9 +1,9 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import { Button, Col, Row } from 'react-bootstrap';
 import Select, { MultiValue } from 'react-select';
 import AsyncSelect from 'react-select/async';
-import { AuthInfo } from '../../../../../../contexts/Auth';
 import { Config } from '../../../../../../types/config';
 import { AuthService } from '../../../../utils/AuthService';
 import { PERM_MAPPING } from './Definitions';
@@ -101,13 +101,13 @@ export default class PermSearch extends Component<
                         placeholder={
                             'Select one or more users to share with...'
                         }
-                        styles={{
-                            menuPortal: (base) => ({
-                                ...base,
-                                zIndex: 9999,
-                            }),
-                            container: (base) => ({ ...base, flex: 2 }),
-                        }}
+                        // styles={{
+                        //     menuPortal: (base) => ({
+                        //         ...base,
+                        //         zIndex: 9999,
+                        //     }),
+                        //     container: (base) => ({ ...base, flex: 2 }),
+                        // }}
                         noOptionsMessage={({ inputValue }) => {
                             if (inputValue.length === 0) {
                                 return 'Search for a user by username or real name';
@@ -134,13 +134,13 @@ export default class PermSearch extends Component<
                         <Select
                             defaultValue={this.permOptions[0]}
                             options={this.permOptions}
-                            styles={{
-                                menuPortal: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                }),
-                                container: (base) => ({ ...base, flex: 1 }),
-                            }}
+                            // styles={{
+                            //     menuPortal: (base) => ({
+                            //         ...base,
+                            //         zIndex: 9999,
+                            //     }),
+                            //     container: (base) => ({ ...base, flex: 1 }),
+                            // }}
                             menuPortalTarget={document.body}
                             onChange={this.handlePermChange.bind(this)}
                         />

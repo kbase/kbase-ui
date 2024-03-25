@@ -52,6 +52,7 @@ export default class RenameItem extends Component<
             const client = new NarrativeModel({
                 token: this.props.authInfo.token,
                 workspaceURL: this.props.config.services.Workspace.url,
+                timeout: this.props.config.ui.constants.clientTimeout
             });
             const userPerm = await client.getUserPermission(
                 this.props.narrative.access_group,
@@ -96,7 +97,7 @@ export default class RenameItem extends Component<
         const narrativeService = new NarrativeService({
             url: this.props.config.services.ServiceWizard.url,
             token: this.props.authInfo.token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
             await narrativeService.rename_narrative({

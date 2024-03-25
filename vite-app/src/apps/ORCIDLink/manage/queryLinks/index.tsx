@@ -1,5 +1,5 @@
-import { AuthenticationStatus } from "contexts/Auth";
-import { RuntimeContext } from "contexts/RuntimeContext";
+import { AuthenticationStatus, EuropaContext } from "contexts/EuropaContext";
+import { AsyncProcessStatus } from "lib/AsyncProcess";
 import { Component } from "react";
 import QueryLinksController from "./controller";
 
@@ -10,19 +10,20 @@ export interface QueryLinksContextProps {
 
 export default class QueryLinksContext extends Component<QueryLinksContextProps> {
     render() {
-        return <RuntimeContext.Consumer>
+        return <EuropaContext.Consumer>
             {(value) => {
-                if (value) {
-                    if (value.authState.status === AuthenticationStatus.AUTHENTICATED) {
+                if (value && value.status === AsyncProcessStatus.SUCCESS) {
+                    const {authState, config, notify} = value.value;
+                    if (authState.status === AuthenticationStatus.AUTHENTICATED) {
                         return <QueryLinksController
-                            config={value.config}
-                            auth={value.authState}
+                            config={config}
+                            auth={authState}
                             viewLink={this.props.viewLink}
-                            notify={value.addNotification}
+                            notify={notify}
                         />
                     }
                 }
             }}
-        </RuntimeContext.Consumer>
+        </EuropaContext.Consumer>
     }
 }

@@ -1,9 +1,10 @@
 import { Component, PropsWithChildren } from 'react';
-import './ErrorAlert.css';
+import { Alert, AlertHeading } from 'react-bootstrap';
+import styles from './ErrorAlert.module.css';
 
 export type ErrorAlertProps = PropsWithChildren<{
     title?: string;
-    message: string;
+    message?: string;
     render?: () => JSX.Element;
 }>;
 
@@ -11,10 +12,10 @@ export default class ErrorAlert extends Component<ErrorAlertProps> {
     renderTitle() {
         const title = this.props.title || 'Error!';
         return (
-            <div className="alert-title">
+            <AlertHeading>
                 <span className="fa fa-exclamation-triangle" />
                 {title}
-            </div>
+            </AlertHeading>
         );
     }
     render() {
@@ -25,10 +26,10 @@ export default class ErrorAlert extends Component<ErrorAlertProps> {
             return this.props.message || this.props.children;
         })();
         return (
-            <div className="alert alert-danger ErrorAlert">
+            <Alert variant="danger" className={styles.main}>
                 {this.renderTitle()}
                 {content}
-            </div>
+            </Alert>
         );
     }
 }

@@ -1,6 +1,6 @@
 import { Tabs, TabsProps } from 'antd';
 import { RouteProps } from 'components/Router2';
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { Component } from "react";
 import { Config } from "types/config";
 import NarrativesController from './Narratives/controller';
@@ -16,12 +16,11 @@ export interface UserProfileProps extends RouteProps {
 }
 
 interface UserProfileState {
-
 }
 
 export default class UserProfile extends Component<UserProfileProps, UserProfileState> {
     componentDidMount(): void {
-        this.props.setTitle('User Profile - IN PROGRESS');
+        this.props.setTitle('User Profile');
     }
 
     renderUserSearch() {
@@ -36,13 +35,13 @@ export default class UserProfile extends Component<UserProfileProps, UserProfile
     }
 
     render() {
-
         const username = this.props.username || this.props.authState.authInfo.account.user;
 
         const items: TabsProps['items'] = [{
             key: 'profile',
             label: 'Profile',
             children: <ProfileController
+                key={username}
                 authState={this.props.authState}
                 config={this.props.config}
                 username={username}
@@ -51,8 +50,14 @@ export default class UserProfile extends Component<UserProfileProps, UserProfile
         }, {
             key: 'narratives',
             label: 'Narratives',
-            children: <NarrativesController authState={this.props.authState} config={this.props.config} username={this.props.username} />
+            children: <NarrativesController 
+                key={username}
+                authState={this.props.authState} 
+                config={this.props.config} 
+                username={this.props.username} 
+            />
         }]
+
         return (
             <div className={`${styles.UserProfile} Profile`}>
                 <Tabs type="card"

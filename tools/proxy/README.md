@@ -24,3 +24,6 @@ local_navigator
 local_narrative
 service_proxies
 dynamic_service_proxies
+
+> NOTE: the standalone docker-compose.yml has not been used for a while; just the
+> devcontainer one. It will need some work to ... work.

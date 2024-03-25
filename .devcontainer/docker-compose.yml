@@ -1,4 +1,5 @@
 version: '3.6'
+name: kbase-dev
 networks:
   kbase-dev:
     name: kbase-dev
@@ -7,73 +8,38 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-devcontainer
-    # just use dev for the image tag so we can easily clean
-    # up afterwards.
-
     image: kbase/kbase-ui:dev
-
     container_name: kbase-ui
     dns: 8.8.8.8
     volumes:
       # Update this to wherever you want VS Code to mount the folder of your project
       - ..:/workspace:cached
-      # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
-      # - /var/run/docker.sock:/var/run/docker.sock 
-
-      # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
-      # cap_add:
-      #   - SYS_PTRACE
-      # security_opt:
-      #   - seccomp:unconfined
-      # volumes:
-      # - ${APP_DIR}:/kb/deployment/app
-      # Map local source into expected location within container
-      # - "${PWD}/react-app:/kb/deployment/app"
-      # # Map local configuration directory into expected location within container
-      # - "${PWD}/dev/gitlab-config:/kb/deployment/config"
-      # - ${PWD}/deployment/scripts:/kb/deployment/scripts
-      # # Map locally installed plugins into the expected location within container
-      # - ${PWD}/build/dist/deploy/plugins:/kb/deployment/app/public/deploy/plugins
-      # - ${SCRIPTS_DIR}:/kb/deployment/scripts
-
-      # just use dev for the image tag so we can easily clean
-      # up afterwards.
-      # image: kbase/kbase-ui:dev
     networks:
       - kbase-dev
-    environment:
-      # - PORT=80
-      - DEPLOY_ENV=${DEPLOY_ENV:-ci}
-      # - BASE_PATH=
+    env_file: 
+      - runtime.env
     # Required for a devcontainer -- keeps the container running.
     # Don't worry, our main interaction with the container is through the 
     # VSC terminal, which for a devcontainer opens a shell within the
     # container.
     command: /bin/sh -c "while sleep 1000; do :; done"
   kbase-ui-deploy:
-    image: nginx:1.25.1-alpine
+    image: nginx:1.25.4-alpine3.18
     container_name: kbase-ui-deploy
     volumes:
       - ../build:/usr/share/nginx/html
-      # - /Users/erikpearson/Work/KBase/2023/CE-255/kbase-ui-plugin-react-profile-view/dist/plugin:/usr/share/nginx/html/plugins/react-profile-view
-      # - /Users/erikpearson/Work/KBase/2023/UFI-60/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
-      # - /Users/erikpearson/Work/KBase/2023/helpdesk/UFI-48/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
-      # - /Users/erikpearson/Work/KBase/2023/helpdesk/UFI-48/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
-      # - /Users/erikpearson/Work/KBase/2022/fix-app-icons/kbase-ui-plugin-organizations/react-app:/usr/share/nginx/html/plugins/organizations
-      # - /Users/erikpearson/Work/KBase/2022/UIP-7/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
-      # - /Users/erikpearson/Work/KBase/2022/UIP-7/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
+      # Example of volume mounts for local plugins
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-catalog/dist/plugin:/usr/share/nginx/html/plugins/catalog
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-typeview/dist/plugin:/usr/share/nginx/html/plugins/typeview
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-data-search/dist/plugin:/usr/share/nginx/html/plugins/data-search
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-organizations/dist/plugin:/usr/share/nginx/html/plugins/organizations
+      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-samples/dist/plugin:/usr/share/nginx/html/plugins/samples
     networks:
       - kbase-dev
     ports:
       - "8081:80"
-    environment:
-      # um, does nothing?
-      # for now, set the proxy port to 80 to match the default
-      # nginx config.
-      # TODO: use the templating built into the nginx image.
-      # or switch to a custom image using dockerize.
-      - NGINX_HOST=kbase-ui-deploy.ci.kbase.us
-      - NGINX_PORT=5000
   kbase-ui-proxy:
     build:
       context: ../tools/proxy
@@ -94,14 +60,5 @@ services:
       - 9.9.9.9
       - 1.1.1.1
       - 208.67.222.222
-    environment:
-      - BASE_PATH=/
-      
-
-    # note that this is really a docker env file and is relative to the docker-compose file 
-    # TODO: I think we may need to use an entrypoint which selects the deploy environment
-    # config (env) file based on the DEPLOY_ENV. 
-    
     env_file: 
-      - ../tools/proxy/conf/ci.env
-      - custom.env
+      - proxy.env

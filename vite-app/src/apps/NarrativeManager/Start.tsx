@@ -1,7 +1,7 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { Component } from 'react';
 import ErrorView from '../../components/ErrorView';
 import { RouteProps } from '../../components/Router2';
-import { AuthInfo } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { NarrativeService } from '../../lib/clients/NarrativeService';
 import { Config } from '../../types/config';
@@ -46,7 +46,7 @@ export default class NarrativeManagerStart extends Component<
             status: AsyncProcessStatus.PENDING
         });
         try {
-            const workspaceID = await this.startOrCreateNewNarrative()
+            const workspaceID = await this.startOrCreateNewNarrative();
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: { workspaceID },
@@ -58,7 +58,6 @@ export default class NarrativeManagerStart extends Component<
             });
         }
     }
-
 
     async startOrCreateNewNarrative(): Promise<number> {
         const narrativeManager = new NarrativeManager({
@@ -79,7 +78,7 @@ export default class NarrativeManagerStart extends Component<
 
         const narrativeServiceClient = new NarrativeService({
             token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
             url: this.props.config.services.ServiceWizard.url
         });
 
@@ -91,14 +90,14 @@ export default class NarrativeManagerStart extends Component<
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <NarrativeLoading message="Opening an existing or new narrative..." detectSlow={true} config={this.props.config} />
+                return <NarrativeLoading message="Opening a Narrative..." detectSlow={true} config={this.props.config} />
             case AsyncProcessStatus.ERROR:
                 return <ErrorView title="Error">
                     <p>
                         Sorry, there was an error creating or opening a narrative:
                     </p>
                     <p>
-                        ${this.state.error}
+                        {this.state.error}
                     </p>
                 </ErrorView>
             case AsyncProcessStatus.SUCCESS:

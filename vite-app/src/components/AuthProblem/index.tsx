@@ -1,5 +1,6 @@
 import { HashPath } from 'contexts/RouterContext';
-import { NextRequest } from 'lib/NextRequest';
+import { nextRequestFromCurrentURL } from 'lib/NextRequest';
+import { navigate } from 'lib/navigation';
 import { Component } from 'react';
 import HelpLinks from '../HelpLinks';
 import './AuthProblem.css';
@@ -15,36 +16,62 @@ export interface AuthProblemProps {
 }
 
 interface AuthProblemState {
+    redirecting: boolean;
 }
 
-export default class NotFound extends Component<AuthProblemProps, AuthProblemState> {
+export default class AuthProblem extends Component<AuthProblemProps, AuthProblemState> {
+    constructor(props: AuthProblemProps) {
+        super(props);
+        this.state = {
+            redirecting: false
+        }
+    }
     componentDidMount() {
         // this.props.setTitle(`Auth Problem - ${this.props.hashPath}`);
     }
 
+    /**
+     * Given that the browser is sitting on an "auth problem" - which boils down to
+     * simply there is no authorization but the route requires it - we capture the
+     * currently resolved route (as a "hash path" object), convert it to a "nextrequest"
+     * object to be routed in the authorization flow within the state parameter.
+     */
     redirectToLogin() {
-        const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
 
-        const url = new URL(window.location.href);
-        url.pathname = '';
-        url.hash = '#login';
+        // const {hash, params} = urlToHashPath(new URL(window.location.href));
 
-        for (const [key, value] of nextRequest.toSearchParams()) {
-            url.searchParams.set(key, value);
-        }
-        window.location.href = url.toString();
+        // const nextRequest: NextRequestObject = {
+        //     hash, params
+        // }
+
+        // OR
+
+        const nextRequest = nextRequestFromCurrentURL();
+
+        // const nextRequest: NextRequest = new NextRequest('authorization', this.props.hashPath);
+
+        // const url = new URL(window.location.href);
+        // url.pathname = '';
+        // url.hash = '#login';
+
+        // for (const [key, value] of nextRequest.toSearchParams()) {
+        //     url.searchParams.set(key, value);
+        // }
+
+        navigate('login', {params: {nextrequest: JSON.stringify(nextRequest)}});
     }
 
     renderAuthProblem() {
-        const nextRequest = new NextRequest('authorization', this.props.hashPath);
+        // const nextRequest = new NextRequest('authorization', this.props.hashPath);
 
-        const url = new URL(window.location.href);
-        url.pathname = '';
-        url.hash = '#login';
+        // const url = new URL(window.location.href);
+        // url.pathname = '';
+        // url.hash = '#login';
 
-        for (const [key, value] of nextRequest.toSearchParams()) {
-            url.searchParams.set(key, value);
-        }
+        // for (const [key, value] of nextRequest.toSearchParams()) {
+        //     url.searchParams.set(key, value);
+        // }
+        // const nextRequest = nextRequestFromURL(new URL(window.location.href));
 
         return (
             <div className="AuthProblem" >
@@ -74,7 +101,6 @@ export default class NotFound extends Component<AuthProblemProps, AuthProblemSta
             </div>
         );
     }
-
 
     render() {
         // return <div style={{margin: '0 10px'}}>{this.renderAuthProblem()}</div>;

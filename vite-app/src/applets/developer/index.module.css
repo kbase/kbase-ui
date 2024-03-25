@@ -1,0 +1,21 @@
+.main {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0 1rem 1rem 1rem;
+}
+
+.main :global .tab-content {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.main :global .tab-content :global .tab-pane.active {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}

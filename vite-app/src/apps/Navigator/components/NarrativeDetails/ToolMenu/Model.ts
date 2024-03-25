@@ -1,6 +1,6 @@
+import { AuthInfo } from "contexts/EuropaContext";
+import { Config } from "../../../../../types/config";
 import OrganizationsClient, { OrgAPIError } from '../../../utils/OrganizationsClient';
-import {AuthInfo} from "../../../../../contexts/Auth";
-import {Config} from "../../../../../types/config";
 
 /**
  * Holds the state for the overall Link Organizations item popup.

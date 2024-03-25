@@ -19,7 +19,7 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
         return (
             <div
                 dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(marked.parse(this.props.cell.source))
+                    __html: DOMPurify.sanitize(marked.parse(this.props.cell.source, {async: false}) as string)
                 }}
             />
         );

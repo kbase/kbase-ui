@@ -1,0 +1,14 @@
+# Other Labs
+---
+-
+  name: Cold Spring Harbor Laboratory
+  city: Cold Spring Harbor
+  state: New York
+  initials: CSHL
+  type: private
+-
+  name: Joint Genome Institute
+  city: Walnut Creek
+  state: CA
+  initials: JGI
+  type: doe

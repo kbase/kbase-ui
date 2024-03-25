@@ -1,0 +1,67 @@
+import { tsConstructorType } from "@babel/types";
+
+export abstract class QueueItem {
+    id: string;
+    abstract onRun(): void;
+    abstract onError(error: Error): void;
+    constructor({ id }: { id: string }) {
+        this.id = id;
+    }
+}
+
+export default class AsyncQueue {
+    queue: Array<QueueItem>
+    queuePauseTime: number;
+    itemId: number;
+    timer: number | null;
+    constructor({ queuePauseTime }: { queuePauseTime?: number }) {
+        this.queue = [];
+        this.queuePauseTime = queuePauseTime || 0;
+        this.itemId = 0;
+        this.timer = null;
+    }
+
+    processQueue() {
+        const item = this.queue.shift();
+        if (item) {
+            try {
+                item.onRun();
+            } catch (ex) {
+                if (item.onError) {
+                    try {
+                        item.onError(ex);
+                    } catch (ignore) {
+                        console.error('ERROR running onerror');
+                        console.error(ex);
+                    }
+                } else {
+                    console.error('Error processing queue item');
+                    console.error(ex);
+                }
+            } finally {
+                this.start();
+            }
+        }
+    }
+
+    start() {
+        this.timer = window.setTimeout(() => {
+            this.processQueue();
+        }, this.queuePauseTime);
+    }
+
+    stop() {
+        if (this.timer) {
+            window.clearTimeout(this.timer);
+        }
+        this.timer = null;
+    }
+
+    addItem(item: QueueItem) {
+        this.itemId += 1;
+        item.id = String(this.itemId);
+        this.queue.push(item);
+        this.start();
+    }
+}
+

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import './ErrorMessage.css';
 
 export interface ErrorMessageProps {
     title?: string;
     style?: React.CSSProperties;
-    message: string;
+    message: ReactNode;
 }
 
 interface ErrorMessageState {}

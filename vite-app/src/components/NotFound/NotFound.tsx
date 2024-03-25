@@ -1,8 +1,8 @@
-import {Component} from 'react';
+import { Component } from 'react';
 import { HashPath } from '../../contexts/RouterContext';
 import HelpLinks from '../HelpLinks';
+import styles from './NotFound.module.css';
 import flapjack from './flapjack.png';
-import styles from './NotFound.module.css'
 
 export interface NotFoundProps {
     hashPath: HashPath;
@@ -33,8 +33,7 @@ export default class NotFound extends Component<NotFoundProps, NotFoundState> {
                     <div className={styles.message}>
                         <p>
                             Sorry, this resource, <em>"{this.props.hashPath.hash}"</em> was not found.
-                        </p>
-                        
+                        </p>                       
                     </div>
                     <div className={styles.body}>
                         <HelpLinks />

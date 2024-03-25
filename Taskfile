@@ -9,13 +9,13 @@
 #
 # Runs docker compose with the given docker compose filename suffix with the given command arguments
 #
-function _run-dc {
-  docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink run --rm orcidlink "${@:2}"
-}
+# function _run-dc {
+#   docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink run --rm orcidlink "${@:2}"
+# }
 
-function _dc-up {
-  docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink up
-}
+# function _dc-up {
+#   docker compose -f "etc/docker-compose-${1}.yml" --project-directory "${PWD}" --project-name orcidlink up
+# }
 
 function _noop {
     echo "Not implemented yet"
@@ -30,7 +30,7 @@ function alias-me {
 }
 
 function install-plugins {
-	bash tools/deno/scripts/install-plugins.sh "${GH_TOKEN:?GH_TOKEN is required}"
+	bash tools/deno/scripts/install-plugins.sh "${1}" 
 }
 
 function install-plugin {
@@ -54,7 +54,7 @@ function create-deploy {
 }
 
 function build {
-    env DIR="${PWD}/vite-app" bash scripts/host/build.sh
+    env DIR="${PWD}/vite-app" BASE_PATH="${BASE_PATH}" bash scripts/host/build.sh
 }
 
 function shell {
@@ -77,7 +77,6 @@ function setup-for-build-or-dev {
     git-info
     build-info
     install-plugins
-    render-templates
 }
 
 #
@@ -97,6 +96,7 @@ function build-kbase-ui {
 #
 function dev-setup {
     setup-for-build-or-dev
+    render-templates
 }
 
 #
@@ -107,8 +107,72 @@ function format {
     _noop
 }
 
-function render-templates {
-    env DIR="${PWD}" ENV="${ENV:-ci}" DEFAULT_PATH="${DEFAULT_PATH}" bash tools/dockerize/scripts/render-templates.sh
+
+# Creates environment variables required for the local development proxy.
+# See "create-proxy-env-vars.bash", which documents the required and optional input
+# environment variables, as well as the generated ones.
+# Saves the environment variables into an env file in .devcontainer/proxy-env
+function generate-proxy-env {
+    # ./scripts/host/generate-proxy-env.bash
+    # DIR="${PWD}" && cd tools/node && docker compose -f run --rm node-tool echo
+    # "Network Created"
+    DIR="${PWD}" \
+    docker compose \
+        -f tools/node/docker-compose.yml \
+        -p kbase-dev \
+    run \
+        -e DIR="${PWD}" \
+        -e DEPLOY_ENV \
+        -e BASE_PATH \
+        -e KBASE_UI_HOSTNAME \
+        -e SERVICE_PROXIES \
+        -e DYNAMIC_SERVICE_PROXIES \
+        -e SERVICES_DOMAIN \
+        -e KBASE_UI_HOST \
+        -e KBASE_UI_PORT \
+        -e NARRATIVE_HOST \
+        -e NARRATIVE_PORT \
+        -e EUROPA_UI_HOST \
+        -e EUROPA_UI_PORT \
+        --rm \
+    node-tool ./scripts/container/generate-proxy-env
+}
+
+function generate-runtime-env {
+    DIR="${PWD}" \
+    docker compose \
+        -f tools/node/docker-compose.yml \
+        -p kbase-dev \
+    run \
+        -e DEPLOY_ENV \
+        -e BASE_PATH \
+        -e UI_DOMAIN \
+        -e KBASE_UI_HOSTNAME \
+        -e FEATURE_SWITCHES_ENABLED \
+        -e FEATURE_SWITCHES_DISABLED \
+        -e DEFAULT_PATH \
+        -e DEFAULT_PATH_TYPE \
+        -e KBASE_ENDPOINT \
+        --rm \
+    node-tool ./scripts/container/generate-runtime-env
+}
+
+function generate-runtime-config {
+    generate-runtime-env
+    DIR="${PWD}" tools/dockerize/scripts/render-templates.sh
+}
+
+function remove-proxy-container {
+    docker rm $(docker ps -a --no-trunc --format="{{.ID}}" --filter name=^/kbase-ui-proxy$)
+}
+
+# Renders the proxy server config file into build/deploy/proxy-nginx.conf
+# Depends upon the proxy env variables existing in .devcontainer/proxy.env
+# Use ./Taskfile generate-proxy-env.
+# This is useful for previwing the development proxy nginx config, especially when
+# making changes to it.
+function render-proxy-config {
+    DIR="${PWD}" ENV_FILE="${PWD}/.devcontainer/proxy.env" tools/dockerize/scripts/render-proxy-configs.sh
 }
 
 # Optional dev tooling:
@@ -122,7 +186,27 @@ function remove-dev-cert {
 }
 
 function start-local-server {
-	docker compose up 
+	docker compose up
+    docker compose rm -f
+}
+
+function build-image {
+    ./scripts/host/build-image.sh
+}
+
+function run-image {
+    ./scripts/host/run-image.sh
+}
+
+function run-proxy {
+    ./scripts/host/run-proxy.sh
+}
+
+function create-docker-network {
+    DIR="${PWD}" && cd tools/node && docker compose -f run --rm node-tool echo "Network Created"
+    #!/usr/bin/env bash
+
+    # DIR="${PWD}" docker compose -f tools/node/docker-compose.yml run --rm node-tool "$@"
 }
 
 #

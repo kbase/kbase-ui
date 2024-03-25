@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import PluginWrapper2 from '../components/PluginWrapper/PluginWrapper2';
 import { RouteProps, Router } from '../components/Router2';
-import { AuthenticationState } from '../contexts/Auth';
+import { AuthenticationState } from '../contexts/EuropaContext';
 import { Route, SimplePluginRouteSpec } from '../lib/Route';
 import { Config } from '../types/config';
+import { SignIn } from './Auth2/SignIn/SignIn';
 
 export interface OrganizationsProps extends RouteProps {
     config: Config;
@@ -30,7 +31,7 @@ export default class Organizations extends Component<OrganizationsProps, Organiz
                 view: 'newOrg'
             },
             {
-                path: '^orgs$/:organizationId',
+                path: '^(org|orgs)$/:organizationId',
                 auth: true,
                 view: 'viewOrg'
             },
@@ -52,7 +53,22 @@ export default class Organizations extends Component<OrganizationsProps, Organiz
             });
         });
 
-        return <Router routes={routes} hashPath={this.props.hashPath} />
+        const authRoute = new Route(
+            '^login|signin|signup$', 
+            {authenticationRequired: false}, 
+            (props: RouteProps) => {
+                return <SignIn 
+                    {...props} 
+                    key={props.hashPath.hash} 
+                    source="authorization"
+                    config={this.props.config}
+                    authState={this.props.authState}
+                    setTitle={this.props.setTitle}
+                />
+            }
+        )
+
+        return <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
         // return (
         // <Switch>
         //     <Route

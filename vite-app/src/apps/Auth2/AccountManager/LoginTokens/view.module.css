@@ -1,0 +1,11 @@
+.main {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+   
+}
+
+/* Middle vertical align table cells in this module. */
+.main  :global .table td {
+    vertical-align: middle;
+}

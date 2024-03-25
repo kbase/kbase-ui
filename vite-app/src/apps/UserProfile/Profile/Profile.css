@@ -13,7 +13,16 @@
 .Profile-content-area {
     flex: 1 1 0;
     overflow-y: auto;
+    /* padding: 1rem; */
 }
+
+/* .Profile-content-area .antd-row:nth-child(1) {
+    margin-left: 0;
+}
+
+.Profile-content-area .antd-row:last-child {
+    margin-left: 0;
+} */
 
 .ProfileAvatar {
     flex: 1 1 0;

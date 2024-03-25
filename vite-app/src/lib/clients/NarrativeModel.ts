@@ -53,7 +53,7 @@ export interface NarrativeSearchDoc {
 
 export type CellType = "code" | "markdown";
 
-export type KBaseCodeCellType = "code" | "data" | "app" | "output";
+export type KBaseCodeCellType = "code" | "data" | "app" | "output" | "serviceWidget" ;
 
 export interface BaseCell {
     cell_type: CellType;
@@ -250,11 +250,36 @@ export interface OutputObjectCell extends CodeCellBase {
     };
 }
 
+
+export interface ServiceWidgetCell extends CodeCellBase {
+    metadata: {
+        kbase: {
+            type: "serviceWidget";
+            attributes: {
+                title: string;
+                subtitle: string;
+                // TODO: icon here
+            };
+            serviceWidget: {
+                service: {
+                    moduleName: string;
+                    widgetName: string;
+                    title: string;
+                    subtitle: string;
+                    params: Record<string, any>;
+                    isDynamicService: boolean;
+                }
+            };
+        };
+    };
+}
+
 export type SomeCodeCell =
     | CodeCell
     | AppCell
     | DataObjectCell
-    | OutputObjectCell;
+    | OutputObjectCell 
+    | ServiceWidgetCell;
 
 export type Cell = MarkdownCell | SomeCodeCell;
 // | AppCell
@@ -299,17 +324,21 @@ const narrativeObjectCache: Map<string, NarrativeObject> = new Map();
 export default class NarrativeModel {
     workspaceURL: string;
     token: string;
+    timeout: number;
     // authInfo: AuthInfo;
     // config: Config;
     constructor({
         workspaceURL,
         token,
+        timeout,
     }: {
         workspaceURL: string;
         token: string;
+        timeout: number;
     }) {
         this.workspaceURL = workspaceURL;
         this.token = token;
+        this.timeout = timeout;
     }
 
     clearCache() {
@@ -329,7 +358,7 @@ export default class NarrativeModel {
 
         const ws = new WorkspaceClient({
             url: this.workspaceURL,
-            timeout: 1000,
+            timeout: this.timeout,
             token: this.token
         });
 
@@ -352,7 +381,7 @@ export default class NarrativeModel {
     async getUserPermission(wsId: number, username: string): Promise<string> {
         const ws = new WorkspaceClient({
             url: this.workspaceURL,
-            timeout: 1000,
+            timeout: this.timeout,
             token: this.token
         });
         const result = await ws.get_permissions_mass(

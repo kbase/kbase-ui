@@ -1,0 +1,41 @@
+[{
+        "value": "annotation",
+        "label": "Genome Annotation"
+    },
+    {
+        "value": "assembly",
+        "label": "Genome Assembly"
+    },
+    {
+        "value": "communities",
+        "label": "Microbial Communities"
+    },
+    {
+        "value": "comparative_genomics",
+        "label": "Comparative Genomics"
+    },
+    {
+        "value": "expression",
+        "label": "Expression"
+    },
+    {
+        "value": "metabolic_modeling",
+        "label": "Metabolic Modeling"
+    },
+    {
+        "value": "reads",
+        "label": "Read Processing"
+    },
+    {
+        "value": "sequence",
+        "label": "Sequence Analysis"
+    },
+    {
+        "value": "util",
+        "label": "Utilities"
+    },
+    {
+        "value": "other",
+        "label": "Other"
+    }
+]

@@ -1,12 +1,12 @@
-import { SearchOptions } from 'lib/clients/NarrativeSearch';
-import { changeHash2 } from 'lib/navigation';
-import React from 'react';
-import ErrorBoundary from '../../components/ErrorBoundary';
 import {
     AuthenticationState,
     AuthenticationStatus,
     AuthInfo
-} from '../../contexts/Auth';
+} from 'contexts/EuropaContext';
+import { SearchOptions } from 'lib/clients/NarrativeSearch';
+import { navigate } from 'lib/navigation';
+import React from 'react';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import { Config } from '../../types/config';
 import Main from './components/Main';
 import { DetailOptions } from './context/DataModel';
@@ -64,7 +64,7 @@ export default class Navigator extends React.Component<
      * @returns The captured paramters
      */
     searchParamsFromSearch(props: RouteProps): NavigatorSearchParams {
-        const queryParams = props.hashPath.query;
+        const queryParams = new Map<string, string>(Object.entries(props.hashPath.params || {}));
 
         const params: NavigatorSearchParams = {};
 
@@ -92,7 +92,7 @@ export default class Navigator extends React.Component<
     }
 
     detailParamsFromSearch(props: RouteProps): NarrativeDetailParams {
-        const queryParams = props.hashPath.query;
+        const queryParams = new Map<string, string>(Object.entries(props.hashPath.params || {}));
 
         const params: NarrativeDetailParams = {};
 
@@ -138,13 +138,7 @@ export default class Navigator extends React.Component<
         return { ...detailParams };
     }
 
-    makePath(extraPath?: string) {
-        if (extraPath) {
-            return `${this.props.hashPath.path}/${extraPath}`;
-        } else {
-            return this.props.hashPath.path;
-        }
-    }
+
     // narrativeId;
     renderNav(authInfo: AuthInfo) {
         return (
@@ -174,7 +168,7 @@ export default class Navigator extends React.Component<
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
                 // TODO: add the next route to this navigation.
-                changeHash2('login');
+                navigate('login');
                 return null;
             case AuthenticationStatus.AUTHENTICATED:
                 return this.renderNav(authState.authInfo);

@@ -1,8 +1,8 @@
+import { SignIn } from 'apps/Auth2/SignIn/SignIn';
 import ErrorBoundary from 'components/ErrorBoundary';
-import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { RouteProps, Router } from '../../components/Router2';
-import { AuthContext, AuthenticationState, AuthenticationStatus } from '../../contexts/Auth';
+import { AuthenticationStateAuthenticated } from '../../contexts/EuropaContext';
 import { Route } from '../../lib/Route';
 import { Config } from '../../types/config';
 import Error from './Error/Controller';
@@ -17,7 +17,7 @@ import ConfirmRevoke from './revoke/Controller';
 
 export interface ORCIDLinkProps extends RouteProps {
     config: Config;
-    authState: AuthenticationState;
+    authState: AuthenticationStateAuthenticated;
     setTitle: (title: string) => void;
 }
 
@@ -28,212 +28,125 @@ export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState>
     render() {
         const routes = [
             new Route('orcidlink', { authenticationRequired: true }, (props: RouteProps) => {
-                // TODO: need to make route support authenticated and unauthenticated invocations
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        // const returnLink = (() => {
-                        //     const returnLinkRaw = props.params.get('return_link');
-                        //     if (!returnLinkRaw) {
-                        //         return;
-                        //     }
-                        //     const {
-                        //         url, label
-                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                        //     return { url, label }
-                        // })();
+                const returnInstruction = (() => {
+                    const raw = props.match.params.get('return_link');
+                    if (!raw) {
+                        return;
+                    }
+                    return JSON.parse(raw) as unknown as ReturnInstruction;
+                })();
 
-                        const returnInstruction = (() => {
-                            const raw = props.params.get('return_link');
-                            if (!raw) {
-                                return;
-                            }
-                            return JSON.parse(raw) as unknown as ReturnInstruction;
-                        })();
-
-                        return <HomeController
-                            {...this.props}
-                            auth={authValue.value}
-                            returnInstruction={returnInstruction}
-                            skipPrompt={props.params.get('skip_prompt') === 'true'}
-                            uiOptions={props.params.get('ui_options')}
-                        />;
-                    }}
-                </AuthContext.Consumer>
-
+                return <HomeController
+                    {...this.props}
+                    auth={this.props.authState}
+                    returnInstruction={returnInstruction}
+                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
+                    uiOptions={props.match.params.get('ui_options')}
+                />;
             }),
             /**
              * This route handles requests to link.
              */
             new Route('orcidlink/link', { authenticationRequired: true }, (props: RouteProps) => {
-                // TODO: need to make route support authenticated and unauthenticated invocations
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        // const returnLink = (() => {
-                        //     const returnLinkRaw = props.params.get('return_link');
-                        //     if (!returnLinkRaw) {
-                        //         return;
-                        //     }
-                        //     const {
-                        //         url, label
-                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                        //     return { url, label }
-
-                        // })();
-                        const returnInstruction = (() => {
-                            const raw = props.params.get('return_link');
-                            if (!raw) {
-                                return;
-                            }
-                            return (JSON.parse(raw) as unknown) as ReturnInstruction;
-                        })();
-                        return <Link
-                            {...this.props}
-                            auth={authValue.value}
-                            returnInstruction={returnInstruction}
-                            skipPrompt={props.params.get('skip_prompt') === 'true'}
-                            uiOptions={props.params.get('ui_options')}
-                        />;
-                    }}
-                </AuthContext.Consumer>
-
-            }), /**
+                const returnInstruction = (() => {
+                    const raw = props.match.params.get('return_link');
+                    if (!raw) {
+                        return;
+                    }
+                    return (JSON.parse(raw) as unknown) as ReturnInstruction;
+                })();
+                return <Link
+                    {...this.props}
+                    auth={this.props.authState}
+                    returnInstruction={returnInstruction}
+                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
+                    uiOptions={props.match.params.get('ui_options')}
+                />;
+            }), 
+            /**
              * This route handles requests to link.
              */
             new Route('orcidlink/revoke', { authenticationRequired: true }, () => {
                 // TODO: need to make route support authenticated and unauthenticated invocations
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
 
-                        return <ConfirmRevoke
-                            {...this.props}
-                            auth={authValue.value}
-                        />;
-                    }}
-                </AuthContext.Consumer>
-
+                return <ConfirmRevoke
+                    {...this.props}
+                    auth={this.props.authState}
+                />;
             }),
             new Route('orcidlink/continue/:linkingSessionId', { authenticationRequired: true }, (props: RouteProps) => {
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        const linkingSessionId = props.params.get('linkingSessionId')!;
-                        // const returnLink = (() => {
-                        //     const returnLinkRaw = props.params.get('return_link');
-                        //     if (!returnLinkRaw) {
-                        //         return;
-                        //     }
-                        //     const {
-                        //         url, label
-                        //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                        //     return { url, label }
-                        // })();
+                const linkingSessionId = props.match.params.get('linkingSessionId')!;
+                // const returnLink = (() => {
+                //     const returnLinkRaw = props.params.get('return_link');
+                //     if (!returnLinkRaw) {
+                //         return;
+                //     }
+                //     const {
+                //         url, label
+                //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                //     return { url, label }
+                // })();
 
-                        const returnInstruction = (() => {
-                            const raw = props.params.get('return_link');
-                            if (!raw) {
-                                return;
-                            }
-                            return (JSON.parse(raw) as unknown) as ReturnInstruction;
-                        })();
+                const returnInstruction = (() => {
+                    const raw = props.match.params.get('return_link');
+                    if (!raw) {
+                        return;
+                    }
+                    return (JSON.parse(raw) as unknown) as ReturnInstruction;
+                })();
 
-                        return <Continue {...this.props}
-                            linkingSessionId={linkingSessionId}
-                            auth={authValue.value}
-                            returnInstruction={returnInstruction}
-                            skipPrompt={props.params.get('skip_prompt') === 'true'}
-                        />;
-                        // return <Link {...this.props} auth={authValue.value} />;
-                    }}
-                </AuthContext.Consumer>
-
+                return <Continue {...this.props}
+                    linkingSessionId={linkingSessionId}
+                    auth={this.props.authState}
+                    returnInstruction={returnInstruction}
+                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
+                />;
+                // return <Link {...this.props} auth={authValue.value} />;
             }),
 
             new Route('orcidlink/error', { authenticationRequired: true }, (props: RouteProps) => {
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-                        return <Error
-                            auth={authValue.value}
-                            config={this.props.config}
-                            errorCode={parseInt(props.hashPath.query.get("code")!, 10)}
-                            title={props.hashPath.query.get("title")!}
-                            message={props.hashPath.query.get("message")!}
-                            setTitle={this.props.setTitle}
-                        />;
-                    }}
-                </AuthContext.Consumer>
-
+                return <Error
+                    auth={this.props.authState}
+                        config={this.props.config}
+                        errorCode={parseInt(props.hashPath.params!["code"]!, 10)}
+                        title={props.hashPath.params!["title"]!}
+                        message={props.hashPath.params!["message"]!}
+                        setTitle={this.props.setTitle}
+                    />;
             }),
             new Route('orcidlink/help', { authenticationRequired: true }, () => {
                 return <Help />;
             }),
 
             new Route('orcidlink/manage/link/:username', { authenticationRequired: true }, (props: RouteProps) => {
-                // TODO: need to make route support authenticated and unauthenticated invocations
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-
-                        return <ViewLinkContext username={props.params.get('username')!} />;
-                    }}
-                </AuthContext.Consumer>
+                return <ViewLinkContext username={props.match.params.get('username')!} />;
             }),
             new Route('orcidlink/manage', { authenticationRequired: true }, () => {
-                // TODO: need to make route support authenticated and unauthenticated invocations
-                return <AuthContext.Consumer>
-                    {(authValue) => {
-                        if (authValue.status !== AsyncProcessStatus.SUCCESS) {
-                            return null;
-                        }
-                        if (authValue.value.status !== AuthenticationStatus.AUTHENTICATED) {
-                            return null;
-                        }
-
-                        return <ManageController
-                            {...this.props}
-                            auth={authValue.value}
-                        />;
-                    }}
-                </AuthContext.Consumer>
+                return <ManageController
+                    {...this.props}
+                    auth={this.props.authState}
+                />;
             }),
         ]
 
+        const authRoute = new Route(
+            '^login|signin|signup$', 
+            {authenticationRequired: false}, 
+            (props: RouteProps) => {
+                return <SignIn 
+                    {...props} 
+                    key={props.hashPath.hash} 
+                    source="authorization"
+                    config={this.props.config}
+                    authState={this.props.authState}
+                    setTitle={this.props.setTitle}
+                />
+            }
+        )
+
         return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', overflowY: 'auto', margin: '0 1em' }}>
             <ErrorBoundary>
-                <Router routes={routes} hashPath={this.props.hashPath} />
+                <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
             </ErrorBoundary>
         </div>
     }

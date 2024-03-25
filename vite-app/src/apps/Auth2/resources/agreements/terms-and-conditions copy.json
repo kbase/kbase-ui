@@ -1,0 +1,21 @@
+{
+    "id": "kbase-user",
+    "title": "KBase Use Agreement",
+    "versions": [
+        {
+            "version": 1,
+            "publishedAt": "2015-01-01T08:00:00Z",
+            "url": "https://www.kbase.us/about/terms-and-conditions-v1"
+        },
+        {
+            "version": 2,
+            "url": "https://www.kbase.us/about/terms-and-conditions-v2",
+            "publishedAt": "2023-04-01T07:00:00Z"
+        },
+        {
+            "version": 3,
+            "url": "https://www.kbase.us/about/terms-and-conditions-v2",
+            "publishedAt": "2023-05-01T07:00:00Z"
+        }
+    ]
+}

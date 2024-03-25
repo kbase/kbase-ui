@@ -68,22 +68,12 @@ export default class Continue extends Component<ContinueProps> {
         if (typeof returnInstruction === 'undefined') {
             return;
         }
-        switch (returnInstruction.type) {
-            case 'link':
-                return (
-                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-                        After creating the link, your browser will be returned to{' '}
-                        <b>{returnInstruction.label}</b>.
-                    </AlertMessage>
-                );
-            case 'window':
-                return (
-                    <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-                        After creating the link, this window will be closed, and you should be returned to{' '}
-                        <b>{returnInstruction.label}</b>.
-                    </AlertMessage>
-                );
-        }
+        return (
+            <AlertMessage variant="info" style={{ marginTop: '1em' }} >
+                After creating the link, your browser will be returned to{' '}
+                <b>{returnInstruction.label}</b>.
+            </AlertMessage>
+        );
     }
 
     renderPendingProgress() {
@@ -160,7 +150,7 @@ export default class Continue extends Component<ContinueProps> {
                             <span className="fa fa-lg fa-plus" /> Finish Creating your KBase ORCID® Link
                         </Button> */}
                         <Button variant="primary" onClick={this.props.confirmLink}>
-                            Finish Creating your KBase ORCID® Link <CheckLg fontSize="1.5rem" />
+                            Finish Creating Your KBase ORCID® Link <CheckLg fontSize="1.5rem" />
                         </Button>
                         <Button variant="danger" onClick={this.props.cancelLink}>
                             <span className="fa fa-lg fa-mail-reply" /> Cancel

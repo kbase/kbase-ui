@@ -1,6 +1,6 @@
+import * as Cookie from 'es-cookie';
 import { Component } from 'react';
 import Features from './Features';
-import * as Cookie from 'es-cookie';
 
 // Just for now; 
 // TODO: move into config.
@@ -27,7 +27,6 @@ export interface FeatureState extends Feature {
 
 interface FeaturesControllerState {
     features: Array<FeatureState>
-
 }
 
 const FEATURE_COOKIE_SEPARATOR = /s*,s*/;
@@ -58,7 +57,6 @@ export default class FeaturesController extends Component<FeaturesControllerProp
     // Actions
 
     getFeatures() {
-
     }
 
     toggleFeature(featureId: string) {
@@ -86,7 +84,6 @@ export default class FeaturesController extends Component<FeaturesControllerProp
             }
         })
     }
-
 
     // Renderers
 

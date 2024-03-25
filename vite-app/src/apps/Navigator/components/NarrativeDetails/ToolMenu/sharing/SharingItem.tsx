@@ -35,7 +35,7 @@ export default class SharingItem extends Component<
 
         this.workspaceClient = new Workspace({
             url: this.props.config.services.Workspace.url,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
             token: this.props.authInfo.token,
         });
 
@@ -72,7 +72,7 @@ export default class SharingItem extends Component<
         // get shared perms from workspace
         const ws = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
             token: this.props.authInfo.token
         });
         const result = await ws.get_permissions_mass(

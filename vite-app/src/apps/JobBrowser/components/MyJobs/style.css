@@ -1,0 +1,375 @@
+.MyJobs {
+    min-height: 0;
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table {
+    table-layout: fixed;
+}
+
+.MyJobs-tableCell,
+.MyJobs-table td,
+.MyJobs-table th {
+    max-width: 0;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.MyJobs-table .ant-table-header-column {
+    /* max-width: 0; */
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.MyJobs-filterArea {
+    padding: 6px;
+    margin: 0 20px 0 20px;
+    border: 1px solid rgba(150, 150, 150, 0.3);
+    box-shadow: 4px 4px 4px;
+    border-radius: 4px;
+    background-color: rgba(200, 200, 200, 0.95);
+}
+
+.MyJobs-filterPanel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.ant-modal-wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-body {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table-pagination.ant-pagination {
+    flex: 0 0 auto;
+}
+
+.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table .ant-table-row {
+    height: 30px;
+}
+
+
+.MyJobs .Table-row>.Table-cell:nth-child(1) {
+    flex: 0 0 4em;
+    align-items: center;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(2) {
+    flex: 1 1 0px;
+    min-width: 10em;
+}
+
+
+.MyJobs .Table-row>.Table-cell:nth-child(3) {
+    min-width: 10em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(4) {
+    flex: 0 0 8em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(5) {
+    flex: 0 0 8em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(6) {
+    flex: 0 0 8em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(7) {
+    flex: 0 0 8em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(8) {
+    flex: 0 0 8em;
+}
+
+.MyJobs .Table-row>.Table-cell:nth-child(9) {
+    flex: 0 0 4em;
+    align-items: center;
+
+}
+
+.MyJobs .-controlBar {
+    margin: 10px;
+}
+
+
+
+.ant-modal.FullScreenModal {
+    /* width: 80% !important;
+    top: 10% !important;
+    bottom: 10% !important; */
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    width: unset !important;
+    top: unset !important;
+    padding-bottom: 0;
+    margin: 5%;
+}
+
+.ant-modal.FullScreenModal .ant-modal-content {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+    top: unset;
+    min-height: 0;
+}
+
+.ant-modal.FullScreenModal .ant-modal-content .ant-modal-header {
+    flex: 0 0 auto;
+}
+
+.ant-modal.FullScreenModal .ant-modal-content .ant-modal-body {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ant-modal.FullScreenModal .ant-modal-content .ant-modal-footer {
+    flex: 0 0 auto;
+}
+
+
+
+.ant-tabs.FullHeightTabs {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ant-tabs.FullHeightTabs>.ant-tabs-content {
+    flex: 1 1 0px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0;
+}
+
+.ant-tabs.FullHeightTabs>.ant-tabs-content>.ant-tabs-tabpane {
+    flex: 1 1 0px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0;
+}
+
+/* flex table */
+
+
+.FlexTable {
+    flex: 1 1 0px;
+    flex-basis: 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.FlexTable-header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.FlexTable-row {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    /* padding: 4px; */
+    /* margin: 4px; */
+    border-bottom: 1px silver solid;
+}
+
+.FlexTable-col {
+    flex: 0 0 auto;
+    /* border: 1px silver dashed; */
+    padding: 4px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+.FlexTable-col:last-child {
+    flex: 1 1 0px;
+}
+
+.FlexTable-body {
+    flex: 1 1 0px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* .FlexTable-col:nth-child(1) {
+    flex: 0 0 4em;
+}
+
+.FlexTable-col:nth-child(2) {
+    flex: 1 1 0px;
+
+}
+
+.FlexTable-body .Table-col:nth-child(2) {
+    font-family: monospace;
+    font-size: 90%;
+    white-space: pre-wrap
+} */
+
+.FullyCenteredBox {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.ScrollingFlexTable.ant-table-wrapper {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-scroll {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+
+.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-scroll>.ant-table-header {
+    flex: 0 0 auto;
+}
+
+
+/* */
+.PreciseTable {
+    table-layout: fixed;
+}
+
+.PreciseTable-cell,
+.PreciseTable td {
+    max-width: 0;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.PreciseTable .ant-table-column-title {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NumericColumn {
+    text-align: right;
+    padding-right: 1em;
+}
+
+
+.InfoTable {
+    display: flex;
+    flex-direction: column;
+}
+
+.InfoTable-row {
+    display: flex;
+    flex-direction: row;
+    padding: 4px;
+}
+
+.InfoTable-labelCol {
+    flex: 0 0 auto;
+    font-weight: bold;
+    color: rgba(150, 150, 150, 1);
+}
+
+.InfoTable-dataCol {
+    flex: 1 1 0px;
+    text-align: left;
+}
+

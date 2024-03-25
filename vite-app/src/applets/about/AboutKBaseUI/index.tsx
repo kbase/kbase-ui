@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import Loading from '../../../components/Loading';
-import { ConfigState, ConfigContext } from '../../../contexts/ConfigContext';
+import { ConfigContext, ConfigState } from '../../../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
 import AboutKBaseUI from './AboutKBaseUI';
 
@@ -8,11 +8,8 @@ export interface AboutBuildWrapperProps {
     setTitle: (title: string) => void;
 }
 
-interface AboutBuildWrapperState { }
-
 export default class AboutBuildWrapper extends Component<
-    AboutBuildWrapperProps,
-    AboutBuildWrapperState
+    AboutBuildWrapperProps
 > {
     componentDidMount() {
         this.props.setTitle('About the KBase User Interface');
@@ -37,6 +34,7 @@ export default class AboutBuildWrapper extends Component<
                             config={configValue.value.config}
                             gitInfo={configValue.value.gitInfo}
                             buildInfo={configValue.value.buildInfo}
+                            uiURL={configValue.value.uiURL}
                         />
                 }
             }}

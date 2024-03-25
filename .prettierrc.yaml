@@ -1,5 +1,0 @@
-printWidth: 100
-trailingComma: 'es5'
-tabWidth: 4
-# use single quotes instead of double quotes
-singleQuote: true

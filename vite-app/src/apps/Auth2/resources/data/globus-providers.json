@@ -1,0 +1,1108 @@
+      [{
+              "id": "aalborg_university",
+              "label": "Aalborg University"
+          },
+          {
+              "id": "aarhus_basic_health_care_college",
+              "label": "Aarhus Basic Health Care College"
+          },
+          {
+              "id": "aarhus_school_of_marine_and_technical_engineering",
+              "label": "Aarhus School of Marine and Technical Engineering"
+          }, {
+              "id": "aarhus_university",
+              "label": "Aarhus University"
+          }, {
+              "id": "academic_computer_center_task_in_gdansk",
+              "label": "Academic Computer Center TASK in Gdansk"
+          }, {
+              "id": "aconet_team",
+              "label": "ACOnet Team"
+          }, {
+              "id": "alexander_stuart_test_idp_yin",
+              "label": "Alexander Stuart test IdP (yin)"
+          }, {
+              "id": "anton_bruckner_private_university",
+              "label": "Anton Bruckner Private University"
+          }, {
+              "id": "alcf",
+              "label": "Argonne LCF"
+          }, {
+              "id": "argonne_national_laboratory",
+              "label": "Argonne National Laboratory"
+          }, {
+              "id": "aristotle_university_of_thessaloniki",
+              "label": "Aristotle University of Thessaloniki"
+          }, {
+              "id": "arizona_state_university",
+              "label": "Arizona State University"
+          }, {
+              "id": "auburn_university",
+              "label": "Auburn University"
+          }, {
+              "id": "augusta_university",
+              "label": "Augusta University"
+          }, {
+              "id": "basic_health_care_college_silkeborg",
+              "label": "Basic Health Care College Silkeborg"
+          }, {
+              "id": "bates_college",
+              "label": "Bates College"
+          }, {
+              "id": "baylor_college_of_medicine",
+              "label": "Baylor College of Medicine"
+          }, {
+              "id": "baylor_university",
+              "label": "Baylor University"
+          }, {
+              "id": "bbfc",
+              "label": "BBFC"
+          }, {
+              "id": "bfh_berner_fachhochschule",
+              "label": "BFH - Berner Fachhochschule"
+          }, {
+              "id": "blekinge_tekniska_hogskola",
+              "label": "Blekinge Tekniska Högskola"
+          }, {
+              "id": "boise_state_university",
+              "label": "Boise State University"
+          }, {
+              "id": "boston_college",
+              "label": "Boston College"
+          }, {
+              "id": "boston_university",
+              "label": "Boston University"
+          }, {
+              "id": "brandeis_university",
+              "label": "Brandeis University"
+          }, {
+              "id": "brookhaven_national_laboratory",
+              "label": "Brookhaven National Laboratory"
+          }, {
+              "id": "brown_university",
+              "label": "Brown University"
+          }, {
+              "id": "business_academy_aarhus",
+              "label": "Business Academy Aarhus"
+          }, {
+              "id": "business_academy_southwest_easv",
+              "label": "Business Academy SouthWest (EASV)"
+          }, {
+              "id": "california_institute_of_technology",
+              "label": "California Institute of Technology"
+          }, {
+              "id": "california_state_polytechnic_university_pomona",
+              "label": "California State Polytechnic University, Pomona"
+          }, {
+              "id": "california_state_university_fresno",
+              "label": "California State University, Fresno"
+          }, {
+              "id": "california_state_university_fullerton",
+              "label": "California State University, Fullerton"
+          }, {
+              "id": "california_state_university_san_bernardino",
+              "label": "California State University, San Bernardino"
+          }, {
+              "id": "cardiff_university",
+              "label": "Cardiff University"
+          }, {
+              "id": "carleton_college",
+              "label": "Carleton College"
+          }, {
+              "id": "carnegie_mellon_university",
+              "label": "Carnegie Mellon University"
+          }, {
+              "id": "case_western_reserve_university",
+              "label": "Case Western Reserve University"
+          }, {
+              "id": "cern",
+              "label": "CERN"
+          }, {
+              "id": "clemson_university",
+              "label": "Clemson University"
+          }, {
+              "id": "cnr_institute_of_informatics_and_telematics",
+              "label": "CNR Institute of Informatics and Telematics"
+          }, {
+              "id": "coleg_sir_gar",
+              "label": "Coleg Sir Gar"
+          }, {
+              "id": "colorado_school_of_mines",
+              "label": "Colorado School of Mines"
+          }, {
+              "id": "colorado_state_university",
+              "label": "Colorado State University"
+          }, {
+              "id": "columbia_university",
+              "label": "Columbia University"
+          }, {
+              "id": "computecanada",
+              "label": "Compute Canada"
+          }, {
+              "id": "copenhagen_business_school",
+              "label": "Copenhagen Business School"
+          }, {
+              "id": "copenhagen_hospitality_college",
+              "label": "Copenhagen Hospitality College"
+          }, {
+              "id": "copenhagen_school_of_marine_engineering_and_technology_management",
+              "label": "Copenhagen School of Marine Engineering and Technology Management"
+          }, {
+              "id": "cornell_university",
+              "label": "Cornell University"
+          }, {
+              "id": "cphbusiness",
+              "label": "Cphbusiness"
+          }, {
+              "id": "dania_danish_academy_of_business_and_technology",
+              "label": "Dania – Danish Academy of Business and Technology"
+          }, {
+              "id": "danish_defence_library",
+              "label": "Danish Defence Library"
+          }, {
+              "id": "danish_research_centre_for_magnetic_resonance",
+              "label": "Danish Research Centre for Magnetic Resonance"
+          }, {
+              "id": "danish_school_of_media_and_journalism",
+              "label": "Danish School of Media and Journalism"
+          }, {
+              "id": "democritus_university_of_thrace",
+              "label": "Democritus University of Thrace"
+          }, {
+              "id": "design_school_kolding",
+              "label": "Design School Kolding"
+          }, {
+              "id": "dfn_verein_deutsches_forschungsnetz",
+              "label": "DFN-Verein - Deutsches Forschungsnetz"
+          }, {
+              "id": "dronninglund_gymnasium",
+              "label": "Dronninglund Gymnasium"
+          }, {
+              "id": "dublin_business_school",
+              "label": "Dublin Business School"
+          }, {
+              "id": "dublin_institute_of_technology",
+              "label": "Dublin Institute of Technology"
+          }, {
+              "id": "duke_university",
+              "label": "Duke University"
+          }, {
+              "id": "ehb_iffp_iuffp_das_eidgenossische_hochschulinstitut_fur_berufsbildung",
+              "label": "EHB / IFFP / IUFFP - Das eidgenössische Hochschulinstitut für Berufsbildung"
+          }, {
+              "id": "epfl_epf_lausanne",
+              "label": "EPFL - EPF Lausanne"
+          }, {
+              "id": "erhvervsakademi_midtvest",
+              "label": "Erhvervsakademi MidtVest"
+          }, {
+              "id": "esnet",
+              "label": "ESnet"
+          }, {
+              "id": "ethz_eth_zurich",
+              "label": "ETHZ - ETH Zürich"
+          }, {
+              "id": "euc_nord",
+              "label": "EUC Nord"
+          }, {
+              "id": "eupathdb",
+              "label": "EuPathDB"
+          }, {
+              "id": "euresearch_head_office",
+              "label": "Euresearch Head Office"
+          }, {
+              "id": "fachhochschule_karnten",
+              "label": "Fachhochschule Kärnten"
+          }, {
+              "id": "fachhochschule_vorarlberg",
+              "label": "Fachhochschule Vorarlberg"
+          }, {
+              "id": "feide",
+              "label": "Feide"
+          }, {
+              "id": "fermi_national_accelerator_laboratory",
+              "label": "Fermi National Accelerator Laboratory"
+          }, {
+              "id": "fh_joanneum",
+              "label": "FH Joanneum"
+          }, {
+              "id": "fhnw_fachhochschule_nordwestschweiz",
+              "label": "FHNW - Fachhochschule Nordwestschweiz"
+          }, {
+              "id": "fhs_st_gallen",
+              "label": "FHS St. Gallen"
+          }, {
+              "id": "fh_wiener_neustadt",
+              "label": "FH Wiener Neustadt"
+          }, {
+              "id": "florida_atlantic_university",
+              "label": "Florida Atlantic University"
+          }, {
+              "id": "florida_international_university",
+              "label": "Florida International University"
+          }, {
+              "id": "fredericia_maskinmesterskole",
+              "label": "Fredericia Maskinmesterskole"
+          }, {
+              "id": "frederikshavn_upper_secondary_school_and_hf_course",
+              "label": "Frederikshavn upper secondary school and HF-Course"
+          }, {
+              "id": "frederikssund_gymnasium",
+              "label": "Frederikssund Gymnasium"
+          }, {
+              "id": "ftl_facolta_di_teologia_di_lugano",
+              "label": "FTL - Facoltà di Teologia di Lugano"
+          }, {
+              "id": "george_mason_university",
+              "label": "George Mason University"
+          }, {
+              "id": "georgetown_university",
+              "label": "Georgetown University"
+          }, {
+              "id": "georgia_institute_of_technology",
+              "label": "Georgia Institute of Technology"
+          }, {
+              "id": "georgia_state_university",
+              "label": "Georgia State University"
+          }, {
+              "id": "gesellschaft_fur_wissenschaftliche_datenverarbeitung_mbh",
+              "label": "Gesellschaft für wissenschaftliche Datenverarbeitung mbH"
+          }, {
+              "id": "gettysburg_college",
+              "label": "Gettysburg College"
+          }, {
+              "id": "globusid",
+              "label": "Globus ID"
+          }, {
+              "id": "google",
+              "label": "Google"
+          }, {
+              "id": "goucher_college",
+              "label": "Goucher College"
+          }, {
+              "id": "gpn_great_plains_network",
+              "label": "GPN (Great Plains Network)"
+          }, {
+              "id": "graz_university_of_technology",
+              "label": "Graz University of Technology"
+          }, {
+              "id": "greek_research_and_technology_network",
+              "label": "Greek Research and Technology Network"
+          }, {
+              "id": "grenaa_gymnasium",
+              "label": "Grenaa Gymnasium"
+          }, {
+              "id": "harvey_mudd_college",
+              "label": "Harvey Mudd College"
+          }, {
+              "id": "haverford_college",
+              "label": "Haverford College"
+          }, {
+              "id": "heanet",
+              "label": "HEAnet"
+          }, {
+              "id": "hep_bejune_padagogische_hochschule_bejune",
+              "label": "HEP-BEJUNE – Pädagogische Hochschule - BEJUNE"
+          }, {
+              "id": "hep_ph_fr_university_of_teacher_education_fribourg",
+              "label": "HEP-PH FR - University of Teacher Education Fribourg"
+          }, {
+              "id": "hep_vaud_haute_ecole_pedagogique_du_canton_de_vaud",
+              "label": "HEP Vaud - Haute école pédagogique du canton de Vaud"
+          }, {
+              "id": "hes_so_uas_western_switzerland",
+              "label": "HES-SO : UAS Western Switzerland"
+          }, {
+              "id": "hochschule_osnabruck",
+              "label": "Hochschule Osnabrück"
+          }, {
+              "id": "hogskolan_kristianstad",
+              "label": "Högskolan Kristianstad"
+          }, {
+              "id": "hslu_hochschule_luzern",
+              "label": "HSLU - Hochschule Luzern"
+          }, {
+              "id": "hsr_hochschule_fur_technik_rapperswil",
+              "label": "HSR - Hochschule für Technik Rapperswil"
+          }, {
+              "id": "htw_chur_hochschule_fur_technik_und_wirtschaft",
+              "label": "HTW Chur - Hochschule für Technik und Wirtschaft"
+          }, {
+              "id": "ian_a_young",
+              "label": "Ian A. Young"
+          }, {
+              "id": "iba_international_business_academy",
+              "label": "IBA International Business Academy"
+          }, {
+              "id": "iccu_central_institute_for_the_union_catalogue",
+              "label": "ICCU - Central Institute for the Union Catalogue"
+          }, {
+              "id": "icer_mali",
+              "label": "ICER - Mali"
+          }, {
+              "id": "icer_uganda",
+              "label": "ICER - Uganda"
+          }, {
+              "id": "idiap_research_institute",
+              "label": "Idiap Research Institute"
+          }, {
+              "id": "indiana_university",
+              "label": "Indiana University"
+          }, {
+              "id": "indiana_university_of_pennsylvania",
+              "label": "Indiana University of Pennsylvania"
+          }, {
+              "id": "infn_istituto_nazionale_di_fisica_nucleare",
+              "label": "INFN - Istituto Nazionale di Fisica Nucleare"
+          }, {
+              "id": "insel_gruppe",
+              "label": "Insel Gruppe"
+          }, {
+              "id": "institute_of_science_and_technology_austria",
+              "label": "Institute of Science and Technology Austria"
+          }, {
+              "id": "institut_fur_hohere_studien_ihs",
+              "label": "Institut für Höhere Studien (IHS)"
+          }, {
+              "id": "international_business_college",
+              "label": "International Business College"
+          }, {
+              "id": "internet2",
+              "label": "Internet2"
+          }, {
+              "id": "iowa_state_university",
+              "label": "Iowa State University"
+          }, {
+              "id": "irccs_cro_di_aviano",
+              "label": "IRCCS CRO di Aviano"
+          }, {
+              "id": "istat_istituto_nazionale_di_statistica",
+              "label": "ISTAT - Istituto Nazionale di Statistica"
+          }, {
+              "id": "istituto_nazionale_di_astrofisica_inaf",
+              "label": "Istituto Nazionale di Astrofisica - INAF"
+          }, {
+              "id": "it_department_of_the_ministry_of_higher_education",
+              "label": "IT Department of the Ministry of Higher Education"
+          }, {
+              "id": "its_it_support_centre",
+              "label": "ITS (IT Support Centre)"
+          }, {
+              "id": "it_university_of_copenhagen",
+              "label": "IT University of Copenhagen"
+          }, {
+              "id": "izs_sicilia",
+              "label": "IZS Sicilia"
+          }, {
+              "id": "johannes_kepler_universitat_linz",
+              "label": "Johannes Kepler Universität Linz"
+          }, {
+              "id": "johns_hopkins",
+              "label": "Johns Hopkins"
+          }, {
+              "id": "kansas_state_university",
+              "label": "Kansas State University"
+          }, {
+              "id": "kaunas_university_of_technology",
+              "label": "Kaunas University of Technology"
+          }, {
+              "id": "kea_copenhagen_school_of_design_and_technology",
+              "label": "KEA – Copenhagen School of Design and Technology"
+          }, {
+              "id": "kielce_university_of_technology",
+              "label": "Kielce University of Technology"
+          }, {
+              "id": "koebenhavn_nord",
+              "label": "Koebenhavn Nord"
+          }, {
+              "id": "korea_institute_of_science_and_technology_information",
+              "label": "Korea Institute of Science and Technology Information"
+          }, {
+              "id": "lafayette_college",
+              "label": "Lafayette College"
+          }, {
+              "id": "lamar_university",
+              "label": "Lamar University"
+          }, {
+              "id": "lawrence_berkeley_national_laboratory",
+              "label": "Lawrence Berkeley National Laboratory"
+          }, {
+              "id": "lehigh_university",
+              "label": "Lehigh University"
+          }, {
+              "id": "leibniz_rechenzentrum_der_bayerischen_akademie_der_wissenschaften",
+              "label": "Leibniz-Rechenzentrum der Bayerischen Akademie der Wissenschaften"
+          }, {
+              "id": "ligo_scientific_collaboration",
+              "label": "LIGO Scientific Collaboration"
+          }, {
+              "id": "lillebaelt_academy",
+              "label": "Lillebaelt Academy"
+          }, {
+              "id": "linkopings_universitet",
+              "label": "Linköpings Universitet"
+          }, {
+              "id": "lodz_university_of_technology",
+              "label": "Lodz University of Technology"
+          }, {
+              "id": "louisiana_state_university",
+              "label": "Louisiana State University"
+          }, {
+              "id": "loyola_university_of_chicago",
+              "label": "Loyola University of Chicago"
+          }, {
+              "id": "ludwig_maximilians_universitat_munchen",
+              "label": "Ludwig-Maximilians-Universität München"
+          }, {
+              "id": "lunds_universitet",
+              "label": "Lunds universitet"
+          }, {
+              "id": "malmo_hogskola",
+              "label": "Malmö högskola"
+          }, {
+              "id": "marine_biological_laboratory",
+              "label": "Marine Biological Laboratory"
+          }, {
+              "id": "marselisborg_gymnasium",
+              "label": "Marselisborg Gymnasium"
+          }, {
+              "id": "marshall_university",
+              "label": "Marshall University"
+          }, {
+              "id": "massachusetts_institute_of_technology",
+              "label": "Massachusetts Institute of Technology"
+          }, {
+              "id": "mcnc",
+              "label": "MCNC"
+          }, {
+              "id": "medical_university_of_south_carolina",
+              "label": "Medical University of South Carolina"
+          }, {
+              "id": "metropolitan_university_college",
+              "label": "Metropolitan University College"
+          }, {
+              "id": "michigan_state_university",
+              "label": "Michigan State University"
+          }, {
+              "id": "mississippi_state_university",
+              "label": "Mississippi State University"
+          }, {
+              "id": "montana_state_university_bozeman",
+              "label": "Montana State University - Bozeman"
+          }, {
+              "id": "moss_landing_marine_laboratories",
+              "label": "Moss Landing Marine Laboratories"
+          }, {
+              "id": "national_institutes_of_health",
+              "label": "National Institutes of Health"
+          }, {
+              "id": "naval_postgraduate_school",
+              "label": "Naval Postgraduate School"
+          }, {
+              "id": "rda",
+              "label": "NCAR RDA"
+          }, {
+              "id": "ncsa",
+              "label": "NCSA"
+          }, {
+              "id": "nersc",
+              "label": "NERSC"
+          }, {
+              "id": "new_york_university",
+              "label": "New York University"
+          }, {
+              "id": "nicolaus_copernicus_university_in_torun",
+              "label": "Nicolaus Copernicus University in Torun"
+          }, {
+              "id": "nikhef",
+              "label": "Nikhef"
+          }, {
+              "id": "north_carolina_state_university",
+              "label": "North Carolina State University"
+          }, {
+              "id": "northern_illinois_university",
+              "label": "Northern Illinois University"
+          }, {
+              "id": "northwestern_university",
+              "label": "Northwestern University"
+          }, {
+              "id": "ntb_hochschule_fur_technik_buchs",
+              "label": "NTB - Hochschule für Technik Buchs"
+          }, {
+              "id": "oak_ridge_national_laboratory",
+              "label": "Oak Ridge National Laboratory"
+          }, {
+              "id": "ohio_state_university",
+              "label": "Ohio State University"
+          }, {
+              "id": "ohio_technology_consortium_oh_tech",
+              "label": "Ohio Technology Consortium (OH-TECH)"
+          }, {
+              "id": "ohio_university_main_campus",
+              "label": "Ohio University Main Campus"
+          }, {
+              "id": "oklahoma_state_university_system",
+              "label": "Oklahoma State University System"
+          }, {
+              "id": "old_dominion_university",
+              "label": "Old Dominion University"
+          }, {
+              "id": "opole_university",
+              "label": "Opole University"
+          }, {
+              "id": "orcid",
+              "label": "ORCID"
+          }, {
+              "id": "oregon_state_university",
+              "label": "Oregon State University"
+          }, {
+              "id": "paderup_gymnasium",
+              "label": "Paderup Gymnasium"
+          }, {
+              "id": "penn_state",
+              "label": "Penn State"
+          }, {
+              "id": "pharmakon",
+              "label": "Pharmakon"
+          }, {
+              "id": "phgr_padagogische_hochschule_graubunden",
+              "label": "PHGR - Pädagogische Hochschule Graubünden"
+          }, {
+              "id": "phlu_padagogische_hochschule_luzern",
+              "label": "PHLU - Pädagogische Hochschule Luzern"
+          }, {
+              "id": "phsg_padagogische_hochschule_st_gallen",
+              "label": "PHSG - Pädagogische Hochschule St.Gallen"
+          }, {
+              "id": "phtg_padagogische_hochschule_thurgau",
+              "label": "PHTG - Pädagogische Hochschule Thurgau"
+          }, {
+              "id": "phvs_padagogische_hochschule_wallis",
+              "label": "PHVS - Pädagogische Hochschule Wallis"
+          }, {
+              "id": "ph_zug_padagogische_hochschule_zug",
+              "label": "PH Zug - Pädagogische Hochschule Zug"
+          }, {
+              "id": "ph_zurich_padagogische_hochschule_zurich",
+              "label": "PH Zürich - Pädagogische Hochschule Zürich"
+          }, {
+              "id": "pmod_wrc_observatorium_davos",
+              "label": "PMOD/WRC - Observatorium Davos"
+          }, {
+              "id": "pomona_college",
+              "label": "Pomona College"
+          }, {
+              "id": "portland_state_university",
+              "label": "Portland State University"
+          }, {
+              "id": "princeton_university",
+              "label": "Princeton University"
+          }, {
+              "id": "protectnetwork",
+              "label": "ProtectNetwork"
+          }, {
+              "id": "psi_paul_scherrer_institut",
+              "label": "PSI - Paul Scherrer Institut"
+          }, {
+              "id": "purdue_university_main_campus",
+              "label": "Purdue University Main Campus"
+          }, {
+              "id": "reed_college",
+              "label": "Reed College"
+          }, {
+              "id": "region_zealand",
+              "label": "Region Zealand"
+          }, {
+              "id": "rice_university",
+              "label": "Rice University"
+          }, {
+              "id": "rockefeller_university",
+              "label": "Rockefeller University"
+          }, {
+              "id": "rosborg_gymnasium_hf",
+              "label": "Rosborg Gymnasium &amp; HF"
+          }, {
+              "id": "roskilde_university",
+              "label": "Roskilde University"
+          }, {
+              "id": "royal_academy_of_music_aarhus_aalborg_rama",
+              "label": "Royal Academy of Music Aarhus/Aalborg (RAMA)"
+          }, {
+              "id": "royal_college_of_physicians_of_ireland",
+              "label": "Royal College of Physicians of Ireland"
+          }, {
+              "id": "rungsted_high_school",
+              "label": "Rungsted High School"
+          }, {
+              "id": "rutgers_the_state_university_of_new_jersey",
+              "label": "Rutgers, The State University of New Jersey"
+          }, {
+              "id": "san_diego_state_university",
+              "label": "San Diego State University"
+          }, {
+              "id": "schools_of_architecture_design_and_conservation",
+              "label": "Schools of Architecture, Design and Conservation"
+          }, {
+              "id": "second_university_of_naplesi",
+              "label": "Second University of Naplesi"
+          }, {
+              "id": "silkeborg_business_college",
+              "label": "Silkeborg Business College"
+          }, {
+              "id": "simac",
+              "label": "SIMAC"
+          }, {
+              "id": "sissa",
+              "label": "SISSA"
+          }, {
+              "id": "smithsonian_institution",
+              "label": "Smithsonian Institution"
+          }, {
+              "id": "southern_illinois_university",
+              "label": "Southern Illinois University"
+          }, {
+              "id": "southern_methodist_university",
+              "label": "Southern Methodist University"
+          }, {
+              "id": "sscol_soprintendenza_speciale_per_il_colosseo",
+              "label": "SSCOL - Soprintendenza Speciale per il Colosseo"
+          }, {
+              "id": "stanford_university",
+              "label": "Stanford University"
+          }, {
+              "id": "state_and_university_library_employees",
+              "label": "State and University Library - employees"
+          }, {
+              "id": "statens_museum_for_kunst_smk",
+              "label": "Statens Museum for Kunst – SMK"
+          }, {
+              "id": "stevens_institute_of_technology",
+              "label": "Stevens Institute of Technology"
+          }, {
+              "id": "stockholms_universitet",
+              "label": "Stockholms universitet"
+          }, {
+              "id": "stony_brook_university",
+              "label": "Stony Brook University"
+          }, {
+              "id": "switch",
+              "label": "SWITCH"
+          }, {
+              "id": "syddansk_erhvervsskole",
+              "label": "Syddansk Erhvervsskole"
+          }, {
+              "id": "syracuse_university",
+              "label": "Syracuse University"
+          }, {
+              "id": "technical_university_of_denmark",
+              "label": "Technical University of Denmark"
+          }, {
+              "id": "technische_universitat_wien",
+              "label": "Technische Universität Wien"
+          }, {
+              "id": "texas_a_m_university",
+              "label": "Texas A &amp; M University"
+          }, {
+              "id": "texas_a_m_university_corpus_christi",
+              "label": "Texas A&amp;M University-Corpus Christi"
+          }, {
+              "id": "texas_state_university_san_marcos",
+              "label": "Texas State University - San Marcos"
+          }, {
+              "id": "texas_tech_university",
+              "label": "Texas Tech University"
+          }, {
+              "id": "the_broad_institute_of_mit_and_harvard",
+              "label": "The Broad Institute of MIT and Harvard"
+          }, {
+              "id": "the_christian_gymnasium",
+              "label": "The Christian Gymnasium"
+          }, {
+              "id": "the_george_washington_university",
+              "label": "The George Washington University"
+          }, {
+              "id": "the_state_university_of_new_york_at_buffalo",
+              "label": "The State University of New York at Buffalo"
+          }, {
+              "id": "the_university_of_arizona",
+              "label": "The University of Arizona"
+          }, {
+              "id": "the_university_of_memphis",
+              "label": "The University of Memphis"
+          }, {
+              "id": "towson_university",
+              "label": "Towson University"
+          }, {
+              "id": "tufts_university",
+              "label": "Tufts University"
+          }, {
+              "id": "united_id",
+              "label": "United ID"
+          }, {
+              "id": "universita_degli_studi_di_perugia",
+              "label": "Università degli studi di Perugia"
+          }, {
+              "id": "universita_di_modena_e_reggio_emilia",
+              "label": "Università di Modena e Reggio Emilia"
+          }, {
+              "id": "universita_di_trieste",
+              "label": "Università di Trieste"
+          }, {
+              "id": "universita_di_urbino",
+              "label": "Università di Urbino"
+          }, {
+              "id": "universita_politecnica_delle_marche",
+              "label": "Universita Politecnica delle Marche"
+          }, {
+              "id": "universitare_fernstudien_schweiz",
+              "label": "Universitäre Fernstudien Schweiz"
+          }, {
+              "id": "universitat_basel",
+              "label": "Universität Basel"
+          }, {
+              "id": "universitat_bern",
+              "label": "Universität Bern"
+          }, {
+              "id": "universitat_freiburg",
+              "label": "Universität Freiburg"
+          }, {
+              "id": "universitat_genf",
+              "label": "Universität Genf"
+          }, {
+              "id": "universitat_liechtenstein",
+              "label": "Universität Liechtenstein"
+          }, {
+              "id": "universitat_luzern",
+              "label": "Universität Luzern"
+          }, {
+              "id": "universitat_st_gallen",
+              "label": "Universität St. Gallen"
+          }, {
+              "id": "universitat_zurich",
+              "label": "Universität Zürich"
+          }, {
+              "id": "universite_de_lausanne",
+              "label": "Université de Lausanne"
+          }, {
+              "id": "universite_de_neuchatel",
+              "label": "Université de Neuchâtel"
+          }, {
+              "id": "university_at_albany_state_university_of_new_york",
+              "label": "University At Albany, State University of New York"
+          }, {
+              "id": "university_college_capital",
+              "label": "University College Capital"
+          }, {
+              "id": "university_college_cork",
+              "label": "University College Cork"
+          }, {
+              "id": "university_college_dublin",
+              "label": "University College Dublin"
+          }, {
+              "id": "university_college_lillebaelt",
+              "label": "University College Lillebaelt"
+          }, {
+              "id": "university_college_of_northern_denmark",
+              "label": "University College of Northern Denmark"
+          }, {
+              "id": "university_college_of_teacher_education_in_lower_austria",
+              "label": "University College of Teacher Education in Lower Austria"
+          }, {
+              "id": "university_college_of_teacher_education_styria",
+              "label": "University College of Teacher Education Styria"
+          }, {
+              "id": "university_college_south_denmark",
+              "label": "University College South Denmark"
+          }, {
+              "id": "university_college_zealand",
+              "label": "University College Zealand"
+          }, {
+              "id": "university_of_alabama_at_birmingham",
+              "label": "University of Alabama at Birmingham"
+          }, {
+              "id": "university_of_alabama_the",
+              "label": "University of Alabama, The"
+          }, {
+              "id": "university_of_alaska_statewide_system",
+              "label": "University of Alaska Statewide System"
+          }, {
+              "id": "university_of_arkansas",
+              "label": "University of Arkansas"
+          }, {
+              "id": "university_of_california_berkeley",
+              "label": "University of California, Berkeley"
+          }, {
+              "id": "university_of_california_davis",
+              "label": "University of California, Davis"
+          }, {
+              "id": "university_of_california_irvine",
+              "label": "University of California-Irvine"
+          }, {
+              "id": "university_of_california_los_angeles",
+              "label": "University of California-Los Angeles"
+          }, {
+              "id": "university_of_california_office_of_the_president",
+              "label": "University of California - Office of the President"
+          }, {
+              "id": "university_of_california_riverside",
+              "label": "University of California, Riverside"
+          }, {
+              "id": "university_of_california_san_diego",
+              "label": "University of California-San Diego"
+          }, {
+              "id": "university_of_california_san_francisco",
+              "label": "University of California, San Francisco"
+          }, {
+              "id": "university_of_california_santa_barbara",
+              "label": "University of California-Santa Barbara"
+          }, {
+              "id": "university_of_california_santa_cruz",
+              "label": "University of California, Santa Cruz"
+          }, {
+              "id": "university_of_central_florida",
+              "label": "University of Central Florida"
+          }, {
+              "id": "uchicago",
+              "label": "University of Chicago"
+          }, {
+              "id": "university_of_cincinnati_main_campus",
+              "label": "University of Cincinnati Main Campus"
+          }, {
+              "id": "university_of_colorado_at_boulder",
+              "label": "University of Colorado at Boulder"
+          }, {
+              "id": "university_of_copenhagen",
+              "label": "University of Copenhagen"
+          }, {
+              "id": "university_of_dayton",
+              "label": "University of Dayton"
+          }, {
+              "id": "university_of_delaware",
+              "label": "University of Delaware"
+          }, {
+              "id": "exeter",
+              "label": "University of Exeter"
+          }, {
+              "id": "university_of_florida",
+              "label": "University of Florida"
+          }, {
+              "id": "university_of_glasgow",
+              "label": "University of Glasgow"
+          }, {
+              "id": "university_of_hawaii",
+              "label": "University of Hawaii"
+          }, {
+              "id": "university_of_helsinki",
+              "label": "University of Helsinki"
+          }, {
+              "id": "university_of_houston_libraries",
+              "label": "University of Houston Libraries"
+          }, {
+              "id": "university_of_iceland",
+              "label": "University of Iceland"
+          }, {
+              "id": "university_of_illinois_at_chicago",
+              "label": "University of Illinois at Chicago"
+          }, {
+              "id": "university_of_illinois_at_springfield",
+              "label": "University of Illinois At Springfield"
+          }, {
+              "id": "university_of_illinois_at_urbana_champaign",
+              "label": "University of Illinois at Urbana-Champaign"
+          }, {
+              "id": "university_of_iowa",
+              "label": "University of Iowa"
+          }, {
+              "id": "university_of_kansas",
+              "label": "University of Kansas"
+          }, {
+              "id": "university_of_kansas_medical_center",
+              "label": "University of Kansas Medical Center"
+          }, {
+              "id": "university_of_maryland_baltimore",
+              "label": "University of Maryland Baltimore"
+          }, {
+              "id": "university_of_maryland_baltimore_county",
+              "label": "University of Maryland Baltimore County"
+          }, {
+              "id": "university_of_maryland_college_park",
+              "label": "University of Maryland College Park"
+          }, {
+              "id": "university_of_massachusetts_amherst",
+              "label": "University of Massachusetts Amherst"
+          }, {
+              "id": "university_of_miami",
+              "label": "University of Miami"
+          }, {
+              "id": "university_of_michigan",
+              "label": "University of Michigan"
+          }, {
+              "id": "university_of_minnesota",
+              "label": "University of Minnesota"
+          }, {
+              "id": "university_of_mississippi",
+              "label": "University of Mississippi"
+          }, {
+              "id": "university_of_missouri_system",
+              "label": "University of Missouri System"
+          }, {
+              "id": "university_of_nebraska_lincoln",
+              "label": "University of Nebraska-Lincoln"
+          }, {
+              "id": "university_of_nebraska_medical_center",
+              "label": "University of Nebraska Medical Center"
+          }, {
+              "id": "university_of_nevada_reno",
+              "label": "University of Nevada, Reno"
+          }, {
+              "id": "university_of_new_mexico",
+              "label": "University of New Mexico"
+          }, {
+              "id": "university_of_north_carolina_at_chapel_hill",
+              "label": "University of North Carolina at Chapel Hill"
+          }, {
+              "id": "university_of_north_carolina_at_charlotte",
+              "label": "University of North Carolina At Charlotte"
+          }, {
+              "id": "university_of_north_carolina_at_greensboro",
+              "label": "University of North Carolina at Greensboro"
+          }, {
+              "id": "university_of_notre_dame",
+              "label": "University of Notre Dame"
+          }, {
+              "id": "university_of_oklahoma",
+              "label": "University of Oklahoma"
+          }, {
+              "id": "university_of_oregon",
+              "label": "University of Oregon"
+          }, {
+              "id": "university_of_padova",
+              "label": "University of Padova"
+          }, {
+              "id": "university_of_pennsylvania",
+              "label": "University of Pennsylvania"
+          }, {
+              "id": "university_of_pittsburgh",
+              "label": "University of Pittsburgh"
+          }, {
+              "id": "university_of_rochester",
+              "label": "University of Rochester"
+          }, {
+              "id": "university_of_science_and_technology_in_bydgoszcz",
+              "label": "University of Science and Technology in Bydgoszcz"
+          }, {
+              "id": "university_of_south_carolina",
+              "label": "University of South Carolina"
+          }, {
+              "id": "university_of_south_dakota",
+              "label": "University of South Dakota"
+          }, {
+              "id": "university_of_southern_california",
+              "label": "University of Southern California"
+          }, {
+              "id": "university_of_southern_denmark",
+              "label": "University of Southern Denmark"
+          }, {
+              "id": "university_of_south_florida",
+              "label": "University of South Florida"
+          }, {
+              "id": "university_of_texas_at_austin",
+              "label": "University of Texas at Austin"
+          }, {
+              "id": "university_of_texas_at_dallas",
+              "label": "University of Texas at Dallas"
+          }, {
+              "id": "university_of_texas_m_d_anderson_cancer_center",
+              "label": "University of Texas M.D. Anderson Cancer Center"
+          }, {
+              "id": "university_of_utah",
+              "label": "University of Utah"
+          }, {
+              "id": "university_of_vermont",
+              "label": "University of Vermont"
+          }, {
+              "id": "university_of_virginia",
+              "label": "University of Virginia"
+          }, {
+              "id": "university_of_washington",
+              "label": "University of Washington"
+          }, {
+              "id": "university_of_west_florida",
+              "label": "University of West Florida"
+          }, {
+              "id": "university_of_wisconsin_madison",
+              "label": "University of Wisconsin-Madison"
+          }, {
+              "id": "university_of_wisconsin_milwaukee",
+              "label": "University of Wisconsin-Milwaukee"
+          }, {
+              "id": "university_of_wyoming",
+              "label": "University of Wyoming"
+          }, {
+              "id": "uppsala_universitet",
+              "label": "Uppsala universitet"
+          }, {
+              "id": "utah_state_university",
+              "label": "Utah State University"
+          }, {
+              "id": "utah_valley_university",
+              "label": "Utah Valley University"
+          }, {
+              "id": "vanderbilt_university",
+              "label": "Vanderbilt University"
+          }, {
+              "id": "veterinarmedizinische_universitat_wien",
+              "label": "Veterinärmedizinische Universität Wien"
+          }, {
+              "id": "via_university_college",
+              "label": "VIA University College"
+          }, {
+              "id": "virginia_polytechnic_institute_and_state_university",
+              "label": "Virginia Polytechnic Institute and State University"
+          }, {
+              "id": "vordingborg_gymnasium_and_higher_prep_exam",
+              "label": "Vordingborg Gymnasium and Higher Prep Exam"
+          }, {
+              "id": "wayf_orphanage",
+              "label": "WAYF Orphanage"
+          }, {
+              "id": "wayne_state_university",
+              "label": "Wayne State University"
+          }, {
+              "id": "weill_cornell_medical_college",
+              "label": "Weill Cornell Medical College"
+          }, {
+              "id": "western_michigan_university",
+              "label": "Western Michigan University"
+          }, {
+              "id": "westgrid",
+              "label": "WestGrid"
+          }, {
+              "id": "west_virginia_university",
+              "label": "West Virginia University"
+          }, {
+              "id": "wheaton_college_ma",
+              "label": "Wheaton College (MA)"
+          }, {
+              "id": "woods_hole_oceanographic_institution",
+              "label": "Woods Hole Oceanographic Institution"
+          }, {
+              "id": "wsl_eidg_forschungsanstalt_fur_wald_schnee_und_landschaft",
+              "label": "WSL - Eidg. Forschungsanstalt für Wald, Schnee und Landschaft"
+          }, {
+              "id": "xsede",
+              "label": "XSEDE"
+          }, {
+              "id": "yale_university",
+              "label": "Yale University"
+          }, {
+              "id": "zealand_business_college",
+              "label": "Zealand Business College"
+          }, {
+              "id": "zentral_und_hochschulbibliothek_luzern",
+              "label": "Zentral- und Hochschulbibliothek Luzern"
+          }, {
+              "id": "zhaw_zurcher_hochschule_fur_angewandte_wissenschaften",
+              "label": "ZHAW - Zürcher Hochschule für Angewandte Wissenschaften"
+          }
+      ]

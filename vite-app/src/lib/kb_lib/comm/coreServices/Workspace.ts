@@ -4,7 +4,7 @@ import {
     JSONValue,
     objectToJSONObject
 } from 'lib/json';
-import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../../jsonLike';
+import { JSONLikeArrayOf, JSONLikeObject, toJSON, toJSONObject } from '../../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 import { EpochTimeMS, Mapping, SDKBoolean } from '../types';
 
@@ -18,6 +18,18 @@ export interface ObjectIdentity extends JSONLikeObject {
     objid?: ObjectId;
     ver?: number;
     ref?: string;
+}
+
+export interface SubObjectIdentity extends JSONLikeObject {
+    workspace?: string;
+    wsid?: WorkspaceId;
+    name?: string;
+    objid?: ObjectId;
+    ver?: number;
+    ref?: string;
+    included: Array<string>;
+    strict_maps?: boolean;
+    strict_arrays?: boolean;
 }
 
 export interface WorkspaceIdentity extends JSONLikeObject {
@@ -64,7 +76,7 @@ export type ObjectInfoRaw = [
     Metadata // metadata
 ];
 
-export interface ObjectInfo {
+export interface ObjectInfo  extends JSONObject {
     id: number;
     name: string;
     type: string;
@@ -121,7 +133,7 @@ export interface GetObjectInfo3Result extends JSONObject {
 
 export interface GetWorkspaceInfoParams extends WorkspaceIdentity { }
 
-export interface GetWorkspaceInfoResult { }
+export type GetWorkspaceInfoResult = WorkspaceInfoRaw;
 
 export interface ListWorkspaceInfoParams {
     perm?: string;
@@ -136,7 +148,7 @@ export interface ListWorkspaceInfoParams {
     showOnlyDeleted?: SDKBoolean;
 }
 
-export type ListWorkspaceInfoResult = Array<WorkspaceInfo>;
+export type ListWorkspaceInfoResult = Array<WorkspaceInfoRaw>;
 
 export type ObjectRef = string;
 export type Username = string;
@@ -311,6 +323,68 @@ export interface SetPermissionsParams extends JSONLikeObject {
     users: Array<string>
 }
 
+export interface GetTypeInfoResult extends JSONObject {
+    type_def: string;
+    description: string;
+    spec_def: string;
+    json_schema: string,
+    parsing_structure: string;
+    module_vers: Array<number>;
+    released_module_vers: Array<number>;
+    type_vers: Array<string>
+    using_func_defs: Array<string>;
+    using_type_defs: Array<string>;
+    used_type_defs: Array<string>
+}
+
+export interface GetModuleInfoParams extends JSONLikeObject {
+    mod: string;
+    ver?: number;
+}
+
+export interface GetModuleInfoResult extends JSONObject {
+    owners: Array<string>;
+    ver: number;
+    spec: string;
+    description: string;
+    types: Record<string, string>;
+    included_spec_version: Record<string, number>;
+    chsum: string;
+    functions: Array<string>;
+    is_released: boolean;
+}
+
+export interface ListModuleVersionsParams extends JSONLikeObject {
+    mod?: string;
+    type?: string;
+}
+
+export interface ListModuleVersionsResult extends JSONObject {
+    mod: string;
+    vers: Array<number>;
+    released_vers: Array<number>;
+}
+
+export type GetObjectHistoryParams  = ObjectIdentity;
+
+export type GetObjectHistoryResult = Array<ObjectInfoRaw>;
+
+
+export type ListReferencingObjectCountsParams = Array<ObjectIdentity>;
+
+export type ListReferencingObjectCountsResult = Array<number>;
+
+
+export type ListReferencingObjectsParams = Array<ObjectIdentity>;
+
+export type ListReferencingObjectsResult = Array<Array<ObjectInfoRaw>>;
+
+export type GetObjectSubsetParams = Array<SubObjectIdentity>;
+
+export interface GetObjectSubsetResult {
+    data: JSONLikeArrayOf<ObjectData>;
+}
+
 
 export default class WorkspaceClient extends ServiceClient {
     module = 'Workspace';
@@ -323,28 +397,30 @@ export default class WorkspaceClient extends ServiceClient {
 
     async get_object_info3(
         params: GetObjectInfo3Params
-    ) {
+    ): Promise<GetObjectInfo3Result> {
         const [result] = await this.callFunc<
             [JSONObject],
             [GetObjectInfo3Result]
         >('get_object_info3', [objectToJSONObject(params)]);
 
-        return {
-            infos: result.infos.map((info) => {
-                return objectInfoToObject(info);
-            }),
-            paths: result.paths
-        };
+        return result as unknown as GetObjectInfo3Result;
+        // return {
+        //     infos: result.infos.map((info) => {
+        //         return objectInfoToObject(info);
+        //     }),
+        //     paths: result.paths
+        // };
     }
 
     async get_workspace_info(
         params: GetWorkspaceInfoParams
-    ): Promise<WorkspaceInfo> {
+    ): Promise<GetWorkspaceInfoResult> {
         const [result] = await this.callFunc<[JSONObject], [WorkspaceInfoRaw]>(
             'get_workspace_info',
             [objectToJSONObject(params)]
         );
-        return workspaceInfoToObject(result as unknown as WorkspaceInfoRaw);
+        return result as unknown as GetWorkspaceInfoResult;
+        // return workspaceInfoToObject(result as unknown as WorkspaceInfoRaw);
     }
 
     async list_workspace_info(
@@ -354,9 +430,8 @@ export default class WorkspaceClient extends ServiceClient {
             [JSONObject],
             [Array<WorkspaceInfoRaw>]
         >('list_workspace_info', [objectToJSONObject(params)]);
-        return result.map((item) => {
-            return workspaceInfoToObject(item);
-        })
+
+        return result as unknown as ListWorkspaceInfoResult;
     }
 
     async get_objects2(params: GetObjects2Param): Promise<GetObjects2Result> {
@@ -422,5 +497,66 @@ export default class WorkspaceClient extends ServiceClient {
             'set_permissions',
             [toJSON(params)]
         );
+    }
+
+    async get_type_info(typeId: string): Promise<GetTypeInfoResult> {
+        const [result] = await this.callFunc<[string], [GetTypeInfoResult]>(
+            'get_type_info',
+            [typeId]
+        )
+        return result;
+    }
+
+    async get_module_info(params: GetModuleInfoParams): Promise<GetModuleInfoResult> {
+        const [result] = await this.callFunc<[JSONObject], [GetModuleInfoResult]>(
+            'get_module_info',
+            [toJSONObject(params)]
+        )
+        return result;
+    }
+
+
+    async list_module_versions(params: ListModuleVersionsParams): Promise<ListModuleVersionsResult> {
+        const [result] = await this.callFunc<[JSONObject], [ListModuleVersionsResult]>(
+            'list_module_versions',
+            [toJSONObject(params)]
+        )
+        return result;
+    }
+
+
+
+    async get_object_history(params: GetObjectHistoryParams): Promise<GetObjectHistoryResult> {
+        const [result] = await this.callFunc<[JSONObject], [GetObjectHistoryResult]>(
+            'get_object_history',
+            [toJSONObject(params)]
+        )
+        return result;
+    }
+
+
+    async list_referencing_object_counts(params: ListReferencingObjectCountsParams): Promise<ListReferencingObjectCountsResult> {
+        const [result] = await this.callFunc<[JSONObject], [ListReferencingObjectCountsResult]>(
+            'get_object_history',
+            [toJSONObject(params)]
+        )
+        return result;
+    }
+
+
+    async list_referencing_objects(params: ListReferencingObjectsParams): Promise<ListReferencingObjectsResult> {
+        const [result] = await this.callFunc<[JSONObject], [ListReferencingObjectsResult]>(
+            'list_referencing_object_counts',
+            [toJSONObject(params)]
+        )
+        return result;
+    }
+
+    async get_object_subset(params: GetObjectSubsetParams): Promise<GetObjectSubsetResult> {
+        const [result] = await this.callFunc<[JSONObject], [JSONObject]>(
+            'get_object_subset',
+            [toJSONObject(params)]
+        )
+        return result as unknown as GetObjectSubsetResult;
     }
 }

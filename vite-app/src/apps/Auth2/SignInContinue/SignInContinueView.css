@@ -1,0 +1,26 @@
+.SignInContinueView {
+    flex: 1 1 0px;  
+    display: flex; 
+    flex-direction: column;
+    overflow-y: auto;
+    margin: 0 1rem;
+}
+
+.SignInContinueView .-header {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.SignInContinueView .-header .-col1 {
+    flex: 1 1 0;
+    font-weight: bold;
+}
+
+.SignInContinueView .-header .-col2 {
+    flex: 0 0 auto;
+}
+
+.SignInContinueView .-body {
+    flex: 1 1 0;    
+}

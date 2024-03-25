@@ -1,19 +1,25 @@
-import {
-    ServiceWizardClient,
-    ServiceStatus,
-} from '../coreServices/ServiceWizard';
-import { ServiceClient, ServiceClientParams } from './ServiceClient';
 import Cache from '../Cache';
-
-import { JSONRPCParams } from './JSONRPC20';
-import { JSONValue } from '@kbase/ui-lib/lib/json';
+import {
+    ServiceStatus, ServiceWizardClient
+} from '../coreServices/ServiceWizard';
+import { JSONRPC20Params, JSONRPC20Result } from './JSONRPC20';
+import { ServiceClient, ServiceClientParams } from './ServiceClient';
 
 const ITEM_LIFETIME = 1800000;
 const MONITORING_FREQUENCY = 60000;
 const WAITER_TIMEOUT = 30000;
 const WAITER_FREQUENCY = 100;
 
-const moduleCache = new Cache<ServiceStatus>({
+// now import the service wizard, and one auth generic client
+
+// type Promise<T> = Promise<T>
+
+// interface ModuleInfo {
+
+//     module_name: string;
+// }
+
+var moduleCache = new Cache<ServiceStatus>({
     itemLifetime: ITEM_LIFETIME,
     monitoringFrequency: MONITORING_FREQUENCY,
     waiterTimeout: WAITER_TIMEOUT,
@@ -33,17 +39,19 @@ const moduleCache = new Cache<ServiceStatus>({
 
 export interface DynamicServiceClientParams extends ServiceClientParams {
     version?: string;
+    // module: string;
 }
 
 export abstract class DynamicServiceClient extends ServiceClient {
     version: string | null;
 
     abstract module: string;
+    abstract prefix: boolean;
 
     serviceDiscoveryURL: string;
     serviceDiscoveryModule: string = 'ServiceWizard';
 
-    protected constructor(params: DynamicServiceClientParams) {
+    constructor(params: DynamicServiceClientParams) {
         super(params);
         const { version } = params;
 
@@ -53,6 +61,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
         }
 
         this.serviceDiscoveryURL = params.url;
+        // this.module = module;
     }
 
     private moduleId() {
@@ -72,6 +81,10 @@ export abstract class DynamicServiceClient extends ServiceClient {
         });
     }
 
+    // setCached(value: any) {
+    //     moduleCache.setItem(this.moduleId(), value);
+    // }
+
     // TODO: Promise<any> -> Promise<ServiceStatusResult>
     private async lookupModule(): Promise<ServiceStatus> {
         const moduleInfo = await this.getCached(
@@ -83,10 +96,11 @@ export abstract class DynamicServiceClient extends ServiceClient {
                 });
                 // NB wrapped in promise.resolve because the promise we have
                 // here is bluebird, which supports cancellation, which we need.
-                return await client.get_service_status({
+                const status = await client.get_service_status({
                     module_name: this.module,
                     version: this.version,
                 });
+                return status;
             }
         );
         this.module = moduleInfo.module_name;
@@ -96,9 +110,24 @@ export abstract class DynamicServiceClient extends ServiceClient {
 
     async callFunc(
         funcName: string,
-        params: JSONRPCParams
-    ): Promise<JSONValue> {
+        params?: JSONRPC20Params
+    ): Promise<JSONRPC20Result> {
         await this.lookupModule();
         return super.callFunc(funcName, params);
     }
+
+    // async callFuncNoParams<ReturnType extends JSONArray>(
+    //     funcName: string
+    // ): Promise<ReturnType> {
+    //     await this.lookupModule();
+    //     return super.callFunc(funcName);
+    // }
+
+    // async callFuncEmptyResult<ParamType extends JSONArray>(
+    //     funcName: string,
+    //     params?: ParamType
+    // ): Promise<void> {
+    //     await this.lookupModule();
+    //     return super.callFuncEmptyResult(funcName, params);
+    // }
 }

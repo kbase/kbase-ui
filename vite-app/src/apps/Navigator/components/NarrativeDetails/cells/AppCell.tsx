@@ -1,3 +1,4 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import DOMPurify from 'dompurify';
 import { AppCell } from 'lib/clients/NarrativeModel';
 import { marked } from 'marked';
@@ -5,7 +6,6 @@ import { Component } from 'react';
 import { Accordion, Tab, Table, Tabs } from 'react-bootstrap';
 import Empty from '../../../../../components/Empty';
 import RenderJSON from '../../../../../components/RenderJSON';
-import { AuthInfo } from '../../../../../contexts/Auth';
 import { niceElapsed } from '../../../../../lib/time';
 import { Config } from '../../../../../types/config';
 import { AppCellIcon } from '../../Icon';
@@ -26,7 +26,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
         return (
             <div
                 dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(marked.parse(description)),
+                    __html: DOMPurify.sanitize(marked.parse(description, {async: false}) as string),
                 }}
             />
         );
@@ -53,7 +53,7 @@ export default class AppCellView extends Component<PreviewCellProps> {
             <>
                 <div className={styles.id}>
                     <a
-                        href={`/#spec/type/${id}`}
+                        href={`#spec/type/${id}`}
                         target="_blank"
                         rel="noreferrer"
                     >

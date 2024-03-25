@@ -1,9 +1,8 @@
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { Notification, NotificationKind } from "contexts/RuntimeContext";
+import { AuthenticationStateAuthenticated, NotifyOptions } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
 import Poller, { makePoller } from "lib/poller";
@@ -16,7 +15,7 @@ export interface QueryLinksControllerProps {
     auth: AuthenticationStateAuthenticated;
     config: Config;
     viewLink: (username: string) => void;
-    notify: (n: Notification) => void;
+    notify: (notification: NotifyOptions) => void;
 }
 
 export interface QueryLinksState {
@@ -86,28 +85,38 @@ export default class QueryLinksController extends Component<QueryLinksController
         // On the cheap...
         const model = new Model({ config: this.props.config, auth: this.props.auth });
         try {
-            await model.deleteLink(username);
+            await model.deleteLink(username);  
             this.props.notify({
-                kind: NotificationKind.AUTODISMISS,
-                dismissAfter: 3000,
-                id: 'deletedLink',
+                title: 'Success',
                 message: `Deleted link for user ${username}`,
-                startedAt: Date.now(),
-                type: 'success',
+                variant: 'success'
             });
+            // this.props.notify({
+            //     kind: NotificationKind.AUTODISMISS,
+            //     dismissAfter: 3000,
+            //     id: 'deletedLink',
+            //     message: `Deleted link for user ${username}`,
+            //     startedAt: Date.now(),
+            //     type: 'success',
+            // });
             this.loadData();
         } catch (ex) {
             console.error('ERROR deleting link for user', ex);
-            const message = ex instanceof Error ? ex.message : 'Unknown error';
+            const message = ex instanceof Error ? ex.message : 'Unknown error'; 
             this.props.notify({
-                kind: NotificationKind.AUTODISMISS,
-                dismissAfter: 3000,
-                id: 'deletedLink',
-                message: `Error deleting link for user ${username}; check console`,
-                description: message,
-                startedAt: Date.now(),
-                type: 'error',
+                title: 'Error',
+                message: `Error deleting link for user ${username}; check console: ${message}`,
+                variant: 'danger'
             });
+            // this.props.notify({
+            //     kind: NotificationKind.AUTODISMISS,
+            //     dismissAfter: 3000,
+            //     id: 'deletedLink',
+            //     message: `Error deleting link for user ${username}; check console`,
+            //     description: message,
+            //     startedAt: Date.now(),
+            //     type: 'error',
+            // });
         }
     }
 

@@ -1,9 +1,9 @@
 import { AsyncProcess } from "@kbase/ui-lib";
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { AsyncProcessStatus } from "lib/AsyncProcess";
+import { SimpleError } from 'lib/SimpleError';
 import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
 import { hasOwnProperty } from "lib/utils";
 import { Component } from "react";

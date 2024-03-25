@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import Loading from '../../../components/Loading';
-import { ConfigState, ConfigContext } from '../../../contexts/ConfigContext';
+import { ConfigContext, ConfigState } from '../../../contexts/ConfigContext';
 import { AsyncProcessStatus } from '../../../lib/AsyncProcess2';
 import AboutBuild from './AboutBuild';
 
@@ -32,9 +32,9 @@ export default class AboutBuildWrapper extends Component<
                     case AsyncProcessStatus.SUCCESS:
                         this.props.setTitle('About the kbase-ui build');
                         return <AboutBuild 
-                                    buildInfo={configValue.value.buildInfo}
-                                    gitInfo={configValue.value.gitInfo}
-                                />
+                            buildInfo={configValue.value.buildInfo}
+                            gitInfo={configValue.value.gitInfo}
+                        />
                 }
             }}
         </ConfigContext.Consumer>

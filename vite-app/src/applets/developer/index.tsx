@@ -2,9 +2,9 @@ import { Component } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import { Config } from '../../types/config';
 import ConfigEditor from './ConfigEditor';
-import Main from './Main';
-import './index.css';
 import Features from './FeaturesController';
+import Main from './Main';
+import styles from './index.module.css';
 
 export interface DeveloperProps {
     tab?: string;
@@ -12,11 +12,8 @@ export interface DeveloperProps {
     setTitle: (title: string) => void;
 }
 
-interface DeveloperState { }
-
 export default class Developer extends Component<
-    DeveloperProps,
-    DeveloperState
+    DeveloperProps
 > {
     componentDidMount() {
         this.props.setTitle('Developer Tools ;)');
@@ -45,7 +42,7 @@ export default class Developer extends Component<
 
     render() {
         return (
-            <div className="Developer" data-k-b-testhook-plugin="developer">
+            <div className={styles.main} data-k-b-testhook-plugin="developer">
                 {this.renderTabs()}
             </div>
         );

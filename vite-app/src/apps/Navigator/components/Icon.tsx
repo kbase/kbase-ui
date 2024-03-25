@@ -1,8 +1,10 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { Component } from 'react';
-import IconProvider, { IconInfo, AppTag } from '../api/IconProvider';
 import { Config } from '../../../types/config';
-import { AuthInfo } from '../../../contexts/Auth';
+import IconProvider, { AppTag, IconInfo } from '../api/IconProvider';
 import styles from './Icon.module.css';
+
+// const DEFAULT_SIZE = '2.5rem';
 
 /**
  * Generates various KBase Narrative icons from input props.
@@ -16,9 +18,10 @@ interface AppIconProps {
 }
 
 interface TypeIconProps {
-    authInfo: AuthInfo;
+    // authInfo: AuthInfo;
     config: Config;
     objectType: string;
+    size?: number;
 }
 
 interface TypeIconState {
@@ -37,6 +40,7 @@ enum CellIcons {
     widget = 'fa fa-wrench',
     data = 'fa fa-database',
     output = 'fa fa-arrow-right',
+    serviceWidget = 'fa fa-flask'
 }
 
 /**
@@ -70,7 +74,7 @@ export class TypeIcon extends Component<TypeIconProps, TypeIconState> {
             nmsURL: this.props.config.services.NarrativeMethodStore.url,
             nmsImageURL:
                 this.props.config.services.NarrativeMethodStore.image_url,
-            token: this.props.authInfo.token,
+            // token: this.props.authInfo.token,
         });
         const iconInfo = await iconProvider.typeIcon(this.props.objectType);
         this.setState({
@@ -85,33 +89,47 @@ export class TypeIcon extends Component<TypeIconProps, TypeIconState> {
      * @return {JSX}
      */
     render() {
-        const iconInfo = this.state.iconInfo
-            ? this.state.iconInfo
-            : { isImage: false, icon: 'fa fa-spinner', color: 'silver' };
+        // const iconInfo = this.state.iconInfo
+        //     ? this.state.iconInfo
+        //     : { isImage: false, icon: 'fa fa-spinner', color: 'silver' };
 
-        if (iconInfo.isImage) {
-            return (
-                <span>
-                    <img
-                        src={iconInfo.url}
-                        alt="App Icon"
-                        style={{
-                            width: '2.5em',
-                            height: '2.5em',
-                            margin: 0,
-                        }}
-                    />
-                </span>
-            );
+        if (this.state.iconInfo) {
+            if (this.state.iconInfo.isImage) {
+                return (
+                    <span>
+                        <img
+                            src={this.state.iconInfo.url}
+                            alt="App Icon"
+                            style={{
+                                width: '2.5rem',
+                                height: '2.5rem',
+                                margin: 0,
+                            }}
+                        />
+                    </span>
+                );
+            } else {
+                return (
+                    <span className="fa-stack fa-lg" style={{fontSize: this.props.size ? `${this.props.size}%` : '100%'}}>
+                        <span
+                            className="fa fa-circle fa-stack-2x"
+                            style={{ color: this.state.iconInfo.color }}
+                        />
+                        <span
+                            className={`fa fa-inverse fa-stack-1x ${this.state.iconInfo.icon}`}
+                        />
+                    </span>
+                );
+            }
         } else {
             return (
                 <span className="fa-stack fa-lg">
                     <span
-                        className="fa fa-square fa-stack-2x"
-                        style={{ color: iconInfo.color }}
+                        className="fa fa-circle fa-stack-2x"
+                        style={{ color: 'silver' }}
                     />
                     <span
-                        className={`fa fa-inverse fa-stack-1x ${iconInfo.icon}`}
+                        className={`fa fa-inverse fa-stack-1x fa fa-spinner`}
                     />
                 </span>
             );
@@ -147,7 +165,7 @@ export class AppCellIcon extends Component<AppIconProps, AppIconState> {
             nmsURL: this.props.config.services.NarrativeMethodStore.url,
             nmsImageURL:
                 this.props.config.services.NarrativeMethodStore.image_url,
-            token: this.props.authInfo.token,
+            // token: this.props.authInfo.token,
         });
         const iconInfo = await iconProvider.appIcon(
             this.props.appId,
@@ -165,9 +183,9 @@ export class AppCellIcon extends Component<AppIconProps, AppIconState> {
      * @return {JSX}
      */
     render() {
-        const iconInfo = this.state.iconInfo
+        const iconInfo: IconInfo = this.state.iconInfo
             ? this.state.iconInfo
-            : { isImage: false, icon: 'fa fa-spinner', color: 'silver' };
+            : { isImage: false, icon: ['fa', 'fa-spinner'], color: 'silver' };
 
         if (iconInfo.isImage) {
             return (
@@ -224,6 +242,9 @@ export function DefaultIcon(props: DefaultIconProps) {
             break;
         case 'error':
             icon = 'fa-exclamation-triangle';
+            break;
+        case 'serviceWidget': 
+            icon = CellIcons.serviceWidget;
             break;
         default:
             icon = CellIcons.widget;

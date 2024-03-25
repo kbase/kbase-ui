@@ -78,7 +78,6 @@ async function fetchPlugins(config: string, downloadDest: string, installDest: s
                 branch,
                 downloadDest
             );
-            console.log(`fetch result: ${result}`);
         } catch (ex) {
             console.error('error fetching repo', ex.message, ex);
             throw new Error(`Error fetching repo ${pluginConfig.name}: ${ex.message}`);
@@ -306,14 +305,6 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
     );
     log('done!', 'generatePluginsManifest');
 }
-
-// async function savePluginManifest(path) {
-//   const root = state.environment.path;
-//   const configDest = root.concat(['build', 'client', 'modules', 'config']);
-//   const manifestPath = configDest.concat(['plugins-manifest.json']);
-//   await mutant.saveJson(manifestPath, state.pluginsManifest);
-//   return state;
-// }
 
 async function main() {
     if (Deno.args.length < 3) {

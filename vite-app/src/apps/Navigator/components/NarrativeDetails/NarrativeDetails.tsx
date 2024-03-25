@@ -1,8 +1,9 @@
+import UILink from 'components/UILink2';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
 import DataView from './DataView';
 import './NarrativeDetails.css';
@@ -11,154 +12,140 @@ import Preview from './Preview';
 import ToolMenu from './ToolMenu/ToolMenuWrapper';
 
 interface Props {
-    authInfo: AuthInfo;
-    narrativeDoc: NarrativeSearchDoc;
-    updateSearch: () => void;
-    view: string;
-    config: Config;
+  authInfo: AuthInfo;
+  narrativeDoc: NarrativeSearchDoc;
+  updateSearch: () => void;
+  view: string;
+  config: Config;
 }
 
 interface State {
-    view: string | null;
+  view: string | null;
 }
 
 // Narrative details side panel in the narrative listing.
 export default class NarrativeDetails extends Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            view: this.props.view,
-        };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      view: this.props.view,
+    };
+  }
+
+  async componentDidMount() {
+    // const detailsHeaderComponent = await this.detailsHeader(
+    //   this.state.activeItem
+    // );
+    // this.setState({
+    //   detailsHeader: detailsHeaderComponent,
+    // });
+  }
+
+  async componentDidUpdate(prevProps: Props) {
+    if (prevProps.narrativeDoc === this.props.narrativeDoc) {
+      return;
+    }
+    // const detailsHeaderComponent = await this.detailsHeader(
+    //   this.props.activeItem
+    // );
+    // this.setState({
+    //   detailsHeader: detailsHeaderComponent,
+    // });
+    // this.setState({
+    //     narrativeDoc: this.props.narrativeDoc,
+    // });
+  }
+
+  handleTabSelected(eventKey: string | null) {
+    this.setState({
+      view: eventKey,
+    });
+    updateHistory('view', eventKey);
+  }
+
+  renderTitle(narrativeDoc: NarrativeSearchDoc) {
+    const title = (() => {
+      if (narrativeDoc.narrative_title.match(/^\s*$/)) {
+        return '** EMPTY TITLE **';
+      }
+      return narrativeDoc.narrative_title;
+    })();
+    return (
+      <UILink path={`narrative/${narrativeDoc.access_group}`} type="europaui" newWindow={true}>
+        <span className="-title">{title}</span>
+      </UILink>
+    );
+  }
+
+  render() {
+    const { narrativeDoc, updateSearch } = this.props;
+    if (!narrativeDoc) {
+      return null;
     }
 
-    async componentDidMount() {
-        // const detailsHeaderComponent = await this.detailsHeader(
-        //   this.state.activeItem
-        // );
-        // this.setState({
-        //   detailsHeader: detailsHeaderComponent,
-        // });
-    }
+    return (
+      <div className="container-fluid NarrativeDetails">
+        <div className="row -title-row align-items-center">
+          <div
+            className="col-10 -fullheight"
+            style={{
+              overflowX: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {this.renderTitle(narrativeDoc)}
+          </div>
+          <div className="col-2 -fullheight align-items-end">
+            <ToolMenu
+              authInfo={this.props.authInfo}
+              config={this.props.config}
+              narrative={narrativeDoc}
+              doneFn={() => {
+                updateSearch();
+              }}
+            />
+          </div>
+        </div>
+        <div className="row" style={{ marginBottom: '1em' }}>
+          <div className="col-12">
+            <NarrativeHeader
+              authInfo={this.props.authInfo}
+              config={this.props.config}
+              narrativeDoc={this.props.narrativeDoc}
+            />
+          </div>
+        </div>
 
-    async componentDidUpdate(prevProps: Props) {
-        if (prevProps.narrativeDoc === this.props.narrativeDoc) {
-            return;
-        }
-        // const detailsHeaderComponent = await this.detailsHeader(
-        //   this.props.activeItem
-        // );
-        // this.setState({
-        //   detailsHeader: detailsHeaderComponent,
-        // });
-        // this.setState({
-        //     narrativeDoc: this.props.narrativeDoc,
-        // });
-    }
-
-    handleTabSelected(eventKey: string | null) {
-        this.setState({
-            view: eventKey,
-        });
-        updateHistory('view', eventKey);
-    }
-
-    renderTitle(narrativeDoc: NarrativeSearchDoc) {
-        const narrativeHref = `/narrative/${narrativeDoc.access_group}`;
-        const title = (() => {
-            if (narrativeDoc.narrative_title.match(/^\s*$/)) {
-                return '** EMPTY TITLE **';
-            }
-            return narrativeDoc.narrative_title;
-        })();
-        return (
-            <a
-                className=""
-                href={narrativeHref}
-                rel="noopener noreferrer"
-                target="_blank"
+        <div className="row h-100">
+          <div className="col-12 -fullheight">
+            <Tabs
+              variant="tabs"
+              onSelect={this.handleTabSelected.bind(this)}
+              defaultActiveKey="preview"
+              activeKey={(() => {
+                return this.state.view || undefined;
+              })()}
             >
-                <span className="-title">{title}</span>
-            </a>
-        );
-    }
-
-    render() {
-        const { narrativeDoc, updateSearch } = this.props;
-        if (!narrativeDoc) {
-            return null;
-        }
-
-        return (
-            <div className="container-fluid NarrativeDetails">
-                <div className="row -title-row align-items-center">
-                    <div
-                        className="col-10 -fullheight"
-                        style={{
-                            overflowX: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                        }}
-                    >
-                        {this.renderTitle(narrativeDoc)}
-                    </div>
-                    <div className="col-2 -fullheight align-items-end">
-                        <ToolMenu
-                            authInfo={this.props.authInfo}
-                            config={this.props.config}
-                            narrative={narrativeDoc}
-                            doneFn={() => {
-                                updateSearch();
-                            }}
-                        />
-                    </div>
+              <Tab eventKey="preview" title="Cells">
+                <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
+                  <Preview authInfo={this.props.authInfo} narrative={narrativeDoc} config={this.props.config} />
                 </div>
-                <div className="row" style={{ marginBottom: '1em' }}>
-                    <div className="col-12">
-                        <NarrativeHeader
-                            authInfo={this.props.authInfo}
-                            config={this.props.config}
-                            narrativeDoc={this.props.narrativeDoc}
-                        />
-                    </div>
+              </Tab>
+              <Tab eventKey="data" title="Data">
+                <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
+                  <DataView
+                    accessGroup={narrativeDoc.access_group}
+                    dataObjects={narrativeDoc.data_objects}
+                    authInfo={this.props.authInfo}
+                    config={this.props.config}
+                  />
                 </div>
-
-                <div className="row h-100">
-                    <div className="col-12 -fullheight">
-                        <Tabs
-                            variant="tabs"
-                            onSelect={this.handleTabSelected.bind(this)}
-                            defaultActiveKey="preview"
-                            activeKey={(() => {
-                                return this.state.view || undefined;
-                            })()}
-                        >
-                            <Tab eventKey="preview" title="Cells">
-                                <div
-                                    style={{ flex: '1 1 0', overflowY: 'auto' }}
-                                >
-                                    <Preview
-                                        authInfo={this.props.authInfo}
-                                        narrative={narrativeDoc}
-                                        config={this.props.config}
-                                    />
-                                </div>
-                            </Tab>
-                            <Tab eventKey="data" title="Data">
-                                <div
-                                    style={{ flex: '1 1 0', overflowY: 'auto' }}
-                                >
-                                    <DataView
-                                        accessGroup={narrativeDoc.access_group}
-                                        dataObjects={narrativeDoc.data_objects}
-                                        authInfo={this.props.authInfo}
-                                        config={this.props.config}
-                                    />
-                                </div>
-                            </Tab>
-                        </Tabs>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+              </Tab>
+            </Tabs>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }

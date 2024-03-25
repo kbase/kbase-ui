@@ -1,7 +1,7 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { Component } from 'react';
-import { AppCellIcon, DefaultIcon, TypeIcon } from '../Icon';
-import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
+import { AppCellIcon, DefaultIcon, TypeIcon } from '../Icon';
 import styles from './PreviewCell.module.css';
 
 interface PreviewCellProps {
@@ -33,7 +33,7 @@ export class PreviewCell extends Component<PreviewCellProps> {
                 icon = (
                     <TypeIcon
                         objectType={this.props.metaName}
-                        authInfo={this.props.authInfo}
+                        // authInfo={this.props.authInfo}
                         config={this.props.config}
                     />
                 );

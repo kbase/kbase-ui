@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+
+# Proxy Container
+#
+# See tools/proxy/contents/conf/nginx.conf.tmpl for usage
+#
+# Input environment variables:
+#
+# required:
+# 
+# DEPLOY_ENV
+# BASE_PATH
+# KBASE_UI_HOSTNAME
+#
+# (either BASE_PATH, KBASE_UI_HOSTNAME or both must be provided)
+#
+# optional:
+#
+# KBASE_UI_HOST
+# KBASE_UI_PORT
+# EUROPA_UI_HOST
+# EUROPA_UI_PORT
+# NARRATIVE_HOST
+# NARRATIVE_PORT
+# SERVICE_PROXIES
+# DYNAMIC_SERVICE_PROXIES
+#
+# Created environment variables:
+#
+# BASE_PATH
+# UI_DOMAIN
+# KBASE_UI_DOMAIN
+# SERVICES_DOMAIN
+# KBASE_ENDPOINT
+# KBASE_UI_HOST
+# KBASE_UI_PORT
+# EUROPA_UI_HOST
+# EUROPA_UI_PORT
+# NARRATIVE_HOST
+# NARRATIVE_PORT
+# SERVICE_PROXIES
+# DYNAMIC_SERVICE_PROXIES
+
+
+echo
+echo 'Creating proxy env vars...'
+
+if [ -z "${DEPLOY_ENV}" ]
+then
+    echo 'The "DEPLOY_ENV" environment variable is required to generate config env'
+    exit 1
+fi
+
+echo
+echo "DEPLOY_ENV is '${DEPLOY_ENV}'"
+
+if [ -z "${KBASE_UI_BASE_PATH}" ] && [ -z "${KBASE_UI_HOSTNAME}" ]  
+then
+    echo 'Either the "KBASE_UI_BASE_PATH" or "KBASE_UI_HOSTNAME" environment variable is required to generate config env'
+    exit 1
+fi
+
+echo "KBASE_UI_BASE_PATH is '${KBASE_UI_BASE_PATH}'"
+echo "KBASE_UI_HOSTNAME is '${KBASE_UI_HOSTNAME}'"
+echo "LOCAL_KBASE_UI is '${LOCAL_KBASE_UI}'"
+echo
+
+# 
+# These rarely, if ever, change
+#
+
+# The proxy target for kbase-ui; the ip or host of the kbase-ui container. 
+KBASE_UI_HOST="${KBASE_UI_HOST}" # kbase-ui
+EUROPA_UI_HOST="${EUROPA_UI_HOST}" # europa-ui
+NARRATIVE_HOST="${NARRATIVE_HOST}" # narrative
+
+# For all other user intefaces
+UI_DOMAIN="${DEPLOY_ENV}.kbase.us"
+
+# For the time being, the proxy needs to forwared narrative.kbase.us to kbase.us.
+# TODO: still necessary?
+if [ "${DEPLOY_ENV}" = "narrative" ]
+then
+    SERVICES_DOMAIN="kbase.us"
+elif [ "${DEPLOY_ENV}" = "narrative2" ]
+then
+    SERVICES_DOMAIN="kbase.us"
+else
+    SERVICES_DOMAIN="${UI_DOMAIN}"
+fi
+
+# SERVICES_DOMAIN="${UI_DOMAIN}"
+
+# For running under Europa, this is the server hostname used by kbase-ui.
+if [ -z "${KBASE_UI_HOSTNAME}" ]
+then
+    KBASE_UI_DOMAIN="${DEPLOY_ENV}.kbase.us"
+else
+    KBASE_UI_DOMAIN="${KBASE_UI_HOSTNAME}.${DEPLOY_ENV}.kbase.us"
+fi
+
+
+BASE_PATH="${KBASE_UI_BASE_PATH}"
+
+#
+# These are controlled directly by the developer
+#
+SERVICE_PROXIES="${SERVICE_PROXIES}"
+DYNAMIC_SERVICE_PROXIES="${DYNAMIC_SERVICE_PROXIES}"
+KBASE_UI_HOST="${KBASE_UI_HOST}"
+KBASE_UI_PORT="${KBASE_UI_PORT}"
+NARRATIVE_HOST="${NARRATIVE_HOST}"
+NARRATIVE_PORT="${NARRATIVE_PORT}"
+EUROPA_UI_HOST="${EUROPA_UI_HOST}"
+EUROPA_UI_PORT="${EUROPA_UI_PORT}"
+
+# Generates an env file for usage by the proxy service in the devcontainer.
+
+cat << EOF > ./.devcontainer/proxy.env
+# An env file for usage by the proxy service in the devcontainer.
+BASE_PATH="${BASE_PATH}"
+UI_DOMAIN="${UI_DOMAIN}"
+KBASE_UI_DOMAIN="${KBASE_UI_DOMAIN}"
+SERVICES_DOMAIN="${SERVICES_DOMAIN}"
+SERVICE_PROXIES="${SERVICE_PROXIES}"
+DYNAMIC_SERVICE_PROXIES="${DYNAMIC_SERVICE_PROXIES}"
+KBASE_UI_HOST="${KBASE_UI_HOST}"
+KBASE_UI_PORT="${KBASE_UI_PORT}"
+NARRATIVE_HOST="${NARRATIVE_HOST}"
+NARRATIVE_PORT="${NARRATIVE_PORT}"
+EUROPA_UI_HOST="${EUROPA_UI_HOST}"
+EUROPA_UI_PORT="${EUROPA_UI_PORT}"
+EOF

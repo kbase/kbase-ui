@@ -30,7 +30,9 @@ test('renders ErrorAlert in all sizes', () => {
                 message={message}
                 title={title}
             />);
-            expect(screen.getByText(message)).toBeInTheDocument();
+            if (message) {
+              expect(screen.getByText(message)).toBeInTheDocument();
+            }
             expect(screen.getByText(title)).toBeInTheDocument();
         }
     }

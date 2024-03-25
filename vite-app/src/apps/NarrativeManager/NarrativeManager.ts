@@ -1,6 +1,6 @@
-import { AuthInfo } from "../../contexts/Auth";
+import { AuthInfo } from "contexts/EuropaContext";
 import { CreateNewNarrativeParams, NarrativeService } from "../../lib/clients/NarrativeService";
-import Workspace from "../../lib/kb_lib/comm/coreServices/Workspace";
+import Workspace, { objectInfoToObject, workspaceInfoToObject } from "../../lib/kb_lib/comm/coreServices/Workspace";
 import { Config } from "../../types/config";
 
 export default interface NarrativeManagerParams {
@@ -19,7 +19,7 @@ export class NarrativeManager {
         async getMostRecentNarrative() {
             const workspaceClient = new Workspace({
                 url: this.config.services.Workspace.url,
-                timeout: 1000,
+                timeout: this.config.ui.constants.clientTimeout,
                 token: this.auth.token
             });
             // get the full list of workspaces
@@ -28,8 +28,10 @@ export class NarrativeManager {
             });
 
             const workspaces = workspaceInfos
+                .map((workspaceInfo) => {
+                    return workspaceInfoToObject(workspaceInfo);
+                })
                 .filter((workspaceInfo) => {
-                    // TODO: should be function in json.ts for this...
                     return !!(
                         'metadata' in workspaceInfo && 
                         typeof workspaceInfo.metadata === 'object' && 
@@ -59,9 +61,10 @@ export class NarrativeManager {
                 includeMetadata: 1,
                 ignoreErrors: 1,
             });
+
             return ({
                 workspaceInfo: workspaceInfo,
-                narrativeInfo: infos[0]
+                narrativeInfo: objectInfoToObject(infos[0])
             });
         }
 
@@ -69,12 +72,9 @@ export class NarrativeManager {
             const narrativeService = new NarrativeService({
                 url: this.config.services.ServiceWizard.url,
                 token: this.auth.token,
-                timeout: 1000
+                timeout: this.config.ui.constants.clientTimeout
             });
             params.includeIntroCell = 1;
-            // return new Promise((resolve, reject) => {
-            //     reject(new Error('Yikes!'));
-            // });
             return narrativeService.create_new_narrative(params);
         }
     }

@@ -1,0 +1,10 @@
+[
+    {
+        "value": "gravatar",
+        "label": "Gravatar - Use your Gravatar image otherwise random generator selected below"
+    },
+    {
+        "value": "silhouette",
+        "label": "silhouette - simple, anonymous, featureless, silhouette"
+    }
+]

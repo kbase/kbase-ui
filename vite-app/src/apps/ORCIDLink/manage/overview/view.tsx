@@ -92,7 +92,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
         return <Container fluid style={{ marginTop: '1rem' }}>
             <Row>
                 <Col md={3}>
-                    <Well variant="primary">
+                    <Well variant="secondary">
                         <Well.Header>
                             Links
                         </Well.Header>
@@ -102,7 +102,7 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
                     </Well>
                 </Col>
                 <Col md={9}>
-                    <Well variant="primary">
+                    <Well variant="secondary">
                         <Well.Header>
                             Linking Sessions
                         </Well.Header>

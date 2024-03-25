@@ -16,7 +16,6 @@ var moduleCache = new Cache<ServiceStatus>({
     waiterFrequency: WAITER_FREQUENCY,
 });
 
-
 export interface SearchParams {
     [key: string]: string
 }
@@ -33,7 +32,6 @@ export type SearchParams2 = Array<[string, string]>
  *   username - username
  * rpcContext
  */
-
 
 export interface DynamicServiceClientParams extends ServiceClientParams {
     version?: string;

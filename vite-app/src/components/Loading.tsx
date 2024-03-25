@@ -1,7 +1,7 @@
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { CSSProperties, Component, PropsWithChildren } from 'react';
 import { Spinner } from 'react-bootstrap';
-import styles from './Loading.styles';
+import styles from './Loading.module.css';
 
 export type Size = 'small' | 'normal' | 'large';
 export type Type = 'inline' | 'block';
@@ -20,6 +20,7 @@ type LoadingState = AsyncProcess<null, null>;
 
 export default class Loading extends Component<LoadingProps, LoadingState> {
     timer: number | null = null;
+    
     constructor(props: LoadingProps) {
         super(props);
         this.state = {
@@ -44,7 +45,7 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         if (this.props.message) {
             return <>
                 {' '}
-                <span style={styles.LoadingMessage}>
+                <span className={styles.message}>
                     {this.props.message}
                 </span>
             </>;
@@ -52,6 +53,7 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         return this.props.children;
 
     }
+
     renderLoading() {
         const spinner = (() => {
             switch (this.props.size || 'normal') {
@@ -70,14 +72,14 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         })();
         if (this.props.type === 'inline') {
             return (
-                <div style={{ ...styles.LoadingInline, ...(this.props.style || {}) }}>
+                <div className={styles.inline} style={{...(this.props.style || {}) }}>
                     {spinner}{this.renderMessage()}
                 </div>
             );
         } else {
             return (
-                <div style={{ ...styles.LoadingContainer, ...(this.props.style || {}) }}>
-                    <div style={styles.Loading}>
+                <div className={styles.container} style={{...(this.props.style || {}) }}>
+                    <div className={styles.loading}>
                         {spinner}{this.renderMessage()}
                     </div>
                 </div>

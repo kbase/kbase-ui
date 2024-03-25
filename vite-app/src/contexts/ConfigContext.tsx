@@ -1,10 +1,19 @@
+import { resourceURL } from 'lib/navigation';
 import React, { PropsWithChildren } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
-
 import { Config, PluginInfo as ConfigPluginInfo, DeployConfig } from '../types/config';
 import { BuildInfo, GitInfo, PluginsInfo } from '../types/info';
 
+function buildUIURL(config: Config, path: string, params?: Record<string, string>): URL {
+    if (params) {
+        const search = new URLSearchParams(params).toString();
+        return new URL(`${config.deploy.ui.origin}#${path}&${search}`);
+    }
+    return new URL(`${config.deploy.ui.origin}#${path}`);
+}
+
+// export type NavigationPathToURL = ({path, params, type}: NavigationPath, 
+//                                     newWindow: boolean) => URL;
 
 /**
  * Holds the current config information
@@ -14,6 +23,10 @@ export interface ConfigInfo {
     pluginsInfo: PluginsInfo,
     gitInfo: GitInfo,
     buildInfo: BuildInfo
+    // Some handy config utilities.
+    uiURL: (path: string, params?: Record<string, string>) => URL
+    // navigationPathToURL: NavigationPathToURL
+
 }
 
 export type ConfigState = AsyncProcess<ConfigInfo, string>;
@@ -37,24 +50,6 @@ export type ConfigWrapperProps = PropsWithChildren<{
 
 interface ConfigWrapperState {
     configState: ConfigState;
-}
-
-
-
-function hostURL(path: string) {
-    const baseURL = new URL(window.location.href);
-    const newPath = `${import.meta.env.BASE_URL}/${path}`
-        .split('/')
-        .filter((pathElement) => { return pathElement.trim() !== '' }).join('/');
-    baseURL.pathname = newPath;
-    // We have a dilemma here -- we can't use the version as the cache buster as 
-    // it we don't know it yet (it is in the config files!) -- so we use a uuid
-    // but this means that the config is loaded fresh each time. They are small, so 
-    // that is okay for now.
-    // TODO: configs can be installed into the source tree so that we can simply
-    // import them. This will require changes to the dev proxies.
-    baseURL.searchParams.set('cb', uuidv4());
-    return baseURL;
 }
 
 /**
@@ -95,20 +90,24 @@ export default class ConfigWrapper extends React.Component<
         });
         try {
             const rawConfig = await (
-                await fetch(hostURL('deploy/config.json'))
+                await fetch(resourceURL('deploy/config.json'))
             ).json() as DeployConfig;
 
             const gitInfo = await (
-                await fetch(hostURL('build/git-info.json'))
+                await fetch(resourceURL('build/git-info.json'))
             ).json() as GitInfo
 
             const buildInfo = await (
-                await fetch(hostURL('build/build-info.json'))
+                await fetch(resourceURL('build/build-info.json'))
             ).json() as BuildInfo;
 
             const pluginsInfo = await (
-                await fetch(hostURL('plugins/plugin-manifest.json'))
+                await fetch(resourceURL('plugins/plugin-manifest.json'))
             ).json() as PluginsInfo;
+
+            const uiURL = (path: string, params?: Record<string, string>) => {
+                return buildUIURL(config, path, params);
+            }
 
             // Note that this build info is used by plugins, so we have to maintain it.
 
@@ -133,11 +132,17 @@ export default class ConfigWrapper extends React.Component<
                         config,
                         pluginsInfo,
                         gitInfo,
-                        buildInfo
+                        buildInfo,
+                        uiURL,
+                        // navigationPathToURL: createNavigationPathToURL(config)
                     },
                 },
             });
         } catch (ex) {
+            // TODO: need to communicate done with error to Europa; but this occurs
+            // before Europa integration begins, so some refactoring required.
+            console.error('ERROR', ex);
+
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.ERROR,

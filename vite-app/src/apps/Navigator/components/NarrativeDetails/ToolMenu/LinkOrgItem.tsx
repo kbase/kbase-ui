@@ -1,3 +1,4 @@
+import Well from 'components/Well';
 import NarrativeModel from 'lib/clients/NarrativeModel';
 import React, { Component } from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
@@ -63,6 +64,7 @@ export default class LinkOrgItem extends Component<
             const narrativeModel = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
                 token: this.props.authInfo.token,
+                timeout: this.props.config.ui.constants.clientTimeout
             });
             const perm = await narrativeModel.getUserPermission(
                 this.props.narrative.access_group,
@@ -171,12 +173,14 @@ export default class LinkOrgItem extends Component<
         };
 
         return (
-            <div className="well mt-3">
-                <div className="well-header">
+            <Well variant="info" className="mt-3">
+                <Well.Header>
                     Organizations this Narrative is Linked to
-                </div>
-                <div className="well-body">{renderLinkedOrgs()}</div>
-            </div>
+                </Well.Header>
+                <Well.Body>
+                    {renderLinkedOrgs()}
+                </Well.Body>
+            </Well>
         );
     }
 
@@ -326,7 +330,7 @@ const LinkedOrg = (props: LinkedOrgProps) => {
         <div className="">
             <a
                 className=""
-                href={`/#orgs/${props.id}`}
+                href={`#orgs/${props.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
             >

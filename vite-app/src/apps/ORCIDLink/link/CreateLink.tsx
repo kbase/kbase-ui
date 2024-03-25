@@ -1,11 +1,13 @@
 import AlertMessage from 'components/AlertMessage';
 import Well from 'components/Well';
 import { Component } from 'react';
-import { Accordion, Alert, Button, Col, Row, Spinner, Stack } from 'react-bootstrap';
+import { Accordion, Alert, Button, Col, Container, Row, Spinner, Stack } from 'react-bootstrap';
 import { renderORCIDLabel, renderORCIDLinkLabel } from '../common';
 import orcidSignIn from '../images/ORCID-sign-in.png';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 
+import { faMailReply } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ErrorAlert from 'components/ErrorAlert';
 import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { ArrowRight } from 'react-bootstrap-icons';
@@ -23,23 +25,23 @@ export interface CreateLinkProps {
 export default class CreateLink extends Component<CreateLinkProps> {
     renderReturnURL() {
         const returnInstruction = this.props.returnInstruction;
-        if (typeof returnInstruction === 'undefined' || returnInstruction.type !== 'link') {
+        if (typeof returnInstruction === 'undefined') {
             return;
         }
-        return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
+        return <AlertMessage variant="info" style={{ marginTop: '1em' }} >
             After creating the link, your browser will be returned to <b>{returnInstruction.label}</b>.
         </AlertMessage>;
     }
 
-    renderReturnFromWindow() {
-        const returnInstruction = this.props.returnInstruction;
-        if (typeof returnInstruction === 'undefined' || returnInstruction.type !== 'window') {
-            return;
-        }
-        return <AlertMessage variant="info" style={{ marginTop: '1em' }} title="After Linking...">
-            After creating the link, this window will be closed, and you should be returned to <b>{returnInstruction.label}</b>.
-        </AlertMessage>;
-    }
+    // renderReturnFromWindow() {
+    //     const returnInstruction = this.props.returnInstruction;
+    //     if (typeof returnInstruction === 'undefined' || returnInstruction.type !== 'window') {
+    //         return;
+    //     }
+    //     return <AlertMessage variant="info" style={{ marginTop: '1em' }} >
+    //         After creating the link, this window will be closed, and you should be returned to <b>{returnInstruction.label}</b>.
+    //     </AlertMessage>;
+    // }
 
     renderPendingProgress() {
         const linkingState = this.props.startLinkState;
@@ -95,21 +97,25 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         </p>
 
                         {this.renderReturnURL()}
-                        {this.renderReturnFromWindow()}
+                        {/* {this.renderReturnFromWindow()} */}
                     </Well.Body>
                     <Well.Footer>
-
                         <Stack direction="horizontal" gap={3} className="justify-content-center" style={{ flex: '1 1 0' }}>
                             {/* <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
                                 <span className="fa fa-lg fa-plus" /> Start {renderORCIDLabel()} Link process...
                             </Button> */}
-                            <Button variant="primary" onClick={this.props.start} disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
-                                Continue to {renderORCIDLabel()} <ArrowRight fontSize="1.5rem" fontWeight="bold" />
+                            <Button 
+                                variant="primary" 
+                                className="d-flex flex-row align-items-center"
+                                onClick={this.props.start} 
+                                disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
+                                Continue to {renderORCIDLabel()} <ArrowRight className="fs-4 ms-1 fw-bold "/>
                             </Button>
                             <Button variant="danger"
+                                className="d-flex flex-row align-items-center"
                                 onClick={(e) => { e.preventDefault(); this.props.goBack(); }}
                                 disabled={this.props.startLinkState.status !== AsyncProcessStatus.NONE}>
-                                <span className="fa fa-lg fa-mail-reply" /> Cancel
+                                <FontAwesomeIcon icon={faMailReply} size="lg" className="me-1" /> Cancel
                             </Button>
                         </Stack>
                     </Well.Footer>
@@ -142,7 +148,6 @@ export default class CreateLink extends Component<CreateLinkProps> {
                         After registering, the linking process will be resumed, just as if you had simply signed in with an existing {renderORCIDLabel()} account.
                     </p>
                 </Accordion.Body>
-
             </Accordion.Item>
             <Accordion.Item eventKey='1'>
                 <Accordion.Header>
@@ -168,7 +173,7 @@ export default class CreateLink extends Component<CreateLinkProps> {
     }
 
     render() {
-        return <Stack>
+        return <Container fluid className="p-0 overflow-x-hidden">
             <Row>
                 <Col>
                     {this.renderLinkStart()}
@@ -186,6 +191,6 @@ export default class CreateLink extends Component<CreateLinkProps> {
                     </Well>
                 </Col>
             </Row>
-        </Stack>
+        </Container>
     }
 }

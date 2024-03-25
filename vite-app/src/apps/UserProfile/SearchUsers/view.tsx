@@ -1,5 +1,6 @@
 import { Alert, Empty, Select } from 'antd';
 
+import { navigationPathToURL } from 'contexts/RouterContext';
 import { AsyncSearchProcessStatus } from 'lib/AsyncSearchProcess';
 import { Component } from 'react';
 import { MINIMUM_SEARCH_CHARS } from '../constants';
@@ -48,7 +49,7 @@ export default class SearchUsersView extends Component<SearchUsersViewProps, Sea
         if (value.length === 0) {
             return;
         }
-        const url = `/#user/${value}`;
+        const url = navigationPathToURL({path: `user/${value}`, type: 'kbaseui'}, true);
         window.open(url, '_blank');
     }
 

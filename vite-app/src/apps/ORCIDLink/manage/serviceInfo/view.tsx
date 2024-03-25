@@ -1,4 +1,5 @@
 import PropTable, { PropTableRow } from "components/PropTable";
+import Well from "components/Well";
 import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { Component } from "react";
 
@@ -16,7 +17,13 @@ export default class ServiceInfoView extends Component<ServiceInfoViewProps> {
                 'Repo', <a href={this.props.serviceInfo['service-description'].repoURL} target="_blank">{this.props.serviceInfo["service-description"].repoURL}</a>
             ],
         ];
-        return <PropTable rows={rows} styles={{ body: { flex: '0 0 auto' }, col1: { flex: '0 0 20rem' }, col2: { flex: '1 0 0', justifyContent: 'flex-start' } }} />
+        return <PropTable 
+            rows={rows} 
+            styles={{ 
+                body: { flex: '0 0 auto' }, 
+                col1: { flex: '0 0 10rem' }, 
+                col2: { flex: '1 0 0', justifyContent: 'flex-start' } }} 
+        />
     }
 
     renderGitInfoTable() {
@@ -56,12 +63,35 @@ export default class ServiceInfoView extends Component<ServiceInfoViewProps> {
 
     render() {
         return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', marginTop: '1rem' }}>
-            <h4>Service</h4>
-            {this.renderServiceTable()}
-            <h4 style={{ marginTop: '1rem' }}>Git</h4>
-            {this.renderGitInfoTable()}
-            <h4 style={{ marginTop: '1rem' }}>ORCID</h4>
-            {this.renderORCIDTable()}
+            <h4></h4>
+            <Well variant="secondary" style={{maxWidth: '50rem'}}>
+                <Well.Header>
+                    Service
+                </Well.Header>
+                <Well.Body>
+                    {this.renderServiceTable()}
+                </Well.Body>
+            </Well>
+            
+            <Well variant="secondary"  className="mt-2" style={{maxWidth: '50rem'}}>
+                <Well.Header>
+                    Git
+                </Well.Header>
+                <Well.Body>
+                    {this.renderGitInfoTable()}
+                </Well.Body>
+            </Well>
+
+
+            <Well variant="secondary" className="mt-2" style={{maxWidth: '50rem'}}>
+                <Well.Header>
+                    ORCID
+                </Well.Header>
+                <Well.Body>
+                    {this.renderORCIDTable()}
+                </Well.Body>
+            </Well>
+
         </div>
     }
 }

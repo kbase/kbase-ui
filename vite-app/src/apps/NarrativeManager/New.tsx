@@ -1,7 +1,7 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { Component } from 'react';
 import ErrorView from '../../components/ErrorView';
 import { RouteProps } from '../../components/Router2';
-import { AuthInfo } from '../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { CreateNewNarrativeParams, NarrativeService } from '../../lib/clients/NarrativeService';
 import { Config } from '../../types/config';
@@ -57,20 +57,20 @@ export default class NarrativeManagerNew extends Component<
 
 
     async createNewNarrative(): Promise<number> {
-        if (this.props.params.has('app') && this.props.params.has('method')) {
+        if (this.props.match.params.has('app') && this.props.match.params.has('method')) {
             throw new Error('Must provide no more than one of the "app" or "method" params');
         }
         // let i;
         const newNarrativeParams: CreateNewNarrativeParams = {};
-        if (this.props.params.has('copydata')) {
-            newNarrativeParams.importData = this.props.params.get('copydata')!.split(';');
+        if (this.props.match.params.has('copydata')) {
+            newNarrativeParams.importData = this.props.match.params.get('copydata')!.split(';');
         }
 
         // Note that these are exclusive cell creation options.
-        if (this.props.params.has('app') || this.props.params.has('method')) {
-            newNarrativeParams.method = this.props.params.get('app') || this.props.params.get('method');
-            if (this.props.params.has('appparam')) {
-                const appParams = this.props.params.get('appparam')!.split(';');
+        if (this.props.match.params.has('app') || this.props.match.params.has('method')) {
+            newNarrativeParams.method = this.props.match.params.get('app') || this.props.match.params.get('method');
+            if (this.props.match.params.has('appparam')) {
+                const appParams = this.props.match.params.get('appparam')!.split(';');
                 const appData: AppData = [];
                 for (let i = 0; i < appParams.length; i += 1) {
                     const appParamRaw = appParams[i].split(',');
@@ -91,8 +91,8 @@ export default class NarrativeManagerNew extends Component<
                 }
                 newNarrativeParams.appData = appData;
             }
-        } else if (this.props.params.has('markdown')) {
-            newNarrativeParams.markdown = this.props.params.get('markdown')!;
+        } else if (this.props.match.params.has('markdown')) {
+            newNarrativeParams.markdown = this.props.match.params.get('markdown')!;
         }
 
         const token = this.props.authInfo.token;
@@ -100,7 +100,7 @@ export default class NarrativeManagerNew extends Component<
 
         const narrativeServiceClient = new NarrativeService({
             token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
             url: this.props.config.services.ServiceWizard.url
         });
 

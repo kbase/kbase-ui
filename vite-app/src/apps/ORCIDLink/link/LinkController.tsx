@@ -1,12 +1,13 @@
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AuthenticationStateAuthenticated } from 'contexts/Auth';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
 import { Config } from 'types/config';
 
-import { SimpleError } from 'components/MainWindow';
+import { SimpleError } from 'lib/SimpleError';
 import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
+import { navigate2 } from 'lib/navigation';
 import { LinkInfo, Model } from '../lib/Model';
 import { ReturnInstruction } from '../lib/ORCIDLinkClient';
 import AlreadyLinked from './AlreadyLinked';
@@ -199,16 +200,11 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     returnFromWhence() {
         const returnInstruction = this.props.returnInstruction;
         if (typeof returnInstruction !== 'undefined') {
-            switch (returnInstruction.type) {
-                case 'link':
-                    window.open(returnInstruction.url, '_parent');
-                    return;
-                case 'window':
-                    window.opener.postMessage({ id: returnInstruction.id }, window.location.origin);
-            }
-
+            window.open(returnInstruction.url, '_parent');
         } else {
-            window.open('https://ci.kbase.us/#orcidlink', '_parent');
+            // TODO: FIX ME
+            // TODO: confirm this works:
+            navigate2({type: 'kbaseui', path: 'orcidlink'})
         }
     }
 

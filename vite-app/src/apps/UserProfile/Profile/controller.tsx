@@ -1,8 +1,9 @@
 import { ErrorCode } from "apps/ORCIDLink/lib/ORCIDLinkClient";
 import ErrorMessage from "components/ErrorMessage";
 import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
+import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
 import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+// import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
 import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
 import ORCIDLinkAPI, { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
 import { Component } from "react";
@@ -33,7 +34,7 @@ export type ORCIDState = AsyncProcess<ORCIDView, SimpleError>;
 
 export interface Org {
     name: string;
-    url: string;
+    id: string;
     logoURL?: string;
 }
 
@@ -84,6 +85,8 @@ export default class ProfileController extends Component<ProfileControllerProps,
     }
 
     componentDidMount() {
+        // These will all run on their own, updating state as they see fit. We don't
+        // need to parallelize them with Promise.any or such business.
         this.loadOrgs();
         this.fetchProfile(this.props.username);
         this.checkORCID(this.props.username);
@@ -148,7 +151,7 @@ export default class ProfileController extends Component<ProfileControllerProps,
             .map(({ name, id, custom }) => {
                 return {
                     name,
-                    url: "/#orgs/" + id,
+                    id,
                     logoURL: custom.logourl,
                 };
             });
@@ -439,7 +442,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
                         orgsState={this.state.orgsState}
                         profileView={this.state.profileState.value.profileView}
                         orcidState={this.state.orcidState}
-                        uiOrigin={this.props.config.deploy.ui.origin}
                         updateProfile={this.updateProfile.bind(this)}
                         checkORCID={this.checkORCID.bind(this)}
                         fetchProfile={this.fetchProfile.bind(this)}
@@ -450,7 +452,6 @@ export default class ProfileController extends Component<ProfileControllerProps,
                         orgsState={this.state.orgsState}
                         profileView={this.state.profileState.value.profileView}
                         orcidState={this.state.orcidState}
-                        uiOrigin={this.props.config.deploy.ui.origin}
                         checkORCID={this.checkORCID.bind(this)}
                         fetchProfile={this.fetchProfile.bind(this)}
                         toggleEditing={this.toggleEditing.bind(this)}
