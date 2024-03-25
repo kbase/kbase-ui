@@ -135,6 +135,8 @@ NGINX_SERVER_NAME=localhost
 # config.json and nginx.conf
 
 cat << EOF > ./.devcontainer/runtime.env
+# An env file to be used by to generate the deploy config for development, 
+# and to serve as an env file when running a local image.
 BASE_PATH="${BASE_PATH}"
 DEFAULT_PATH="${DEFAULT_PATH}"
 DEFAULT_PATH_TYPE="${DEFAULT_PATH_TYPE}"
