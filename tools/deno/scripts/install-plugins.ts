@@ -78,7 +78,6 @@ async function fetchPlugins(config: string, downloadDest: string, installDest: s
                 branch,
                 downloadDest
             );
-            console.log(`fetch result: ${result}`);
         } catch (ex) {
             console.error('error fetching repo', ex.message, ex);
             throw new Error(`Error fetching repo ${pluginConfig.name}: ${ex.message}`);
