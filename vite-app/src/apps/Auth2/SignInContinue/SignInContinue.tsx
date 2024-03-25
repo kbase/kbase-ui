@@ -259,7 +259,7 @@ export default class LoginContinue extends Component<LoginContinueProps, LoginCo
         nextRequest,
       });
     } catch (ex) {
-      console.log('ERROR', ex);
+      console.error('ERROR', ex);
     }
   }
 
@@ -298,7 +298,7 @@ export default class LoginContinue extends Component<LoginContinueProps, LoginCo
         nextRequest,
       });
     } catch (ex) {
-      console.log('ERROR', ex);
+      console.error('ERROR', ex);
     }
   }
   gravatarHash(emailAddress: string) {
