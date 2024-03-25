@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.8'
 name: kbase-dev
 networks:
   kbase-dev:
@@ -8,17 +8,40 @@ services:
     build:
       context: .
     # there is only one proxy image, for local development, so just call it :dev
-    image: kbase/kbase-ui-proxy:dev
+    image: local/kbase-ui-proxy:dev
     networks:
       - kbase-dev
-    # volumes:
-
     container_name: kbase-ui-proxy
     ports:
       - '80:80'
       - '443:443'
     dns: 8.8.8.8
-    environment:
-      - BASE_PATH=${BASE_PATH}
     # note that this is really a docker env file and is relative to the docker-compose file
-    env_file: ./conf/${DEPLOY_ENV}.env
+    # env_file: ./conf/${DEPLOY_ENV}.env
+    env_file: 
+      - ../../.devcontainer/proxy.env
+
+
+
+  # kbase-ui-proxy:
+  #   build:
+  #     context: ../tools/proxy
+  #   # there is only one proxy image, for local development, so just call it :dev
+  #   image: kbase/kbase-ui-proxy:dev
+  #   depends_on:
+  #     - kbase-ui
+  #     - kbase-ui-deploy
+  #   networks:
+  #     - kbase-dev
+  #   container_name: kbase-ui-proxy
+  #   ports:
+  #     - '80:80'
+  #     - '443:443'
+  #   dns: 
+  #     # TODO: sort this out!
+  #     - 8.8.8.8
+  #     - 9.9.9.9
+  #     - 1.1.1.1
+  #     - 208.67.222.222
+  #   env_file: 
+  #     - ../../.devcontainer/proxy.env
