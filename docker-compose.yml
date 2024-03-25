@@ -21,17 +21,17 @@ services:
           - "bash"
           - "/kb/deployment/scripts/start-server.bash"
         env_file: .devcontainer/runtime.env
-    kbase-ui-proxy:
-        build:
-            context: ./tools/proxy
-        image: local/kbase-ui-proxy:dev
-        depends_on:
-            - kbase-ui
-        networks:
-            - kbase-dev
-        container_name: kbase-ui-proxy
-        ports:
-            - '80:80'
-            - '443:443'
-        dns: 8.8.8.8
-        env_file: .devcontainer/proxy.env
+    # kbase-ui-proxy:
+    #     build:
+    #         context: ./tools/proxy
+    #     image: local/kbase-ui-proxy:dev
+    #     depends_on:
+    #         - kbase-ui
+    #     networks:
+    #         - kbase-dev
+    #     container_name: kbase-ui-proxy
+    #     ports:
+    #         - '80:80'
+    #         - '443:443'
+    #     dns: 8.8.8.8
+    #     env_file: .devcontainer/proxy.env
