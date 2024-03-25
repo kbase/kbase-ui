@@ -355,61 +355,61 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
       // sign in and sign out).
       // For example, during sign
       const message = ex instanceof Error ? ex.message : 'Unknown error';
-      console.warn(`eruopa.authenticate message contained invalid token: ${message}`);
-      //   return {
-      //     status: AuthenticationStatus.UNAUTHENTICATED,
-      //   };
-      if (ex instanceof JSONRPC11Exception) {
-        switch (ex.error.code) {
-          case 10020:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[authenticate] Error getting auth info (1)`,
-              },
-            });
-            break;
-          default:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[authenticate] Error getting auth info (2)`,
-              },
-            });
-        }
-      } else if (ex instanceof AuthError) {
-        switch (ex.code) {
-          case '10020':
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[authenticate] Error getting auth info (3)`,
-              },
-            });
-            break;
-          default:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[authenticate] Error getting auth info (4)`,
-              },
-            });
-        }
-      } else if (ex instanceof Error) {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `[authenticate] Error getting auth info (5)`,
-          },
-        });
-      } else {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `[authenticate] Error getting auth info (6)`,
-          },
-        });
-      }
+      console.warn(`europa.authenticate message contained invalid token: ${message}`);
+      return {
+        status: AuthenticationStatus.UNAUTHENTICATED,
+      };
+      //   if (ex instanceof JSONRPC11Exception) {
+      //     switch (ex.error.code) {
+      //       case 10020:
+      //         this.setState({
+      //           status: AsyncProcessStatus.ERROR,
+      //           error: {
+      //             message: `[authenticate] Error getting auth info (1)`,
+      //           },
+      //         });
+      //         break;
+      //       default:
+      //         this.setState({
+      //           status: AsyncProcessStatus.ERROR,
+      //           error: {
+      //             message: `[authenticate] Error getting auth info (2)`,
+      //           },
+      //         });
+      //     }
+      //   } else if (ex instanceof AuthError) {
+      //     switch (ex.code) {
+      //       case '10020':
+      //         this.setState({
+      //           status: AsyncProcessStatus.ERROR,
+      //           error: {
+      //             message: `[authenticate] Error getting auth info (3)`,
+      //           },
+      //         });
+      //         break;
+      //       default:
+      //         this.setState({
+      //           status: AsyncProcessStatus.ERROR,
+      //           error: {
+      //             message: `[authenticate] Error getting auth info (4)`,
+      //           },
+      //         });
+      //     }
+      //   } else if (ex instanceof Error) {
+      //     this.setState({
+      //       status: AsyncProcessStatus.ERROR,
+      //       error: {
+      //         message: `[authenticate] Error getting auth info (5)`,
+      //       },
+      //     });
+      //   } else {
+      //     this.setState({
+      //       status: AsyncProcessStatus.ERROR,
+      //       error: {
+      //         message: `[authenticate] Error getting auth info (6)`,
+      //       },
+      //     });
+      //   }
     }
   }
 
