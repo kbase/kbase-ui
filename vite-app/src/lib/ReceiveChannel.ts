@@ -1,5 +1,7 @@
 import { ChannelMessage } from './SendChannel';
 
+let INSTANCE = 0;
+
 /**
  * A listener callback is simply a functino which takes a single `payload`
  * argument, and returns nothing.
@@ -91,7 +93,7 @@ export default class ReceiveChannel {
   channel: string;
 
   /** Spy on sent messages; useful for debugging */
-  spy?: (message: ChannelMessage) => void;
+  spy?: (message: ChannelMessage, extra?: any) => void;
 
   /** A map from message name to an array of listeners */
   listeners: Map<string, Array<ChannelListener>>;
@@ -104,6 +106,8 @@ export default class ReceiveChannel {
 
   messageQueue: Array<ChannelMessage>;
 
+  instance: number;
+
   constructor({ window, expectedOrigin, channel, spy }: ReceiveChannelConstructorParameters) {
     this.window = window;
     this.expectedOrigin = expectedOrigin;
@@ -113,6 +117,7 @@ export default class ReceiveChannel {
     this.currentListener = null;
     this.monitorRunning = false;
     this.messageQueue = [];
+    this.instance = INSTANCE += 1;
   }
 
   /**
@@ -166,16 +171,16 @@ export default class ReceiveChannel {
 
   processMesageQueue() {
     const messages = this.messageQueue;
+    this.messageQueue = [];
     for (const message of messages) {
       this.processMessage(message);
     }
-    this.messageQueue = [];
   }
 
   processMessage(message: ChannelMessage) {
     if (this.spy) {
       try {
-        this.spy(message);
+        this.spy(message, { instance: this.instance, queue: this.messageQueue });
       } catch (ex) {
         const message = ex instanceof Error ? ex.message : 'Unknown error';
         // eslint-disable-next-line no-console
@@ -189,7 +194,7 @@ export default class ReceiveChannel {
       // We simply ignore messages for which there are no registered handlers, but we do
       // issue a warning.
       // eslint-disable-next-line no-console
-      console.warn('No listeners for message', message.name);
+      console.warn('No listeners for message', message.name, this.instance, this.listeners);
       return;
     }
 
@@ -292,6 +297,10 @@ export default class ReceiveChannel {
     );
   }
 
+  setChannelId(channel: string) {
+    this.channel = channel;
+  }
+
   /**
    * Starts the channel listening for window messages.
    *
@@ -315,7 +324,7 @@ export default class ReceiveChannel {
       this.window.removeEventListener('message', this.currentListener, false);
     } else {
       // eslint-disable-next-line no-console
-      console.warn('"stop" method called without then channel having been started');
+      console.warn('"stop" method called without the channel having been started');
     }
   }
 }

@@ -120,4 +120,8 @@ export default class SendChannel {
 
     return message;
   }
+
+  setChannelId(channel: string) {
+    this.channel = channel;
+}
 }
