@@ -395,7 +395,7 @@ describe('ReceiveChannel', () => {
     const expectedPayload = 'baz';
 
     const spyError = new Error('To spy or not, that is the question');
-    const spy = (message: ChannelMessage) => {
+    const spy = (_message: ChannelMessage) => {
       throw spyError;
     };
     const expectedOrigin = window.location.origin;
@@ -436,7 +436,7 @@ describe('ReceiveChannel', () => {
     const expectedPayload = 'baz';
 
     const spyError = 'To spy or not, that is the question';
-    const spy = (message: ChannelMessage) => {
+    const spy = (_message: ChannelMessage) => {
       throw spyError;
     };
     const expectedOrigin = window.location.origin;
@@ -642,7 +642,7 @@ describe('ReceiveChannel', () => {
         throw new ErrorOne('Error 1');
       },
       // note the error listener below.
-      (error: unknown) => {
+      (_error: unknown) => {
         throw new ErrorTwo('Error 2');
       },
     );
@@ -680,7 +680,7 @@ describe('ReceiveChannel', () => {
         throw new ErrorOne('Error 1');
       },
       // note the error listener below.
-      (error: unknown) => {
+      (_error: unknown) => {
         throw new ErrorTwo('Error 2');
       },
     );
@@ -718,7 +718,7 @@ describe('ReceiveChannel', () => {
         throw new ErrorOne('Error 1');
       },
       // note the error listener below.
-      (error: unknown) => {
+      (_error: unknown) => {
         // eslint-disable-next-line no-throw-literal
         throw 'Error 3';
       },
@@ -807,7 +807,7 @@ describe('ReceiveChannel', () => {
     let actualError: unknown = null;
     receiveChannel.once(
       messageName,
-      (payload: unknown) => {
+      (_payload: unknown) => {
         throw expectedError;
       },
       (error: unknown) => {
@@ -844,10 +844,10 @@ describe('ReceiveChannel', () => {
     // We simply capture the payload for inspection further down.
     receiveChannel.once(
       messageName,
-      (payload: unknown) => {
+      (_payload: unknown) => {
         throw expectedError;
       },
-      (error: unknown) => {
+      (_error: unknown) => {
         throw new ErrorTwo('Error 2');
       },
     );
@@ -881,10 +881,10 @@ describe('ReceiveChannel', () => {
     // We simply capture the payload for inspection further down.
     receiveChannel.once(
       messageName,
-      (payload: unknown) => {
+      (_payload: unknown) => {
         throw new ErrorOne('Error 1');
       },
-      (error: unknown) => {
+      (_error: unknown) => {
         // eslint-disable-next-line no-throw-literal
         throw 'Error 3';
       },
@@ -1005,7 +1005,7 @@ describe('ReceiveChannel', () => {
       // genericPostMessage(message.name, channel, message.payload, targetOrigin);
       genericRawPostMessage(window, window, message);
       // window.postMessage(message, targetOrigin);
-    //   sendMessage(messageName, channel, expectedValue);
+      //   sendMessage(messageName, channel, expectedValue);
     }
 
     await expect(
