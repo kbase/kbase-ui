@@ -1,18 +1,13 @@
 import App from 'components/App';
-import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 // import reportWebVitals from './reportWebVitals';
-
 import 'font-awesome/css/font-awesome.css';
-
 import './antd.css';
-
 // import './bootstrap-custom.scss';
-import './scss/bootstrap-custom.scss';
-
+import { StrictMode } from 'react';
 import './css/kb-icons.css';
-
 import './main.css';
+import './scss/bootstrap-custom.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
