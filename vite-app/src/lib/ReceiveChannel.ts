@@ -194,7 +194,7 @@ export default class ReceiveChannel {
       // We simply ignore messages for which there are no registered handlers, but we do
       // issue a warning.
       // eslint-disable-next-line no-console
-      console.warn('No listeners for message', message.name, this.instance, this.listeners);
+      console.warn('No listeners for message', message.name);
       return;
     }
 
