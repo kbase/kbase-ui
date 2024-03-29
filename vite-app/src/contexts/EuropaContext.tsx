@@ -1,17 +1,17 @@
-import { NextRequestObject } from 'lib/NextRequest';
-import ReceiveChannel from 'lib/ReceiveChannel';
-import SendChannel, { ChannelMessage } from 'lib/SendChannel';
 import { SimpleError } from 'lib/SimpleError';
-import { AuthError } from 'lib/kb_lib/Auth2Error';
-import { JSONRPC11Exception } from 'lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import UserProfileClient, { UserProfile } from 'lib/kb_lib/comm/coreServices/UserProfile';
 import { Messenger } from 'lib/messenger';
-import { NavigationPath, navigate2 } from 'lib/navigation';
-import { Component, PropsWithChildren, RefObject, createContext, createRef } from 'react';
+import { navigate2 } from 'lib/navigation';
+import { Component, PropsWithChildren, createContext } from 'react';
 import { Config } from 'types/config';
+import { v4 as uuidv4 } from 'uuid';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
-import { urlToNavigationPath } from './RouterContext';
+import EuropaConnection, {
+    AuthNavigatePayload,
+    AuthenticatedPayload,
+    DeauthenticatedPayload,
+} from './EuropaConnection';
 
 // TODO: restore the timeout?
 // const START_TIMEOUT = 10000;
@@ -100,19 +100,19 @@ export interface StartPayload {
   channelId: string;
 }
 
-export interface AuthenticatedPayload {
-  token: string;
-  nextRequest?: NextRequestObject;
-}
+// export interface AuthenticatedPayload {
+//   token: string;
+//   nextRequest?: NextRequestObject;
+// }
 
 export interface EuropaNavigationPayload {
   path: string;
   params: Record<string, string>;
 }
 
-export interface DeauthenticatedPayload {
-  nextRequest: NextRequestObject;
-}
+// export interface DeauthenticatedPayload {
+//   nextRequest: NextRequestObject;
+// }
 
 /**
  * Auth state -
@@ -160,7 +160,7 @@ export type AuthenticationState =
  */
 export interface EuropaInfo {
   authState: AuthenticationState;
-  europaOrigin: string;
+  //   europaOrigin: string;
   messenger: Messenger;
   config: Config;
   isHosted: boolean;
@@ -191,7 +191,12 @@ export type EuropaWrapperProps = PropsWithChildren<{
   // defaultPath: NavigationPath;
 }>;
 
-type EuropaWrapperState = EuropaState;
+// type EuropaWrapperState = EuropaState;
+
+export interface EuropaWrapperState {
+  europaState: EuropaState;
+  id: string;
+}
 
 /**
  * Wraps a component tree, ensuring that authentication status is
@@ -207,46 +212,67 @@ type EuropaWrapperState = EuropaState;
  * which includes any errors encountered.
  */
 export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaWrapperState> {
-  sendChannel: SendChannel | null;
-  receiveChannel: ReceiveChannel | null;
-  foo: number;
-  dedupeRef: RefObject<boolean>;
+  connection: EuropaConnection;
+  instance: string;
   constructor(props: EuropaWrapperProps) {
     super(props);
 
-    this.sendChannel = null;
-    this.receiveChannel = null;
-
-    this.foo = Date.now();
-
-    this.dedupeRef = createRef();
-
     this.state = {
-      status: AsyncProcessStatus.NONE,
+      europaState: {
+        status: AsyncProcessStatus.NONE,
+      },
+      id: uuidv4(),
     };
+
+    this.instance = uuidv4();
+
+    this.connection = new EuropaConnection({
+      config: this.props.config,
+      messenger: $GlobalMessenger,
+      onDeauthenticated: this.onDeauthenticated.bind(this),
+      onAuthenticated: this.onAuthenticated.bind(this),
+      onAuthNavigate: this.onAuthNavigate.bind(this),
+      //   onEuropaConnect: this.onEuropaConnect.bind(this),
+    });
   }
 
-  componentDidMount() {
-    if (this.dedupeRef.current) {
-      return;
-    }
-    this.initialize();
+  async componentDidMount() {
+    this.connection.connect();
   }
 
-  onDeauthenticated({ nextRequest }: DeauthenticatedPayload) {
-    if (this.state.status !== AsyncProcessStatus.SUCCESS) {
+  setTitle(title: string) {
+    this.connection.setTitle(title);
+  }
+
+  componentWillUnmount() {
+    // this.connection.disconnect();
+    // console.log('DEBUG2: [componentWillUnmount]', this.state.id, this.instance, this.state.europaState.status);
+    // this.setState({
+    //   europaState: {
+    //     status: AsyncProcessStatus.ERROR,
+    //     error: {
+    //       message: 'EuropaContext has will dismount...',
+    //     },
+    //   },
+    // });
+  }
+
+  onDeauthenticated({ navigation }: DeauthenticatedPayload) {
+    if (this.state.europaState.status !== AsyncProcessStatus.SUCCESS) {
       return;
     }
-    if (this.state.value.authState.status !== AuthenticationStatus.AUTHENTICATED) {
-      return;
-    }
+    // if (this.state.europaState.value.authState.status !== AuthenticationStatus.AUTHENTICATED) {
+    //   return;
+    // }
     this.setState(
       {
-        ...this.state,
-        value: {
-          ...this.state.value,
-          authState: {
-            status: AuthenticationStatus.UNAUTHENTICATED,
+        europaState: {
+          ...this.state.europaState,
+          value: {
+            ...this.state.europaState.value,
+            authState: {
+              status: AuthenticationStatus.UNAUTHENTICATED,
+            },
           },
         },
       },
@@ -255,8 +281,8 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
         // Typically this is auth2/loggedout. If omitted, the current kbase-ui view
         // will continue being displayed, and may alter itself in response to the
         // change in authentication state.
-        if (nextRequest) {
-          navigate2(nextRequest.path);
+        if (navigation) {
+          navigate2({ ...navigation, type: 'kbaseui' });
         }
       },
     );
@@ -276,43 +302,112 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
     return userProfile;
   }
 
-  async asyncSetState(newState: EuropaWrapperState): Promise<void> {
-    return new Promise((resolve) => {
-      this.setState(newState, () => {
-        resolve();
-      });
-    });
-  }
+  //   async onEuropaConnect({ token, path, params }: EuropaConnectPayload): Promise<void> {
+  //     const auth = new Auth2({
+  //       baseUrl: this.props.config.services.Auth2.url,
+  //     });
+
+  //     if (this.state.europaState.status !== AsyncProcessStatus.SUCCESS) {
+  //       return;
+  //     }
+
+  //     if (token) {
+  //       try {
+  //         const [tokenInfo, account] = await Promise.all([auth.getTokenInfo(token), auth.getMe(token)]);
+  //         if (tokenInfo === null) {
+  //           this.setState({
+  //             europaState: {
+  //               status: AsyncProcessStatus.ERROR,
+  //               error: {
+  //                 message: `Authenticating with invalid token.`,
+  //               },
+  //             },
+  //           });
+  //           return;
+  //         }
+
+  //         const userProfile = await this.fetchUserProfile(token, tokenInfo.user);
+
+  //         this.setState(
+  //           {
+  //             europaState: {
+  //               ...this.state.europaState,
+  //               value: {
+  //                 ...this.state.europaState.value,
+  //                 authState: {
+  //                   status: AuthenticationStatus.AUTHENTICATED,
+  //                   authInfo: {
+  //                     token,
+  //                     tokenInfo,
+  //                     account,
+  //                   },
+  //                   userProfile,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //           () => {
+  //             navigate2({ path, params, type: 'kbaseui' });
+  //           },
+  //         );
+  //       } catch (ex) {
+  //         // We have code to consider this an exception - to receive a token from Europa
+  //         // which is invalid (should be by far the most common reason for an error).
+  //         // Now, how can this happen, as Europa will validate the token before setting it
+  //         // (which in turn triggers europa.authenticated to be sent?)
+  //         // This occurs commonly during development, but should not occur in productino.
+  //         //
+  //         // The reason is the usage of "StrictMode" which duplicates all renders
+  //         // and effects. This causes trouble as  Europa depends to some degree upon
+  //         // noticing changes in state to trigger asynchronous effects (e.g. during
+  //         // sign in and sign out).
+  //         // For example, during sign
+  //         //   const message = ex instanceof Error ? ex.message : 'Unknown error';
+  //         //   console.warn(`europa.authenticate message contained invalid token: ${message}`);
+  //         //   return {
+  //         //     status: AuthenticationStatus.UNAUTHENTICATED,
+  //         //   };
+
+  //         throw new Error(`Error setting auth: ${ex instanceof Error ? ex.message : 'Unknown error'}`);
+  //       }
+  //     } else {
+  //       this.setState(
+  //         {
+  //           europaState: {
+  //             ...this.state.europaState,
+  //             value: {
+  //               ...this.state.europaState.value,
+  //               authState: {
+  //                 status: AuthenticationStatus.UNAUTHENTICATED,
+  //               },
+  //             },
+  //           },
+  //         },
+  //         () => {
+  //           navigate2({ path, params, type: 'kbaseui' });
+  //         },
+  //       );
+  //     }
+  //   }
 
   async onAuthenticated({ token, nextRequest }: AuthenticatedPayload) {
-    await this.authenticate(token, nextRequest);
-  }
+    if (this.state.europaState.status !== AsyncProcessStatus.SUCCESS) {
+      return false;
+    }
 
-  onEuropaNavigation({ path, params }: EuropaNavigationPayload) {
-    navigate2({ type: 'kbaseui', path, params });
-  }
-
-  async authenticate(token: string, nextRequest?: NextRequestObject) {
     const auth = new Auth2({
       baseUrl: this.props.config.services.Auth2.url,
     });
 
-    if (this.state.status !== AsyncProcessStatus.SUCCESS) {
-      return false;
-    }
-
-    // TODO: if the auth state is already determined, the token is the same, and
-    // not much time has passed, don't bother re-fetching everything...
-
     try {
       const [tokenInfo, account] = await Promise.all([auth.getTokenInfo(token), auth.getMe(token)]);
-      // const tokenInfo = await auth.getTokenInfo(token);
-      // const account = await auth.getMe(token);
       if (tokenInfo === null) {
         this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `Authenticating with invalid token.`,
+          europaState: {
+            status: AsyncProcessStatus.ERROR,
+            error: {
+              message: `Authenticating with invalid token.`,
+            },
           },
         });
         return;
@@ -322,17 +417,19 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
 
       this.setState(
         {
-          ...this.state,
-          value: {
-            ...this.state.value,
-            authState: {
-              status: AuthenticationStatus.AUTHENTICATED,
-              authInfo: {
-                token,
-                tokenInfo,
-                account,
+          europaState: {
+            ...this.state.europaState,
+            value: {
+              ...this.state.europaState.value,
+              authState: {
+                status: AuthenticationStatus.AUTHENTICATED,
+                authInfo: {
+                  token,
+                  tokenInfo,
+                  account,
+                },
+                userProfile,
               },
-              userProfile,
             },
           },
         },
@@ -354,508 +451,119 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
       // noticing changes in state to trigger asynchronous effects (e.g. during
       // sign in and sign out).
       // For example, during sign
-      const message = ex instanceof Error ? ex.message : 'Unknown error';
-      console.warn(`europa.authenticate message contained invalid token: ${message}`);
-      return {
-        status: AuthenticationStatus.UNAUTHENTICATED,
-      };
-      //   if (ex instanceof JSONRPC11Exception) {
-      //     switch (ex.error.code) {
-      //       case 10020:
-      //         this.setState({
-      //           status: AsyncProcessStatus.ERROR,
-      //           error: {
-      //             message: `[authenticate] Error getting auth info (1)`,
-      //           },
-      //         });
-      //         break;
-      //       default:
-      //         this.setState({
-      //           status: AsyncProcessStatus.ERROR,
-      //           error: {
-      //             message: `[authenticate] Error getting auth info (2)`,
-      //           },
-      //         });
-      //     }
-      //   } else if (ex instanceof AuthError) {
-      //     switch (ex.code) {
-      //       case '10020':
-      //         this.setState({
-      //           status: AsyncProcessStatus.ERROR,
-      //           error: {
-      //             message: `[authenticate] Error getting auth info (3)`,
-      //           },
-      //         });
-      //         break;
-      //       default:
-      //         this.setState({
-      //           status: AsyncProcessStatus.ERROR,
-      //           error: {
-      //             message: `[authenticate] Error getting auth info (4)`,
-      //           },
-      //         });
-      //     }
-      //   } else if (ex instanceof Error) {
-      //     this.setState({
-      //       status: AsyncProcessStatus.ERROR,
-      //       error: {
-      //         message: `[authenticate] Error getting auth info (5)`,
-      //       },
-      //     });
-      //   } else {
-      //     this.setState({
-      //       status: AsyncProcessStatus.ERROR,
-      //       error: {
-      //         message: `[authenticate] Error getting auth info (6)`,
-      //       },
-      //     });
-      //   }
-    }
-  }
-
-  async startAuthenticated(token: string, channelId: string, path: NavigationPath) {
-    const auth = new Auth2({
-      baseUrl: this.props.config.services.Auth2.url,
-    });
-
-    try {
-      // TODO: can get all three of the following requests at one time...
-      const [tokenInfo, account] = await Promise.all([auth.getTokenInfo(token), auth.getMe(token)]);
-
-      if (tokenInfo === null) {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `Authenticating with invalid token.`,
-          },
-        });
-        return;
-      }
-
-      const userProfile = await this.fetchUserProfile(token, tokenInfo.user);
-
-      this.setState(
-        {
-          status: AsyncProcessStatus.SUCCESS,
-          value: {
-            authState: {
-              status: AuthenticationStatus.AUTHENTICATED,
-              authInfo: {
-                token,
-                tokenInfo,
-                account,
-              },
-              userProfile,
-            },
-            config: this.props.config,
-            // TODO: fix this
-            europaOrigin: 'foo',
-            isHosted: window.parent !== window,
-            messenger: $GlobalMessenger,
-            channelId,
-            notify,
-            setTitle: this.setTitle.bind(this),
-          },
-        },
-        () => {
-          this.runtimeListeners();
-          navigate2(path);
-        },
-      );
-    } catch (ex) {
-      if (ex instanceof JSONRPC11Exception) {
-        switch (ex.error.code) {
-          case 10020:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `Error getting auth info`,
-              },
-            });
-            break;
-          default:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `Error getting auth info`,
-              },
-            });
-        }
-      } else if (ex instanceof AuthError) {
-        switch (ex.code) {
-          case '10020':
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[startAuthenticated] Error getting auth info`,
-              },
-            });
-            break;
-          default:
-            this.setState({
-              status: AsyncProcessStatus.ERROR,
-              error: {
-                message: `[startAuthenticated] Error getting auth info`,
-              },
-            });
-        }
-      } else if (ex instanceof Error) {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `[startAuthenticated] Error getting auth info`,
-          },
-        });
-      } else {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: `[startAuthenticated] Error getting auth info`,
-          },
-        });
-      }
-    }
-  }
-
-  /**
-   * Based on a token passed from Europa, authenticate the token and fetch associated
-   * account, token, and user profile
-   *
-   * @param token A kbase Login Token
-   * @returns
-   */
-  async authenticateFromEuropa(token: string): Promise<AuthenticationState> {
-    const auth = new Auth2({
-      baseUrl: this.props.config.services.Auth2.url,
-    });
-
-    try {
-      // TODO: can get all three of the following requests at one time...
-      const tokenInfo = await auth.getTokenInfo(token);
-      const account = await auth.getMe(token);
-      if (tokenInfo === null) {
-        throw new Error('Authenticating with invalid token.');
-      }
-
-      const userProfile = await this.fetchUserProfile(token, tokenInfo.user);
-
-      return {
-        status: AuthenticationStatus.AUTHENTICATED,
-        authInfo: {
-          token,
-          tokenInfo,
-          account,
-        },
-        userProfile,
-      };
-    } catch (ex) {
+      //   const message = ex instanceof Error ? ex.message : 'Unknown error';
+      //   console.warn(`europa.authenticate message contained invalid token: ${message}`);
       //   return {
       //     status: AuthenticationStatus.UNAUTHENTICATED,
       //   };
-      if (ex instanceof JSONRPC11Exception) {
-        switch (ex.error.code) {
-          case 10020:
-            throw new Error('Error getting auth info (1)');
-          default:
-            throw new Error('Error getting auth info (2)');
-        }
-      } else if (ex instanceof AuthError) {
-        switch (ex.code) {
-          case '10020':
-            throw new Error('Error getting auth info (3)');
-          default:
-            throw new Error('Error getting auth info (4)');
-        }
-      } else if (ex instanceof Error) {
-        throw new Error('Error getting auth info (5)');
-      } else {
-        throw new Error('Error getting auth info (6)');
-      }
+
+      throw new Error(`Error setting auth: ${ex instanceof Error ? ex.message : 'Unknown error'}`);
     }
   }
 
-  async onStart({ authToken }: StartPayload, channelId: string) {
-    // const path: NavigationPath = { path: initialPath, params: initialParams, type: 'kbaseui', newWindow: false }
+  async onAuthNavigate({ token, nextRequest }: AuthNavigatePayload) {
+    if (this.state.europaState.status !== AsyncProcessStatus.NONE) {
+      return false;
+    }
+
+    const auth = new Auth2({
+      baseUrl: this.props.config.services.Auth2.url,
+    });
+
     try {
-      const authState: AuthenticationState = await (async () => {
-        if (authToken) {
-          return this.authenticateFromEuropa(authToken);
-        } else {
-          return {
-            status: AuthenticationStatus.UNAUTHENTICATED,
-          };
+      if (token) {
+        const [tokenInfo, account] = await Promise.all([auth.getTokenInfo(token), auth.getMe(token)]);
+        if (tokenInfo === null) {
+          this.setState({
+            europaState: {
+              status: AsyncProcessStatus.ERROR,
+              error: {
+                message: `Authenticating with invalid token.`,
+              },
+            },
+          });
+          return;
         }
-      })();
 
-      this.setState(
-        {
-          status: AsyncProcessStatus.SUCCESS,
-          value: {
-            authState,
-            config: this.props.config,
-            // TODO: sort this out.
-            europaOrigin: 'foo',
-            isHosted: window.parent !== window,
-            messenger: $GlobalMessenger,
-            channelId,
-            notify: notify,
-            setTitle: this.setTitle.bind(this),
+        const userProfile = await this.fetchUserProfile(token, tokenInfo.user);
+
+        this.setState(
+          {
+            europaState: {
+              status: AsyncProcessStatus.SUCCESS,
+              value: {
+                authState: {
+                  status: AuthenticationStatus.AUTHENTICATED,
+                  authInfo: {
+                    token,
+                    tokenInfo,
+                    account,
+                  },
+                  userProfile,
+                },
+                channelId: 'europa_kbaseui_channel',
+                config: this.props.config,
+                isHosted: window.parent !== window,
+                messenger: $GlobalMessenger,
+                notify,
+                setTitle: this.setTitle.bind(this),
+              },
+            },
           },
-        },
-        () => {
-          this.runtimeListeners();
-          this.sendChannel!.send('kbase-ui.started', {});
-          // navigate2(path);
-          // navigate2(path)
-        },
-      );
-    } catch (ex) {
-      this.setState({
-        status: AsyncProcessStatus.ERROR,
-        error: {
-          message: ex instanceof Error ? ex.message : 'Unknown error',
-        },
-      });
-    }
-  }
-
-  /**
-   * We need the origin of Europa in order to send it messages.
-   * The origin will always be either the
-   *
-   * @returns
-   */
-  sendMessageOrigin(): string {
-    // ignore the "insecure" for now.
-    // return this.insecureParent || this.europaTargetOrigin;
-    const url = new URL(window.location.href);
-    url.hostname = window.location.hostname.split('.').slice(-3).join('.');
-
-    // return window.location.origin.replace('legacy.', '');
-    return url.origin;
-  }
-
-  setTitle(title: string) {
-    if (this.state.status !== AsyncProcessStatus.SUCCESS) {
-      return;
-    }
-    this.sendChannel!.send('kbase-ui.set-title', { title });
-  }
-
-  /**
-   * Set up all listeners after the connection with europa is established (by the
-   * receipt of the 'europa.start' message.)
-   */
-  runtimeListeners() {
-    if (this.state.status !== AsyncProcessStatus.SUCCESS) {
-      return;
-    }
-
-    // PostMessage from Europa
-    // TODO: switch to the ReceiveChannel class.
-    // const listener = (message: MessageEvent<MessageData>) => {
-    //     // only look at messages which come from the iframe parent
-
-    //     // Must be loaded.
-    //     if (this.state.status !== AsyncProcessStatus.SUCCESS) {
-    //         console.warn('Not in SUCCESS state, cannot proceed');
-    //         return;
-    //     }
-
-    //     // We only receive messages from the parent window (owner of the iframe),
-    //     // and insist on having a "source" property in the message data.
-    //     // TODO: this is a bit ill-defined. Let's use the system well-trod by
-    //     // plugins. Use the iframe as the communication bus, and use unique ids to
-    //     // establish a stable channel.
-    //     if (message.source !== window.parent || !message?.data?.name) {
-    //         console.warn('Received message from somewhere other than Europa - ignoring');
-    //         return;
-    //     }
-
-    //      const {name, envelope, payload} = message.data;
-
-    //     if (typeof name === 'undefined' || typeof envelope === 'undefined' || typeof payload === 'undefined') {
-    //         console.warn('This message not intended for Europa / kbase-ui integration (structure)');
-    //         return;
-    //     }
-
-    //     const {channel} = envelope;
-
-    //     if (channel !== this.state.value.channelId) {
-    //         console.warn('This message not intended for Europa / kbase-ui integration (envelope)');
-    //         return;
-    //     }
-
-    //     switch (name) {
-    //         case 'europa.deauthenticated':
-    //             this.onDeauthenticated(payload as DeauthenticatedPayload);
-    //             break;
-    //         case 'europa.authenticated': {
-    //             this.onAuthenticated(payload as AuthenticatedPayload);
-    //             break;
-    //         }
-    //     }
-    // }
-    // window.addEventListener('message', listener);
-
-    // Now that we've received the start message, we can listen on the channel (id)
-    // send from the host.
-
-    this.sendChannel = new SendChannel({
-      window: window.parent,
-      targetOrigin: this.sendMessageOrigin(),
-      channel: this.state.value.channelId,
-    });
-
-    // This is emitted after a successful sign in or sign up. We let europa know, so
-    // it can establish its auth state, and it in turn will send the
-    // 'europa.authenticated' message above.
-    $GlobalMessenger.on('session', 'loggedin', ({ token, expires, nextRequest }) => {
-      this.sendChannel!.send('kbase-ui.loggedin', { token, expires, nextRequest });
-    });
-
-    $GlobalMessenger.on('session', 'logout', () => {
-      this.sendChannel!.send('kbase-ui.logout', {});
-    });
-
-    $GlobalMessenger.on('europa', 'navigate', ({ path, params, type }) => {
-      const payload: NavigationMessagePayload = {
-        path,
-        params,
-        type,
-      };
-
-      this.sendChannel!.send('kbase-ui.navigation', payload);
-    });
-
-    $GlobalMessenger.on('europa', 'redirect', ({ url, newWindow }) => {
-      const payload: RedirectMessagePayload = {
-        url,
-        newWindow,
-      };
-
-      this.sendChannel!.send('kbase-ui.redirect', payload);
-    });
-
-    /**
-     * Captures a hash change and propagates up to the container app, Europa.
-     *
-     * It is emitted as a "navigation" event, carrying the payload of the path (the
-     * hash with the initial # removed) and any search params.
-     *
-     * Note:
-     */
-    window.addEventListener('hashchange', (event: HashChangeEvent) => {
-      // We like to use URL objects when manipulating URLs.
-      const newURL = new URL(event.newURL);
-
-      // This function knows how to extract what we need from the URL, especially
-      // dealing with how we store params on the fragement itself.
-      const { path, params } = urlToNavigationPath(newURL);
-
-      const payload: NavigationMessagePayload = {
-        path,
-        params,
-      };
-
-      this.sendChannel!.send('kbase-ui.navigation', payload);
-    });
-
-    this.receiveChannel!.on('europa.deauthenticated', (payload: any) => {
-      this.onDeauthenticated(payload as DeauthenticatedPayload);
-    });
-    this.receiveChannel!.on('europa.authenticated', (payload: any) => {
-      this.onAuthenticated(payload as AuthenticatedPayload);
-    });
-
-    this.receiveChannel!.on('europa.navigation', (payload: any) => {
-      this.onEuropaNavigation(payload as EuropaNavigationPayload);
-    });
-
-    this.receiveChannel!.on('europa.navigation', (payload: any) => {
-      this.onEuropaNavigation(payload as EuropaNavigationPayload);
-    });
-  }
-
-  initialize() {
-    if (this.state.status !== AsyncProcessStatus.NONE) {
-      return;
-    }
-
-    // Is kbase-ui running in an iframe? If not, it is an error.
-    if (window.parent === window) {
-      this.setState({
-        status: AsyncProcessStatus.ERROR,
-        error: {
-          message: 'kbase-ui not running within an iframe',
-        },
-      });
-      return;
-    }
-
-    this.setState(
-      {
-        status: AsyncProcessStatus.PENDING,
-      },
-      () => this.initializePending(),
-    );
-  }
-
-  initializePending() {
-    // TODO: a better technique!
-    const isSubdomain = window.location.host.split('.').length === 4;
-    let channelId: string;
-    if (isSubdomain) {
-      channelId = 'europa_kbaseui_channel';
-    } else {
-      const channelIdFromElement = window.frameElement!.getAttribute('data-channel-id');
-      if (channelIdFromElement === null) {
-        this.setState({
-          status: AsyncProcessStatus.ERROR,
-          error: {
-            message: "The 'data-channel-id' attribute is missing",
+          () => {
+            if (nextRequest) {
+              navigate2(nextRequest.path);
+            }
           },
-        });
-        return;
+        );
+      } else {
+        this.setState(
+          {
+            europaState: {
+              status: AsyncProcessStatus.SUCCESS,
+              value: {
+                authState: {
+                  status: AuthenticationStatus.UNAUTHENTICATED,
+                },
+                channelId: 'europa_kbaseui_channel',
+                config: this.props.config,
+                isHosted: window.parent !== window,
+                messenger: $GlobalMessenger,
+                notify,
+                setTitle: this.setTitle.bind(this),
+              },
+            },
+          },
+          () => {
+            if (nextRequest) {
+              navigate2(nextRequest.path);
+            }
+          },
+        );
       }
-      channelId = channelIdFromElement;
+    } catch (ex) {
+      // We have code to consider this an exception - to receive a token from Europa
+      // which is invalid (should be by far the most common reason for an error).
+      // Now, how can this happen, as Europa will validate the token before setting it
+      // (which in turn triggers europa.authenticated to be sent?)
+      // This occurs commonly during development, but should not occur in productino.
+      //
+      // The reason is the usage of "StrictMode" which duplicates all renders
+      // and effects. This causes trouble as  Europa depends to some degree upon
+      // noticing changes in state to trigger asynchronous effects (e.g. during
+      // sign in and sign out).
+      // For example, during sign
+      //   const message = ex instanceof Error ? ex.message : 'Unknown error';
+      //   console.warn(`europa.authenticate message contained invalid token: ${message}`);
+      //   return {
+      //     status: AuthenticationStatus.UNAUTHENTICATED,
+      //   };
+
+      throw new Error(`Error setting auth: ${ex instanceof Error ? ex.message : 'Unknown error'}`);
     }
-
-    this.sendChannel = new SendChannel({
-      window: window.parent,
-      targetOrigin: this.sendMessageOrigin(),
-      channel: channelId,
-    });
-    const spy = (() => {
-      return (message: ChannelMessage) => {
-        console.info('kbase-ui RECEIVE ->', message);
-      };
-    })();
-
-    this.receiveChannel = new ReceiveChannel({
-      window,
-      expectedOrigin: this.sendMessageOrigin(),
-      channel: channelId,
-      spy,
-    });
-
-    // TODO: restore the timeout?
-    // this.receiveChannel.once('europa.start', START_TIMEOUT, (payload: any) => {
-    this.receiveChannel.once('europa.start', (payload: any) => {
-      this.onStart(payload as StartPayload, channelId);
-    });
-
-    this.receiveChannel.start();
-
-    // Send a "ready" message to the parent window to indicate that kbase-ui has
-    // successfully initialized for Europa integration and is ready to proceed with
-    // the requested endpoint.
-    this.sendChannel.send('kbase-ui.ready', {
-      ready: true,
-    });
   }
 
   render() {
-    return <EuropaContext.Provider value={this.state}>{this.props.children}</EuropaContext.Provider>;
+    return <EuropaContext.Provider value={this.state.europaState}>{this.props.children}</EuropaContext.Provider>;
   }
 }
