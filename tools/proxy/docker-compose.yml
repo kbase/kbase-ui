@@ -21,27 +21,3 @@ services:
     env_file: 
       - ../../.devcontainer/proxy.env
 
-
-
-  # kbase-ui-proxy:
-  #   build:
-  #     context: ../tools/proxy
-  #   # there is only one proxy image, for local development, so just call it :dev
-  #   image: kbase/kbase-ui-proxy:dev
-  #   depends_on:
-  #     - kbase-ui
-  #     - kbase-ui-deploy
-  #   networks:
-  #     - kbase-dev
-  #   container_name: kbase-ui-proxy
-  #   ports:
-  #     - '80:80'
-  #     - '443:443'
-  #   dns: 
-  #     # TODO: sort this out!
-  #     - 8.8.8.8
-  #     - 9.9.9.9
-  #     - 1.1.1.1
-  #     - 208.67.222.222
-  #   env_file: 
-  #     - ../../.devcontainer/proxy.env
