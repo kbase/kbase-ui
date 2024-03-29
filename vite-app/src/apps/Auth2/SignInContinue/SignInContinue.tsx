@@ -9,7 +9,7 @@ import { AuthError } from 'lib/kb_lib/Auth2Error';
 import { JSONRPC11Exception } from 'lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import UserProfile from 'lib/kb_lib/comm/coreServices/UserProfile';
 import { Messenger } from 'lib/messenger';
-import { navigate } from 'lib/navigation';
+import { navigate2 } from 'lib/navigation';
 import { Component, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import { Md5 } from 'ts-md5';
@@ -684,7 +684,7 @@ export default class LoginContinue extends Component<LoginContinueProps, LoginCo
   }
 
   returnToSignIn() {
-    navigate('login');
+    navigate2({ path: 'login', type: 'kbaseui' });
   }
 
   renderSignInButton(message: string) {
