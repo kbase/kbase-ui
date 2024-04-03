@@ -283,6 +283,8 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
         // change in authentication state.
         if (navigation) {
           navigate2({ ...navigation, type: 'kbaseui' });
+        } else {
+            navigate2({ path: 'auth2/signedout', type: 'kbaseui'});
         }
       },
     );
