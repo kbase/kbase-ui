@@ -3,7 +3,7 @@ import TextSpan from "apps/Auth2/TextSpan";
 import Well from "components/Well";
 import { Identity } from "lib/kb_lib/Auth2";
 import { Component } from "react";
-import { Button, Dropdown, Form } from "react-bootstrap";
+import { Alert, Button, Dropdown, Form } from "react-bootstrap";
 import { IDProvider } from "types/config";
 import styles from './view.module.css';
 
@@ -97,6 +97,18 @@ export default class LinkedIdProvidersView extends Component<LinkedIdProvidersVi
     }
 
     renderAccountLinker() {
+        const availableProviders = this.props.providers.filter(({id}) => {
+            return !this.props.identities.some(({provider}) => {
+                return provider === id;
+            });
+        });
+
+        if (availableProviders.length === 0) {
+            return <Alert variant="info">
+                All available id providers have been linked
+            </Alert>
+        }
+
         return <Form className="form-inline" 
                      onSubmit={(e) => {e.preventDefault(); this.doSubmitLinkRequest();}}>
             <div>
@@ -117,7 +129,7 @@ export default class LinkedIdProvidersView extends Component<LinkedIdProvidersVi
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                         {
-                            this.props.providers.map((provider) => {
+                            availableProviders.map((provider) => {
                                 return <Dropdown.Item key={provider.id} onClick={() => {this.selectProvider(provider)}}>
                                     {this.renderProviderLabel(provider.id)}
                                 </Dropdown.Item>
