@@ -171,9 +171,16 @@ export function navigateToEuropa({
   params?: Record<string, string>;
   newWindow?: boolean;
 }) {
-  // const hostname = window.location.hostname.split('.').slice(1).join('.');
-  const hostname = window.location.hostname;
-  const url = new URL(`https://${hostname}`);
+  // Detect if operating on subdomain in order to determine the Europa domain.
+  const hostnameParsed = window.location.hostname.split('.');
+  let domain: string;
+  if (hostnameParsed.length === 4) {
+    domain = hostnameParsed.slice(1).join('.');
+  } else {
+    domain = hostnameParsed.join('.');
+  }
+
+  const url = new URL(`https://${domain}`);
   url.pathname = path || '';
   if (params) {
     for (const [key, value] of Object.entries(params)) {
