@@ -4,6 +4,7 @@ import Loading from 'components/Loading';
 import { AuthenticationState, AuthenticationStatus } from 'contexts/EuropaContext';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
+import { navigate2 } from 'lib/navigation';
 import { Component } from 'react';
 import { Config, IDProvider } from 'types/config';
 import { Providers } from '../Providers';
@@ -46,12 +47,10 @@ export default class SignedOutController extends Component<SignedOutControllerPr
             });
 
             if (this.props.authState.status !== AuthenticationStatus.UNAUTHENTICATED) {
-                this.setState({
-                    status: AsyncProcessStatus.ERROR,
-                    error: {
-                        message: 'Unfortunately, it appears that kbase-ui is not actually logged out' 
-                    }
-                });
+                // Rather than show an error message, let us take the browser somewhere
+                // interesting, like the default view.
+                navigate2({path: 'narratives', type: 'europaui'})
+
                 return;
             }
 
