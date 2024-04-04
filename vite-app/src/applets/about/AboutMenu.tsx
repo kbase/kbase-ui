@@ -47,11 +47,11 @@ export default class AboutMenu extends Component<AboutMenuProps> {
           About
         </div>
         <Nav variant="pills" activeKey={this.props.tab} onSelect={this.onSelect.bind(this)}>
-          {/* <Nav.Item>
-                    <Nav.Link eventKey="kbase-ui">
-                        kbase-ui
-                    </Nav.Link>
-                </Nav.Item> */}
+            <Nav.Item>
+                <Nav.Link eventKey="kbase-ui">
+                    kbase-ui
+                </Nav.Link>
+          </Nav.Item>
           <Nav.Item>
             <Nav.Link eventKey="services">services</Nav.Link>
           </Nav.Item>
