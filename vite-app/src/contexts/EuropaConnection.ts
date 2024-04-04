@@ -153,6 +153,7 @@ export interface EuropaConnectionConstructorParams {
   onDeauthenticated: (payload: DeauthenticatedPayload) => void;
   onAuthenticated: (payload: EuropaAuthenticatedPayload) => void;
   onAuthNavigate: (payload: AuthNavigatePayload) => void;
+  spyOnMessages?: boolean;
   //   onEuropaConnect: (payload: EuropaConnectPayload) => Promise<void>;
 }
 
@@ -179,7 +180,7 @@ export default class EuropaConnection {
       window,
       expectedOrigin: this.europaOrigin(),
       channel: this.channelId,
-    //   spy: receiveSpy,
+      spy: this.params.spyOnMessages ? receiveSpy : undefined,
     });
 
     const sendSpy = (() => {
@@ -192,7 +193,7 @@ export default class EuropaConnection {
       window: this.europaWindow(),
       targetOrigin: this.europaOrigin(),
       channel: this.getChannelId(),
-    //   spy: sendSpy,
+      spy: this.params.spyOnMessages ? sendSpy : undefined,
     });
   }
 
