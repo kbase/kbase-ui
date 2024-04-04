@@ -2,7 +2,6 @@ import ReceiveChannel from 'lib/ReceiveChannel';
 import SendChannel, { ChannelMessage } from 'lib/SendChannel';
 import { v4 as uuidv4 } from 'uuid';
 
-import { NextRequestObject } from 'lib/NextRequest';
 import { AuthError } from 'lib/kb_lib/Auth2Error';
 import { JSONRPC11Exception } from 'lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import UserProfileClient, { UserProfile } from 'lib/kb_lib/comm/coreServices/UserProfile';
@@ -15,7 +14,7 @@ import { urlToNavigationPath } from './RouterContext';
 
 // Message payloads
 
-export interface NavigationMessagePayload {
+export interface KBaseUINavigatedMessagePayload {
   path: string;
   params?: Record<string, string>;
   type?: 'kbaseui' | 'europaui';
@@ -80,13 +79,14 @@ export interface StartPayload {
 
 export interface AuthNavigatePayload {
   token: string | null;
-  nextRequest: NextRequestObject;
+  navigation: ResourcePath;
 }
 
-export interface AuthenticatedPayload {
+export interface EuropaAuthenticatedPayload {
   token: string;
   //   navigation?: ResourcePath;
-  nextRequest?: NextRequestObject;
+//   nextRequest?: NextRequestObject;
+    navigation?: ResourcePath;
 }
 
 export interface EuropaNavigationPayload {
@@ -151,7 +151,7 @@ export interface EuropaConnectionConstructorParams {
   config: Config;
   messenger: Messenger;
   onDeauthenticated: (payload: DeauthenticatedPayload) => void;
-  onAuthenticated: (payload: AuthenticatedPayload) => void;
+  onAuthenticated: (payload: EuropaAuthenticatedPayload) => void;
   onAuthNavigate: (payload: AuthNavigatePayload) => void;
   //   onEuropaConnect: (payload: EuropaConnectPayload) => Promise<void>;
 }
@@ -179,7 +179,7 @@ export default class EuropaConnection {
       window,
       expectedOrigin: this.europaOrigin(),
       channel: this.channelId,
-      spy: receiveSpy,
+    //   spy: receiveSpy,
     });
 
     const sendSpy = (() => {
@@ -192,7 +192,7 @@ export default class EuropaConnection {
       window: this.europaWindow(),
       targetOrigin: this.europaOrigin(),
       channel: this.getChannelId(),
-      spy: sendSpy,
+    //   spy: sendSpy,
     });
   }
 
@@ -360,7 +360,7 @@ export default class EuropaConnection {
     });
 
     this.receiveChannel.on('europa.authenticated', (payload: any) => {
-      this.params.onAuthenticated(payload as AuthenticatedPayload);
+      this.params.onAuthenticated(payload as EuropaAuthenticatedPayload);
     });
 
     this.receiveChannel.on('europa.deauthenticated', (payload: any) => {
@@ -378,12 +378,12 @@ export default class EuropaConnection {
       // dealing with how we store params on the fragement itself.
       const { path, params } = urlToNavigationPath(newURL);
 
-      const payload: NavigationMessagePayload = {
+      const payload: KBaseUINavigatedMessagePayload = {
         path,
         params,
       };
 
-      this.sendChannel.send('kbase-ui.navigation', payload);
+      this.sendChannel.send('kbase-ui.navigated', payload);
     });
 
     this.params.messenger.on('session', 'loggedin', ({ token, expires, nextRequest }) => {

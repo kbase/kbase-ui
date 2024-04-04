@@ -1,7 +1,7 @@
 import { AuthenticationState, AuthenticationStatus } from "contexts/EuropaContext";
 import { Auth2 } from "lib/kb_lib/Auth2";
 import { AuthError } from "lib/kb_lib/Auth2Error";
-import { navigate, navigate2 } from "lib/navigation";
+import { navigate2 } from "lib/navigation";
 import AutoPostForm from "pluginSupport/AutoPostForm";
 import { Component } from "react";
 import { IDProvider } from "types/config";
@@ -66,6 +66,7 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
             signInState: {mode: 'signin', status: 'choosing'}
         }
     }
+
     componentDidMount() {
         if (!this.possiblyRedirect()) {
             const {mode, status} = this.state.signInState;
@@ -81,6 +82,10 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
                     }
             }
         }
+    }
+
+    componentDidUpdate() {
+        this.possiblyRedirect();
     }
 
     async cancelLogin() {
@@ -101,34 +106,23 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
     doRedirect(nextRequest?: NextRequestObject) {
         if (nextRequest) {
             try {
-                // const {hash, params} = nextRequest;
-                // navigate(hash, {params});
-                // this.props.runtime.send('app', 'navigate', nextRequest);
                 navigate2(nextRequest.path);
             } catch (ex) {
-                navigate('dashboard');
+                // TODO: get the default path from the props.
+                navigate2({path: "narratives", type: "europaui"})
             }
         } else {
-            navigate('dashboard');
+            navigate2({path: "narratives", type: "europaui"})
         }
     }
 
     possiblyRedirect() {
         // if is logged in, just redirect to the nextrequest,
         // or the nexturl, or dashboard.
-
         if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
             this.doRedirect(this.props.nextRequest);
             return true;
         }
-        // TODO: restore this; it appears to handle the case of sitting on the signin
-        // page and then receiving a loggedin message, triggering a redirect to the next
-        // request.
-        // this.listeners.push(
-        //     this.props.runtime.recv('session', 'loggedin', () => {
-        //         this.doRedirect(nextRequest);
-        //     })
-        // );
         return false;
     }
 
@@ -193,7 +187,6 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
         });
     }
 
-
     async doSignUp(provider: IDProvider) {
         const auth2Client = new Auth2({
             baseUrl: this.props.authURL
@@ -222,41 +215,6 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
             }
         })
     }
-
-    // /**
-    //  * 
-    //  * Primarily just redirects to the signup page.
-    //  * 
-    //  *
-    //  */
-    // async doSignUp() {
-    //     const auth2Client = new Auth2({
-    //         baseUrl: this.props.authURL
-    //     });
-
-    //     try {
-    //         await auth2Client.loginCancel();
-    //     } catch (ex) {
-    //         if (ex instanceof AuthError) {
-    //             // ignore this specific error...
-    //             if (ex.code !== '10010') {
-    //                 throw ex;
-    //             }
-    //         } else {
-    //             // TODO: show error.
-    //             console.error('Skipping error', ex);
-    //         }
-    //     }
-    //     //  don't care whether it succeeded or failed.
-    //     // const params: Record<string, string> = {
-    //     //     provider: provider.id,
-    //     //     redirecturl: this.makeRedirectURL()
-    //     //     // not used
-    //     //     // stayloggedin: false
-    //     // };
-
-    //     navigate('signup');
-    // }
 
     chooseSignIn() {
         this.setState ({
@@ -365,7 +323,6 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
 
         return <AutoPostForm action={action} params={params} />
     }
-
 
     render() {
        const {mode, status} = this.state.signInState;

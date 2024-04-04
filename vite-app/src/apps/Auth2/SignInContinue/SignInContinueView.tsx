@@ -7,7 +7,7 @@ import { IDProvider } from "types/config";
 import { renderProviderLabel } from "../Providers";
 import TextSpan from "../TextSpan";
 import { PendingPolicyAgreement, PolicyAgreement } from "./PolicyAndAgreement";
-import { AuthSessionCancellationType, SignUpFormInfo } from "./SignInContinue";
+import { AuthSessionCancellationType, SignInStatus, SignUpFormInfo } from "./SignInContinue";
 import SignInContinueForm from "./SignInContinueForm";
 import './SignInContinueView.css';
 import SignUpContinue from "./SignUpContinue";
@@ -99,6 +99,8 @@ export default class SignInContinueView extends Component<SignInContinueViewProp
 
     renderSignIn() {
         return <SignInContinueForm
+            // TODO: work on this...
+            signInState={{status: SignInStatus.NONE}}
             choice={this.props.choice}
             provider={this.props.provider}
             source="signin"
@@ -161,17 +163,6 @@ export default class SignInContinueView extends Component<SignInContinueViewProp
             </Col>
         </Row>
     }
-
-    // renderHeader(message: string) {
-    //     return <ContinueHeader 
-    //         name="Sign In"
-    //         choice={this.props.choice}
-    //         cancelChoiceSession={() => {
-    //             this.props.cancelSignIn(AuthSessionCancellationType.TIMEOUT, 'Your Sign In session has expired');
-    //         }}
-    //         serverTimeOffset={this.props.serverTimeOffset}
-    //     />
-    // }
 
     render() {
         return <div className="SignInContinueView">

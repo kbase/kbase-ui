@@ -44,6 +44,46 @@ class UIError extends Error {
   }
 }
 
+export enum SignInStatus {
+    NONE = 'NONE',
+    PREPARING = 'PREPARING',
+    READY = 'READY',
+    SIGNING_IN = 'SIGNING_IN',
+    SIGNED_IN = 'SIGNED_IN',
+    ERROR = 'ERROR'
+}
+
+export interface SignInStateBase {
+    status: SignInStatus
+}
+
+export interface SignInStateNone extends SignInStateBase {
+    status: SignInStatus.NONE;
+}
+
+export interface SignInStatePreparing extends SignInStateBase  {
+    status: SignInStatus.PREPARING;
+}
+
+export interface SignInStateReady extends SignInStateBase  {
+    status: SignInStatus.READY;
+}
+
+export interface SignInStateSigningIn extends SignInStateBase  {
+    status: SignInStatus.SIGNING_IN;
+}
+
+export interface SignInStateSignedIn extends SignInStateBase  {
+    status: SignInStatus.SIGNED_IN;
+}
+
+export interface SignInStateError extends SignInStateBase  {
+    status: SignInStatus.ERROR;
+    message: string;
+}
+
+export type SignInState = SignInStateNone | SignInStatePreparing | SignInStateReady | SignInStateSigningIn | SignInStateSignedIn | SignInStateError;
+
 export enum AuthSessionCancellationType {
   USER = 'CancellationType_USER',
   TIMEOUT = 'CancellationType_TIMEOUT',

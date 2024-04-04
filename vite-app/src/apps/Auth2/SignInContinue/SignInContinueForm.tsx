@@ -10,6 +10,7 @@ import TextSpan from '../TextSpan';
 import UseAgreements from '../UseAgreements';
 import { CurrentTermsAndConditionsPolicy } from './Policy';
 import { PendingPolicyAgreement, PolicyAgreement } from './PolicyAndAgreement';
+import { SignInState } from './SignInContinue';
 import SignInOops from './SignInOops';
 
 // TODO: what type is choice?
@@ -22,7 +23,11 @@ function providerUserName(choice: LoginChoice): string {
 
 // TODO: okay, need to resolve next request!
 
+
+
+
 export interface SignInContinueProps {
+    signInState: SignInState;
   source: string;
   choice: LoginChoice;
   provider: IDProvider;

@@ -9,12 +9,9 @@ import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
 import EuropaConnection, {
     AuthNavigatePayload,
-    AuthenticatedPayload,
     DeauthenticatedPayload,
+    EuropaAuthenticatedPayload,
 } from './EuropaConnection';
-
-// TODO: restore the timeout?
-// const START_TIMEOUT = 10000;
 
 export const $GlobalMessenger = new Messenger();
 
@@ -245,16 +242,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
   }
 
   componentWillUnmount() {
-    // this.connection.disconnect();
-    // console.log('DEBUG2: [componentWillUnmount]', this.state.id, this.instance, this.state.europaState.status);
-    // this.setState({
-    //   europaState: {
-    //     status: AsyncProcessStatus.ERROR,
-    //     error: {
-    //       message: 'EuropaContext has will dismount...',
-    //     },
-    //   },
-    // });
+    this.connection.disconnect();
   }
 
   onDeauthenticated({ navigation }: DeauthenticatedPayload) {
@@ -304,95 +292,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
     return userProfile;
   }
 
-  //   async onEuropaConnect({ token, path, params }: EuropaConnectPayload): Promise<void> {
-  //     const auth = new Auth2({
-  //       baseUrl: this.props.config.services.Auth2.url,
-  //     });
-
-  //     if (this.state.europaState.status !== AsyncProcessStatus.SUCCESS) {
-  //       return;
-  //     }
-
-  //     if (token) {
-  //       try {
-  //         const [tokenInfo, account] = await Promise.all([auth.getTokenInfo(token), auth.getMe(token)]);
-  //         if (tokenInfo === null) {
-  //           this.setState({
-  //             europaState: {
-  //               status: AsyncProcessStatus.ERROR,
-  //               error: {
-  //                 message: `Authenticating with invalid token.`,
-  //               },
-  //             },
-  //           });
-  //           return;
-  //         }
-
-  //         const userProfile = await this.fetchUserProfile(token, tokenInfo.user);
-
-  //         this.setState(
-  //           {
-  //             europaState: {
-  //               ...this.state.europaState,
-  //               value: {
-  //                 ...this.state.europaState.value,
-  //                 authState: {
-  //                   status: AuthenticationStatus.AUTHENTICATED,
-  //                   authInfo: {
-  //                     token,
-  //                     tokenInfo,
-  //                     account,
-  //                   },
-  //                   userProfile,
-  //                 },
-  //               },
-  //             },
-  //           },
-  //           () => {
-  //             navigate2({ path, params, type: 'kbaseui' });
-  //           },
-  //         );
-  //       } catch (ex) {
-  //         // We have code to consider this an exception - to receive a token from Europa
-  //         // which is invalid (should be by far the most common reason for an error).
-  //         // Now, how can this happen, as Europa will validate the token before setting it
-  //         // (which in turn triggers europa.authenticated to be sent?)
-  //         // This occurs commonly during development, but should not occur in productino.
-  //         //
-  //         // The reason is the usage of "StrictMode" which duplicates all renders
-  //         // and effects. This causes trouble as  Europa depends to some degree upon
-  //         // noticing changes in state to trigger asynchronous effects (e.g. during
-  //         // sign in and sign out).
-  //         // For example, during sign
-  //         //   const message = ex instanceof Error ? ex.message : 'Unknown error';
-  //         //   console.warn(`europa.authenticate message contained invalid token: ${message}`);
-  //         //   return {
-  //         //     status: AuthenticationStatus.UNAUTHENTICATED,
-  //         //   };
-
-  //         throw new Error(`Error setting auth: ${ex instanceof Error ? ex.message : 'Unknown error'}`);
-  //       }
-  //     } else {
-  //       this.setState(
-  //         {
-  //           europaState: {
-  //             ...this.state.europaState,
-  //             value: {
-  //               ...this.state.europaState.value,
-  //               authState: {
-  //                 status: AuthenticationStatus.UNAUTHENTICATED,
-  //               },
-  //             },
-  //           },
-  //         },
-  //         () => {
-  //           navigate2({ path, params, type: 'kbaseui' });
-  //         },
-  //       );
-  //     }
-  //   }
-
-  async onAuthenticated({ token, nextRequest }: AuthenticatedPayload) {
+  async onAuthenticated({ token, navigation }: EuropaAuthenticatedPayload) {
     if (this.state.europaState.status !== AsyncProcessStatus.SUCCESS) {
       return false;
     }
@@ -436,8 +336,8 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
           },
         },
         () => {
-          if (nextRequest) {
-            navigate2(nextRequest.path);
+          if (navigation) {
+            navigate2({path: navigation.path, params: navigation.params, type: 'kbaseui'});
           }
         },
       );
@@ -463,7 +363,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
     }
   }
 
-  async onAuthNavigate({ token, nextRequest }: AuthNavigatePayload) {
+  async onAuthNavigate({ token, navigation: {path, params} }: AuthNavigatePayload) {
     if (this.state.europaState.status !== AsyncProcessStatus.NONE) {
       return false;
     }
@@ -513,9 +413,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
             },
           },
           () => {
-            if (nextRequest) {
-              navigate2(nextRequest.path);
-            }
+            navigate2({path, params, type: 'kbaseui'});
           },
         );
       } else {
@@ -537,9 +435,7 @@ export default class EuropaWrapper extends Component<EuropaWrapperProps, EuropaW
             },
           },
           () => {
-            if (nextRequest) {
-              navigate2(nextRequest.path);
-            }
+            navigate2({path, params, type: 'kbaseui'});
           },
         );
       }

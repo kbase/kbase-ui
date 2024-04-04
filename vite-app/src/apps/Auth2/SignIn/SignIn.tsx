@@ -91,7 +91,7 @@ export class SignIn extends Component<SignInProps, SignInState> {
                     navigate2(nextRequest.path);
                 } else {
                     // TODO: navigate to default path...
-                    navigate2({path: 'dashboard', type: 'kbaseui'});
+                    navigate2({path: 'narratives', type: 'europaui'});
                 }
                 return;
             }
