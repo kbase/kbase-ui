@@ -70,14 +70,6 @@ export function sendWindowMessage(
   payload: unknown,
   options?: SendMessageOptions,
 ) {
-  // console.log(
-  //   '[sendFromKBaseUI]',
-  //   name,
-  //   channel,
-  //   payload,
-  //   fromWindow.origin,
-  //   toWindow.origin
-  // );
   const data = { name, envelope: { channel }, payload };
   // Must use the following, due to jsDOM:
   toWindow.dispatchEvent(
