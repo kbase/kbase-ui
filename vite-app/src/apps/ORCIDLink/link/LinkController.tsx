@@ -69,7 +69,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     componentDidMount() {
-        this.props.setTitle('KBase ORCID® Link - Create New Link');
+        this.props.setTitle('KBase ORCID Link - Create New Link');
         this.loadData();
     }
 

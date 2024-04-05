@@ -109,7 +109,7 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     componentDidMount() {
-        this.props.setTitle('KBase ORCID® Link - Confirm Link');
+        this.props.setTitle('KBase ORCID Link - Confirm Link');
         if (this.props.skipPrompt) {
             this.confirmLink();
         } else {

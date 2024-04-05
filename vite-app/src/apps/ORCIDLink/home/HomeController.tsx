@@ -61,22 +61,8 @@ export default class HomeController extends Component<HomeControllerProps, HomeC
     }
 
     componentDidMount() {
-        this.props.setTitle('KBase ORCID® Link');
-        this.setState({
-            linkState: {
-                status: AsyncProcessStatus.ERROR,
-                error: {
-                    code: ErrorCode.unknown,
-                    message: `Unknown error: FOO`,
-                    title: 'Error',
-                    data: {
-                        some: 'more',
-                        detail: 123
-                    }
-                }
-            }
-        });
-        // this.loadData();
+        this.props.setTitle('KBase ORCID Link');
+        this.loadData();
     }
 
     async fetchLink(): Promise<LinkInfo | null> {

@@ -89,7 +89,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     componentDidMount() {
-        this.props.setTitle('KBase ORCID® Link - Revoke');
+        this.props.setTitle('KBase ORCID Link - Revoke');
         this.loadData();
     }
 

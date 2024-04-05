@@ -31,13 +31,13 @@ export default class View extends Component<ViewProps, ViewState> {
         switch (this.props.linkState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                this.props.setTitle('KBase ORCID® Link - Revoke - Loading...');
+                this.props.setTitle('KBase ORCID Link - Revoke - Loading...');
                 break;
             case AsyncProcessStatus.ERROR:
                 if (this.props.revokeState.status === RevokeStatus.REVOKED) {
-                    this.props.setTitle('KBaseORCID® Link - Revoke - Successfully Revoked');
+                    this.props.setTitle('KBaseORCID Link - Revoke - Successfully Revoked');
                 } else {
-                    this.props.setTitle('KBaseORCID® Link - Revoke - Error');
+                    this.props.setTitle('KBaseORCID Link - Revoke - Error');
                 }
                 break;
             case AsyncProcessStatus.SUCCESS:
@@ -46,16 +46,16 @@ export default class View extends Component<ViewProps, ViewState> {
                     // a link, so we should technically be in an ERROR state.
                     // But we should just change the link status to be:
                     // NONE, PENDING, LINKED, NOTLINKED, ERROR
-                    this.props.setTitle('KBase ORCID® Link - Successfully Removed');
+                    this.props.setTitle('KBase ORCID Link - Successfully Removed');
                 } else {
-                    this.props.setTitle('KBaseORCID® Link - Confirm Link Removal');
+                    this.props.setTitle('KBaseORCID Link - Confirm Link Removal');
                 }
                 break;
         }
     }
 
     // renderNotLinked() {
-    //     this.props.setTitle('KBase ORCID® Link - Revoke - Not Linked')
+    //     this.props.setTitle('KBase ORCID Link - Revoke - Not Linked')
     //     return <div className="well" style={{ maxWidth: '60em', margin: '0 auto' }}>
     //         <div className="well-header">
     //             Warning: Not Linked
@@ -73,7 +73,7 @@ export default class View extends Component<ViewProps, ViewState> {
     // }
 
     // renderRevoked() {
-    //     this.props.setTitle('KBase ORCID® Link - Revoke - Successfully Revoked Link')
+    //     this.props.setTitle('KBase ORCID Link - Revoke - Successfully Revoked Link')
     //     return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
     //         <Well.Header>
     //             Success!
