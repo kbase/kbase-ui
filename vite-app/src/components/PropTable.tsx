@@ -11,6 +11,7 @@ export interface PropTableProps {
     title?: string;
     footer?: PropTableRow;
     header?: PropTableRow;
+    bordered?: boolean;
     styles?: {
         col1?: CSSProperties;
         col2?: CSSProperties;
@@ -124,8 +125,15 @@ export default class PropTable extends Component<
     }
 
     render() {
+        const mainClass = (() => {
+            if (this.props.bordered) {
+                return styles['main-bordered'];
+            } else {
+                return styles.main;
+            }
+        })();
         return (
-            <div className={styles.PropTable}>
+            <div className={mainClass}>
                 {this.renderTitle()}
                 {this.renderHeader()}
                 {this.renderBody()}
