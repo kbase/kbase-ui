@@ -1,0 +1,29 @@
+@startuml
+
+title Europa/kbase-ui startup sequence
+
+participant europa as "Europa"
+entity timer as "Timeout Monitor"
+participant kbaseui as "KBase UI"
+
+autonumber
+
+europa -> kbaseui: mount kbase-ui\nhttps://legacy.ENV.kbase.us
+|||
+europa -> timer: start\ntimes out after 60s
+activate timer
+|||
+kbaseui -> kbaseui: load and start up
+|||
+europa <-- kbaseui: send __""kbase-ui.connect""__\nwith channel id
+|||
+europa --> kbaseui: send __""europa.connect""__
+|||
+europa <-- kbaseui: send __""kbase-ui.connected""__
+europa -> timer: stop
+deactivate timer
+|||
+europa --> kbaseui: send __""europa.authnavigate""__\nwith token, path, params
+|||
+
+@enduml
