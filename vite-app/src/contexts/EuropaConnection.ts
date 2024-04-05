@@ -1,13 +1,14 @@
+import AJV from 'ajv';
+import { SomeJSONSchema } from 'ajv/dist/types/json-schema';
 import ReceiveChannel from 'lib/ReceiveChannel';
 import SendChannel, { ChannelMessage } from 'lib/SendChannel';
-import { v4 as uuidv4 } from 'uuid';
-
 import { AuthError } from 'lib/kb_lib/Auth2Error';
 import { JSONRPC11Exception } from 'lib/kb_lib/comm/JSONRPC11/JSONRPC11';
 import UserProfileClient, { UserProfile } from 'lib/kb_lib/comm/coreServices/UserProfile';
 import { Messenger } from 'lib/messenger';
 import { ResourcePath, navigate2 } from 'lib/navigation';
 import { Config } from 'types/config';
+import { v4 as uuidv4 } from 'uuid';
 import { Account, Auth2, TokenInfo } from '../lib/kb_lib/Auth2';
 import { RedirectMessagePayload } from './EuropaContext';
 import { urlToNavigationPath } from './RouterContext';
@@ -82,11 +83,28 @@ export interface AuthNavigatePayload {
   navigation: ResourcePath;
 }
 
+export interface EuropaConnectPayload {
+  channelId: string;
+}
+const KBASE_UI_CONNECT_PAYLOAD_SCHEMA: SomeJSONSchema = {
+  type: 'object',
+  required: ['channel'],
+  additionalProperties: false,
+  properties: {
+    channel: { type: 'string' },
+  },
+};
+export function assertKBaseUIConnectPayload(payload: unknown): asserts payload is EuropaConnectPayload {
+  const validate = new AJV().compile(KBASE_UI_CONNECT_PAYLOAD_SCHEMA);
+  const isValid = validate(payload);
+  if (!isValid) {
+    throw new Error('connect payload is not valid');
+  }
+}
+
 export interface EuropaAuthenticatedPayload {
   token: string;
-  //   navigation?: ResourcePath;
-//   nextRequest?: NextRequestObject;
-    navigation?: ResourcePath;
+  navigation?: ResourcePath;
 }
 
 export interface EuropaNavigationPayload {
@@ -160,18 +178,16 @@ export interface EuropaConnectionConstructorParams {
 export default class EuropaConnection {
   //   connectionState: ConnectionState;
   connectionStatus: ConnectionStatus;
-  channelId: string;
   params: EuropaConnectionConstructorParams;
   receiveChannel: ReceiveChannel;
   sendChannel: SendChannel;
   constructor(params: EuropaConnectionConstructorParams) {
     this.params = params;
-    this.channelId = uuidv4();
 
     this.connectionStatus = ConnectionStatus.NONE;
 
     const receiveSpy = (() => {
-      return (message: ChannelMessage, extra?: any) => {
+      return (message: ChannelMessage, extra?: unknown) => {
         console.info('[EuropaConnection][spy][RECEIVE] ->', message, extra);
       };
     })();
@@ -179,12 +195,12 @@ export default class EuropaConnection {
     this.receiveChannel = new ReceiveChannel({
       window,
       expectedOrigin: this.europaOrigin(),
-      channel: this.channelId,
+      channel: uuidv4(),
       spy: this.params.spyOnMessages ? receiveSpy : undefined,
     });
 
     const sendSpy = (() => {
-      return (message: ChannelMessage, extra?: any) => {
+      return (message: ChannelMessage, extra?: unknown) => {
         console.info('[EuropaConnection][spy][SEND] ->', message, extra);
       };
     })();
@@ -325,15 +341,18 @@ export default class EuropaConnection {
     //   - validate auth token if sent
     return new Promise((resolve) => {
       // Europa sends a connect request as well.
-      this.receiveChannel.once('europa.connect', () => {
+      this.receiveChannel.once('europa.connect', (payload: unknown) => {
+        // TODO: payload assertion
+        const { channelId } = payload as EuropaConnectPayload;
+
         // Now we can switch the channel to our unique channel id.
-        this.sendChannel.setChannelId(this.channelId);
+        this.sendChannel.setChannelId(channelId);
 
         this.connectionStatus = ConnectionStatus.CONNECTED;
 
         // Now we await the message telling us about the authentication state and
         // first navigation.
-        this.receiveChannel.once('europa.authnavigate', async (payload: any) => {
+        this.receiveChannel.once('europa.authnavigate', async (payload: unknown) => {
           this.setupListeners();
 
           this.params.onAuthNavigate(payload as AuthNavigatePayload);
@@ -347,7 +366,7 @@ export default class EuropaConnection {
       this.receiveChannel.start();
 
       // Let Europa know that we are ready, we want to connect.
-      this.sendChannel.send('kbase-ui.connect', { channel: this.channelId });
+      this.sendChannel.send('kbase-ui.connect', { channel: this.receiveChannel.channel });
     });
 
     // when receive start, send started
@@ -356,15 +375,15 @@ export default class EuropaConnection {
   setupListeners() {
     // Set up handlers for Europa events.
 
-    this.receiveChannel.on('europa.navigate', (payload: any) => {
+    this.receiveChannel.on('europa.navigate', (payload: unknown) => {
       this.onEuropaNavigation(payload as EuropaNavigationPayload);
     });
 
-    this.receiveChannel.on('europa.authenticated', (payload: any) => {
+    this.receiveChannel.on('europa.authenticated', (payload: unknown) => {
       this.params.onAuthenticated(payload as EuropaAuthenticatedPayload);
     });
 
-    this.receiveChannel.on('europa.deauthenticated', (payload: any) => {
+    this.receiveChannel.on('europa.deauthenticated', (payload: unknown) => {
       this.params.onDeauthenticated(payload as DeauthenticatedPayload);
     });
 
@@ -392,7 +411,7 @@ export default class EuropaConnection {
     });
 
     this.params.messenger.on('session', 'logout', () => {
-        this.sendChannel.send('kbase-ui.logout', {});
+      this.sendChannel.send('kbase-ui.logout', {});
     });
 
     this.params.messenger.on('europa', 'redirect', ({ url, newWindow }) => {
@@ -402,7 +421,6 @@ export default class EuropaConnection {
       };
 
       this.sendChannel.send('kbase-ui.redirect', payload);
-
     });
   }
 
