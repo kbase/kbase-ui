@@ -123,5 +123,5 @@ export default class SendChannel {
 
   setChannelId(channel: string) {
     this.channel = channel;
-}
+  }
 }
