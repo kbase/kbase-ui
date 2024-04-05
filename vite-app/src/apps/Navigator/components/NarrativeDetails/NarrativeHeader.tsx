@@ -267,6 +267,7 @@ export default class NarrativeHeader extends React.Component<NarrativeHeaderProp
           <PropTable
             // title="Data Objects"
             noRowsMessage="No data objects in this narrative"
+            bordered={true}
             rows={[
               [
                 'Author',
@@ -314,6 +315,7 @@ export default class NarrativeHeader extends React.Component<NarrativeHeaderProp
         <div className="col-4">
           <PropTable
             // title="Data Objects"
+            bordered={true}
             noRowsMessage="No data objects in this narrative"
             rows={this.countDataTypes(narrativeDoc).map(([key, value]) => {
               return [key, value.toString()];
@@ -335,6 +337,7 @@ export default class NarrativeHeader extends React.Component<NarrativeHeaderProp
         <div className="col-3">
           <div className="-prop-table">
             <PropTable
+              bordered={true}
               // title="Cells"
               rows={[
                 [cellTypesInfo.kbase_app.label, cellTypesInfo.kbase_app.count.toString()],
