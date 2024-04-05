@@ -6,17 +6,19 @@ The KBase User Interface (_kbase-ui_) is a web browser Single Page App (SPA) pro
 tools for [KBase](http://www.base.us) users. It is one of several user-facing interfaces
 at KBase.
 
-`kbase-ui` has traditionally served as a container for various "plugins" which provide most of the
-functionality of the interface. The current set of plugins may be found in [the plugins
-config](conig/plugins.yml).
+`kbase-ui` has traditionally served as a container for various "plugins" which
+provide most of the functionality of the interface. The current set of plugins
+may be found in [the plugins config](conig/plugins.yml).
 
 Some examples include:
 
-
-- _Data Viewer_, for inspecting any data object a user has access to (aka "landing pages"),
+- _Data Viewer_, for inspecting any data object a user has access to (aka
+  "landing pages"),
 - _Type Viewer_, for inspecting the attributes of any data type,
-- _Authenticator_, for logging into and out of user's KBase Account and granting authorization to the web app,
-- _Catalog_, for browsing, searching and (for developers) managing KBase Narrative Apps.
+- _Authenticator_, for logging into and out of user's KBase Account and granting
+  authorization to the web app,
+- _Catalog_, for browsing, searching and (for developers) managing KBase
+  Narrative Apps.
 
 More recently functionality has been added directly to the `kbase-ui` codebase,
 including:
