@@ -20,7 +20,8 @@
                 "DavidAnson.vscode-markdownlint",
                 "jebbs.plantuml",
                 "srmeyers.git-prefix",
-                "esbenp.prettier-vscode"
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint"
             ],
             "settings": {}
         }
