@@ -18,7 +18,9 @@
     "settings": {},
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
-        "DavidAnson.vscode-markdownlint"
+        "DavidAnson.vscode-markdownlint",
+        "jebbs.plantuml",
+        "srmeyers.git-prefix"
     ],
     // "containerEnv": {
     //     "DEPLOY_ENV": "narrative-dev"
