@@ -101,6 +101,124 @@ Diagram 1: Europa/kbase-ui startup sequence
 
 ### URL Formats
 
+There are three URL formats work discussion: kbase-ui "classic" urls, Europa "legacy"
+urls, and the kbase-ui "connection" url.
+
+#### Classic kbase-ui hash paths
+
+The "classic" kbase-ui url uses no URL paths, but rather the "fragment
+identifier", also known as the "hash". kbase-ui documentation often refers to it
+as the "hash path".
+
+For example, a link to a user profile in CI looks like:
+
+```url
+https://ci.kbase.us#people/kbaseuitest
+```
+
+The reason for this url form is primarily because when kbase-ui was created in 2014,
+there was poor support for Javascript to capture the setting of local URL paths.
+Honestly, I don't remember how good the support was. Javascript capture of hash change
+via the `hashchange` event was available and stable.
+
+In addition to the hash path, kbase-ui also has supported parameters via the
+"query string", also known as "search params". This support has come in various
+flavors, all of which are still supported. The search params can be on the url,
+like:
+
+```url
+https://ci.kbase.us?q=coli#data-search
+```
+
+or appended to the hashpath
+
+```url
+https://ci.kbase.us#data-search?q=coli
+```
+
+or, in the preferred form, appended to the hash-path with the dollar sign `$`.
+
+```url
+https://ci.kbase.us#datasearch$q=coli
+```
+
+The latter is preferred, as the first method, search params, causes a page
+reload when the it changes, and the second form works but is invalid url syntax.
+
+A note on the philosopy of hash paths. The "fragment identifier" is designed to
+be used to navigate within the resource idenfied by the rest of the url. Thus,
+it does seem perfectly appropriate to use the hash path to navigate within
+kbase-ui, as it is the resource idenfied by the url and is only loaded one time.
+
+In this context, URL paths almost seem like a misuse, as they do not identify a
+resource, but rather a navigation within a resource. Still, what is philosophy
+in the fact of practicality? URL paths are very useful for server side
+rendering, and are well supported now by the DOM history api.
+
+#### Europa legacy URL
+
+When Europa receives a "classic" kbase-ui URL, it simply reforms it as a
+"legacy" URL. The transformation is pretty simple.
+
+- the base url is the origin and any base path; Europa does not have a base path
+  (it is on the root), although local development uses /dev.
+- take the fragment identifier
+- extract the appended params, if any
+- extract the url params, if any
+- create a query string from the combined params
+- form a path by concatenating the legacy path prefix `legacy` and the hash path (sans
+  the initial octothorpe `#`)
+- attach the params as standard search params
+
+For example
+
+```url
+https://ci.kbase.us#people/bart
+```
+
+becomes
+
+```url
+https://ci.kbase.us/legacy/people/bar
+```
+
+Or
+
+```url
+https://ci.kbase.us#data-search$q=coli
+```
+
+becomes
+
+```url
+https://ci.kbase.us/legacy/data-search?q=coli
+```
+
+#### kbase-ui connection URL
+
+kbase-ui is attached to Europa through an iframe, whose `scr` attribute is a url
+to an instance of kbase-ui. In a deployment, this will be a deployed kbase-ui
+instance.
+
+For instance:
+
+```url
+https://legacy.ci.kbase.us
+```
+
+The url for the iframe never changes after this. All navigation from Europa into
+kbase-ui is through the messaging api.
+
+Europa and kbase-ui do provide support for hosting kbase-ui on the primary
+domain and with a base path. This configuration provides some benefits: It
+allows kbase-ui to operate with same-origin policy, which relaxes security,
+simplifies deployments, and unlocks some capabilities (e.g. using dispatchEvent
+over postMessage).
+
+```url
+https://ci.kbase.us/legacy
+```
+
 ### Window Messaging Implementation
 
 Due to the need to run kbase-ui, initially, on a subhost (e.g. legacy.ci.kbase.us),
