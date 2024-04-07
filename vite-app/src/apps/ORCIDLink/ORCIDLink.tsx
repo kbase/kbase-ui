@@ -21,133 +21,210 @@ export interface ORCIDLinkProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface ORCIDLinkState {
-}
+interface ORCIDLinkState {}
 
-export default class ORCIDLink extends Component<ORCIDLinkProps, ORCIDLinkState> {
+export default class ORCIDLink extends Component<
+    ORCIDLinkProps,
+    ORCIDLinkState
+> {
     render() {
         const routes = [
-            new Route('orcidlink', { authenticationRequired: true }, (props: RouteProps) => {
-                const returnInstruction = (() => {
-                    const raw = props.match.params.get('return_link');
-                    if (!raw) {
-                        return;
-                    }
-                    return JSON.parse(raw) as unknown as ReturnInstruction;
-                })();
+            new Route(
+                'orcidlink',
+                { authenticationRequired: true },
+                (props: RouteProps) => {
+                    const returnInstruction = (() => {
+                        const raw = props.match.params.get('return_link');
+                        if (!raw) {
+                            return;
+                        }
+                        return JSON.parse(raw) as unknown as ReturnInstruction;
+                    })();
 
-                return <HomeController
-                    {...this.props}
-                    auth={this.props.authState}
-                    returnInstruction={returnInstruction}
-                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
-                    uiOptions={props.match.params.get('ui_options')}
-                />;
-            }),
+                    return (
+                        <HomeController
+                            {...this.props}
+                            auth={this.props.authState}
+                            returnInstruction={returnInstruction}
+                            skipPrompt={
+                                props.match.params.get('skip_prompt') === 'true'
+                            }
+                            uiOptions={props.match.params.get('ui_options')}
+                        />
+                    );
+                },
+            ),
             /**
              * This route handles requests to link.
              */
-            new Route('orcidlink/link', { authenticationRequired: true }, (props: RouteProps) => {
-                const returnInstruction = (() => {
-                    const raw = props.match.params.get('return_link');
-                    if (!raw) {
-                        return;
-                    }
-                    return (JSON.parse(raw) as unknown) as ReturnInstruction;
-                })();
-                return <Link
-                    {...this.props}
-                    auth={this.props.authState}
-                    returnInstruction={returnInstruction}
-                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
-                    uiOptions={props.match.params.get('ui_options')}
-                />;
-            }), 
+            new Route(
+                'orcidlink/link',
+                { authenticationRequired: true },
+                (props: RouteProps) => {
+                    const returnInstruction = (() => {
+                        const raw = props.match.params.get('return_link');
+                        if (!raw) {
+                            return;
+                        }
+                        return JSON.parse(raw) as unknown as ReturnInstruction;
+                    })();
+                    return (
+                        <Link
+                            {...this.props}
+                            auth={this.props.authState}
+                            returnInstruction={returnInstruction}
+                            skipPrompt={
+                                props.match.params.get('skip_prompt') === 'true'
+                            }
+                            uiOptions={props.match.params.get('ui_options')}
+                        />
+                    );
+                },
+            ),
             /**
              * This route handles requests to link.
              */
-            new Route('orcidlink/revoke', { authenticationRequired: true }, () => {
-                // TODO: need to make route support authenticated and unauthenticated invocations
+            new Route(
+                'orcidlink/revoke',
+                { authenticationRequired: true },
+                () => {
+                    // TODO: need to make route support authenticated and unauthenticated invocations
 
-                return <ConfirmRevoke
-                    {...this.props}
-                    auth={this.props.authState}
-                />;
-            }),
-            new Route('orcidlink/continue/:linkingSessionId', { authenticationRequired: true }, (props: RouteProps) => {
-                const linkingSessionId = props.match.params.get('linkingSessionId')!;
-                // const returnLink = (() => {
-                //     const returnLinkRaw = props.params.get('return_link');
-                //     if (!returnLinkRaw) {
-                //         return;
-                //     }
-                //     const {
-                //         url, label
-                //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
-                //     return { url, label }
-                // })();
+                    return (
+                        <ConfirmRevoke
+                            {...this.props}
+                            auth={this.props.authState}
+                        />
+                    );
+                },
+            ),
+            new Route(
+                'orcidlink/continue/:linkingSessionId',
+                { authenticationRequired: true },
+                (props: RouteProps) => {
+                    const linkingSessionId =
+                        props.match.params.get('linkingSessionId')!;
+                    // const returnLink = (() => {
+                    //     const returnLinkRaw = props.params.get('return_link');
+                    //     if (!returnLinkRaw) {
+                    //         return;
+                    //     }
+                    //     const {
+                    //         url, label
+                    //     } = (JSON.parse(returnLinkRaw) as unknown) as ReturnLink;
+                    //     return { url, label }
+                    // })();
 
-                const returnInstruction = (() => {
-                    const raw = props.match.params.get('return_link');
-                    if (!raw) {
-                        return;
-                    }
-                    return (JSON.parse(raw) as unknown) as ReturnInstruction;
-                })();
+                    const returnInstruction = (() => {
+                        const raw = props.match.params.get('return_link');
+                        if (!raw) {
+                            return;
+                        }
+                        return JSON.parse(raw) as unknown as ReturnInstruction;
+                    })();
 
-                return <Continue {...this.props}
-                    linkingSessionId={linkingSessionId}
-                    auth={this.props.authState}
-                    returnInstruction={returnInstruction}
-                    skipPrompt={props.match.params.get('skip_prompt') === 'true'}
-                />;
-                // return <Link {...this.props} auth={authValue.value} />;
-            }),
+                    return (
+                        <Continue
+                            {...this.props}
+                            linkingSessionId={linkingSessionId}
+                            auth={this.props.authState}
+                            returnInstruction={returnInstruction}
+                            skipPrompt={
+                                props.match.params.get('skip_prompt') === 'true'
+                            }
+                        />
+                    );
+                    // return <Link {...this.props} auth={authValue.value} />;
+                },
+            ),
 
-            new Route('orcidlink/error', { authenticationRequired: true }, (props: RouteProps) => {
-                return <Error
-                    auth={this.props.authState}
-                        config={this.props.config}
-                        errorCode={parseInt(props.hashPath.params!["code"]!, 10)}
-                        title={props.hashPath.params!["title"]!}
-                        message={props.hashPath.params!["message"]!}
-                        setTitle={this.props.setTitle}
-                    />;
-            }),
-            new Route('orcidlink/help', { authenticationRequired: true }, () => {
-                return <Help />;
-            }),
+            new Route(
+                'orcidlink/error',
+                { authenticationRequired: true },
+                (props: RouteProps) => {
+                    return (
+                        <Error
+                            auth={this.props.authState}
+                            config={this.props.config}
+                            errorCode={parseInt(
+                                props.hashPath.params!['code']!,
+                                10,
+                            )}
+                            title={props.hashPath.params!['title']!}
+                            message={props.hashPath.params!['message']!}
+                            setTitle={this.props.setTitle}
+                        />
+                    );
+                },
+            ),
+            new Route(
+                'orcidlink/help',
+                { authenticationRequired: true },
+                () => {
+                    return <Help />;
+                },
+            ),
 
-            new Route('orcidlink/manage/link/:username', { authenticationRequired: true }, (props: RouteProps) => {
-                return <ViewLinkContext username={props.match.params.get('username')!} />;
-            }),
-            new Route('orcidlink/manage', { authenticationRequired: true }, () => {
-                return <ManageController
-                    {...this.props}
-                    auth={this.props.authState}
-                />;
-            }),
-        ]
+            new Route(
+                'orcidlink/manage/link/:username',
+                { authenticationRequired: true },
+                (props: RouteProps) => {
+                    return (
+                        <ViewLinkContext
+                            username={props.match.params.get('username')!}
+                        />
+                    );
+                },
+            ),
+            new Route(
+                'orcidlink/manage',
+                { authenticationRequired: true },
+                () => {
+                    return (
+                        <ManageController
+                            {...this.props}
+                            auth={this.props.authState}
+                        />
+                    );
+                },
+            ),
+        ];
 
         const authRoute = new Route(
-            '^login|signin|signup$', 
-            {authenticationRequired: false}, 
+            '^login|signin|signup$',
+            { authenticationRequired: false },
             (props: RouteProps) => {
-                return <SignIn 
-                    {...props} 
-                    key={props.hashPath.hash} 
-                    source="authorization"
-                    config={this.props.config}
-                    authState={this.props.authState}
-                    setTitle={this.props.setTitle}
-                />
-            }
-        )
+                return (
+                    <SignIn
+                        {...props}
+                        key={props.hashPath.hash}
+                        source="authorization"
+                        config={this.props.config}
+                        authState={this.props.authState}
+                        setTitle={this.props.setTitle}
+                    />
+                );
+            },
+        );
 
-        return <div style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', overflowY: 'auto', margin: '0 1em' }}>
-            <ErrorBoundary>
-                <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
-            </ErrorBoundary>
-        </div>
+        return (
+            <div
+                style={{
+                    flex: '1 1 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflowY: 'auto',
+                    margin: '0 1em',
+                }}
+            >
+                <ErrorBoundary>
+                    <Router
+                        routes={routes}
+                        hashPath={this.props.hashPath}
+                        authRoute={authRoute}
+                    />
+                </ErrorBoundary>
+            </div>
+        );
     }
 }

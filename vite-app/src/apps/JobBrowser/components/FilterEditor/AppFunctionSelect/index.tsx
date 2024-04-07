@@ -17,7 +17,7 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & AppFunctionSelectProps, "options">;
+type TheProps = Omit<DataProps & AppFunctionSelectProps, 'options'>;
 
 interface AppFunctionSelectData {
     options: Array<OptionValue<string>>;
@@ -25,11 +25,14 @@ interface AppFunctionSelectData {
 
 type AppFunctionSelectState = AsyncProcess<AppFunctionSelectData, SimpleError>;
 
-export default class AppFunctionSelect extends React.Component<TheProps, AppFunctionSelectState> {
+export default class AppFunctionSelect extends React.Component<
+    TheProps,
+    AppFunctionSelectState
+> {
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
 
@@ -39,7 +42,7 @@ export default class AppFunctionSelect extends React.Component<TheProps, AppFunc
 
     async initialize() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
@@ -47,15 +50,15 @@ export default class AppFunctionSelect extends React.Component<TheProps, AppFunc
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    options
-                }
-            })
+                    options,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -65,36 +68,35 @@ export default class AppFunctionSelect extends React.Component<TheProps, AppFunc
         const client = new NarrativeMethodStoreClient({
             token,
             url: nmsURL,
-            timeout
+            timeout,
         });
         const apps = await client.list_methods({});
-        const optionsMap = apps
-            .reduce((options, app) => {
-                const { id } = app;
+        const optionsMap = apps.reduce((options, app) => {
+            const { id } = app;
 
-                let [moduleId, functionId] = id.split('/');
+            let [moduleId, functionId] = id.split('/');
 
-                if (typeof functionId === 'undefined') {
-                    functionId = moduleId;
-                    moduleId = 'unknown';
-                }
+            if (typeof functionId === 'undefined') {
+                functionId = moduleId;
+                moduleId = 'unknown';
+            }
 
-                const option = options.get(functionId);
-                if (!option) {
-                    const newOption = new Set([moduleId]);
-                    options.set(functionId, newOption);
-                } else {
-                    option.add(moduleId);
-                }
+            const option = options.get(functionId);
+            if (!option) {
+                const newOption = new Set([moduleId]);
+                options.set(functionId, newOption);
+            } else {
+                option.add(moduleId);
+            }
 
-                return options;
-            }, new Map<string, Set<string>>());
+            return options;
+        }, new Map<string, Set<string>>());
 
         const options = Array.from(optionsMap.entries())
             .map(([key, value]) => {
                 return {
                     value: key,
-                    label: `${key} (${Array.from(value.values()).join(', ')})`
+                    label: `${key} (${Array.from(value.values()).join(', ')})`,
                 };
             })
             .sort((a, b) => {
@@ -104,18 +106,22 @@ export default class AppFunctionSelect extends React.Component<TheProps, AppFunc
     }
 
     render() {
-        switch (this.state.status)  {
+        switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading App Modules..." type='inline' />
+                return (
+                    <Loading message="Loading App Modules..." type="inline" />
+                );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
             case AsyncProcessStatus.SUCCESS:
-                return <View
-                onChange={this.props.onChange}
-                options={this.state.value.options}
-                defaultValue={this.props.defaultValue}
-            />;
+                return (
+                    <View
+                        onChange={this.props.onChange}
+                        options={this.state.value.options}
+                        defaultValue={this.props.defaultValue}
+                    />
+                );
         }
     }
 }

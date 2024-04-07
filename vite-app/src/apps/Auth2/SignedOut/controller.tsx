@@ -1,7 +1,9 @@
-
 import ErrorAlert from 'components/ErrorAlert';
 import Loading from 'components/Loading';
-import { AuthenticationState, AuthenticationStatus } from 'contexts/EuropaContext';
+import {
+    AuthenticationState,
+    AuthenticationStatus,
+} from 'contexts/EuropaContext';
 import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
 import { navigate2 } from 'lib/navigation';
@@ -20,16 +22,22 @@ export interface SignedOutControllerSuccess {
     providers: Array<IDProvider>;
 }
 
-type SignedOutControllerState = AsyncProcess<SignedOutControllerSuccess, SimpleError>
+type SignedOutControllerState = AsyncProcess<
+    SignedOutControllerSuccess,
+    SimpleError
+>;
 
-export default class SignedOutController extends Component<SignedOutControllerProps, SignedOutControllerState> {
+export default class SignedOutController extends Component<
+    SignedOutControllerProps,
+    SignedOutControllerState
+> {
     constructor(props: SignedOutControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
-    
+
     componentDidMount() {
         this.start();
     }
@@ -43,13 +51,16 @@ export default class SignedOutController extends Component<SignedOutControllerPr
     async start() {
         try {
             this.setState({
-                status: AsyncProcessStatus.PENDING
+                status: AsyncProcessStatus.PENDING,
             });
 
-            if (this.props.authState.status !== AuthenticationStatus.UNAUTHENTICATED) {
+            if (
+                this.props.authState.status !==
+                AuthenticationStatus.UNAUTHENTICATED
+            ) {
                 // Rather than show an error message, let us take the browser somewhere
                 // interesting, like the default view.
-                navigate2({path: 'narratives', type: 'europaui'})
+                navigate2({ path: 'narratives', type: 'europaui' });
 
                 return;
             }
@@ -57,23 +68,24 @@ export default class SignedOutController extends Component<SignedOutControllerPr
             this.props.setTitle('Signed Out');
 
             const providers = new Providers({
-                supportedProviders: this.props.config.services.Auth2.supportedProviders,
-                providers: this.props.config.services.Auth2.providers
+                supportedProviders:
+                    this.props.config.services.Auth2.supportedProviders,
+                providers: this.props.config.services.Auth2.providers,
             }).get();
 
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    providers
-                }
+                    providers,
+                },
             });
         } catch (ex) {
             console.error(ex);
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -82,12 +94,12 @@ export default class SignedOutController extends Component<SignedOutControllerPr
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading..." />
+                return <Loading message="Loading..." />;
             case AsyncProcessStatus.SUCCESS: {
-                return <SignedOutView providers={this.state.value.providers} />
+                return <SignedOutView providers={this.state.value.providers} />;
             }
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
         }
     }
 }

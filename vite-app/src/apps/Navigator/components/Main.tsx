@@ -28,7 +28,7 @@ export default class Main extends Component<MainProps> {
                                     }
                                     return (
                                         <NarrativeList
-                                            emptyMessage='No Narratives found'
+                                            emptyMessage="No Narratives found"
                                             categoryChange={value.setCategory}
                                             queryChange={value.setQuery}
                                             sortChange={value.setSort}

@@ -25,13 +25,17 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
     renderInfo() {
         const errorProps: Array<PropTableRow> = [
             ['message', this.props.error.message],
-            ['code', String(this.props.error.code)]
+            ['code', String(this.props.error.code)],
         ];
 
-        return <div className={styles.info}>
-            <PropTable rows={errorProps} styles={{col1: {flex: '0 0 8rem'}}} />
-        </div>;
-       
+        return (
+            <div className={styles.info}>
+                <PropTable
+                    rows={errorProps}
+                    styles={{ col1: { flex: '0 0 8rem' } }}
+                />
+            </div>
+        );
     }
 
     renderData() {
@@ -44,7 +48,10 @@ export default class StandardErrorView extends Component<StandardErrorViewProps>
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Additional Data</Accordion.Header>
                     <Accordion.Body>
-                        <PresentableJSON data={this.props.error.data} tableStyle="" />
+                        <PresentableJSON
+                            data={this.props.error.data}
+                            tableStyle=""
+                        />
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>

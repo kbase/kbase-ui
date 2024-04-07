@@ -8,10 +8,12 @@ export interface NarrativeSelectProps {
     defaultValue?: Array<number>;
 }
 
-interface NarrativeSelectState {
-}
+interface NarrativeSelectState {}
 
-export default class NarrativeSelect extends Component<NarrativeSelectProps, NarrativeSelectState> {
+export default class NarrativeSelect extends Component<
+    NarrativeSelectProps,
+    NarrativeSelectState
+> {
     onChange(value: number) {
         // oddly enough, clearing a field will set value
         // to undefined :(
@@ -25,34 +27,43 @@ export default class NarrativeSelect extends Component<NarrativeSelectProps, Nar
     }
 
     render() {
-        const narrativeOptions = this.props.narratives
-            .map((narrative) => {
-                return <Select.Option
-                    key={narrative.value}
-                    value={narrative.value}>{narrative.label}</Select.Option>;
-            });
+        const narrativeOptions = this.props.narratives.map((narrative) => {
+            return (
+                <Select.Option key={narrative.value} value={narrative.value}>
+                    {narrative.label}
+                </Select.Option>
+            );
+        });
 
-        const defaultValue = this.props.defaultValue ? this.props.defaultValue[0] : undefined;
+        const defaultValue = this.props.defaultValue
+            ? this.props.defaultValue[0]
+            : undefined;
 
-        return <Select<number>
-            showSearch
-            allowClear
-            defaultValue={defaultValue}
-            onChange={this.onChange.bind(this)}
-            // TODO: figure out how to remove this hack; without it, display is
-            // inline-block, and the control does not fill the column.
-            style={{display: 'block'}}
-            filterOption={(filterTerm, option) => {
-                if (!option) {
-                    return true;
-                }
-                if (!option.props.children) {
-                    return true;
-                }
-                return String(option.props.children).toLowerCase().indexOf(filterTerm.toLowerCase()) >= 0;
-            }}
-        >
-            {narrativeOptions}
-        </Select>;
+        return (
+            <Select<number>
+                showSearch
+                allowClear
+                defaultValue={defaultValue}
+                onChange={this.onChange.bind(this)}
+                // TODO: figure out how to remove this hack; without it, display is
+                // inline-block, and the control does not fill the column.
+                style={{ display: 'block' }}
+                filterOption={(filterTerm, option) => {
+                    if (!option) {
+                        return true;
+                    }
+                    if (!option.props.children) {
+                        return true;
+                    }
+                    return (
+                        String(option.props.children)
+                            .toLowerCase()
+                            .indexOf(filterTerm.toLowerCase()) >= 0
+                    );
+                }}
+            >
+                {narrativeOptions}
+            </Select>
+        );
     }
 }

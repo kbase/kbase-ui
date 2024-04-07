@@ -1,28 +1,35 @@
-import { ErrorCode } from "apps/ORCIDLink/lib/ORCIDLinkClient";
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { ErrorCode } from 'apps/ORCIDLink/lib/ORCIDLinkClient';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 // import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
-import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
-import ORCIDLinkAPI, { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
-import { Component } from "react";
-import { Config } from "types/config";
+import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
+import ORCIDLinkAPI, {
+    InfoResult,
+} from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
+import { Component } from 'react';
+import { Config } from 'types/config';
 import {
-    ProfileWarnings, UserProfileBFFService, UserProfileSubset, UserProfileUpdate,
-    UserProfileUser, fetchProfileAPI2, updateProfileAPI
-} from "../API";
-import { AsyncFetchState, AsyncFetchStatus } from "../asyncFetchState";
-import { SERVICE_CALL_TIMEOUT } from "../constants";
-import ProfileEditor from "./ProfileEditor";
-import ProfileViewer from "./ProfileViewer";
+    ProfileWarnings,
+    UserProfileBFFService,
+    UserProfileSubset,
+    UserProfileUpdate,
+    UserProfileUser,
+    fetchProfileAPI2,
+    updateProfileAPI,
+} from '../API';
+import { AsyncFetchState, AsyncFetchStatus } from '../asyncFetchState';
+import { SERVICE_CALL_TIMEOUT } from '../constants';
+import ProfileEditor from './ProfileEditor';
+import ProfileViewer from './ProfileViewer';
 
 // ORCiD
 
 export type ORCIDView = {
     orcidId: string | null;
     serviceInfo: InfoResult;
-}
+};
 
 export interface SimpleError {
     message: string;
@@ -40,18 +47,19 @@ export interface Org {
 
 export type OrgsState = AsyncProcess<{ orgs: Array<Org> }, SimpleError>;
 
-
 // PROFILE
 
-
 export interface ProfileView {
-    user: UserProfileUser
-    profile: UserProfileSubset
-    editEnable: boolean,
-    warnings: ProfileWarnings
+    user: UserProfileUser;
+    profile: UserProfileSubset;
+    editEnable: boolean;
+    warnings: ProfileWarnings;
 }
 
-export type ProfileState = AsyncFetchState<{ profileView: ProfileView }, SimpleError>
+export type ProfileState = AsyncFetchState<
+    { profileView: ProfileView },
+    SimpleError
+>;
 
 export interface ProfileControllerProps {
     authState: AuthenticationStateAuthenticated;
@@ -61,27 +69,30 @@ export interface ProfileControllerProps {
 }
 
 interface ProfileControllerState {
-    orgsState: OrgsState,
-    orcidState: ORCIDState,
+    orgsState: OrgsState;
+    orcidState: ORCIDState;
     profileState: ProfileState;
     isEditing: boolean;
 }
 
-export default class ProfileController extends Component<ProfileControllerProps, ProfileControllerState> {
+export default class ProfileController extends Component<
+    ProfileControllerProps,
+    ProfileControllerState
+> {
     constructor(props: ProfileControllerProps) {
         super(props);
         this.state = {
             orgsState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
             profileState: {
-                status: AsyncFetchStatus.NONE
+                status: AsyncFetchStatus.NONE,
             },
             orcidState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
-            isEditing: false
-        }
+            isEditing: false,
+        };
     }
 
     componentDidMount() {
@@ -95,19 +106,19 @@ export default class ProfileController extends Component<ProfileControllerProps,
     async loadOrgs() {
         this.setState({
             orgsState: {
-                status: AsyncProcessStatus.PENDING
-            }
+                status: AsyncProcessStatus.PENDING,
+            },
         });
 
         try {
-            const orgs = await this.fetchOrgs(this.props.username)
+            const orgs = await this.fetchOrgs(this.props.username);
             this.setState({
                 orgsState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        orgs
-                    }
-                }
+                        orgs,
+                    },
+                },
             });
         } catch (ex) {
             const message = (() => {
@@ -120,41 +131,38 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 orgsState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
+                        message,
+                    },
+                },
             });
         }
     }
 
     async fetchOrgs(username: string) {
         const {
-            authInfo: {
-                token
-            }
-        } = this.props.authState
+            authInfo: { token },
+        } = this.props.authState;
 
         const {
             services: {
-                ServiceWizard: {
-                    url
-                }
-            }
+                ServiceWizard: { url },
+            },
         } = this.props.config;
 
         const client = new UserProfileBFFService({
-            url, token, timeout: SERVICE_CALL_TIMEOUT
-        })
+            url,
+            token,
+            timeout: SERVICE_CALL_TIMEOUT,
+        });
 
         const orgs = await client.orgsList(username);
-        return orgs
-            .map(({ name, id, custom }) => {
-                return {
-                    name,
-                    id,
-                    logoURL: custom.logourl,
-                };
-            });
+        return orgs.map(({ name, id, custom }) => {
+            return {
+                name,
+                id,
+                logoURL: custom.logourl,
+            };
+        });
     }
 
     async updateProfile(updatedProfile: UserProfileUpdate) {
@@ -162,54 +170,61 @@ export default class ProfileController extends Component<ProfileControllerProps,
             this.setState({
                 profileState: {
                     ...this.state.profileState,
-                    status: AsyncFetchStatus.REFETCHING
-                }
-            })
+                    status: AsyncFetchStatus.REFETCHING,
+                },
+            });
         } else {
             this.setState({
                 profileState: {
-                    status: AsyncFetchStatus.FETCHING
-                }
-            })
+                    status: AsyncFetchStatus.FETCHING,
+                },
+            });
         }
 
         const {
             services: {
-                UserProfile: {
-                    url: userProfileServiceURL,
-                }
-            }
+                UserProfile: { url: userProfileServiceURL },
+            },
         } = this.props.config;
 
         const {
             authInfo: {
                 token,
-                account: {
-                    user: authUsername
-                }
-            }
-        } = this.props.authState
+                account: { user: authUsername },
+            },
+        } = this.props.authState;
 
         try {
             const [status, message] = await updateProfileAPI(
                 token,
                 userProfileServiceURL,
-                updatedProfile
+                updatedProfile,
             );
             if (status !== 200) {
                 this.setState({
                     profileState: {
                         status: AsyncFetchStatus.ERROR,
                         error: {
-                            message
-                        }
-                    }
+                            message,
+                        },
+                    },
                 });
                 return;
             }
 
-            const [profile, warnings] = await fetchProfileAPI2(this.props.username, token, userProfileServiceURL);
-            const { user, profile: { userdata, preferences, synced: { gravatarHash } } } = profile;
+            const [profile, warnings] = await fetchProfileAPI2(
+                this.props.username,
+                token,
+                userProfileServiceURL,
+            );
+            const {
+                user,
+                profile: {
+                    userdata,
+                    preferences,
+                    synced: { gravatarHash },
+                },
+            } = profile;
 
             const isOwner = profile.user.username === authUsername;
 
@@ -217,18 +232,18 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 user,
                 profile: { userdata, preferences, gravatarHash },
                 editEnable: isOwner,
-                warnings
+                warnings,
             };
 
             this.setState({
                 profileState: {
                     status: AsyncFetchStatus.SUCCESS,
                     value: {
-                        profileView
-                    }
+                        profileView,
+                    },
                 },
-                isEditing: false
-            })
+                isEditing: false,
+            });
         } catch (ex) {
             const message = (() => {
                 if (ex instanceof Error) {
@@ -240,9 +255,9 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 profileState: {
                     status: AsyncFetchStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
+                        message,
+                    },
+                },
             });
         }
     }
@@ -250,22 +265,18 @@ export default class ProfileController extends Component<ProfileControllerProps,
     async checkORCID(username: string) {
         this.setState({
             orcidState: {
-                status: AsyncProcessStatus.PENDING
-            }
+                status: AsyncProcessStatus.PENDING,
+            },
         });
 
         const {
-            authInfo: {
-                token
-            }
-        } = this.props.authState
+            authInfo: { token },
+        } = this.props.authState;
 
         const {
             services: {
-                UserProfile: {
-                    url
-                }
-            }
+                UserProfile: { url },
+            },
         } = this.props.config;
 
         try {
@@ -275,9 +286,9 @@ export default class ProfileController extends Component<ProfileControllerProps,
                     orcidState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Cannot get baseURL'
-                        }
-                    }
+                            message: 'Cannot get baseURL',
+                        },
+                    },
                 });
                 return;
             }
@@ -288,21 +299,24 @@ export default class ProfileController extends Component<ProfileControllerProps,
             const orcidLinkAPI = new ORCIDLinkAPI({
                 url: `${orcidLinkURL.toString()}/api/v1`,
                 timeout: SERVICE_CALL_TIMEOUT,
-                token
+                token,
             });
 
             const serviceInfo = await orcidLinkAPI.info();
 
             try {
-                const { orcid_auth: { orcid: orcidId } } = await orcidLinkAPI.getOtherLink({ username });
+                const {
+                    orcid_auth: { orcid: orcidId },
+                } = await orcidLinkAPI.getOtherLink({ username });
                 this.setState({
                     orcidState: {
                         status: AsyncProcessStatus.SUCCESS,
                         value: {
-                            orcidId, serviceInfo
-                        }
-                    }
-                })
+                            orcidId,
+                            serviceInfo,
+                        },
+                    },
+                });
             } catch (ex) {
                 if (ex instanceof JSONRPC20Exception) {
                     if (ex.error.code === ErrorCode.not_found) {
@@ -310,10 +324,11 @@ export default class ProfileController extends Component<ProfileControllerProps,
                             orcidState: {
                                 status: AsyncProcessStatus.SUCCESS,
                                 value: {
-                                    orcidId: null, serviceInfo
-                                }
-                            }
-                        })
+                                    orcidId: null,
+                                    serviceInfo,
+                                },
+                            },
+                        });
                         return;
                     }
                 }
@@ -325,27 +340,27 @@ export default class ProfileController extends Component<ProfileControllerProps,
                     orcidState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else if (ex instanceof Error) {
                 this.setState({
                     orcidState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     orcidState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Unknown error'
-                        }
-                    }
+                            message: 'Unknown error',
+                        },
+                    },
                 });
             }
         }
@@ -354,31 +369,37 @@ export default class ProfileController extends Component<ProfileControllerProps,
     async fetchProfile(username: string) {
         this.setState({
             profileState: {
-                status: AsyncFetchStatus.FETCHING
-            }
+                status: AsyncFetchStatus.FETCHING,
+            },
         });
 
         const {
             authInfo: {
                 token,
-                account: {
-                    user: authUsername
-                }
+                account: { user: authUsername },
             },
-
-        } = this.props.authState
+        } = this.props.authState;
 
         const {
             services: {
-                UserProfile: {
-                    url
-                }
-            }
+                UserProfile: { url },
+            },
         } = this.props.config;
 
         try {
-            const [profile, warnings] = await fetchProfileAPI2(username, token, url);
-            const { user, profile: { userdata, preferences, synced: { gravatarHash } } } = profile;
+            const [profile, warnings] = await fetchProfileAPI2(
+                username,
+                token,
+                url,
+            );
+            const {
+                user,
+                profile: {
+                    userdata,
+                    preferences,
+                    synced: { gravatarHash },
+                },
+            } = profile;
 
             const isOwner = profile.user.username === authUsername;
 
@@ -386,23 +407,25 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 user,
                 profile: { userdata, preferences, gravatarHash },
                 editEnable: isOwner,
-                warnings
+                warnings,
             };
 
             if (isOwner) {
                 this.props.setTitle('Your User Profile');
             } else {
-                this.props.setTitle(`User Profile for ${profileView.user.realname}`);
+                this.props.setTitle(
+                    `User Profile for ${profileView.user.realname}`,
+                );
             }
 
             this.setState({
                 profileState: {
                     status: AsyncFetchStatus.SUCCESS,
                     value: {
-                        profileView
-                    }
-                }
-            })
+                        profileView,
+                    },
+                },
+            });
         } catch (ex) {
             const message = (() => {
                 if (ex instanceof Error) {
@@ -414,48 +437,60 @@ export default class ProfileController extends Component<ProfileControllerProps,
                 profileState: {
                     status: AsyncFetchStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
+                        message,
+                    },
+                },
             });
         }
     }
 
     toggleEditing() {
         this.setState({
-            isEditing: !this.state.isEditing
-        })
+            isEditing: !this.state.isEditing,
+        });
     }
 
     render() {
         switch (this.state.profileState.status) {
             case AsyncFetchStatus.NONE:
-                return <Loading message="Initializing..." />
+                return <Loading message="Initializing..." />;
             case AsyncFetchStatus.FETCHING:
-                return <Loading message="Loading User Profile..." />
+                return <Loading message="Loading User Profile..." />;
             case AsyncFetchStatus.ERROR:
-                return <ErrorMessage message={this.state.profileState.error.message} />
+                return (
+                    <ErrorMessage
+                        message={this.state.profileState.error.message}
+                    />
+                );
             case AsyncFetchStatus.REFETCHING:
             case AsyncFetchStatus.SUCCESS:
                 if (this.state.isEditing) {
-                    return <ProfileEditor
-                        orgsState={this.state.orgsState}
-                        profileView={this.state.profileState.value.profileView}
-                        orcidState={this.state.orcidState}
-                        updateProfile={this.updateProfile.bind(this)}
-                        checkORCID={this.checkORCID.bind(this)}
-                        fetchProfile={this.fetchProfile.bind(this)}
-                        toggleEditing={this.toggleEditing.bind(this)}
-                    />
+                    return (
+                        <ProfileEditor
+                            orgsState={this.state.orgsState}
+                            profileView={
+                                this.state.profileState.value.profileView
+                            }
+                            orcidState={this.state.orcidState}
+                            updateProfile={this.updateProfile.bind(this)}
+                            checkORCID={this.checkORCID.bind(this)}
+                            fetchProfile={this.fetchProfile.bind(this)}
+                            toggleEditing={this.toggleEditing.bind(this)}
+                        />
+                    );
                 } else {
-                    return <ProfileViewer
-                        orgsState={this.state.orgsState}
-                        profileView={this.state.profileState.value.profileView}
-                        orcidState={this.state.orcidState}
-                        checkORCID={this.checkORCID.bind(this)}
-                        fetchProfile={this.fetchProfile.bind(this)}
-                        toggleEditing={this.toggleEditing.bind(this)}
-                    />
+                    return (
+                        <ProfileViewer
+                            orgsState={this.state.orgsState}
+                            profileView={
+                                this.state.profileState.value.profileView
+                            }
+                            orcidState={this.state.orcidState}
+                            checkORCID={this.checkORCID.bind(this)}
+                            fetchProfile={this.fetchProfile.bind(this)}
+                            toggleEditing={this.toggleEditing.bind(this)}
+                        />
+                    );
                 }
         }
     }

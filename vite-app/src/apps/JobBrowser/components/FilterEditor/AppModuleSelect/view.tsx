@@ -9,12 +9,12 @@ export interface AppModuleSelectProps {
     defaultValue?: Array<string>;
 }
 
-interface AppModuleSelectState {
+interface AppModuleSelectState {}
 
-}
-
-export default class AppModuleSelect extends Component<AppModuleSelectProps, AppModuleSelectState> {
-
+export default class AppModuleSelect extends Component<
+    AppModuleSelectProps,
+    AppModuleSelectState
+> {
     // onChange(value: string) {
     //     // oddly enough, clearing a field will set value
     //     // to undefined :(
@@ -31,35 +31,42 @@ export default class AppModuleSelect extends Component<AppModuleSelectProps, App
     // }
 
     renderAppModuleSelector() {
-        const options = this.props.options
-            .map((option) => {
-                return <Select.Option
-                    key={option.value}
-                    value={option.value}>{option.label}</Select.Option>;
-            });
+        const options = this.props.options.map((option) => {
+            return (
+                <Select.Option key={option.value} value={option.value}>
+                    {option.label}
+                </Select.Option>
+            );
+        });
 
         // const defaultValue = this.props.defaultValue ? this.props.defaultValue[0] : undefined;
-        return <Select<string>
-            showSearch
-            onChange={this.props.onChange}
-            // TODO: figure out how to remove this hack; without it, display is
-            // inline-block, and the control does not fill the column.
-            style={{display: 'block'}}
-            allowClear
-            // defaultValue={defaultValue}
-            value={this.props.value}
-            filterOption={(filterTerm, option) => {
-                if (!option) {
-                    return true;
-                }
-                if (!option.props.children) {
-                    return true;
-                }
-                return String(option.props.children).toLowerCase().indexOf(filterTerm.toLowerCase()) >= 0;
-            }}
-        >
-            {options}
-        </Select>;
+        return (
+            <Select<string>
+                showSearch
+                onChange={this.props.onChange}
+                // TODO: figure out how to remove this hack; without it, display is
+                // inline-block, and the control does not fill the column.
+                style={{ display: 'block' }}
+                allowClear
+                // defaultValue={defaultValue}
+                value={this.props.value}
+                filterOption={(filterTerm, option) => {
+                    if (!option) {
+                        return true;
+                    }
+                    if (!option.props.children) {
+                        return true;
+                    }
+                    return (
+                        String(option.props.children)
+                            .toLowerCase()
+                            .indexOf(filterTerm.toLowerCase()) >= 0
+                    );
+                }}
+            >
+                {options}
+            </Select>
+        );
     }
     render() {
         return this.renderAppModuleSelector();

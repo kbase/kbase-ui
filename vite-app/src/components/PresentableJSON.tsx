@@ -18,34 +18,44 @@ export default class PresentableJSON extends Component<PresentableJSONProps> {
 
     renderArray(data: JSONArray) {
         const rows = data.map((datum, index) => {
-            return <tr key={index}>
-                <th style={{ color: 'rgba(150, 150, 150, 1)' }}>{index}</th>
-                <td><span className="fa fa-arrow-right" /></td>
-                <td>{this.renderJSON(datum)}</td>
-            </tr>
+            return (
+                <tr key={index}>
+                    <th style={{ color: 'rgba(150, 150, 150, 1)' }}>{index}</th>
+                    <td>
+                        <span className="fa fa-arrow-right" />
+                    </td>
+                    <td>{this.renderJSON(datum)}</td>
+                </tr>
+            );
         });
 
-        return <table className={this.tableClass()}>
-            <tbody>
-                {rows}
-            </tbody>
-        </table>
+        return (
+            <table className={this.tableClass()}>
+                <tbody>{rows}</tbody>
+            </table>
+        );
     }
 
     renderObject(data: JSONObject) {
         return (() => {
             const rows = Object.keys(data).map((key, index) => {
-                return <tr key={index}>
-                    <th style={{ color: 'rgba(150, 150, 150, 1)' }}>{key}</th>
-                    <td><span className="fa fa-arrow-right" /></td>
-                    <td>{this.renderJSON(data[key])}</td>
-                </tr>
+                return (
+                    <tr key={index}>
+                        <th style={{ color: 'rgba(150, 150, 150, 1)' }}>
+                            {key}
+                        </th>
+                        <td>
+                            <span className="fa fa-arrow-right" />
+                        </td>
+                        <td>{this.renderJSON(data[key])}</td>
+                    </tr>
+                );
             });
-            return <table className={this.tableClass()}>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            return (
+                <table className={this.tableClass()}>
+                    <tbody>{rows}</tbody>
+                </table>
+            );
         })();
     }
 
@@ -67,7 +77,7 @@ export default class PresentableJSON extends Component<PresentableJSONProps> {
                     return this.renderObject(data);
                 }
             default:
-                return 'Not representable: ' + (typeof data);
+                return 'Not representable: ' + typeof data;
         }
     }
 

@@ -1,14 +1,17 @@
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { RouteProps } from "components/Router2";
-import { AuthenticationState, AuthenticationStatus } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
-import { NextRequestObject } from "lib/NextRequest";
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { RouteProps } from 'components/Router2';
+import {
+    AuthenticationState,
+    AuthenticationStatus,
+} from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { NextRequestObject } from 'lib/NextRequest';
 import { SimpleError } from 'lib/SimpleError';
-import { navigate2 } from "lib/navigation";
-import { Component } from "react";
-import { Config } from "types/config";
-import { SignInSource, SignInView } from "./SignInView";
+import { navigate2 } from 'lib/navigation';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import { SignInSource, SignInView } from './SignInView';
 
 export interface SignInParams {
     nextrequest: string;
@@ -17,25 +20,24 @@ export interface SignInParams {
 export interface SignInProps extends RouteProps {
     // params: SignInParams
     // nextrequest: string,
-    authState: AuthenticationState,
-    config: Config,
+    authState: AuthenticationState;
+    config: Config;
     source: SignInSource;
     setTitle: (title: string) => void;
 }
 
 export interface SignInSuccessState {
-    nextRequest: NextRequestObject | null
+    nextRequest: NextRequestObject | null;
 }
 
 export type SignInState = AsyncProcess<SignInSuccessState, SimpleError>;
-
 
 export class SignIn extends Component<SignInProps, SignInState> {
     constructor(props: SignInProps) {
         super(props);
 
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
 
@@ -47,18 +49,18 @@ export class SignIn extends Component<SignInProps, SignInState> {
      * We use this lifecycle call because the sign-in component may be invoked
      * repeatedly without any inetervening route if the user clicks on buttons or links
      * which cause the signin compnent to be rendered for different target paths.
-     * 
+     *
      * The incoming prop for the hash path will have changed, but this will not
      * naturally cause the re-rendering of the sign in component. We need it to
      * re-render as part of the ui represents the "sign in required" notification which
      * reflects the route the user intended to invoke w/o auth.
-     * 
+     *
      * Actually, the other approach is now used -- to place a key on the invocation of
      * this component - with that key being the hash path of the target route. That
      * causes this component to be remounted when the hash path changes.
-     * 
-     * @param prevProps 
-     * @param prevState 
+     *
+     * @param prevProps
+     * @param prevState
      */
     // componentDidUpdate(prevProps: SignInProps, _: SignInState) {
     //     // TODO: should also compare params.
@@ -68,7 +70,10 @@ export class SignIn extends Component<SignInProps, SignInState> {
     // }
 
     getNextRequest(): NextRequestObject | null {
-        if (this.props.hashPath.params && Object.keys(this.props.hashPath.params).includes('nextrequest')) {
+        if (
+            this.props.hashPath.params &&
+            Object.keys(this.props.hashPath.params).includes('nextrequest')
+        ) {
             return JSON.parse(this.props.hashPath.params['nextrequest']!);
         }
         return null;
@@ -78,20 +83,23 @@ export class SignIn extends Component<SignInProps, SignInState> {
     async prepare() {
         try {
             this.setState({
-                status: AsyncProcessStatus.PENDING
+                status: AsyncProcessStatus.PENDING,
             });
 
             // If we land here and are logged in already,
             // just go to the "dashboard"
             const nextRequest = this.getNextRequest();
 
-            if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
+            if (
+                this.props.authState.status ===
+                AuthenticationStatus.AUTHENTICATED
+            ) {
                 if (nextRequest) {
                     // navigate(nextRequest.hash, nextRequest.params);
                     navigate2(nextRequest.path);
                 } else {
                     // TODO: navigate to default path...
-                    navigate2({path: 'narratives', type: 'europaui'});
+                    navigate2({ path: 'narratives', type: 'europaui' });
                 }
                 return;
             }
@@ -100,16 +108,16 @@ export class SignIn extends Component<SignInProps, SignInState> {
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    nextRequest
-                }
+                    nextRequest,
+                },
             });
         } catch (ex) {
             const message = ex instanceof Error ? ex.message : 'Unknown error';
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message
-                }
+                    message,
+                },
             });
         }
     }
@@ -130,19 +138,20 @@ export class SignIn extends Component<SignInProps, SignInState> {
     // }
 
     renderPending() {
-        return <Loading message="Loading ..." />
+        return <Loading message="Loading ..." />;
     }
 
     renderError(message: string) {
-        return <ErrorMessage message={message} />
+        return <ErrorMessage message={message} />;
     }
 
     renderSuccess({ nextRequest }: SignInSuccessState) {
         const whitelistedProviders = this.props.config.services.Auth2.providers;
-        const supportedProviders = this.props.config.services.Auth2.supportedProviders;
-        const providers = supportedProviders.filter((({ id }) => {
+        const supportedProviders =
+            this.props.config.services.Auth2.supportedProviders;
+        const providers = supportedProviders.filter(({ id }) => {
             return whitelistedProviders.includes(id);
-        }));
+        });
 
         // TRY OUR origin
         // const url = new URL(this.props.config.deploy.ui.origin);
@@ -150,14 +159,16 @@ export class SignIn extends Component<SignInProps, SignInState> {
         // url.hostname = `FOO.${url.hostname}`;
         // const origin = url.origin;
 
-        return <SignInView
-            source={this.props.source}
-            providers={providers}
-            authURL={this.props.config.services.Auth2.url}
-            authState={this.props.authState}
-            nextRequest={nextRequest || undefined}
-            setTitle={this.props.setTitle}
-        />
+        return (
+            <SignInView
+                source={this.props.source}
+                providers={providers}
+                authURL={this.props.config.services.Auth2.url}
+                authState={this.props.authState}
+                nextRequest={nextRequest || undefined}
+                setTitle={this.props.setTitle}
+            />
+        );
     }
 
     render() {

@@ -1,21 +1,24 @@
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { AuthenticationState, AuthenticationStatus } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
-import { SimpleError } from "lib/SimpleError";
-import WorkspaceClient, { GetTypeInfoResult } from 'lib/kb_lib/comm/coreServices/Workspace';
-import { Component } from "react";
-import { Config } from "types/config";
-import { TypeInfo, parseTypeId } from "../common";
-import View from "./view";
-
-
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import {
+    AuthenticationState,
+    AuthenticationStatus,
+} from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { SimpleError } from 'lib/SimpleError';
+import WorkspaceClient, {
+    GetTypeInfoResult,
+} from 'lib/kb_lib/comm/coreServices/Workspace';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import { TypeInfo, parseTypeId } from '../common';
+import View from './view';
 
 export interface EnhancedTypeInfo extends GetTypeInfoResult {
     typeIdentifier: TypeInfo;
-    typeVersions: Array<TypeInfo>
-    typesUsing: Array<TypeInfo>
-    typesUsed: Array<TypeInfo>
+    typeVersions: Array<TypeInfo>;
+    typesUsing: Array<TypeInfo>;
+    typesUsed: Array<TypeInfo>;
     // id: string;
     // module: string;
     // name: string;
@@ -32,19 +35,23 @@ export interface TypeViewControllerProps {
 }
 
 export interface TypeViewControllerDataState {
-    typeInfo: EnhancedTypeInfo
+    typeInfo: EnhancedTypeInfo;
 }
 
-type TypeViewControllerState = AsyncProcess<TypeViewControllerDataState, SimpleError>
+type TypeViewControllerState = AsyncProcess<
+    TypeViewControllerDataState,
+    SimpleError
+>;
 
-
-
-export default class TypeViewController extends Component<TypeViewControllerProps, TypeViewControllerState> {
+export default class TypeViewController extends Component<
+    TypeViewControllerProps,
+    TypeViewControllerState
+> {
     constructor(props: TypeViewControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
 
     componentDidMount() {
@@ -59,19 +66,22 @@ export default class TypeViewController extends Component<TypeViewControllerProp
         //     token: this.props.runtime.service('session').getAuthToken()
         // });
         const token = (() => {
-            if (this.props.authState.status !== AuthenticationStatus.AUTHENTICATED) {
+            if (
+                this.props.authState.status !==
+                AuthenticationStatus.AUTHENTICATED
+            ) {
                 return;
             }
-            return this.props.authState.authInfo.token
+            return this.props.authState.authInfo.token;
         })();
         const workspace = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
             token,
-            timeout: this.props.config.ui.constants.clientTimeout
-        })
+            timeout: this.props.config.ui.constants.clientTimeout,
+        });
         try {
             this.setState({
-                status:  AsyncProcessStatus.PENDING
+                status: AsyncProcessStatus.PENDING,
             });
 
             // fetch data...
@@ -79,19 +89,27 @@ export default class TypeViewController extends Component<TypeViewControllerProp
 
             const typeIdentifier = parseTypeId(typeInfo.type_def);
 
-            const typeVersions: Array<TypeInfo> = typeInfo.type_vers.map((typeId) => {
-                return  parseTypeId(typeId);
-            });
+            const typeVersions: Array<TypeInfo> = typeInfo.type_vers.map(
+                (typeId) => {
+                    return parseTypeId(typeId);
+                },
+            );
 
-            const typesUsing: Array<TypeInfo> = typeInfo.using_type_defs.map((typeId) => {
-                return parseTypeId(typeId)
-            })
+            const typesUsing: Array<TypeInfo> = typeInfo.using_type_defs.map(
+                (typeId) => {
+                    return parseTypeId(typeId);
+                },
+            );
 
-            const typesUsed: Array<TypeInfo> = typeInfo.used_type_defs.map((typeId) => {
-                return parseTypeId(typeId)
-            });
+            const typesUsed: Array<TypeInfo> = typeInfo.used_type_defs.map(
+                (typeId) => {
+                    return parseTypeId(typeId);
+                },
+            );
 
-            this.props.setTitle(`Type Specification for "${typeInfo.type_def}"`);
+            this.props.setTitle(
+                `Type Specification for "${typeInfo.type_def}"`,
+            );
 
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
@@ -101,39 +119,39 @@ export default class TypeViewController extends Component<TypeViewControllerProp
                         typeIdentifier,
                         typeVersions,
                         typesUsing,
-                        typesUsed
-                    }
-                }
+                        typesUsed,
+                    },
+                },
             });
         } catch (ex) {
             console.error(ex);
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown error',
+                },
+            });
         }
     }
 
     renderLoading() {
-        return <Loading message="Loading Type Spec Viewer..." />
+        return <Loading message="Loading Type Spec Viewer..." />;
     }
 
-    renderError({message}: SimpleError) {
-        return <ErrorMessage message={message} />
+    renderError({ message }: SimpleError) {
+        return <ErrorMessage message={message} />;
     }
 
-    renderSuccess({typeInfo}: TypeViewControllerDataState) {
-        return <View typeInfo={typeInfo} />
+    renderSuccess({ typeInfo }: TypeViewControllerDataState) {
+        return <View typeInfo={typeInfo} />;
     }
-   
+
     render() {
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
                 return this.renderLoading();
-            case AsyncProcessStatus.ERROR: 
+            case AsyncProcessStatus.ERROR:
                 return this.renderError(this.state.error);
             case AsyncProcessStatus.SUCCESS:
                 return this.renderSuccess(this.state.value);

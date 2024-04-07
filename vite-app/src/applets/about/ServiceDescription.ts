@@ -32,14 +32,14 @@ export const SERVICES: Array<ServiceDescription> = [
         type: 'rest',
         module: 'Auth2',
         path: '/',
-        repoURL: "https://github.com/kbase/auth2",
+        repoURL: 'https://github.com/kbase/auth2',
         versionKey: 'version',
     },
     {
         title: 'Catalog',
         module: 'Catalog',
         type: 'jsonrpc11',
-        repoURL: "https://github.com/kbase/catalog",
+        repoURL: 'https://github.com/kbase/catalog',
         method: 'version',
     },
     {

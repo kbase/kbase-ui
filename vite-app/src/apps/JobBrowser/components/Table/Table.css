@@ -2,14 +2,14 @@
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
-    min-height: 0
+    min-height: 0;
 }
 
 .Table-header {
     flex: 0 0 50px;
     display: flex;
     flex-direction: column;
-    min-height: 0
+    min-height: 0;
 }
 
 .Table-body {
@@ -47,7 +47,7 @@
     overflow: hidden;
 }
 
-.Table-row+.Table-row {
+.Table-row + .Table-row {
     margin-top: -1px;
 }
 
@@ -63,7 +63,7 @@
     padding: 3px;
 }
 
-.Table-cell+.Table-cell {
+.Table-cell + .Table-cell {
     margin-left: -1px;
 }
 
@@ -86,7 +86,8 @@
     padding: 4px;
 }
 
-.JSON .JSONObject {}
+.JSON .JSONObject {
+}
 
 .JSON .JSONObject td,
 .JSON .JSONObject th {
@@ -94,9 +95,10 @@
     padding: 4px;
 }
 
-.JSON .JSONArray {}
+.JSON .JSONArray {
+}
 
-.JSON .JSONArray>div {
+.JSON .JSONArray > div {
     border: 1px silver solid;
     padding: 4px;
 }
@@ -105,9 +107,11 @@
     font-family: monospace;
 }
 
-.JSON .JSONString {}
+.JSON .JSONString {
+}
 
-.JSON .JSONNumber {}
+.JSON .JSONNumber {
+}
 
 .JSON .JSONNull {
     font-family: monospace;

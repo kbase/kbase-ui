@@ -9,15 +9,20 @@ export interface NiceTimeDurationProps {
     tooltipPrefix?: string;
 }
 
-interface NiceTimeDurationState { }
+interface NiceTimeDurationState {}
 
-export default class NiceTimeDuration extends Component<NiceTimeDurationProps, NiceTimeDurationState> {
+export default class NiceTimeDuration extends Component<
+    NiceTimeDurationProps,
+    NiceTimeDurationState
+> {
     render() {
         if (this.props.showTooltip === false) {
             return <span>{niceDuration(this.props.duration, {})}</span>;
         }
 
-        const fullElapsed = <span>{niceDuration(this.props.duration, {})}</span>;
+        const fullElapsed = (
+            <span>{niceDuration(this.props.duration, {})}</span>
+        );
         let tooltip;
         if (this.props.tooltipPrefix) {
             tooltip = (
@@ -31,7 +36,11 @@ export default class NiceTimeDuration extends Component<NiceTimeDurationProps, N
         }
         return (
             <Tooltip placement="bottomRight" title={tooltip}>
-                <span>{niceDuration(this.props.duration, { precision: this.props.precision })}</span>
+                <span>
+                    {niceDuration(this.props.duration, {
+                        precision: this.props.precision,
+                    })}
+                </span>
             </Tooltip>
         );
     }

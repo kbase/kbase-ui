@@ -1,7 +1,7 @@
 import {
     AuthenticationState,
     AuthenticationStatus,
-    AuthInfo
+    AuthInfo,
 } from 'contexts/EuropaContext';
 import { SearchOptions } from 'lib/clients/NarrativeSearch';
 import { navigate } from 'lib/navigation';
@@ -25,7 +25,7 @@ export interface NavigatorProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface NavigatorState { }
+interface NavigatorState {}
 
 export interface NavigatorRouteParams {
     category?: string;
@@ -64,7 +64,9 @@ export default class Navigator extends React.Component<
      * @returns The captured paramters
      */
     searchParamsFromSearch(props: RouteProps): NavigatorSearchParams {
-        const queryParams = new Map<string, string>(Object.entries(props.hashPath.params || {}));
+        const queryParams = new Map<string, string>(
+            Object.entries(props.hashPath.params || {}),
+        );
 
         const params: NavigatorSearchParams = {};
 
@@ -92,7 +94,9 @@ export default class Navigator extends React.Component<
     }
 
     detailParamsFromSearch(props: RouteProps): NarrativeDetailParams {
-        const queryParams = new Map<string, string>(Object.entries(props.hashPath.params || {}));
+        const queryParams = new Map<string, string>(
+            Object.entries(props.hashPath.params || {}),
+        );
 
         const params: NarrativeDetailParams = {};
 
@@ -119,9 +123,7 @@ export default class Navigator extends React.Component<
      * @param props
      * @returns Search options captured from the url.
      */
-    paramsToSearchOptions(
-        props: RouteProps
-    ): SearchOptions {
+    paramsToSearchOptions(props: RouteProps): SearchOptions {
         const searchParams = this.searchParamsFromSearch(props);
         return {
             category: searchParams.category || DEFAULT_CATEGORY,
@@ -131,13 +133,10 @@ export default class Navigator extends React.Component<
         };
     }
 
-    paramsToDetailOptions(
-        props: RouteProps
-    ): DetailOptions {
+    paramsToDetailOptions(props: RouteProps): DetailOptions {
         const detailParams = this.detailParamsFromSearch(props);
         return { ...detailParams };
     }
-
 
     // narrativeId;
     renderNav(authInfo: AuthInfo) {
@@ -148,12 +147,8 @@ export default class Navigator extends React.Component<
                         authInfo={authInfo}
                         config={this.props.config}
                         routeProps={this.props}
-                        searchOptions={this.paramsToSearchOptions(
-                            this.props
-                        )}
-                        detailOptions={this.paramsToDetailOptions(
-                            this.props
-                        )}
+                        searchOptions={this.paramsToSearchOptions(this.props)}
+                        detailOptions={this.paramsToDetailOptions(this.props)}
                     >
                         <Main authInfo={authInfo} />
                     </NavigatorContextWrapper>

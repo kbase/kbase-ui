@@ -11,9 +11,9 @@
  * @return {string}
  */
 export function formatSnakeCase(str: string): string {
-  str = str.replace(/_/g, ' ');
-  str = str[0].toUpperCase() + str.slice(1);
-  return str;
+    str = str.replace(/_/g, ' ');
+    str = str[0].toUpperCase() + str.slice(1);
+    return str;
 }
 
 /**
@@ -23,11 +23,11 @@ export function formatSnakeCase(str: string): string {
  * @return {string}
  */
 export function getWSTypeName(type: string): string {
-  const matches = type.match(/[a-zA-Z]*\.([a-zA-Z]+)(-\d+\.\d+)?/);
-  if (!matches || matches.length < 2) {
-    throw new Error('Invalid workspace type name: ' + type);
-  }
-  const match = matches[1];
-  // Insert a space before all caps and trim
-  return match.replace(/([A-Z][a-z])/g, ' $1').trim();
+    const matches = type.match(/[a-zA-Z]*\.([a-zA-Z]+)(-\d+\.\d+)?/);
+    if (!matches || matches.length < 2) {
+        throw new Error('Invalid workspace type name: ' + type);
+    }
+    const match = matches[1];
+    // Insert a space before all caps and trim
+    return match.replace(/([A-Z][a-z])/g, ' $1').trim();
 }

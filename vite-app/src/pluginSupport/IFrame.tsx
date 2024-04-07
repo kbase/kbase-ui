@@ -31,7 +31,7 @@ export interface IFrameProps {
     whenMounted: (el: Window | null) => Promise<void>;
 }
 
-interface IFrameState { }
+interface IFrameState {}
 
 export default class IFrame extends Component<IFrameProps, IFrameState> {
     id: string;
@@ -48,9 +48,9 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             .filter((pathElement) => {
                 return pathElement.length > 0;
             })
-            .join('/')
+            .join('/');
 
-        const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`
+        const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`;
 
         // Make an absolute url to this.
         // The plugin is always on the same host as kbase-ui
@@ -79,7 +79,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         if (developMode) {
             return String(new Date().getTime());
         } else {
-            return gitInfo.hash.abbreviated
+            return gitInfo.hash.abbreviated;
         }
     }
 
@@ -102,16 +102,14 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         // any browser navigation, just using state and components.
         if (this.props.syncHash) {
             const hashListener = () => {
-                if (
-                    element.contentWindow === null
-                ) {
+                if (element.contentWindow === null) {
                     return;
                 }
                 const path = document.location.hash
                     .substring(1)
                     .replace(/^\/+/, '');
                 element.contentWindow.location.hash = path;
-            }
+            };
             window.addEventListener('hashchange', hashListener);
         }
         this.props.whenMounted(element.contentWindow);
@@ -132,20 +130,20 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             branch: gitInfo.branch, // unused?
             commitAbbreviatedHash: gitInfo.hash.abbreviated,
             commitHash: gitInfo.hash.full,
-            commitNotes: "",
+            commitNotes: '',
             originUrl: gitInfo.originURL,
-            reflogSelector: "",
-            subject: "",
-            tag: gitInfo.tag || "n/a",
-            version: gitInfo.version || "n/a"
-        }
+            reflogSelector: '',
+            subject: '',
+            tag: gitInfo.tag || 'n/a',
+            version: gitInfo.version || 'n/a',
+        };
     }
 
     render() {
         const buildInfo = {
             git: this.gitInfoToPluginGitInfo(this.props.config.gitInfo),
             builtAt: this.props.config.buildInfo.builtAt,
-        }
+        };
 
         const params = {
             frameId: this.id,

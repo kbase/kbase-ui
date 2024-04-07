@@ -12,9 +12,7 @@ export interface DeveloperProps {
     setTitle: (title: string) => void;
 }
 
-export default class Developer extends Component<
-    DeveloperProps
-> {
+export default class Developer extends Component<DeveloperProps> {
     componentDidMount() {
         this.props.setTitle('Developer Tools ;)');
     }
@@ -33,8 +31,7 @@ export default class Developer extends Component<
                     />
                 </Tab>
                 <Tab eventKey="features" title="Features">
-                    <Features
-                        setTitle={this.props.setTitle} />
+                    <Features setTitle={this.props.setTitle} />
                 </Tab>
             </Tabs>
         );

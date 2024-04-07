@@ -1,14 +1,14 @@
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { JSONValue } from "lib/json";
-import { Component } from "react";
-import { Config } from "types/config";
-import { Model } from "../lib/Model";
-import { ErrorInfo } from "../lib/ORCIDLinkClient";
-import ErrorView from "./View";
+import { JSONValue } from 'lib/json';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import { Model } from '../lib/Model';
+import { ErrorInfo } from '../lib/ORCIDLinkClient';
+import ErrorView from './View';
 
 export interface ErrorControllerProps {
     config: Config;
@@ -17,21 +17,24 @@ export interface ErrorControllerProps {
     title: string;
     message: string;
     setTitle: (title: string) => void;
-    info?: JSONValue
+    info?: JSONValue;
 }
 
 interface ErrorControllerState {
-    errorInfoState: AsyncProcess<{ errorInfo: ErrorInfo }, SimpleError>
+    errorInfoState: AsyncProcess<{ errorInfo: ErrorInfo }, SimpleError>;
 }
 
-export default class ErrorController extends Component<ErrorControllerProps, ErrorControllerState> {
+export default class ErrorController extends Component<
+    ErrorControllerProps,
+    ErrorControllerState
+> {
     constructor(props: ErrorControllerProps) {
         super(props);
         this.state = {
             errorInfoState: {
-                status: AsyncProcessStatus.NONE
-            }
-        }
+                status: AsyncProcessStatus.NONE,
+            },
+        };
     }
 
     componentDidMount() {
@@ -41,21 +44,24 @@ export default class ErrorController extends Component<ErrorControllerProps, Err
     async loadErrorInfo() {
         this.setState({
             errorInfoState: {
-                status: AsyncProcessStatus.PENDING
-            }
+                status: AsyncProcessStatus.PENDING,
+            },
         });
 
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth })
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
             const errorInfo = await model.getErrorInfo(this.props.errorCode);
             this.setState({
                 errorInfoState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        errorInfo
-                    }
-                }
-            })
+                        errorInfo,
+                    },
+                },
+            });
         } catch (ex) {
             const message = (() => {
                 if (ex instanceof Error) {
@@ -67,10 +73,10 @@ export default class ErrorController extends Component<ErrorControllerProps, Err
                 errorInfoState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
-            })
+                        message,
+                    },
+                },
+            });
         }
     }
 
@@ -78,15 +84,20 @@ export default class ErrorController extends Component<ErrorControllerProps, Err
         switch (this.state.errorInfoState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading error info..." />
+                return <Loading message="Loading error info..." />;
             case AsyncProcessStatus.ERROR:
-                return <ErrorMessage message={this.state.errorInfoState.error.message} />
+                return (
+                    <ErrorMessage
+                        message={this.state.errorInfoState.error.message}
+                    />
+                );
             case AsyncProcessStatus.SUCCESS:
-                return <ErrorView
-                    {...this.props}
-                    errorInfo={this.state.errorInfoState.value.errorInfo}
-                />
-
+                return (
+                    <ErrorView
+                        {...this.props}
+                        errorInfo={this.state.errorInfoState.value.errorInfo}
+                    />
+                );
         }
     }
 }

@@ -29,7 +29,7 @@ interface GetExecAggrTableItem extends JSONObject {
     user: string;
 }
 
-type GetExecAggrTableResult = JSONArrayOf<GetExecAggrTableItem>
+type GetExecAggrTableResult = JSONArrayOf<GetExecAggrTableItem>;
 
 interface GetExecAggrStatsParam {
     full_app_ids?: JSONArrayOf<string>;
@@ -49,7 +49,6 @@ interface GetExecAggrStatsItem extends JSONObject {
 
 type GetExecAggrStatsResult = JSONArrayOf<GetExecAggrStatsItem>;
 
-
 export interface VersionCommitInfo {
     git_commit_hash: string;
 }
@@ -65,7 +64,6 @@ export interface BasicModuleInfo {
     release: VersionCommitInfo;
     released_version_list: Array<VersionCommitInfo>;
 }
-
 
 export interface ListBasicModuleInfoParams extends JSONLikeObject {
     owners?: Array<string>;
@@ -93,7 +91,7 @@ export default class CatalogClient extends ServiceClient {
     }
 
     async get_exec_aggr_table(
-        param: GetExecAggrTableParam
+        param: GetExecAggrTableParam,
     ): Promise<GetExecAggrTableResult> {
         const [result] = await this.callFunc<
             JSONArrayOf<JSONObject>,
@@ -103,7 +101,7 @@ export default class CatalogClient extends ServiceClient {
     }
 
     async get_exec_aggr_stats(
-        param: GetExecAggrStatsParam
+        param: GetExecAggrStatsParam,
     ): Promise<GetExecAggrStatsResult> {
         const [result] = await this.callFunc<
             JSONArrayOf<JSONObject>,
@@ -112,8 +110,13 @@ export default class CatalogClient extends ServiceClient {
         return result;
     }
 
-    async list_basic_module_info(param: ListBasicModuleInfoParams): Promise<ListBasicModuleInfoResult> {
-        const [result] = await this.callFunc<Array<JSONObject>, Array<JSONObject>>('list_basic_module_info', [toJSONObject(param)]);
+    async list_basic_module_info(
+        param: ListBasicModuleInfoParams,
+    ): Promise<ListBasicModuleInfoResult> {
+        const [result] = await this.callFunc<
+            Array<JSONObject>,
+            Array<JSONObject>
+        >('list_basic_module_info', [toJSONObject(param)]);
         return result as unknown as ListBasicModuleInfoResult;
     }
 }

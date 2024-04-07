@@ -7,8 +7,7 @@ export type WSUPA = string;
 export type SampleNodeId = string;
 export type SampleId = string;
 export type SampleVersion = number;
-export type SampleNodeType = "BioReplicate" | "TechReplicate" | "SubSample";
-
+export type SampleNodeType = 'BioReplicate' | 'TechReplicate' | 'SubSample';
 
 export interface MetadataValue {
     value: string | number;

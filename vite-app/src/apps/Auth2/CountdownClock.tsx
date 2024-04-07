@@ -11,7 +11,7 @@ export interface CountdownClockParams {
 enum CountdownClockStatus {
     NONE = 'NONE',
     RUNNING = 'RUNNING',
-    STOPPED = 'STOPPED'
+    STOPPED = 'STOPPED',
 }
 
 export default class CountdownClock {
@@ -19,7 +19,7 @@ export default class CountdownClock {
     targetTime: number;
     tickInterval: number;
     timer: number | null;
-    status: CountdownClockStatus
+    status: CountdownClockStatus;
     constructor(params: CountdownClockParams) {
         this.params = params;
         const { expiresAt, expiresIn, tick } = params;
@@ -31,7 +31,9 @@ export default class CountdownClock {
             this.targetTime = new Date().getTime() + expiresIn;
         } else {
             console.error;
-            throw new Error('Either "expiresAt" or "expiresIn" must be provided');
+            throw new Error(
+                'Either "expiresAt" or "expiresIn" must be provided',
+            );
         }
         this.tickInterval = tick || DEFAULT_TICK_INTERVAL;
         // this.onTick = onTick;
@@ -53,7 +55,9 @@ export default class CountdownClock {
         try {
             this.params.onTick(remaining);
         } catch (ex) {
-            console.error(`clock onRun: ${ex instanceof Error ? ex.message : 'Unknown Error'}`);
+            console.error(
+                `clock onRun: ${ex instanceof Error ? ex.message : 'Unknown Error'}`,
+            );
         }
         if (remaining > 0) {
             this.tock();

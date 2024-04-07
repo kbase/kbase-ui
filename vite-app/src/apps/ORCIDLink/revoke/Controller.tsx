@@ -13,7 +13,6 @@ export interface ControllerProps {
     setTitle: (title: string) => void;
 }
 
-
 export interface GetNameResult {
     first_name: string;
     last_name: string;
@@ -22,11 +21,11 @@ export interface GetNameResult {
 export type RevokeResult = null;
 
 export enum RevokeStatus {
-    NONE = "NONE",
-    LINKED = "LINKED",
-    REVOKING = "REVOKING",
-    REVOKED = "REVOKED",
-    ERROR = "ERROR"
+    NONE = 'NONE',
+    LINKED = 'LINKED',
+    REVOKING = 'REVOKING',
+    REVOKED = 'REVOKED',
+    ERROR = 'ERROR',
 }
 
 export interface RevokeStateBase {
@@ -42,12 +41,12 @@ export interface RevokeStateBase {
 //     status: RevokeStatus.NOT_LINKED;
 // }
 export interface RevokeStateNone extends RevokeStateBase {
-    status: RevokeStatus.NONE
+    status: RevokeStatus.NONE;
 }
 
 export interface RevokeStateLinked extends RevokeStateBase {
-    status: RevokeStatus.LINKED
-    linkInfo: ORCIDLinkInfo
+    status: RevokeStatus.LINKED;
+    linkInfo: ORCIDLinkInfo;
 }
 
 export interface RevokeStateRevoked extends RevokeStateBase {
@@ -63,29 +62,37 @@ export interface RevokeStateError extends RevokeStateBase {
     message: string;
 }
 
-export type RevokeState = RevokeStateNone | RevokeStateLinked | RevokeStateRevoking | RevokeStateRevoked | RevokeStateError;
+export type RevokeState =
+    | RevokeStateNone
+    | RevokeStateLinked
+    | RevokeStateRevoking
+    | RevokeStateRevoked
+    | RevokeStateError;
 
-export type LinkState = AsyncProcess<ORCIDLinkInfo | null, { message: string }>
+export type LinkState = AsyncProcess<ORCIDLinkInfo | null, { message: string }>;
 
-// State wrapped in state! 
+// State wrapped in state!
 // The initial async state is for the attempt to load the current link.
 // The wrapped state is for the revoking process.
 type ControllerState = {
-    linkState: LinkState,
-    revokeState: RevokeState
-}
+    linkState: LinkState;
+    revokeState: RevokeState;
+};
 
-export default class HomeController extends Component<ControllerProps, ControllerState> {
+export default class HomeController extends Component<
+    ControllerProps,
+    ControllerState
+> {
     constructor(props: ControllerProps) {
         super(props);
         this.state = {
             linkState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
             revokeState: {
-                status: RevokeStatus.NONE
-            }
-        }
+                status: RevokeStatus.NONE,
+            },
+        };
     }
 
     componentDidMount() {
@@ -94,7 +101,10 @@ export default class HomeController extends Component<ControllerProps, Controlle
     }
 
     async fetchLink(): Promise<ORCIDLinkInfo | null> {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
 
         // We get the link for the authenticated user, which is what this api call
         // is for!
@@ -107,9 +117,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
 
         const {
             created_at,
-            orcid_auth: {
-                expires_in, orcid, scope
-            }
+            orcid_auth: { expires_in, orcid, scope },
         } = link;
 
         // Name is the one stored from the original linking, may have changed.
@@ -121,8 +129,8 @@ export default class HomeController extends Component<ControllerProps, Controlle
             expiresAt: Date.now() + expires_in * 1000,
             realname,
             orcidID: orcid,
-            scope
-        }
+            scope,
+        };
     }
 
     // Actions
@@ -134,12 +142,15 @@ export default class HomeController extends Component<ControllerProps, Controlle
         this.setState({
             ...this.state,
             revokeState: {
-                status: RevokeStatus.REVOKING
-            }
+                status: RevokeStatus.REVOKING,
+            },
         });
 
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
             await model.deleteOwnLink();
             await model.removeShowORCIDIdPreference();
 
@@ -147,7 +158,7 @@ export default class HomeController extends Component<ControllerProps, Controlle
                 ...this.state,
                 revokeState: {
                     status: RevokeStatus.REVOKED,
-                }
+                },
             });
         } catch (ex) {
             if (ex instanceof Error) {
@@ -155,23 +166,23 @@ export default class HomeController extends Component<ControllerProps, Controlle
                     ...this.state,
                     revokeState: {
                         status: RevokeStatus.ERROR,
-                        message: ex.message
-                    }
-                })
+                        message: ex.message,
+                    },
+                });
             } else {
                 this.setState({
                     ...this.state,
                     revokeState: {
                         status: RevokeStatus.ERROR,
-                        message: 'Unknown error'
-                    }
-                })
+                        message: 'Unknown error',
+                    },
+                });
             }
         }
     }
 
     cancel() {
-        navigate("orcidlink");
+        navigate('orcidlink');
     }
 
     // Load state
@@ -190,8 +201,8 @@ export default class HomeController extends Component<ControllerProps, Controlle
         this.setState({
             ...this.state,
             linkState: {
-                status: AsyncProcessStatus.PENDING
-            }
+                status: AsyncProcessStatus.PENDING,
+            },
         });
         try {
             const linkInfo = await this.fetchLink();
@@ -201,21 +212,22 @@ export default class HomeController extends Component<ControllerProps, Controlle
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'This account does not have a KBase ORCID® Link '
-                        }
-                    }
+                            message:
+                                'This account does not have a KBase ORCID® Link ',
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     ...this.state,
                     linkState: {
                         status: AsyncProcessStatus.SUCCESS,
-                        value: linkInfo
+                        value: linkInfo,
                     },
                     revokeState: {
                         status: RevokeStatus.LINKED,
-                        linkInfo
-                    }
+                        linkInfo,
+                    },
                 });
             }
         } catch (ex) {
@@ -225,9 +237,9 @@ export default class HomeController extends Component<ControllerProps, Controlle
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
@@ -235,21 +247,23 @@ export default class HomeController extends Component<ControllerProps, Controlle
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
+                            message: `Unknown error: ${String(ex)}`,
+                        },
+                    },
                 });
             }
         }
     }
 
     render() {
-        return <View
-            linkState={this.state.linkState}
-            revokeState={this.state.revokeState}
-            revokeLink={this.revokeLink.bind(this)}
-            cancel={this.cancel.bind(this)}
-            setTitle={this.props.setTitle}
-        />
+        return (
+            <View
+                linkState={this.state.linkState}
+                revokeState={this.state.revokeState}
+                revokeLink={this.revokeLink.bind(this)}
+                cancel={this.cancel.bind(this)}
+                setTitle={this.props.setTitle}
+            />
+        );
     }
 }

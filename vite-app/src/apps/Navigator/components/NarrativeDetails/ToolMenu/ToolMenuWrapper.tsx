@@ -1,7 +1,9 @@
 import ErrorMessage from 'components/ErrorMessage';
 import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
-import WorkspaceClient, { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
+import WorkspaceClient, {
+    UserPermission,
+} from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import {
     AsyncProcess,
@@ -63,11 +65,11 @@ export default class ToolMenUWrapper extends Component<
         const ws = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
             timeout: this.props.config.ui.constants.clientTimeout,
-            token: this.props.authInfo.token
+            token: this.props.authInfo.token,
         });
-        const result = await ws.get_permissions_mass(
-            { workspaces: [{ id: workspaceId }] },
-        )
+        const result = await ws.get_permissions_mass({
+            workspaces: [{ id: workspaceId }],
+        });
         const perms = result.perms[0];
 
         const isGlobal = '*' in perms && perms['*'] !== 'n';

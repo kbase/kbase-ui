@@ -1,19 +1,22 @@
-import { AuthenticationState, AuthenticationStatus } from "contexts/EuropaContext";
-import { Auth2 } from "lib/kb_lib/Auth2";
-import { AuthError } from "lib/kb_lib/Auth2Error";
-import { navigate2 } from "lib/navigation";
-import AutoPostForm from "pluginSupport/AutoPostForm";
-import { Component } from "react";
-import { IDProvider } from "types/config";
+import {
+    AuthenticationState,
+    AuthenticationStatus,
+} from 'contexts/EuropaContext';
+import { Auth2 } from 'lib/kb_lib/Auth2';
+import { AuthError } from 'lib/kb_lib/Auth2Error';
+import { navigate2 } from 'lib/navigation';
+import AutoPostForm from 'pluginSupport/AutoPostForm';
+import { Component } from 'react';
+import { IDProvider } from 'types/config';
 
-import { navigationPathToURL } from "contexts/RouterContext";
-import { NextRequestObject } from "lib/NextRequest";
-import kbaseLogo from "../resources/images/kbase-logo-99.png";
-import SignInControls from "./SignInControls";
+import { navigationPathToURL } from 'contexts/RouterContext';
+import { NextRequestObject } from 'lib/NextRequest';
+import kbaseLogo from '../resources/images/kbase-logo-99.png';
+import SignInControls from './SignInControls';
 
 /**
  * Sign in can be triggered in two scenarios.
- * 
+ *
  * - login          - the user clicks the login button
  * - authentication - the user attempts to access a resource which requires authentication.
  */
@@ -32,44 +35,46 @@ export type SignInMode = 'signup' | 'signin';
 export type SignInStatus = 'choosing' | 'go';
 
 export interface SignInStateBase {
-    mode: SignInMode
+    mode: SignInMode;
     status: SignInStatus;
 }
 
 export interface SignInStateChoosing extends SignInStateBase {
-    status: 'choosing'
+    status: 'choosing';
 }
 
 export interface SignInStateSignIn extends SignInStateBase {
-    mode: 'signin',
+    mode: 'signin';
     status: 'go';
     provider: IDProvider;
 }
 
 export interface SignInStateSignUp extends SignInStateBase {
-    mode: 'signup',
+    mode: 'signup';
     status: 'go';
     provider: IDProvider;
 }
 
-export type SignInState = SignInStateChoosing | SignInStateSignIn | SignInStateSignUp;
-
+export type SignInState =
+    | SignInStateChoosing
+    | SignInStateSignIn
+    | SignInStateSignUp;
 
 interface SignInViewState {
-    signInState: SignInState
+    signInState: SignInState;
 }
 
 export class SignInView extends Component<SignInViewProps, SignInViewState> {
     constructor(props: SignInViewProps) {
         super(props);
         this.state = {
-            signInState: {mode: 'signin', status: 'choosing'}
-        }
+            signInState: { mode: 'signin', status: 'choosing' },
+        };
     }
 
     componentDidMount() {
         if (!this.possiblyRedirect()) {
-            const {mode, status} = this.state.signInState;
+            const { mode, status } = this.state.signInState;
             switch (status) {
                 case 'choosing':
                     switch (mode) {
@@ -90,7 +95,7 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
 
     async cancelLogin() {
         const auth2Client = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         try {
             await await auth2Client.loginCancel();
@@ -109,17 +114,19 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
                 navigate2(nextRequest.path);
             } catch (ex) {
                 // TODO: get the default path from the props.
-                navigate2({path: "narratives", type: "europaui"})
+                navigate2({ path: 'narratives', type: 'europaui' });
             }
         } else {
-            navigate2({path: "narratives", type: "europaui"})
+            navigate2({ path: 'narratives', type: 'europaui' });
         }
     }
 
     possiblyRedirect() {
         // if is logged in, just redirect to the nextrequest,
         // or the nexturl, or dashboard.
-        if (this.props.authState.status === AuthenticationStatus.AUTHENTICATED) {
+        if (
+            this.props.authState.status === AuthenticationStatus.AUTHENTICATED
+        ) {
             this.doRedirect(this.props.nextRequest);
             return true;
         }
@@ -128,7 +135,7 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
 
     /**
      * Create a "redirect url" to be provided to the auth service.
-     * 
+     *
      * This url is not actually used as the target of redirection -  rather it must
      * match the redirect url base URL registered for the auth environment (determined
      * by the auth service hostname we call). The state param is extracted from the
@@ -138,8 +145,8 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
         const params: Record<string, string> = {
             state: JSON.stringify({
                 nextrequest: this.props.nextRequest,
-                origin
-            })
+                origin,
+            }),
         };
 
         // const search = Object.keys(query)
@@ -152,15 +159,18 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
         // plugin/kbase-ui is probably running on a sub-domain host.
 
         // const appOrigin = this.props.origin;
-        
+
         // return `${appOrigin}?${search}`;
 
-        return navigationPathToURL({path: '', type: 'europaui', params }, false).toString();
-    };
+        return navigationPathToURL(
+            { path: '', type: 'europaui', params },
+            false,
+        ).toString();
+    }
 
     async doSignIn(provider: IDProvider) {
         const auth2Client = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
 
         try {
@@ -182,14 +192,14 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
             signInState: {
                 mode: 'signin',
                 status: 'go',
-                provider
-            }
+                provider,
+            },
         });
     }
 
     async doSignUp(provider: IDProvider) {
         const auth2Client = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
 
         try {
@@ -211,27 +221,27 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
             signInState: {
                 mode: 'signup',
                 status: 'go',
-                provider
-            }
-        })
+                provider,
+            },
+        });
     }
 
     chooseSignIn() {
-        this.setState ({
+        this.setState({
             signInState: {
                 ...this.state.signInState,
-                mode: 'signin'
-            }
-        })
+                mode: 'signin',
+            },
+        });
     }
 
     chooseSignUp() {
-        this.setState ({
+        this.setState({
             signInState: {
                 ...this.state.signInState,
-                mode: 'signup'
-            }
-        })
+                mode: 'signup',
+            },
+        });
     }
 
     doGo(provider: IDProvider) {
@@ -239,76 +249,86 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
             signInState: {
                 ...this.state.signInState,
                 status: 'go',
-                provider
-            }
-        })
+                provider,
+            },
+        });
     }
 
     renderSigninChoosing() {
         const source = this.props.source;
-        return <div className="SignIn">
-            <div style={{marginBottom: '20px'}}>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <img src={kbaseLogo}
-                            style={{height: '50px'}} />
-                    <h2 style={{
-                        fontWeight: 'bold',
-                        margin: '0',
-                        padding: '0',
-                        marginLeft: '10px',
-                        color: 'rgba(50, 50, 50, 1)'
-                    }}>
-                        Welcome to KBase
-                    </h2>
+        return (
+            <div className="SignIn">
+                <div style={{ marginBottom: '20px' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <img src={kbaseLogo} style={{ height: '50px' }} />
+                        <h2
+                            style={{
+                                fontWeight: 'bold',
+                                margin: '0',
+                                padding: '0',
+                                marginLeft: '10px',
+                                color: 'rgba(50, 50, 50, 1)',
+                            }}
+                        >
+                            Welcome to KBase
+                        </h2>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <p
+                            style={{
+                                maxWidth: '25em',
+                                fontStyle: 'italic',
+                                fontWeight: 'bold',
+                                color: 'rgba(100, 100, 100, 1)',
+                                marginTop: '10px',
+                                textAlign: 'center',
+                            }}
+                        >
+                            A collaborative, open environment for systems
+                            biology of plants, microbes and their communities
+                        </p>
+                    </div>
                 </div>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                    <p style={{
-                        maxWidth: '25em',
-                        fontStyle: 'italic',
-                        fontWeight: 'bold',
-                        color: 'rgba(100, 100, 100, 1)',
-                        marginTop: '10px',
-                        textAlign: 'center'
-                    }}>
-                        A collaborative, open environment for systems biology of plants, microbes and their communities
-                    </p>
-                </div>
+                <SignInControls
+                    providers={this.props.providers}
+                    // source={source}
+                    // assetsPath={this.props.runtime.pluginResourcePath}
+                    mode={this.state.signInState.mode}
+                    nextRequest={this.props.nextRequest}
+                    authRequired={source === 'authorization'}
+                    chooseSignIn={this.chooseSignIn.bind(this)}
+                    chooseSignUp={this.chooseSignUp.bind(this)}
+                    go={this.doGo.bind(this)}
+                />
             </div>
-            <SignInControls 
-                providers={this.props.providers}
-                // source={source} 
-                // assetsPath={this.props.runtime.pluginResourcePath}
-                mode={this.state.signInState.mode}
-                nextRequest={this.props.nextRequest} 
-                authRequired={source === 'authorization'}
-                chooseSignIn={this.chooseSignIn.bind(this)}
-                chooseSignUp={this.chooseSignUp.bind(this)}
-                go={this.doGo.bind(this)}
-            />
-        </div>
+        );
     }
 
     renderSignInSignIn(provider: IDProvider) {
         const redirectURL = this.makeRedirectURL();
-        
+
         const params: Record<string, string> = {
             provider: provider.id,
-            redirecturl: redirectURL
+            redirecturl: redirectURL,
         };
 
         const action = `${this.props.authURL}/login/start`;
 
-        return <AutoPostForm action={action} params={params} />
+        return <AutoPostForm action={action} params={params} />;
     }
 
     renderSignInSignUp(provider: IDProvider) {
@@ -321,18 +341,25 @@ export class SignInView extends Component<SignInViewProps, SignInViewState> {
 
         const action = `${this.props.authURL}/login/start`;
 
-        return <AutoPostForm action={action} params={params} />
+        return <AutoPostForm action={action} params={params} />;
     }
 
     render() {
-       const {mode, status} = this.state.signInState;
-       switch (status) {
-            case 'choosing': return this.renderSigninChoosing();
-            case 'go': 
+        const { mode, status } = this.state.signInState;
+        switch (status) {
+            case 'choosing':
+                return this.renderSigninChoosing();
+            case 'go':
                 switch (mode) {
-                    case 'signin': return this.renderSignInSignIn(this.state.signInState.provider);
-                    case 'signup': return this.renderSignInSignUp(this.state.signInState.provider);
+                    case 'signin':
+                        return this.renderSignInSignIn(
+                            this.state.signInState.provider,
+                        );
+                    case 'signup':
+                        return this.renderSignInSignUp(
+                            this.state.signInState.provider,
+                        );
                 }
-       }
+        }
     }
 }

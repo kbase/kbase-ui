@@ -7,4 +7,4 @@
 // in the sense of being defined in code (in an exported constant), but also used
 // literally in various parts of the codebase.
 // This means we don't need to treat it as truly configurable.
-export const LEGACY_PATH = "legacy";
+export const LEGACY_PATH = 'legacy';

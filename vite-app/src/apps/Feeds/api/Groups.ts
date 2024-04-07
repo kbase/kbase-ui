@@ -1,4 +1,4 @@
-import { RestClient } from "./RestClient";
+import { RestClient } from './RestClient';
 
 /**
  * Groups API - some useful endpoints.
@@ -28,5 +28,3 @@ export class GroupsAPI extends RestClient {
         return this.makeCall('GET', `request/id/${requestId}/resource`);
     }
 }
-
-

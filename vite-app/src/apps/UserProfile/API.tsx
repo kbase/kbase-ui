@@ -2,37 +2,43 @@ import UserProfileClient from '@kbase/ui-lib/lib/comm/coreServices/UserProfile';
 import { JSONValue } from '@kbase/ui-lib/lib/json';
 import { SERVICE_CALL_TIMEOUT } from './constants';
 
-import { DynamicServiceClient } from "apps/ORCIDLink/lib/DynamicServiceClient";
-import { JSONObject, assertJSONObject, isJSONArray, isJSONObject } from 'lib/json';
+import { DynamicServiceClient } from 'apps/ORCIDLink/lib/DynamicServiceClient';
+import {
+    JSONObject,
+    assertJSONObject,
+    isJSONArray,
+    isJSONObject,
+} from 'lib/json';
 import { hasOwnProperty } from './utils';
 
-
 // TODO: replace the BFF calls with a regular dynamic service call!
-export async function getBFFServiceUrl(token: string, serviceWizardURL: string) {
+export async function getBFFServiceUrl(
+    token: string,
+    serviceWizardURL: string,
+) {
     const body = {
         method: 'ServiceWizard.get_service_status',
         version: '1.1',
-        id: "123",
+        id: '123',
         params: [
             {
                 module_name: 'userprofileuibff',
-                version: null
-            }
-        ]
+                version: null,
+            },
+        ],
     };
     const stringBody = JSON.stringify(body);
     const response = await fetch(serviceWizardURL, {
         method: 'POST',
         mode: 'cors',
         headers: {
-            Authorization: token
+            Authorization: token,
         },
-        body: stringBody
+        body: stringBody,
     });
     if (response.status !== 200) {
-
         // return empty string so that the fetch API called this function
-        // can generate error messages. 
+        // can generate error messages.
         return '';
     } else {
         const responseJson = await response.json();
@@ -51,12 +57,15 @@ export interface UserProfilePreferenceSetting {
     updatedAt: number;
 }
 
-export type UserProfilePreferences = Record<string, UserProfilePreferenceSetting>
+export type UserProfilePreferences = Record<
+    string,
+    UserProfilePreferenceSetting
+>;
 
 export interface UserProfileSubset {
-    userdata: UserProfileUserdata
-    preferences?: UserProfilePreferences
-    gravatarHash: string
+    userdata: UserProfileUserdata;
+    preferences?: UserProfilePreferences;
+    gravatarHash: string;
 }
 
 export interface UserProfileAffiliation {
@@ -66,7 +75,7 @@ export interface UserProfileAffiliation {
     ended?: number | null;
 }
 
-export type UserProfileAffiliations = Array<UserProfileAffiliation>
+export type UserProfileAffiliations = Array<UserProfileAffiliation>;
 
 // TODO: not sure about whether nullable fields should be allowed or preferred, or if they should just be optional.
 export interface UserProfileUserdata {
@@ -77,7 +86,7 @@ export interface UserProfileUserdata {
     organization?: string | null;
     department?: string;
     gravatarDefault?: string; // not required unless avatarOptions === 'gravatar'
-    affiliations?: UserProfileAffiliations
+    affiliations?: UserProfileAffiliations;
     city?: string;
     state?: string;
     postalCode?: string;
@@ -87,7 +96,7 @@ export interface UserProfileUserdata {
     researchInterestsOther?: string | null;
     jobTitle?: string;
     jobTitleOther?: string;
-    fundingSource?: string
+    fundingSource?: string;
 }
 
 export interface UserProfileSynced {
@@ -103,10 +112,10 @@ export interface UserProfilePluginSettingsDataSearch {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    }
+                $numberLong: string;
+            };
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsJGISearch {
@@ -114,16 +123,16 @@ export interface UserProfilePluginSettingsJGISearch {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    },
+                $numberLong: string;
+            };
+        };
+    };
     jgiDataTerms: {
-        agreed: boolean,
+        agreed: boolean;
         time: {
-            $numberLong: string
-        }
-    }
+            $numberLong: string;
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsPublicSearch {
@@ -131,10 +140,10 @@ export interface UserProfilePluginSettingsPublicSearch {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    }
+                $numberLong: string;
+            };
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsUserProfile {
@@ -142,17 +151,17 @@ export interface UserProfilePluginSettingsUserProfile {
 }
 
 export interface UserProfilePlugins {
-    "data-search"?: UserProfilePluginSetting<UserProfilePluginSettingsDataSearch>
-    "jgi-search"?: UserProfilePluginSetting<UserProfilePluginSettingsJGISearch>
-    "public-search"?: UserProfilePluginSetting<UserProfilePluginSettingsPublicSearch>
-    "user-profile"?: UserProfilePluginSetting<UserProfilePluginSettingsUserProfile>
+    'data-search'?: UserProfilePluginSetting<UserProfilePluginSettingsDataSearch>;
+    'jgi-search'?: UserProfilePluginSetting<UserProfilePluginSettingsJGISearch>;
+    'public-search'?: UserProfilePluginSetting<UserProfilePluginSettingsPublicSearch>;
+    'user-profile'?: UserProfilePluginSetting<UserProfilePluginSettingsUserProfile>;
 }
 
 export interface UserProfileSurveyData {
     referralSources: {
         question: string;
-        response: Record<string, string>
-    }
+        response: Record<string, string>;
+    };
 }
 
 export interface UserProfileUser {
@@ -166,13 +175,12 @@ export interface UserProfileProfile {
     synced: UserProfileSynced;
     preferences?: UserProfilePreferences;
     plugins?: UserProfilePlugins;
-    surveydata?: UserProfileSurveyData
+    surveydata?: UserProfileSurveyData;
 }
 
-
 export interface UserProfile {
-    user: UserProfileUser,
-    profile: UserProfileProfile,
+    user: UserProfileUser;
+    profile: UserProfileProfile;
 }
 
 export interface UserProfileUpdate {
@@ -180,24 +188,30 @@ export interface UserProfileUpdate {
     profile: {
         userdata: UserProfileUserdata;
         preferences: UserProfilePreferences;
-    }
+    };
 }
 
 export function convertNumberLong(valueFromMongo: JSONObject): JSONObject {
     function convert(value: JSONValue): JSONValue {
         if (isJSONObject(value)) {
-            if (hasOwnProperty(value, '$numberLong') && (typeof value.$numberLong === 'string')) {
+            if (
+                hasOwnProperty(value, '$numberLong') &&
+                typeof value.$numberLong === 'string'
+            ) {
                 return parseInt(value.$numberLong);
             } else {
-                return Object.entries(value).reduce<Record<string, JSONValue>>((obj, [key, value]) => {
-                    obj[key] = convert(value);
-                    return obj;
-                }, {}) as JSONObject;
+                return Object.entries(value).reduce<Record<string, JSONValue>>(
+                    (obj, [key, value]) => {
+                        obj[key] = convert(value);
+                        return obj;
+                    },
+                    {},
+                ) as JSONObject;
             }
         } else if (isJSONArray(value)) {
             return value.map((item) => {
                 return convert(item);
-            })
+            });
         } else {
             return value;
         }
@@ -206,7 +220,7 @@ export function convertNumberLong(valueFromMongo: JSONObject): JSONObject {
 }
 
 /**
- * Profile 
+ * Profile
  */
 
 /**
@@ -231,19 +245,25 @@ export function convertNumberLong(valueFromMongo: JSONObject): JSONObject {
 
 // }
 
-
 export interface AssertFieldTypeOptions {
     nullable?: boolean;
 }
 
-function assertFieldType(obj: JSONObject, name: string, types: Array<string>, options: AssertFieldTypeOptions = {}) {
+function assertFieldType(
+    obj: JSONObject,
+    name: string,
+    types: Array<string>,
+    options: AssertFieldTypeOptions = {},
+) {
     const value = obj[name];
     const valueType = typeof value;
     if (!types.includes(valueType)) {
         if (options.nullable && value === null) {
             return;
         }
-        throw new Error(`Property "${name}" is not of the expected type "${types.join('|')}", rather is a "${valueType}"`)
+        throw new Error(
+            `Property "${name}" is not of the expected type "${types.join('|')}", rather is a "${valueType}"`,
+        );
     }
 }
 
@@ -251,29 +271,30 @@ export type ProfileWarnings = Array<string>;
 
 /**
  * Inspect the profile, ensuring fields are within spec and if any are out of spec, repair them.
- * 
- * There is not really a case for failure here. In the most egregious cases we may just have to 
+ *
+ * There is not really a case for failure here. In the most egregious cases we may just have to
  * remove a field value.
- * 
+ *
  * See the ...
- * 
- * @param rawPossibleUserProfile 
- * @returns 
+ *
+ * @param rawPossibleUserProfile
+ * @returns
  */
-function fixProfile(rawPossibleUserProfile: unknown): [UserProfile, ProfileWarnings] {
+function fixProfile(
+    rawPossibleUserProfile: unknown,
+): [UserProfile, ProfileWarnings] {
     const warnings: ProfileWarnings = [];
     // Let us establish that this is, generally, a valid JSON-compatible
     // object.
-    assertJSONObject(rawPossibleUserProfile, "User profile is not an object");
+    assertJSONObject(rawPossibleUserProfile, 'User profile is not an object');
 
     // Here we convert any "$numberLong" instances into plain numbers.
     // Mongo db converts json numbers of a certain scale to an object
     // like {$numberLong: "number"}, where the number becomes a string.
     // Since these should all originate from Javascript numbers in the
-    // browser, it should be save to convert them back. 
+    // browser, it should be save to convert them back.
 
     const possibleUserProfile = convertNumberLong(rawPossibleUserProfile);
-
 
     // TODO: remove, this is so incredibly unlikely; user and profile,
     // and the property structure of user, are the only things that the
@@ -282,7 +303,7 @@ function fixProfile(rawPossibleUserProfile: unknown): [UserProfile, ProfileWarni
         throw new Error('User profile missing "user" property');
     }
 
-    if (!hasOwnProperty(possibleUserProfile, "profile")) {
+    if (!hasOwnProperty(possibleUserProfile, 'profile')) {
         throw new Error('User profile missing "profile" property');
     }
 
@@ -296,15 +317,17 @@ function fixProfile(rawPossibleUserProfile: unknown): [UserProfile, ProfileWarni
     //     throw new Error('User profile missing "userdata" property');
     // }
 
-    if (!hasOwnProperty(profile, "userdata") || !isJSONObject(profile.userdata)) {
+    if (
+        !hasOwnProperty(profile, 'userdata') ||
+        !isJSONObject(profile.userdata)
+    ) {
         // throw new Error('User profile "userdata" is not an object');
         // Fix it up!
-        profile.userdata = {}
+        profile.userdata = {};
     }
 
-
-    if (hasOwnProperty(profile.userdata, "affiliations")) {
-        const affiliations = profile.userdata["affiliations"];
+    if (hasOwnProperty(profile.userdata, 'affiliations')) {
+        const affiliations = profile.userdata['affiliations'];
         if (!isJSONArray(affiliations)) {
             throw new Error('User profile "affiliations" is not an array');
         }
@@ -312,74 +335,101 @@ function fixProfile(rawPossibleUserProfile: unknown): [UserProfile, ProfileWarni
             .filter((affiliation) => {
                 // this just to deal with broken affiliations during testing.
                 if (!isJSONObject(affiliation)) {
-                    console.warn(`Omitting non-object affiliation: ${affiliation}`)
+                    console.warn(
+                        `Omitting non-object affiliation: ${affiliation}`,
+                    );
                     return false;
                 }
-                // Rarely a 
+                // Rarely a
                 return true;
             })
             .map((affiliation, index) => {
                 if (!isJSONObject(affiliation)) {
-                    throw new Error(`User profile "affiliation" # ${index}is not an object`);
+                    throw new Error(
+                        `User profile "affiliation" # ${index}is not an object`,
+                    );
                 }
                 // If any field fails validation, we simply omit the affiliation and generate a warning.
                 try {
-                    assertFieldType(affiliation, "title", ["string"]);
-                    assertFieldType(affiliation, "organization", ["string"]);
-                    assertFieldType(affiliation, "started", ["number", "string"]);
-                    assertFieldType(affiliation, "ended", ["number", "string", "undefined"], { nullable: true });
+                    assertFieldType(affiliation, 'title', ['string']);
+                    assertFieldType(affiliation, 'organization', ['string']);
+                    assertFieldType(affiliation, 'started', [
+                        'number',
+                        'string',
+                    ]);
+                    assertFieldType(
+                        affiliation,
+                        'ended',
+                        ['number', 'string', 'undefined'],
+                        { nullable: true },
+                    );
                 } catch (ex) {
-                    warnings.push(`An invalid affiliation record was removed: ${JSON.stringify(affiliation)}`)
+                    warnings.push(
+                        `An invalid affiliation record was removed: ${JSON.stringify(affiliation)}`,
+                    );
                     return false;
                 }
 
                 // See if there are any extant cases of this!
-                if (typeof affiliation["started"] === "string") {
-                    console.warn('Converting affiliation started date from string to number');
-                    const possibleStarted = affiliation["started"];
+                if (typeof affiliation['started'] === 'string') {
+                    console.warn(
+                        'Converting affiliation started date from string to number',
+                    );
+                    const possibleStarted = affiliation['started'];
 
                     // Okay, this rule is a bit looser than the ui, but that is okay.
                     if (!/[0-9]{4}/.test(affiliation['started'])) {
-                        console.warn(`Invalid start year in affiliation ${index} - skipping affiliation`, affiliation);
+                        console.warn(
+                            `Invalid start year in affiliation ${index} - skipping affiliation`,
+                            affiliation,
+                        );
                         // throw new Error('affiliation "started" year is not a number or compatible string');
-                        affiliation["started"] = null;
-                        // WHAT?? Oh, I see, these were filtered out afterwards. This may explain why some 
+                        affiliation['started'] = null;
+                        // WHAT?? Oh, I see, these were filtered out afterwards. This may explain why some
                         // "null" affiliations have been seen in profiles in CI - the filter at the end was
                         // probably added later. Let's change this to "false" to clarify, and I agree it
                         // is best to remove these, although it is interesting to contemplate an infinite
                         // affiliation...
-                        warnings.push(`An affiliation record with an invalid start year was omitted: ${JSON.stringify(affiliation)}`)
+                        warnings.push(
+                            `An affiliation record with an invalid start year was omitted: ${JSON.stringify(affiliation)}`,
+                        );
                         return false;
                     } else {
-                        affiliation["started"] = parseInt(possibleStarted);
+                        affiliation['started'] = parseInt(possibleStarted);
                     }
                 }
 
-                if (typeof affiliation["ended"] === "string") {
-                    console.warn('Converting affiliation ended date from string to number');
-                    const possibleStarted = affiliation["ended"];
+                if (typeof affiliation['ended'] === 'string') {
+                    console.warn(
+                        'Converting affiliation ended date from string to number',
+                    );
+                    const possibleStarted = affiliation['ended'];
 
                     // Okay, this rule is a bit looser than the ui, but that is okay.
                     if (!/[0-9]{4}/.test(affiliation['ended'])) {
-                        console.warn(`Invalid end year in affiliation ${index}`, affiliation);
-                        affiliation["ended"] = null;
+                        console.warn(
+                            `Invalid end year in affiliation ${index}`,
+                            affiliation,
+                        );
+                        affiliation['ended'] = null;
                         // WHAT??
                         // return null;
                     } else {
-                        affiliation["ended"] = parseInt(possibleStarted);
+                        affiliation['ended'] = parseInt(possibleStarted);
                     }
                 }
                 return affiliation;
-            }).filter((affiliation) => {
-                return affiliation
+            })
+            .filter((affiliation) => {
+                return affiliation;
             });
         profile.userdata.affiliations = fixedAffiliations;
     }
 
-    if (!hasOwnProperty(profile, "synced") || !isJSONObject(profile.synced)) {
+    if (!hasOwnProperty(profile, 'synced') || !isJSONObject(profile.synced)) {
         // throw new Error('User profile "userdata" is not an object');
         // Fix it up!
-        profile.synced = {}
+        profile.synced = {};
     }
 
     // if (hasOwnProperty(profile, "preferences"))
@@ -388,18 +438,21 @@ function fixProfile(rawPossibleUserProfile: unknown): [UserProfile, ProfileWarni
     return [possibleUserProfile as unknown as UserProfile, warnings];
 }
 
-
 /**
  * Return profile data
  * @param id profile id
  * @param token KBase session cookie
  * @param serviceWizardURL URL for the service wizard in the current environment
  */
-export async function fetchProfileAPI(username: string, token: string, serviceWizardURL: string): Promise<[UserProfile, ProfileWarnings]> {
+export async function fetchProfileAPI(
+    username: string,
+    token: string,
+    serviceWizardURL: string,
+): Promise<[UserProfile, ProfileWarnings]> {
     const bffServiceUrl = await getBFFServiceUrl(token, serviceWizardURL);
     const url = bffServiceUrl + '/fetchUserProfile/' + username;
     const response = await fetch(url, {
-        method: 'GET'
+        method: 'GET',
     });
     if (response.status === 200) {
         try {
@@ -407,15 +460,25 @@ export async function fetchProfileAPI(username: string, token: string, serviceWi
             return fixProfile(possibleProfile);
         } catch (err) {
             console.error('profile fetch failed', err);
-            throw new Error(`Error parsing profile response to json: ${err instanceof Error ? err.message : 'Unknown error'}`);
+            throw new Error(
+                `Error parsing profile response to json: ${err instanceof Error ? err.message : 'Unknown error'}`,
+            );
         }
     } else {
         throw new Error(`Error fetching user profile: ${response.statusText}`);
     }
 }
 
-export async function fetchProfileAPI2(username: string, token: string, url: string): Promise<[UserProfile, ProfileWarnings]> {
-    const client = new UserProfileClient({ url, timeout: SERVICE_CALL_TIMEOUT, token });
+export async function fetchProfileAPI2(
+    username: string,
+    token: string,
+    url: string,
+): Promise<[UserProfile, ProfileWarnings]> {
+    const client = new UserProfileClient({
+        url,
+        timeout: SERVICE_CALL_TIMEOUT,
+        token,
+    });
     const [profile] = await client.get_user_profile([username]);
     return fixProfile(profile);
 
@@ -442,48 +505,49 @@ export async function fetchProfileAPI2(username: string, token: string, url: str
 }
 
 export interface RPC11<T> {
-    version: '1.1'
-    method: string
-    id: string
-    params: Array<T>
+    version: '1.1';
+    method: string;
+    id: string;
+    params: Array<T>;
 }
 
 export interface UpdateProfileParams {
-    profile: UserProfileUpdate
+    profile: UserProfileUpdate;
 }
 
 /**
- * update profile 
- * method 'UserProfile.update_user_profile' takes top level key of profile object. 
- * @param token 
- * @param url 
- * @param userdata 
+ * update profile
+ * method 'UserProfile.update_user_profile' takes top level key of profile object.
+ * @param token
+ * @param url
+ * @param userdata
  * @param user
  */
-export async function updateProfileAPI(token: string, url: string, profile: UserProfileUpdate): Promise<[number, string]> {
+export async function updateProfileAPI(
+    token: string,
+    url: string,
+    profile: UserProfileUpdate,
+): Promise<[number, string]> {
     const rpc: RPC11<UpdateProfileParams> = {
         version: '1.1',
         method: 'UserProfile.update_user_profile',
-        id: "123",
-        params: [{ profile: profile }]
+        id: '123',
+        params: [{ profile: profile }],
     };
     const response = await fetch(url, {
         method: 'POST',
         mode: 'cors',
         headers: {
             Authorization: token,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(rpc)
+        body: JSON.stringify(rpc),
     });
     if (response.status === 200) {
         return [response.status, ''];
     } else {
         const responseJSON = await response.json();
-        return [
-            response.status,
-            responseJSON.error.message
-        ];
+        return [response.status, responseJSON.error.message];
     }
 }
 
@@ -492,15 +556,19 @@ export async function updateProfileAPI(token: string, url: string, profile: User
  * @param param shared/mine/public
  * @param token kbase session cookie
  */
-export async function fetchNarrativesAPI(param: string, token: string, serviceWizardURL: string) {
+export async function fetchNarrativesAPI(
+    param: string,
+    token: string,
+    serviceWizardURL: string,
+) {
     // TODO: use the dynamic service client.
     const bffServiceUrl = await getBFFServiceUrl(token, serviceWizardURL);
     const url = bffServiceUrl + '/narrative_list/' + param;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
-            Authorization: token
-        }
+            Authorization: token,
+        },
     });
     if (response.status === 500) {
         console.error('Fetch Narratives 500 response:', response);
@@ -537,9 +605,9 @@ export interface Group {
     role: string;
     lastvisit: number;
     name: string;
-    owner: GroupsUser,
-    admins: Array<GroupsUser>,
-    members: Array<GroupsUser>,
+    owner: GroupsUser;
+    admins: Array<GroupsUser>;
+    members: Array<GroupsUser>;
     memcount: number;
     createdate: number;
     moddate: number;
@@ -547,7 +615,6 @@ export interface Group {
     // rescount: GroupResourcesCount,
     custom: CustomFields;
 }
-
 
 /**
  * returns list of orgs that profile and logged in user are both associated with.
@@ -648,22 +715,24 @@ export async function filteredUserAPI(searchValue: string, url: string) {
     const rpc_message = {
         version: '1.1',
         method: 'UserProfile.filter_users',
-        params: [{ filter: searchValue }]
+        params: [{ filter: searchValue }],
     };
     const response = await fetch(url, {
         method: 'POST',
         mode: 'cors',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(rpc_message)
+        body: JSON.stringify(rpc_message),
     });
     if (response.status === 500) {
         console.error('500 response:', response);
         return [response.status, response.statusText];
     }
     try {
-        const { result: [users] } = await response.json();
+        const {
+            result: [users],
+        } = await response.json();
         return [response.status, users];
     } catch (err) {
         console.error('fetch search users failed', response);
@@ -683,12 +752,15 @@ export interface NarrativeData {
     };
 }
 
-
 export class UserProfileBFFService extends DynamicServiceClient {
     module = 'userprofileuibff';
 
-    async narrativeList(narrativeListType: string): Promise<Array<NarrativeData>> {
-        const result = await this.get<Array<NarrativeData>>(`/narrative_list/${narrativeListType}`);
+    async narrativeList(
+        narrativeListType: string,
+    ): Promise<Array<NarrativeData>> {
+        const result = await this.get<Array<NarrativeData>>(
+            `/narrative_list/${narrativeListType}`,
+        );
         return result;
     }
 
@@ -697,5 +769,4 @@ export class UserProfileBFFService extends DynamicServiceClient {
         return result;
         // const url = bffServiceUrl + '/org_list/' + username;
     }
-
 }

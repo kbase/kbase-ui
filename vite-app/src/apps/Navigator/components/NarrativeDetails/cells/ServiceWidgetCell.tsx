@@ -67,7 +67,7 @@ export default class ServiceWidgetCellView extends Component<ServiceWidgetCellPr
             <div className="row my-2 g-0">
                 <div className="col-md-2 d-flex flex-column align-items-center justify-content-start">
                     <div>
-                        <DefaultIcon cellType="serviceWidget"/>
+                        <DefaultIcon cellType="serviceWidget" />
                     </div>
                     <div
                         style={{

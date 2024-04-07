@@ -1,16 +1,16 @@
-import { EpochTime } from "./base";
+import { EpochTime } from './base';
 
 export enum JobStateType {
-    CREATE = "CREATE",
-    QUEUE = "QUEUE",
-    RUN = "RUN",
-    COMPLETE = "COMPLETE",
-    ERROR = "ERROR",
-    TERMINATE = "TERMINATE"
+    CREATE = 'CREATE',
+    QUEUE = 'QUEUE',
+    RUN = 'RUN',
+    COMPLETE = 'COMPLETE',
+    ERROR = 'ERROR',
+    TERMINATE = 'TERMINATE',
 }
 
 // HMM how about a state history??
-// Each state is a simple statement of what has changed 
+// Each state is a simple statement of what has changed
 
 export enum JobErrorCode {
     UNKNOWN,
@@ -18,13 +18,13 @@ export enum JobErrorCode {
     JOB_TERMINATED_BY_AUTOMATION,
     JOB_TIMED_OUT,
     JOB_MISSING_OUTPUT,
-    JOB_AUTHENTICATION_EXPIRED
+    JOB_AUTHENTICATION_EXPIRED,
 }
 
 export enum JobTerminateCode {
     USER,
     ADMIN,
-    PROCESS
+    PROCESS,
 }
 
 export interface JobEventBase {
@@ -60,13 +60,12 @@ export interface JobEventTerminate extends JobEventBase {
 }
 
 export type JobEvent =
-    JobEventCreate |
-    JobEventQueue |
-    JobEventRun |
-    JobEventComplete |
-    JobEventError |
-    JobEventTerminate;
-
+    | JobEventCreate
+    | JobEventQueue
+    | JobEventRun
+    | JobEventComplete
+    | JobEventError
+    | JobEventTerminate;
 
 export type JobEventHistory = Array<JobEvent>;
 

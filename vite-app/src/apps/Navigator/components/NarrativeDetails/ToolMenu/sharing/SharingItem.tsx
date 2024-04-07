@@ -7,7 +7,11 @@ import ShareUser from './ShareUser';
 import AlertMessage from 'components/AlertMessage';
 import Loading from 'components/Loading';
 import Well from 'components/Well';
-import { UserPermission, default as Workspace, default as WorkspaceClient } from 'lib/kb_lib/comm/coreServices/Workspace';
+import {
+    UserPermission,
+    default as Workspace,
+    default as WorkspaceClient,
+} from 'lib/kb_lib/comm/coreServices/Workspace';
 import React from 'react';
 import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import { ControlMenuItemProps } from '../ToolMenu';
@@ -73,11 +77,11 @@ export default class SharingItem extends Component<
         const ws = new WorkspaceClient({
             url: this.props.config.services.Workspace.url,
             timeout: this.props.config.ui.constants.clientTimeout,
-            token: this.props.authInfo.token
+            token: this.props.authInfo.token,
         });
-        const result = await ws.get_permissions_mass(
-            { workspaces: [{ id: wsId }] },
-        )
+        const result = await ws.get_permissions_mass({
+            workspaces: [{ id: wsId }],
+        });
         const perms = result.perms[0];
 
         // Global permissions are represented as the user "*", with permissions
@@ -96,17 +100,16 @@ export default class SharingItem extends Component<
                 }
                 return users;
             },
-            [] as string[]
+            [] as string[],
         );
         // get user infos from auth
         const auth = new AuthService(
             this.props.config.services.Auth2.url,
-            this.props.authInfo.token
+            this.props.authInfo.token,
         );
 
-        const userNames: { [key: string]: string } = await auth.getUsernames(
-            userList
-        );
+        const userNames: { [key: string]: string } =
+            await auth.getUsernames(userList);
         userList.forEach((u) => {
             const userPerm: UserPerms = {
                 userId: u,
@@ -122,7 +125,7 @@ export default class SharingItem extends Component<
         narrativePerms.allUserPerms = narrativePerms.allUserPerms.sort(
             (a, b) => {
                 return a.userName.localeCompare(b.userName);
-            }
+            },
         );
         return narrativePerms;
     }
@@ -131,12 +134,10 @@ export default class SharingItem extends Component<
         // this.setState({ isLoading: true });
         const isGlobal = this.state.perms.isGlobal;
         try {
-            await this.workspaceClient.set_global_permission(
-                {
-                    id: this.props.narrative.access_group,
-                    new_permission: isGlobal ? 'n' : 'r',
-                },
-            );
+            await this.workspaceClient.set_global_permission({
+                id: this.props.narrative.access_group,
+                new_permission: isGlobal ? 'n' : 'r',
+            });
 
             this.setState((prevState) => ({
                 isLoading: false,
@@ -167,13 +168,11 @@ export default class SharingItem extends Component<
 
     async updatePermission(username: string, newPermission: UserPermission) {
         try {
-            await this.workspaceClient.set_permissions(
-                {
-                    id: this.props.narrative.access_group,
-                    users: [username],
-                    new_permission: newPermission,
-                },
-            );
+            await this.workspaceClient.set_permissions({
+                id: this.props.narrative.access_group,
+                users: [username],
+                new_permission: newPermission,
+            });
 
             await this.updateSharedUserInfo();
         } catch (ex) {
@@ -181,15 +180,16 @@ export default class SharingItem extends Component<
         }
     }
 
-    async updatePermissions(usernames: Array<string>, newPermission: UserPermission) {
+    async updatePermissions(
+        usernames: Array<string>,
+        newPermission: UserPermission,
+    ) {
         try {
-            await this.workspaceClient.set_permissions(
-                {
-                    id: this.props.narrative.access_group,
-                    users: usernames,
-                    new_permission: newPermission,
-                },
-            );
+            await this.workspaceClient.set_permissions({
+                id: this.props.narrative.access_group,
+                users: usernames,
+                new_permission: newPermission,
+            });
 
             await this.updateSharedUserInfo();
         } catch (ex) {
@@ -245,7 +245,7 @@ export default class SharingItem extends Component<
                         removeAccess={this.removeAccess.bind(this)}
                     />
                 );
-            }
+            },
         );
     }
 
@@ -301,9 +301,7 @@ export default class SharingItem extends Component<
                     {this.makePermissionText(this.state.perms.curUserPerm.perm)}
                 </p>
                 <Well variant="light">
-                    <Well.Header icon="globe">
-                        Global Access
-                    </Well.Header>
+                    <Well.Header icon="globe">Global Access</Well.Header>
                     <Well.Body>
                         <GlobalPerms
                             isGlobal={this.state.perms.isGlobal}
@@ -318,9 +316,13 @@ export default class SharingItem extends Component<
                     </Well.Header>
 
                     <Well.Body>
-                        <div className="fs-6 fw-bold text-secondary">Share with 1 or more users</div>
+                        <div className="fs-6 fw-bold text-secondary">
+                            Share with 1 or more users
+                        </div>
                         {this.renderPermSearch()}
-                        <div className="fs-6 fw-bold text-secondary mt-2">Already shared with</div>
+                        <div className="fs-6 fw-bold text-secondary mt-2">
+                            Already shared with
+                        </div>
                         {this.renderSharedUsers()}
                     </Well.Body>
                 </Well>

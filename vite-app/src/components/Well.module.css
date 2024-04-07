@@ -10,7 +10,6 @@
     align-items: center;
 }
 
-
 .body {
     flex: 0 0 auto;
     /* padding: 1em; */
@@ -49,7 +48,8 @@
     flex-direction: row;
 }
 
-.variantNone {}
+.variantNone {
+}
 
 /* 
     Vertical orientation
@@ -64,7 +64,7 @@
     position: relative;
 }
 
-.well-vertical.stretch { 
+.well-vertical.stretch {
     flex: 1 1 0;
 }
 
@@ -72,7 +72,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 0; 
+    top: 0;
     bottom: 0;
     background-color: rgba(200, 200, 200, 0.6);
     /* NB this matches the well coutainer - the negative margin

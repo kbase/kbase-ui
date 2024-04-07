@@ -9,11 +9,11 @@ import * as React from 'react';
 import { Config } from 'types/config';
 import Main from './view';
 
-export interface JobBrowserState  {
+export interface JobBrowserState {
     isAdmin: boolean;
 }
 
-export interface LoaderProps  extends RouteProps{
+export interface LoaderProps extends RouteProps {
     config: Config;
     authState: AuthenticationStateAuthenticated;
     setTitle: (title: string) => void;
@@ -25,7 +25,7 @@ export default class Loader extends React.Component<LoaderProps, LoaderState> {
     constructor(props: LoaderProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
 
@@ -39,11 +39,11 @@ export default class Loader extends React.Component<LoaderProps, LoaderState> {
             token: this.props.authState.authInfo.token,
             url: this.props.config.services.ServiceWizard.url,
             timeout: this.props.config.ui.constants.clientTimeout,
-            version: this.props.config.dynamicServices.JobBrowserBFF.version
+            version: this.props.config.dynamicServices.JobBrowserBFF.version,
         });
 
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
@@ -51,17 +51,16 @@ export default class Loader extends React.Component<LoaderProps, LoaderState> {
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    isAdmin: is_admin
-                }
-            })
-
+                    isAdmin: is_admin,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
+            });
         }
     }
 
@@ -78,24 +77,26 @@ export default class Loader extends React.Component<LoaderProps, LoaderState> {
                 style={{
                     width: '20em',
                     padding: '20px',
-                    margin: '20px auto'
+                    margin: '20px auto',
                 }}
             />
         );
     }
 
-    renderError({message}: SimpleError) {
-       return <ErrorAlert message={message} />
+    renderError({ message }: SimpleError) {
+        return <ErrorAlert message={message} />;
     }
 
-    renderSuccess({isAdmin}: JobBrowserState) {
-        return <Main
-            config={this.props.config}
-            authState={this.props.authState}
-            isAdmin={isAdmin}
-            setTitle={this.props.setTitle}
-            tab={this.props.match.params.get('tab')}
-        />
+    renderSuccess({ isAdmin }: JobBrowserState) {
+        return (
+            <Main
+                config={this.props.config}
+                authState={this.props.authState}
+                isAdmin={isAdmin}
+                setTitle={this.props.setTitle}
+                tab={this.props.match.params.get('tab')}
+            />
+        );
     }
 
     render() {

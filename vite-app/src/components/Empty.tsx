@@ -36,12 +36,17 @@ export default class Empty extends React.Component<EmptyProps> {
         }
         const message = (() => {
             if (this.props.message) {
-                return <div className={styles.message}>{this.props.message}</div>
+                return (
+                    <div className={styles.message}>{this.props.message}</div>
+                );
             }
             return this.props.children;
         })();
         return (
-            <div className={mainClasses.join(' ')} style={this.props.style || {}}>
+            <div
+                className={mainClasses.join(' ')}
+                style={this.props.style || {}}
+            >
                 <div className={iconClasses.join(' ')}>
                     <span className="fa-stack fa-lg">
                         <i

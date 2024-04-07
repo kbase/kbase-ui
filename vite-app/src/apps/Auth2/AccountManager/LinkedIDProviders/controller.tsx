@@ -1,15 +1,15 @@
-import ErrorAlert from "components/ErrorAlert";
-import Loading from "components/Loading";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import ErrorAlert from 'components/ErrorAlert';
+import Loading from 'components/Loading';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { Auth2, Identity } from "lib/kb_lib/Auth2";
-import { Component } from "react";
-import LinkedIdProvidersView from "./view";
+import { Auth2, Identity } from 'lib/kb_lib/Auth2';
+import { Component } from 'react';
+import LinkedIdProvidersView from './view';
 
-import { Providers } from "apps/Auth2/Providers";
-import AutoPostForm from "pluginSupport/AutoPostForm";
+import { Providers } from 'apps/Auth2/Providers';
+import AutoPostForm from 'pluginSupport/AutoPostForm';
 import ReactDOM from 'react-dom/client';
-import { Config, IDProvider } from "types/config";
+import { Config, IDProvider } from 'types/config';
 
 export interface LinkedIdProvidersControllerProps {
     config: Config;
@@ -24,16 +24,20 @@ export interface LinkedIdProviders {
     providers: Array<IDProvider>;
 }
 
+type LinkedIdProvidersControllerState = AsyncProcess<
+    LinkedIdProviders,
+    SimpleError
+>;
 
-type LinkedIdProvidersControllerState = AsyncProcess<LinkedIdProviders, SimpleError>;
-
-
-export default class LinkedIdProvidersController extends Component<LinkedIdProvidersControllerProps, LinkedIdProvidersControllerState> {
+export default class LinkedIdProvidersController extends Component<
+    LinkedIdProvidersControllerProps,
+    LinkedIdProvidersControllerState
+> {
     constructor(props: LinkedIdProvidersControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
 
     componentDidMount() {
@@ -41,17 +45,16 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
         this.loadData();
     }
 
-
     async unlinkIdentity(identityId: string) {
         if (this.state.status !== AsyncProcessStatus.SUCCESS) {
             return;
         }
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         try {
             await auth2.removeLink(this.props.token, {
-                identityId
+                identityId,
             });
             // this.props.runtime.notifySuccess(
             //     'Successfully unlinked identity',
@@ -62,8 +65,8 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
                     ...this.state.value,
-                    identities
-                }
+                    identities,
+                },
             });
         } catch (ex) {
             console.error(ex);
@@ -95,7 +98,7 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
             // TODO: routing back into here.
             const params: Record<string, string> = {
                 provider: providerId,
-                token: this.props.token
+                token: this.props.token,
             };
             const action = `${this.props.authURL}/link/start`;
 
@@ -120,7 +123,7 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
 
     async fetchIdentities() {
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         const authToken = this.props.token;
 
@@ -130,28 +133,30 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
 
     async loadData() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
             const identities = await this.fetchIdentities();
             const providers = new Providers({
-                supportedProviders: this.props.config.services.Auth2.supportedProviders,
-                providers: this.props.config.services.Auth2.providers
+                supportedProviders:
+                    this.props.config.services.Auth2.supportedProviders,
+                providers: this.props.config.services.Auth2.providers,
             }).get();
 
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    identities, providers
-                }
+                    identities,
+                    providers,
+                },
             });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -160,17 +165,20 @@ export default class LinkedIdProvidersController extends Component<LinkedIdProvi
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading Linked Sign-In Accounts ..." />
+                return (
+                    <Loading message="Loading Linked Sign-In Accounts ..." />
+                );
             case AsyncProcessStatus.SUCCESS:
-                return <LinkedIdProvidersView
-                    providers={this.state.value.providers}
-                    identities={this.state.value.identities}
-                    linkIdentity={this.linkIdentity.bind(this)}
-                    unlinkIdentity={this.unlinkIdentity.bind(this)}
-                />
+                return (
+                    <LinkedIdProvidersView
+                        providers={this.state.value.providers}
+                        identities={this.state.value.identities}
+                        linkIdentity={this.linkIdentity.bind(this)}
+                        unlinkIdentity={this.unlinkIdentity.bind(this)}
+                    />
+                );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
         }
     }
-
 }

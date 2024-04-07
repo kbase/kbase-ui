@@ -5,7 +5,10 @@ import { Component } from 'react';
 import ErrorMessage from '../../../../components/ErrorMessage';
 import Loading from '../../../../components/Loading';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
-import { NarrativeSelectedBy, NavigatorContext } from '../../context/NavigatorContext';
+import {
+    NarrativeSelectedBy,
+    NavigatorContext,
+} from '../../context/NavigatorContext';
 import NarrativeDetails from './NarrativeDetails';
 
 export default class NarrativeDetailsWrapper extends Component {
@@ -13,13 +16,15 @@ export default class NarrativeDetailsWrapper extends Component {
         return (
             <EuropaContext.Consumer>
                 {(value) => {
-                    if (value === null || value.status !== AsyncProcessStatus.SUCCESS) {
+                    if (
+                        value === null ||
+                        value.status !== AsyncProcessStatus.SUCCESS
+                    ) {
                         return null;
                     }
-                    const {authState, config} = value.value;
+                    const { authState, config } = value.value;
                     if (
-                        authState.status !==
-                        AuthenticationStatus.AUTHENTICATED
+                        authState.status !== AuthenticationStatus.AUTHENTICATED
                     ) {
                         return null;
                     }
@@ -30,13 +35,18 @@ export default class NarrativeDetailsWrapper extends Component {
                                 if (navigatorValue === null) {
                                     return null;
                                 }
-                                if (navigatorValue.userInteractions.narrativeSelectedBy === NarrativeSelectedBy.NONE) {
-                                    return <Empty message="No Narrative selected" />
+                                if (
+                                    navigatorValue.userInteractions
+                                        .narrativeSelectedBy ===
+                                    NarrativeSelectedBy.NONE
+                                ) {
+                                    return (
+                                        <Empty message="No Narrative selected" />
+                                    );
                                 }
                                 switch (
                                     navigatorValue.selectedNarrative.status
                                 ) {
-                                    
                                     case AsyncProcessStatus.NONE:
                                     case AsyncProcessStatus.PENDING:
                                         return (

@@ -30,7 +30,7 @@ export type Query = Map<string, string>;
 export interface RouterProps {
     hashPath: HashPath;
     routes: Array<Route>;
-    authRoute: Route
+    authRoute: Route;
 }
 
 interface RouterState {
@@ -65,7 +65,9 @@ export class Router extends Component<RouterProps, RouterState> {
                     return (
                         <EuropaContext.Consumer>
                             {(value) => {
-                                if (value.status !== AsyncProcessStatus.SUCCESS) {
+                                if (
+                                    value.status !== AsyncProcessStatus.SUCCESS
+                                ) {
                                     return null;
                                 }
                                 if (route.routeOptions.authenticationRequired) {
@@ -84,7 +86,8 @@ export class Router extends Component<RouterProps, RouterState> {
 
                                         // Create the nextrequest directly here!
 
-                                        const nextRequest = nextRequestFromCurrentURL();
+                                        const nextRequest =
+                                            nextRequestFromCurrentURL();
                                         nextRequest.label = route.label;
 
                                         // If a captured "next request" includes the
@@ -92,25 +95,38 @@ export class Router extends Component<RouterProps, RouterState> {
                                         // to prevent a navigation loop when kbase-ui
                                         // notifies europa of a navigation event that
                                         // should be reflected in the top level location.
-                                        if (nextRequest.path.params && Object.keys(nextRequest.path.params).includes('europa')) {
-                                            delete nextRequest.path.params['europa'];
+                                        if (
+                                            nextRequest.path.params &&
+                                            Object.keys(
+                                                nextRequest.path.params,
+                                            ).includes('europa')
+                                        ) {
+                                            delete nextRequest.path.params[
+                                                'europa'
+                                            ];
                                         }
 
                                         if (!hashPath.params) {
                                             hashPath.params = {};
                                         }
 
-                                        hashPath.params['nextrequest'] = JSON.stringify(nextRequest);
+                                        hashPath.params['nextrequest'] =
+                                            JSON.stringify(nextRequest);
 
-                                        return this.props.authRoute.render({hashPath, match})
+                                        return this.props.authRoute.render({
+                                            hashPath,
+                                            match,
+                                        });
                                     }
                                     return route.render({
-                                        hashPath, match
+                                        hashPath,
+                                        match,
                                     });
                                 }
 
                                 return route.render({
-                                    hashPath, match
+                                    hashPath,
+                                    match,
                                 });
                             }}
                         </EuropaContext.Consumer>
@@ -141,7 +157,7 @@ export class Router extends Component<RouterProps, RouterState> {
         // Europa.
         // TODO: send params or not? Europa does not accept arbitrary search params, so
         // they'd need to be encoded as JSON or something similar:
-        // params: hashPath.params, 
-        navigate2({path: `fallback/${hashPath.hash}`, type: 'europaui'});
+        // params: hashPath.params,
+        navigate2({ path: `fallback/${hashPath.hash}`, type: 'europaui' });
     }
 }

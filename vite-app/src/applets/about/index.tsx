@@ -20,80 +20,97 @@ export interface AboutProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface AboutState {
-}
+interface AboutState {}
 
 export default class About extends Component<AboutProps, AboutState> {
     render() {
         const routes: Array<Route> = [
             new Route('about', { authenticationRequired: false }, () => {
-                return (
-                    <AboutKBaseUI {...this.props} />
-                );
+                return <AboutKBaseUI {...this.props} />;
             }),
-            new Route('about/kbase-ui', { authenticationRequired: false }, () => {
-                return (
-                    <AboutKBaseUI {...this.props} />
-                );
-            }),
-            new Route('about/services', { authenticationRequired: false }, () => {
-                return (
-                    <AboutServices {...this.props} />
-                );
-            }),
+            new Route(
+                'about/kbase-ui',
+                { authenticationRequired: false },
+                () => {
+                    return <AboutKBaseUI {...this.props} />;
+                },
+            ),
+            new Route(
+                'about/services',
+                { authenticationRequired: false },
+                () => {
+                    return <AboutServices {...this.props} />;
+                },
+            ),
             new Route('about/build', { authenticationRequired: false }, () => {
-                return (
-                    <AboutBuild {...this.props} />
-                );
+                return <AboutBuild {...this.props} />;
             }),
-            new Route('about/plugins', { authenticationRequired: false }, () => {
-                return (
-                    <AboutPlugins {...this.props} />
-                );
-            }),
-            new Route('about/connection', { authenticationRequired: false }, () => {
-                return (
-                    <ConnectionStatus {...this.props} />
-                );
-            }),            
-            new Route('about/session', { authenticationRequired: false }, () => {
-                return (
-                    <AboutSessionController {...this.props} />
-                );
-            }),
-            new Route('about/*', { authenticationRequired: false }, (props: RouteProps) => {
-                return (
-                    <NotFound
-                        {...this.props}
-                        hashPath={props.hashPath}
-                    />
-                );
-            }),
+            new Route(
+                'about/plugins',
+                { authenticationRequired: false },
+                () => {
+                    return <AboutPlugins {...this.props} />;
+                },
+            ),
+            new Route(
+                'about/connection',
+                { authenticationRequired: false },
+                () => {
+                    return <ConnectionStatus {...this.props} />;
+                },
+            ),
+            new Route(
+                'about/session',
+                { authenticationRequired: false },
+                () => {
+                    return <AboutSessionController {...this.props} />;
+                },
+            ),
+            new Route(
+                'about/*',
+                { authenticationRequired: false },
+                (props: RouteProps) => {
+                    return (
+                        <NotFound {...this.props} hashPath={props.hashPath} />
+                    );
+                },
+            ),
         ];
 
         const authRoute = new Route(
-            '^login|signin|signup$', 
-            {authenticationRequired: false}, 
+            '^login|signin|signup$',
+            { authenticationRequired: false },
             (props: RouteProps) => {
-                return <SignIn 
-                    {...props} 
-                    key={props.hashPath.hash} 
-                    source="authorization"
-                    config={this.props.config}
-                    authState={this.props.authState}
-                    setTitle={this.props.setTitle}
-                />
-            }
-        )
+                return (
+                    <SignIn
+                        {...props}
+                        key={props.hashPath.hash}
+                        source="authorization"
+                        config={this.props.config}
+                        authState={this.props.authState}
+                        setTitle={this.props.setTitle}
+                    />
+                );
+            },
+        );
 
-        return <div className={styles.main}>
-            <div className={styles.menu}>
-                <AboutMenu tab={this.props.match.params.get('name') || 'kbase-ui'} authState={this.props.authState} />
+        return (
+            <div className={styles.main}>
+                <div className={styles.menu}>
+                    <AboutMenu
+                        tab={this.props.match.params.get('name') || 'kbase-ui'}
+                        authState={this.props.authState}
+                    />
+                </div>
+                <div className={styles.body}>
+                    <Router
+                        routes={routes}
+                        hashPath={this.props.hashPath}
+                        authRoute={authRoute}
+                    />
+                </div>
             </div>
-            <div className={styles.body}>
-                <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
-            </div>
-        </div>;
+        );
 
         // return (
         //     <HashRouter>

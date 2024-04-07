@@ -12,117 +12,130 @@ export interface CatalogProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface CatalogState {
-}
+interface CatalogState {}
 
 export default class Catalog extends Component<CatalogProps, CatalogState> {
     render() {
         const common = {
-            name: "catalog",
+            name: 'catalog',
             setTitle: this.props.setTitle,
             authState: this.props.authState,
-            config: this.props.config
+            config: this.props.config,
         };
 
         const routeSpecs: Array<SimplePluginRouteSpec> = [
             {
                 path: '^(appcatalog|catalog)$/admin',
                 auth: true,
-                view: 'catalogAdmin'
+                view: 'catalogAdmin',
             },
             {
                 path: 'catalog/queue',
                 auth: true,
-                view: 'catalogQueue'
+                view: 'catalogQueue',
             },
             {
                 path: 'catalog',
                 auth: false,
-                view: 'catalogIndex'
+                view: 'catalogIndex',
             },
             {
                 path: 'catalog/modules',
                 auth: false,
-                view: 'moduleBrowser'
+                view: 'moduleBrowser',
             },
             {
                 path: 'catalog/services',
                 auth: true,
-                view: 'serviceCatalog'
+                view: 'serviceCatalog',
             },
             {
                 path: 'catalog/datatypes',
                 auth: false,
-                view: 'datatypeBrowser'
+                view: 'datatypeBrowser',
             },
             {
                 path: 'catalog/stats',
                 auth: false,
-                view: 'catalogStats'
+                view: 'catalogStats',
             },
             {
                 path: '^(appcatalog|catalog)$/^(app|apps)$/:namespace/:id/:tag?',
                 auth: false,
-                view: 'appView'
+                view: 'appView',
             },
             {
                 path: '^(appcatalog|catalog)$/apps/:tag?',
                 auth: false,
-                view: 'appsBrowser'
+                view: 'appsBrowser',
             },
             {
                 path: 'catalog/^(module|modules)$/:module_name',
                 auth: false,
-                view: 'moduleView'
+                view: 'moduleView',
             },
             {
                 path: 'catalog/^(function|functions)/:module/:function_id/:ver?',
                 auth: false,
-                view: 'functionView'
+                view: 'functionView',
             },
             {
                 path: 'catalog/functions/:tag?',
                 auth: false,
-                view: 'functionBrowser'
+                view: 'functionBrowser',
             },
             {
                 path: 'catalog/register/:registration_id?',
                 auth: true,
-                view: 'catalogRegistration'
+                view: 'catalogRegistration',
             },
             {
                 path: 'catalog/status/:module_names?',
                 auth: false,
-                view: 'catalogStatus'
-            }
+                view: 'catalogStatus',
+            },
         ];
 
         const routes = routeSpecs.map(({ path, view, auth }) => {
-            return new Route(path, { authenticationRequired: auth }, (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view={view}
-                    syncHash={false}
-                />
-            });
+            return new Route(
+                path,
+                { authenticationRequired: auth },
+                (props: RouteProps) => {
+                    return (
+                        <PluginWrapper2
+                            {...props}
+                            {...common}
+                            view={view}
+                            syncHash={false}
+                        />
+                    );
+                },
+            );
         });
 
         const authRoute = new Route(
-            '^login|signin|signup$', 
-            {authenticationRequired: false}, 
+            '^login|signin|signup$',
+            { authenticationRequired: false },
             (props: RouteProps) => {
-                return <SignIn 
-                    {...props} 
-                    key={props.hashPath.hash} 
-                    source="authorization"
-                    config={this.props.config}
-                    authState={this.props.authState}
-                    setTitle={this.props.setTitle}
-                />
-            }
-        )
+                return (
+                    <SignIn
+                        {...props}
+                        key={props.hashPath.hash}
+                        source="authorization"
+                        config={this.props.config}
+                        authState={this.props.authState}
+                        setTitle={this.props.setTitle}
+                    />
+                );
+            },
+        );
 
-        return <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute} />
+        return (
+            <Router
+                routes={routes}
+                hashPath={this.props.hashPath}
+                authRoute={authRoute}
+            />
+        );
     }
 }

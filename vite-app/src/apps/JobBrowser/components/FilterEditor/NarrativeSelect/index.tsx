@@ -17,20 +17,22 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & NarrativeSelectProps, "narratives">;
+type TheProps = Omit<DataProps & NarrativeSelectProps, 'narratives'>;
 
 export interface NarrativeSelectData {
     narratives: Array<OptionValue<number>>;
 }
 
-type DataState = AsyncProcess<NarrativeSelectData, SimpleError>
+type DataState = AsyncProcess<NarrativeSelectData, SimpleError>;
 
-
-export default class NarrativeSelectController extends Component<TheProps, DataState> {
+export default class NarrativeSelectController extends Component<
+    TheProps,
+    DataState
+> {
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
 
@@ -40,23 +42,23 @@ export default class NarrativeSelectController extends Component<TheProps, DataS
 
     async initialize() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
         try {
             const narratives = await this.fetchNarratives();
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    narratives
-                }
-            })
+                    narratives,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
+            });
         }
     }
 
@@ -65,7 +67,7 @@ export default class NarrativeSelectController extends Component<TheProps, DataS
         const client = new WorkspaceClient({
             token,
             url: workspaceURL,
-            timeout
+            timeout,
         });
         const workspaces = await client.list_workspace_info({});
         const narratives = workspaces
@@ -84,7 +86,7 @@ export default class NarrativeSelectController extends Component<TheProps, DataS
                 const [id, , , , , , , , metadata] = workspace;
                 return {
                     value: id,
-                    label: metadata.narrative_nice_name
+                    label: metadata.narrative_nice_name,
                 };
             })
             .sort((a, b) => {
@@ -97,15 +99,19 @@ export default class NarrativeSelectController extends Component<TheProps, DataS
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading Narratives..."  type='inline'/>
+                return (
+                    <Loading message="Loading Narratives..." type="inline" />
+                );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
             case AsyncProcessStatus.SUCCESS:
-                return <View
-                    onChange={this.props.onChange}
-                    narratives={this.state.value.narratives}
-                    defaultValue={this.props.defaultValue}
-                />;
+                return (
+                    <View
+                        onChange={this.props.onChange}
+                        narratives={this.state.value.narratives}
+                        defaultValue={this.props.defaultValue}
+                    />
+                );
         }
     }
 }

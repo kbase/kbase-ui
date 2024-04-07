@@ -15,31 +15,34 @@ export interface IconConfig {
 
 const ICON_CONFIG: IconConfig = iconConfigRaw as unknown as IconConfig;
 
-const ICON_CONFIG_MAP: Map<string, TypeIconConfig> = ICON_CONFIG.typeIcons.reduce((iconConfigMap, iconConfig) => {
-    iconConfigMap.set(iconConfig.typeName, iconConfig);
-    return iconConfigMap;
-}, new Map<string, TypeIconConfig>())
+const ICON_CONFIG_MAP: Map<string, TypeIconConfig> =
+    ICON_CONFIG.typeIcons.reduce((iconConfigMap, iconConfig) => {
+        iconConfigMap.set(iconConfig.typeName, iconConfig);
+        return iconConfigMap;
+    }, new Map<string, TypeIconConfig>());
 
 export interface TypeIconProps {
     typeName: string;
-    size?: string
+    size?: string;
 }
 
-interface TypeIconState { }
+interface TypeIconState {}
 
 export default class TypeIcon extends Component<TypeIconProps, TypeIconState> {
     getDefaultIcon(typeName: string) {
         return {
             type: 'fontAwesome',
             classNames: ['fa-file-o'],
-            color: this.getColor(typeName)
+            color: this.getColor(typeName),
         };
     }
 
     getIcon() {
         const iconConfig = ICON_CONFIG_MAP.get(this.props.typeName);
         if (!iconConfig) {
-            console.warn(`No icon defined for type ${this.props.typeName}, defaulting`);
+            console.warn(
+                `No icon defined for type ${this.props.typeName}, defaulting`,
+            );
             return this.getDefaultIcon(this.props.typeName);
         }
         const classNames = iconConfig.classNames.slice();
@@ -68,7 +71,7 @@ export default class TypeIcon extends Component<TypeIconProps, TypeIconState> {
         return {
             classNames,
             iconType: iconConfig.iconType,
-            color: iconConfig.color
+            color: iconConfig.color,
         };
     }
 
@@ -84,12 +87,18 @@ export default class TypeIcon extends Component<TypeIconProps, TypeIconState> {
 
     render() {
         const icon = this.getIcon();
-        return <div>
-            <span className="fa-stack fa-2x">
-                <i className="fa fa-circle fa-stack-2x"
-                    style={{ color: icon.color }}></i>
-                <i className={`fa fa-inverse fa-stack-1x ${icon.classNames.join(' ')}`}></i>
-            </span>
-        </div>;
+        return (
+            <div>
+                <span className="fa-stack fa-2x">
+                    <i
+                        className="fa fa-circle fa-stack-2x"
+                        style={{ color: icon.color }}
+                    ></i>
+                    <i
+                        className={`fa fa-inverse fa-stack-1x ${icon.classNames.join(' ')}`}
+                    ></i>
+                </span>
+            </div>
+        );
     }
 }

@@ -4,7 +4,7 @@ export enum ComponentLoadingState {
     NONE = 0,
     LOADING,
     SUCCESS,
-    ERROR
+    ERROR,
 }
 
 export interface ViewBase {
@@ -28,7 +28,7 @@ export interface ViewSuccess extends ViewBase {
     loadingState: ComponentLoadingState.SUCCESS;
 }
 
-export interface SimpleView { }
+export interface SimpleView {}
 
 // Search
 
@@ -37,7 +37,7 @@ export enum SearchState {
     INITIAL_SEARCHING,
     SEARCHING,
     SEARCHED,
-    ERROR
+    ERROR,
 }
 
 // APp

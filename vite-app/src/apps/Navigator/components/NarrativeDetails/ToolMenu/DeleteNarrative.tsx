@@ -73,11 +73,11 @@ export default class DeleteNarrative extends Component<
             const client = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
                 token: this.props.authInfo.token,
-                timeout: this.props.config.ui.constants.clientTimeout
+                timeout: this.props.config.ui.constants.clientTimeout,
             });
             const perm = await client.getUserPermission(
                 this.props.narrative.access_group,
-                this.props.authInfo.account.user
+                this.props.authInfo.account.user,
             );
             if (perm === 'a') {
                 this.setState({
@@ -119,9 +119,9 @@ export default class DeleteNarrative extends Component<
             timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
-            await workspaceClient.delete_workspace(
-                { id: this.props.narrative.access_group }
-            );
+            await workspaceClient.delete_workspace({
+                id: this.props.narrative.access_group,
+            });
             // TODO: force an immediate refresh of the search.
             this.setState({
                 status: DeleteNarrativeStatus.SUCCESS,
@@ -158,7 +158,7 @@ export default class DeleteNarrative extends Component<
             <>
                 <div style={{ fontWeight: 'bold', color: 'red' }}>Error</div>
                 {messageContent}
-            </>
+            </>,
         );
     }
 
@@ -166,7 +166,7 @@ export default class DeleteNarrative extends Component<
         return this.renderModal(
             <div style={{ textAlign: 'center' }}>
                 <Loading message={message} />
-            </div>
+            </div>,
         );
     }
 
@@ -241,7 +241,7 @@ export default class DeleteNarrative extends Component<
                     />{' '}
                     Close
                 </div>
-            </Button>
+            </Button>,
         );
     }
 

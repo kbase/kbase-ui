@@ -1,16 +1,20 @@
-import { AsyncSearchProcess, AsyncSearchProcessStatus } from "lib/AsyncSearchProcess";
+import {
+    AsyncSearchProcess,
+    AsyncSearchProcessStatus,
+} from 'lib/AsyncSearchProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { Component } from "react";
+import { Component } from 'react';
 import { UserProfileUser, filteredUserAPI } from '../API';
-import { MINIMUM_SEARCH_CHARS } from "../constants";
-import { containsScriptTag } from "../utils";
-import SearchUsersView from "./view";
-
+import { MINIMUM_SEARCH_CHARS } from '../constants';
+import { containsScriptTag } from '../utils';
+import SearchUsersView from './view';
 
 // export type SearchUsersStatus = "none" | "searching" | "found" | "needmore" | "error";
 
-export type SearchState = AsyncSearchProcess<{ foundUsers: Array<UserProfileUser> }, SimpleError>;
-
+export type SearchState = AsyncSearchProcess<
+    { foundUsers: Array<UserProfileUser> },
+    SimpleError
+>;
 
 export interface SearchUsersControllerProps {
     // token: string;
@@ -19,29 +23,32 @@ export interface SearchUsersControllerProps {
 
 interface SearchUsersControllerState {
     searchText: string;
-    searchState: SearchState
+    searchState: SearchState;
     // message: string;
     // status: SearchUsersStatus;
     // foundUsers: Array<UserProfileUser>
 }
 
-export default class SearchUsersController extends Component<SearchUsersControllerProps, SearchUsersControllerState> {
+export default class SearchUsersController extends Component<
+    SearchUsersControllerProps,
+    SearchUsersControllerState
+> {
     constructor(props: SearchUsersControllerProps) {
         super(props);
         this.state = {
             searchText: '',
             searchState: {
-                status: AsyncSearchProcessStatus.NONE
-            }
-        }
+                status: AsyncSearchProcessStatus.NONE,
+            },
+        };
     }
 
     /**
-    * when search value is more than 2 charactors, 
-    * make API call and returns filtered list of users 
-    * 
-    * @param value 
-    */
+     * when search value is more than 2 charactors,
+     * make API call and returns filtered list of users
+     *
+     * @param value
+     */
     async search(value: string) {
         // should never get this.
         if (value.length === 0) {
@@ -69,34 +76,43 @@ export default class SearchUsersController extends Component<SearchUsersControll
                 searchState: {
                     status: AsyncSearchProcessStatus.ERROR,
                     error: {
-                        message: 'Search text may not contain the "script" tag'
-                    }
+                        message: 'Search text may not contain the "script" tag',
+                    },
                 },
-                searchText: value
-            })
+                searchText: value,
+            });
             return;
         }
 
         this.setState({
             searchState: {
                 status: AsyncSearchProcessStatus.PENDING,
-                value: (this.state.searchState.status === AsyncSearchProcessStatus.PENDING || this.state.searchState.status === AsyncSearchProcessStatus.SUCCESS ? this.state.searchState.value : { foundUsers: [] })
-            }
+                value:
+                    this.state.searchState.status ===
+                        AsyncSearchProcessStatus.PENDING ||
+                    this.state.searchState.status ===
+                        AsyncSearchProcessStatus.SUCCESS
+                        ? this.state.searchState.value
+                        : { foundUsers: [] },
+            },
         });
 
         // this.setState({ status: 'searching', searchText: value, foundUsers: this.state.foundUsers })
         try {
-            const [status, result] = await filteredUserAPI(value, this.props.url);
+            const [status, result] = await filteredUserAPI(
+                value,
+                this.props.url,
+            );
             if (status === 200) {
                 this.setState({
                     searchState: {
                         status: AsyncSearchProcessStatus.SUCCESS,
                         value: {
-                            foundUsers: result
-                        }
+                            foundUsers: result,
+                        },
                     },
-                    searchText: value
-                })
+                    searchText: value,
+                });
             } else {
                 // TODO: make a real error state in this control
                 // this just hacks the error response into the user list!
@@ -105,9 +121,9 @@ export default class SearchUsersController extends Component<SearchUsersControll
                     searchState: {
                         status: AsyncSearchProcessStatus.ERROR,
                         error: {
-                            message: result
-                        }
-                    }
+                            message: result,
+                        },
+                    },
                 });
             }
         } catch (ex) {
@@ -121,15 +137,12 @@ export default class SearchUsersController extends Component<SearchUsersControll
                 searchState: {
                     status: AsyncSearchProcessStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
+                        message,
+                    },
+                },
             });
         }
-
-
     }
-
 
     render() {
         // switch (this.state.searchState.status) {
@@ -139,6 +152,11 @@ export default class SearchUsersController extends Component<SearchUsersControll
         //             case AsyncSearchProcessStatus.ERROR:
         //                 case AsyncSearchProcessStatus.SUCCESS:
         // }
-        return <SearchUsersView searchUsersState={this.state.searchState} search={this.search.bind(this)} />
+        return (
+            <SearchUsersView
+                searchUsersState={this.state.searchState}
+                search={this.search.bind(this)}
+            />
+        );
     }
 }

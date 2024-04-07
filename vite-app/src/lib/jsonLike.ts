@@ -1,9 +1,4 @@
-import {
-    JSONArray,
-    JSONObject,
-    JSONScalarValue,
-    JSONValue
-} from './json';
+import { JSONArray, JSONObject, JSONScalarValue, JSONValue } from './json';
 
 export type JSONLikeValue =
     | JSONScalarValue
@@ -17,7 +12,7 @@ export interface JSONLikeObjectOf<T extends JSONLikeValue> {
 
 export type JSONLikeObject = JSONLikeObjectOf<JSONLikeValue>;
 
-export interface JSONLikeArrayOf<T extends JSONLikeValue> extends Array<T> { }
+export interface JSONLikeArrayOf<T extends JSONLikeValue> extends Array<T> {}
 
 export type JSONLikeArray = JSONLikeArrayOf<JSONLikeValue>;
 
@@ -47,7 +42,7 @@ export function toJSONLike(like: unknown): JSONLikeValue {
                 return x;
             } else {
                 throw new Error(
-                    `Not acceptable JSONLikeObject value: ${typeof like}`
+                    `Not acceptable JSONLikeObject value: ${typeof like}`,
                 );
             }
         default:
@@ -96,12 +91,12 @@ export function toJSONObject(like: unknown): JSONObject {
         case 'number':
         case 'boolean':
         case 'undefined':
-            throw new Error('May not be a JSON Object')
+            throw new Error('May not be a JSON Object');
         case 'object':
             if (like === null) {
-                throw new Error('May not be a JSON Object')
+                throw new Error('May not be a JSON Object');
             } else if (Array.isArray(like)) {
-                throw new Error('May not be a JSON Object')
+                throw new Error('May not be a JSON Object');
             } else {
                 const x: JSONObject = {};
                 for (const [k, v] of Object.entries(like)) {

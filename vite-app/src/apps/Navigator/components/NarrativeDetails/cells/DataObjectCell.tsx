@@ -23,7 +23,10 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
         return (
             <div className={styles.ObjectInfo}>
                 <Button
-                    href={navigationPathToURL({path: `dataview/${info.ref}`, type: 'kbaseui'}, true).toString()}
+                    href={navigationPathToURL(
+                        { path: `dataview/${info.ref}`, type: 'kbaseui' },
+                        true,
+                    ).toString()}
                     target="_blank"
                     variant="outline-info"
                 >
@@ -75,12 +78,12 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                                 <EZTooltip
                                     id="saved-at-tooltip"
                                     tooltip={Intl.DateTimeFormat(
-                                        'en-US'
+                                        'en-US',
                                     ).format(new Date(info.saveDate))}
                                 >
                                     <span>
                                         {niceRelativeTime(
-                                            new Date(info.saveDate)
+                                            new Date(info.saveDate),
                                         )}
                                     </span>
                                 </EZTooltip>

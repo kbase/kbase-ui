@@ -8,7 +8,6 @@ export interface GenericClientClientParams {
     prefix?: boolean;
 }
 
-
 /**
  * The base class for all KBase JSON-RPC 1.1 services
  */
@@ -19,7 +18,13 @@ export default class GenericClient {
     token?: string;
     prefix?: boolean;
 
-    constructor({ module, url, timeout, token, prefix }: GenericClientClientParams) {
+    constructor({
+        module,
+        url,
+        timeout,
+        token,
+        prefix,
+    }: GenericClientClientParams) {
         this.module = module;
         this.url = url;
         this.timeout = timeout;
@@ -29,12 +34,15 @@ export default class GenericClient {
 
     /**
      * The single point of entry for RPC calls, just to help dry out the class.
-     * 
-     * @param funcName 
-     * @param params 
-     * @returns 
+     *
+     * @param funcName
+     * @param params
+     * @returns
      */
-    public async callFunc(funcName: string, params?: JSONRPC20Params): Promise<JSONRPC20Response> {
+    public async callFunc(
+        funcName: string,
+        params?: JSONRPC20Params,
+    ): Promise<JSONRPC20Response> {
         const client = new JSONRPCClient({
             url: this.url,
             timeout: this.timeout,
@@ -52,5 +60,4 @@ export default class GenericClient {
         });
         return result;
     }
-
 }

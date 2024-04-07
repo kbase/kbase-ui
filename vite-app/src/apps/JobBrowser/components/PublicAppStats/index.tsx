@@ -13,7 +13,7 @@ import PublicAppStats from './view';
 
 export interface ControllerProps {
     config: Config;
-    auth: AuthenticationStateAuthenticated
+    auth: AuthenticationStateAuthenticated;
 }
 
 export interface Filtered<T> {
@@ -22,17 +22,20 @@ export interface Filtered<T> {
 }
 
 export interface PublicAppStatsState {
-    stats: Array<Filtered<AppStat>>
+    stats: Array<Filtered<AppStat>>;
 }
 
-export type ControllerState = AsyncProcess<PublicAppStatsState, SimpleError>
+export type ControllerState = AsyncProcess<PublicAppStatsState, SimpleError>;
 
-export default class Controller extends React.Component<ControllerProps, ControllerState> {
+export default class Controller extends React.Component<
+    ControllerProps,
+    ControllerState
+> {
     constructor(props: ControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
 
     componentDidMount() {
@@ -45,23 +48,23 @@ export default class Controller extends React.Component<ControllerProps, Control
         // support fully search semantics (offset, limit, sort, query), but for now I
         // believe we still just have to get everything and perform it all client-side.
         this.setState({
-            status: AsyncProcessStatus.PENDING
-        })
+            status: AsyncProcessStatus.PENDING,
+        });
         try {
-            const stats = await this.loadInitialData()
+            const stats = await this.loadInitialData();
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    stats
-                }
-            })
+                    stats,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
+            });
         }
     }
 
@@ -69,7 +72,7 @@ export default class Controller extends React.Component<ControllerProps, Control
         const catalogClient = new CatalogClient({
             token: this.props.auth.authInfo.token,
             url: this.props.config.services.Catalog.url,
-            timeout: this.props.config.ui.constants.clientTimeout
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
 
         const rawStats = await catalogClient.get_exec_aggr_stats({});
@@ -78,12 +81,21 @@ export default class Controller extends React.Component<ControllerProps, Control
             if (!moduleId || !functionId) {
                 console.warn('bad app!', stat);
             }
-            const successRate = calcRate(stat.number_of_calls - stat.number_of_errors, stat.number_of_calls);
-            const averageRunTime = calcAverage(stat.total_exec_time, stat.number_of_calls);
-            const averageQueueTime = calcAverage(stat.total_queue_time, stat.number_of_calls);
+            const successRate = calcRate(
+                stat.number_of_calls - stat.number_of_errors,
+                stat.number_of_calls,
+            );
+            const averageRunTime = calcAverage(
+                stat.total_exec_time,
+                stat.number_of_calls,
+            );
+            const averageQueueTime = calcAverage(
+                stat.total_queue_time,
+                stat.number_of_calls,
+            );
             return {
                 show: true,
-                    value: {
+                value: {
                     appId: stat.full_app_id,
                     moduleId,
                     functionId: functionId || '',
@@ -94,9 +106,9 @@ export default class Controller extends React.Component<ControllerProps, Control
                     successRate,
                     averageRunTime,
                     averageQueueTime,
-                    totalRunTime: stat.total_queue_time
-                }
-            }
+                    totalRunTime: stat.total_queue_time,
+                },
+            };
         });
     }
 
@@ -111,32 +123,33 @@ export default class Controller extends React.Component<ControllerProps, Control
                 return new RegExp(term, 'i');
             });
 
-            const stats = this.state.value.stats.map(({value}) => {
-                const show = expression.length === 0 || expression.every((term) => {
-                    return (
-                        term.test(value.moduleTitle) ||
-                        term.test(value.moduleId) ||
-                        term.test(value.functionTitle) ||
-                        term.test(value.functionId)
-                    );
-                });
-                return {show, value};
+            const stats = this.state.value.stats.map(({ value }) => {
+                const show =
+                    expression.length === 0 ||
+                    expression.every((term) => {
+                        return (
+                            term.test(value.moduleTitle) ||
+                            term.test(value.moduleId) ||
+                            term.test(value.functionTitle) ||
+                            term.test(value.functionId)
+                        );
+                    });
+                return { show, value };
             });
 
-    
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    stats
-                }
-            })
+                    stats,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
+            });
         }
     }
 
@@ -148,15 +161,20 @@ export default class Controller extends React.Component<ControllerProps, Control
         this.search(query);
     }
 
-    renderSuccess({stats}: PublicAppStatsState) {
+    renderSuccess({ stats }: PublicAppStatsState) {
         const filteredStats = stats
-            .filter(({show}) => {
+            .filter(({ show }) => {
                 return show;
             })
-            .map(({value}) => {
+            .map(({ value }) => {
                 return value;
             });
-        return <PublicAppStats stats={filteredStats} onSearch={this.onSearch.bind(this)} />;
+        return (
+            <PublicAppStats
+                stats={filteredStats}
+                onSearch={this.onSearch.bind(this)}
+            />
+        );
     }
 
     renderError(error: SimpleError) {

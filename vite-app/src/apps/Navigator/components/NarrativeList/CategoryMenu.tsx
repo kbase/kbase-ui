@@ -6,7 +6,7 @@ export interface CategoryMenuProps {
     category?: string;
 }
 
-interface CategoryMenuState { }
+interface CategoryMenuState {}
 
 export default class CategoryMenu extends Component<
     CategoryMenuProps,

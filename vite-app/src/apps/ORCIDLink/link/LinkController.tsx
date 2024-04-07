@@ -24,7 +24,7 @@ export interface LinkControllerProps {
 
 export enum LinkStatus {
     NONE = 'NONE',
-    LINKED = 'LINKED'
+    LINKED = 'LINKED',
 }
 
 // export interface LinkInfo {
@@ -43,29 +43,32 @@ export interface GetNameResult {
 export type RevokeResult = null;
 
 export interface LinkState {
-    link: LinkInfo | null,
-    serviceInfo: InfoResult
+    link: LinkInfo | null;
+    serviceInfo: InfoResult;
 }
 
-export type LinkStateProcess = AsyncProcess<LinkState, { message: string }>
+export type LinkStateProcess = AsyncProcess<LinkState, { message: string }>;
 
-export type StartLinkState = AsyncProcess<true, SimpleError>
+export type StartLinkState = AsyncProcess<true, SimpleError>;
 
 interface LinkControllerState {
     linkState: LinkStateProcess;
-    startLinkState: StartLinkState
+    startLinkState: StartLinkState;
     // started: boolean;
 }
 
-export default class LinkController extends Component<LinkControllerProps, LinkControllerState> {
+export default class LinkController extends Component<
+    LinkControllerProps,
+    LinkControllerState
+> {
     constructor(props: LinkControllerProps) {
         super(props);
         this.state = {
             linkState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
-            startLinkState: { status: AsyncProcessStatus.NONE }
-        }
+            startLinkState: { status: AsyncProcessStatus.NONE },
+        };
     }
 
     componentDidMount() {
@@ -74,9 +77,12 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     async fetchLink(): Promise<LinkInfo | null> {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
 
-        const linkInfo = await model.getLinkInfo()
+        const linkInfo = await model.getLinkInfo();
         return linkInfo;
     }
 
@@ -85,7 +91,10 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
             return;
         }
 
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
         await model.deleteOwnLink();
 
         this.setState({
@@ -93,9 +102,9 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
                     ...this.state.linkState.value,
-                    link: null
-                }
-            }
+                    link: null,
+                },
+            },
         });
 
         // TODO: notification
@@ -105,62 +114,74 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
 
     async startLink() {
         this.setState({
-            startLinkState: { status: AsyncProcessStatus.PENDING }
-        })
+            startLinkState: { status: AsyncProcessStatus.PENDING },
+        });
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
             await model.startLink({
                 returnInstruction: this.props.returnInstruction,
                 skipPrompt: this.props.skipPrompt,
-                uiOptions: this.props.uiOptions
-            })
+                uiOptions: this.props.uiOptions,
+            });
             this.setState({
-                startLinkState: { status: AsyncProcessStatus.SUCCESS, value: true }
-            })
+                startLinkState: {
+                    status: AsyncProcessStatus.SUCCESS,
+                    value: true,
+                },
+            });
         } catch (ex) {
             if (ex instanceof Error) {
                 this.setState({
                     startLinkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
-                })
+                            message: ex.message,
+                        },
+                    },
+                });
             } else {
                 this.setState({
                     startLinkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Unknown Error'
-                        }
-                    }
-                })
+                            message: 'Unknown Error',
+                        },
+                    },
+                });
             }
         }
     }
 
     async loadData() {
         await new Promise((resolve) => {
-            this.setState({
-                linkState: {
-                    status: AsyncProcessStatus.PENDING
-                }
-            }, () => {
-                resolve(null);
-            });
+            this.setState(
+                {
+                    linkState: {
+                        status: AsyncProcessStatus.PENDING,
+                    },
+                },
+                () => {
+                    resolve(null);
+                },
+            );
         });
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
 
-            const linkInfo = await model.getLinkInfo()
+            const linkInfo = await model.getLinkInfo();
             const serviceInfo = await model.getInfo();
 
             this.setState({
                 linkState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { link: linkInfo, serviceInfo }
-                }
+                    value: { link: linkInfo, serviceInfo },
+                },
             });
         } catch (ex) {
             if (ex instanceof Error) {
@@ -168,18 +189,18 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     linkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
+                            message: `Unknown error: ${String(ex)}`,
+                        },
+                    },
                 });
             }
         }
@@ -190,7 +211,7 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
     }
 
     renderError({ message }: { message: string }) {
-        return <ErrorAlert message={message} />
+        return <ErrorAlert message={message} />;
     }
 
     goBack() {
@@ -204,26 +225,35 @@ export default class LinkController extends Component<LinkControllerProps, LinkC
         } else {
             // TODO: FIX ME
             // TODO: confirm this works:
-            navigate2({type: 'kbaseui', path: 'orcidlink'})
+            navigate2({ type: 'kbaseui', path: 'orcidlink' });
         }
     }
 
-    renderSuccess({ link, serviceInfo: { runtime_info: { orcid_site_url } } }: LinkState) {
+    renderSuccess({
+        link,
+        serviceInfo: {
+            runtime_info: { orcid_site_url },
+        },
+    }: LinkState) {
         if (link === null) {
-            return <CreateLink
-                start={this.startLink.bind(this)}
-                startLinkState={this.state.startLinkState}
-                goBack={this.goBack.bind(this)}
-                returnInstruction={this.props.returnInstruction}
-                skipPrompt={this.props.skipPrompt}
-            />;
+            return (
+                <CreateLink
+                    start={this.startLink.bind(this)}
+                    startLinkState={this.state.startLinkState}
+                    goBack={this.goBack.bind(this)}
+                    returnInstruction={this.props.returnInstruction}
+                    skipPrompt={this.props.skipPrompt}
+                />
+            );
         }
-        return <AlreadyLinked
-            link={link}
-            returnInstruction={this.props.returnInstruction}
-            orcidSiteURL={orcid_site_url}
-            returnFromWhence={this.returnFromWhence.bind(this)}
-        />;
+        return (
+            <AlreadyLinked
+                link={link}
+                returnInstruction={this.props.returnInstruction}
+                orcidSiteURL={orcid_site_url}
+                returnFromWhence={this.returnFromWhence.bind(this)}
+            />
+        );
     }
 
     render() {

@@ -1,11 +1,11 @@
-import { NavigationPath } from "lib/navigation";
-import { Menu } from "./menu";
+import { NavigationPath } from 'lib/navigation';
+import { Menu } from './menu';
 
 export interface UIServiceConfig {
     name: string;
 }
 
-export type CoreServiceType = "rest" | "jsonrpc" | "jsonrpc2";
+export type CoreServiceType = 'rest' | 'jsonrpc' | 'jsonrpc2';
 
 export interface CoreServiceConfig {
     aliases?: Array<string>;
@@ -16,7 +16,7 @@ export interface CoreServiceConfig {
 }
 
 export interface RestServiceConfig extends CoreServiceConfig {
-    type: "rest";
+    type: 'rest';
     version: {
         path: string;
         propertyPath?: string;
@@ -25,7 +25,7 @@ export interface RestServiceConfig extends CoreServiceConfig {
 }
 
 export interface JSONRPC11ServiceConfig extends CoreServiceConfig {
-    type: "jsonrpc";
+    type: 'jsonrpc';
     version?: {
         method: string;
     };
@@ -35,7 +35,7 @@ export interface JSONRPC11ServiceConfig extends CoreServiceConfig {
 }
 
 export interface JSONRPC20ServiceConfig extends CoreServiceConfig {
-    type: "jsonrpc2";
+    type: 'jsonrpc2';
     version?: {
         method: string;
     };
@@ -96,30 +96,30 @@ export interface LinkInfo {
 
 export interface DynamicServiceConfig {
     module: string;
-    version: "auto" | "dev" | "beta" | "release";
+    version: 'auto' | 'dev' | 'beta' | 'release';
 }
 
 export interface GitInfo {
     hash: {
-        full: string
-        abbreviated: string
-    }
-    subject: string
-    notes: string
+        full: string;
+        abbreviated: string;
+    };
+    subject: string;
+    notes: string;
     author: {
-        name: string
-        date: string
-    }
+        name: string;
+        date: string;
+    };
     committer: {
-        name: string
-        date: string
-    },
-    originURL: string
-    account: string
-    repoName: string
-    branch: string
-    tag?: string
-    version?: string
+        name: string;
+        date: string;
+    };
+    originURL: string;
+    account: string;
+    repoName: string;
+    branch: string;
+    tag?: string;
+    version?: string;
 }
 
 export type ISODateTimeString = string;
@@ -166,7 +166,6 @@ export interface CookieConfig {
 //     newWindow?: boolean;
 // }
 
-
 // export interface NavigationEndpoint {
 //     hash?: string;
 //     path?: string;
@@ -192,7 +191,6 @@ export interface CookieConfig {
 
 // export type DefaultNavigationPath = DefaultNavigationPathKBaseUI | DefaultNavigationPathEuropa;
 
-
 export interface DeployConfig {
     deploy: {
         id: string;
@@ -209,9 +207,9 @@ export interface DeployConfig {
                 loadingTimers: {
                     slow: number;
                     verySlow: number;
-                }
-            }
-        }
+                };
+            };
+        };
         services: {
             connection: UIServiceConfig;
             coreService: UIServiceConfig;
@@ -225,7 +223,7 @@ export interface DeployConfig {
             };
             userprofile: UIServiceConfig;
             feeds: UIServiceConfig & {
-                pollInterval: number
+                pollInterval: number;
             };
         };
         urls: {
@@ -262,8 +260,8 @@ export interface DeployConfig {
             };
         };
         defaults: {
-            path: NavigationPath,
-        }
+            path: NavigationPath;
+        };
     };
     services: {
         Auth2: Auth2ServiceConfig;

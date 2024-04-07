@@ -15,10 +15,8 @@ export interface PolicyDataVersion {
 export interface PolicyData {
     id: string;
     title: string;
-    versions: Array<PolicyDataVersion>
+    versions: Array<PolicyDataVersion>;
 }
-
-
 
 export interface TermsAndConditionsPolicyVersion {
     version: number;
@@ -29,7 +27,7 @@ export interface TermsAndConditionsPolicyVersion {
 export interface TermsAndConditionsPolicy {
     id: string;
     title: string;
-    versions: Array<TermsAndConditionsPolicyVersion>
+    versions: Array<TermsAndConditionsPolicyVersion>;
 }
 
 export interface CurrentTermsAndConditionsPolicy {
@@ -45,12 +43,12 @@ const POLICY: TermsAndConditionsPolicy = {
     title: policyData.title,
     versions: policyData.versions.map(({ version, publishedAt, url }) => {
         return {
-            version, url: new URL(url),
-            publishedAt: new Date(publishedAt)
+            version,
+            url: new URL(url),
+            publishedAt: new Date(publishedAt),
         };
-    })
-}
-
+    }),
+};
 
 export default class Policy {
     _policy: TermsAndConditionsPolicy = POLICY;
@@ -71,10 +69,14 @@ export default class Policy {
         }
 
         if (!currentVersion) {
-            throw new Error('No current T&C policy')
+            throw new Error('No current T&C policy');
         }
 
-        return {id: this._policy.id, title: this._policy.title, ...currentVersion}
+        return {
+            id: this._policy.id,
+            title: this._policy.title,
+            ...currentVersion,
+        };
     }
 
     policy(): TermsAndConditionsPolicy {

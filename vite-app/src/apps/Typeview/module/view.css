@@ -5,13 +5,13 @@
     margin: 0 1rem 1rem 1rem;
 }
 
-.TypeView  .tab-content {
+.TypeView .tab-content {
     flex: 1 1 0;
     display: flex;
     flex-direction: column;
 }
 
-.TypeView .tab-content > .tab-pane.active{
+.TypeView .tab-content > .tab-pane.active {
     flex: 1 1 0;
     display: flex;
     flex-direction: column;

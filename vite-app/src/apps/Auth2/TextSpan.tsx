@@ -1,4 +1,4 @@
-import { CSSProperties, Component, PropsWithChildren } from "react";
+import { CSSProperties, Component, PropsWithChildren } from 'react';
 
 export interface TextSpanProps extends PropsWithChildren {
     bold?: boolean;
@@ -18,8 +18,6 @@ export default class TextSpan extends Component<TextSpanProps> {
         } else {
             style.margin = '0 0.25em';
         }
-        return <span style={style}>
-            {this.props.children}
-        </span>
+        return <span style={style}>{this.props.children}</span>;
     }
 }

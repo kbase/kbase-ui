@@ -1,7 +1,7 @@
 import { faBan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FeedNotificationLevel } from 'lib/clients/Feeds';
-import { Component, PropsWithChildren, ReactNode } from "react";
+import { Component, PropsWithChildren, ReactNode } from 'react';
 import styles from './Notification.module.css';
 import { NotificationAlert } from './NotificationAlert';
 
@@ -9,9 +9,15 @@ import { NotificationAlert } from './NotificationAlert';
 // export type Variant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' |
 // 'info' | 'dark' | 'light' | string;
 
-export type StrictVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light';
-
-
+export type StrictVariant =
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'dark'
+    | 'light';
 
 export interface NotificationLevelAlertProps extends PropsWithChildren {
     level: FeedNotificationLevel;
@@ -19,18 +25,21 @@ export interface NotificationLevelAlertProps extends PropsWithChildren {
     message?: string;
     renderControls?: () => ReactNode;
     renderBody?: () => ReactNode;
-
 }
 
 export class NotificationLevelAlert extends Component<NotificationLevelAlertProps> {
-
     levelToVariant(): StrictVariant {
         switch (this.props.level) {
-            case 'error': return 'danger';
-            case 'success': return 'success';
-            case 'request': return 'success';
-            case 'warning': return 'warning';
-            case 'alert': return 'info';
+            case 'error':
+                return 'danger';
+            case 'success':
+                return 'success';
+            case 'request':
+                return 'success';
+            case 'warning':
+                return 'warning';
+            case 'alert':
+                return 'info';
         }
     }
 
@@ -81,16 +90,19 @@ export class NotificationLevelAlert extends Component<NotificationLevelAlertProp
         if (!this.props.renderControls) {
             return;
         }
-        return <div className={styles.NotificationControls}>
-            {this.props.renderControls()}
-        </div>;
+        return (
+            <div className={styles.NotificationControls}>
+                {this.props.renderControls()}
+            </div>
+        );
     }
 
     render() {
-        return <NotificationAlert variant={this.levelToVariant()}>
-            {this.props.children}
-        </NotificationAlert>
-
+        return (
+            <NotificationAlert variant={this.levelToVariant()}>
+                {this.props.children}
+            </NotificationAlert>
+        );
 
         // const classNames: Array<string> = [
         //     styles.Notification,
@@ -110,14 +122,19 @@ export class NotificationLevelAlert extends Component<NotificationLevelAlertProp
     }
 }
 
-export interface NoNotificationProps extends PropsWithChildren {
-}
+export interface NoNotificationProps extends PropsWithChildren {}
 
 export default class NoNotification extends Component<NoNotificationProps> {
     render() {
-        return <NotificationAlert variant="secondary" unselected={true} icon={<FontAwesomeIcon icon={faBan}/>}>
-            {this.props.children}
-        </NotificationAlert>
+        return (
+            <NotificationAlert
+                variant="secondary"
+                unselected={true}
+                icon={<FontAwesomeIcon icon={faBan} />}
+            >
+                {this.props.children}
+            </NotificationAlert>
+        );
         // return <NotificationLevelAlert level='alert' unselected={true}>
         //     {this.props.children}
         // </NotificationLevelAlert>

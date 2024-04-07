@@ -10,8 +10,7 @@ export interface AreaProps extends PropsWithChildren {
 
 export default class Area extends Component<AreaProps> {
     render() {
-        const bodyStyle: React.CSSProperties = {
-        };
+        const bodyStyle: React.CSSProperties = {};
         if (this.props.maxHeight) {
             bodyStyle.maxHeight = this.props.maxHeight;
             bodyStyle.overflowY = 'auto';
@@ -22,11 +21,13 @@ export default class Area extends Component<AreaProps> {
         if (this.props.title) {
             title = <div className="Area-title">{this.props.title}</div>;
         }
-        return <div className='Area' style={this.props.style}>
-            {title}
-            <div className="Area-body" style={bodyStyle}>
-                {this.props.children}
+        return (
+            <div className="Area" style={this.props.style}>
+                {title}
+                <div className="Area-body" style={bodyStyle}>
+                    {this.props.children}
+                </div>
             </div>
-        </div>;
+        );
     }
 }

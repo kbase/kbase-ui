@@ -8,35 +8,39 @@ export interface AboutBuildWrapperProps {
     setTitle: (title: string) => void;
 }
 
-interface AboutBuildWrapperState { }
+interface AboutBuildWrapperState {}
 
 export default class AboutBuildWrapper extends Component<
     AboutBuildWrapperProps,
     AboutBuildWrapperState
 > {
     render() {
-        return <ConfigContext.Consumer>
-            {(configValue: ConfigState) => {
-                switch (configValue.status) {
-                    case AsyncProcessStatus.NONE:
-                    case AsyncProcessStatus.PENDING:
-                        return (
-                            <Loading
-                                message="Loading Config..."
-                                size="large"
-                                type="block"
-                            />
-                        );
-                    case AsyncProcessStatus.ERROR:
-                        return <div>Error! {configValue.error}</div>;
-                    case AsyncProcessStatus.SUCCESS:
-                        this.props.setTitle('About the kbase-ui build');
-                        return <AboutBuild 
-                            buildInfo={configValue.value.buildInfo}
-                            gitInfo={configValue.value.gitInfo}
-                        />
-                }
-            }}
-        </ConfigContext.Consumer>
+        return (
+            <ConfigContext.Consumer>
+                {(configValue: ConfigState) => {
+                    switch (configValue.status) {
+                        case AsyncProcessStatus.NONE:
+                        case AsyncProcessStatus.PENDING:
+                            return (
+                                <Loading
+                                    message="Loading Config..."
+                                    size="large"
+                                    type="block"
+                                />
+                            );
+                        case AsyncProcessStatus.ERROR:
+                            return <div>Error! {configValue.error}</div>;
+                        case AsyncProcessStatus.SUCCESS:
+                            this.props.setTitle('About the kbase-ui build');
+                            return (
+                                <AboutBuild
+                                    buildInfo={configValue.value.buildInfo}
+                                    gitInfo={configValue.value.gitInfo}
+                                />
+                            );
+                    }
+                }}
+            </ConfigContext.Consumer>
+        );
     }
 }

@@ -1,13 +1,13 @@
-import { Model } from "apps/ORCIDLink/lib/Model";
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import { Model } from 'apps/ORCIDLink/lib/Model';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { InfoResult } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
-import { Component } from "react";
-import { Config } from "types/config";
-import ServiceInfoView from "./view";
+import { InfoResult } from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import ServiceInfoView from './view';
 
 export interface ServiceInfoControllerProps {
     auth: AuthenticationStateAuthenticated;
@@ -15,75 +15,81 @@ export interface ServiceInfoControllerProps {
 }
 
 interface ServiceInfoState {
-    serviceInfo: InfoResult
+    serviceInfo: InfoResult;
 }
 
-type ServiceInfoStateProcess = AsyncProcess<ServiceInfoState, SimpleError>
+type ServiceInfoStateProcess = AsyncProcess<ServiceInfoState, SimpleError>;
 
 interface ServiceInfoControllerState {
-    process: ServiceInfoStateProcess
+    process: ServiceInfoStateProcess;
 }
 
-export default class ServiceInfoController extends Component<ServiceInfoControllerProps, ServiceInfoControllerState> {
+export default class ServiceInfoController extends Component<
+    ServiceInfoControllerProps,
+    ServiceInfoControllerState
+> {
     constructor(props: ServiceInfoControllerProps) {
         super(props);
         this.state = {
             process: {
-                status: AsyncProcessStatus.NONE
-            }
-        }
+                status: AsyncProcessStatus.NONE,
+            },
+        };
     }
     async componentDidMount() {
         this.setState({
             process: {
-                status: AsyncProcessStatus.NONE
-            }
-        })
+                status: AsyncProcessStatus.NONE,
+            },
+        });
 
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
             const serviceInfo = await model.getInfo();
             this.setState({
                 process: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        serviceInfo
-                    }
-                }
-            })
+                        serviceInfo,
+                    },
+                },
+            });
         } catch (ex) {
             if (ex instanceof Error) {
                 this.setState({
                     process: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
-                })
+                            message: ex.message,
+                        },
+                    },
+                });
             } else {
                 this.setState({
                     process: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Unknown error'
-                        }
-                    }
-                })
+                            message: 'Unknown error',
+                        },
+                    },
+                });
             }
         }
     }
 
     renderLoading() {
-        return <Loading message="Loading service info..." />
+        return <Loading message="Loading service info..." />;
     }
 
     renderError(error: SimpleError) {
-        return <ErrorMessage message={error.message} />
+        return <ErrorMessage message={error.message} />;
     }
 
     renderSuccess(value: ServiceInfoState) {
-        return <ServiceInfoView serviceInfo={value.serviceInfo} />
+        return <ServiceInfoView serviceInfo={value.serviceInfo} />;
     }
 
     render() {

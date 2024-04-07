@@ -17,12 +17,14 @@ export interface AsyncProcessWithHaltPending extends AsyncProcessWithHaltSBase {
     status: AsyncProcessWithHaltStatus.PENDING;
 }
 
-export interface AsyncProcessWithHaltError<H> extends AsyncProcessWithHaltSBase {
+export interface AsyncProcessWithHaltError<H>
+    extends AsyncProcessWithHaltSBase {
     status: AsyncProcessWithHaltStatus.HALTED;
     value: H;
 }
 
-export interface AsyncProcessWithHaltSuccess<T> extends AsyncProcessWithHaltSBase {
+export interface AsyncProcessWithHaltSuccess<T>
+    extends AsyncProcessWithHaltSBase {
     status: AsyncProcessWithHaltStatus.SUCCESS;
     value: T;
 }

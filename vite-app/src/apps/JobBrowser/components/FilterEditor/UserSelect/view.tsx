@@ -9,10 +9,12 @@ export interface UserSelectProps {
     defaultValue?: Array<string>;
 }
 
-interface UserSelectState {
-}
+interface UserSelectState {}
 
-export default class UserSelect extends Component<UserSelectProps, UserSelectState> {
+export default class UserSelect extends Component<
+    UserSelectProps,
+    UserSelectState
+> {
     onChange(value: string) {
         // oddly enough, clearing a field will set value
         // to undefined :(
@@ -33,19 +35,23 @@ export default class UserSelect extends Component<UserSelectProps, UserSelectSta
     }
 
     render() {
-        const defaultValue = this.props.defaultValue ? this.props.defaultValue[0] : undefined;
+        const defaultValue = this.props.defaultValue
+            ? this.props.defaultValue[0]
+            : undefined;
 
-        return <Select<string>
-            showSearch
-            allowClear
-            onChange={this.onChange.bind(this)}
-            onSearch={this.onSearch.bind(this)}
-            // TODO: figure out how to remove this hack; without it, display is
-            // inline-block, and the control does not fill the column.
-            style={{display: 'block'}}
-            filterOption={false}
-            defaultValue={defaultValue}
-            options={this.props.options}
-        />;
+        return (
+            <Select<string>
+                showSearch
+                allowClear
+                onChange={this.onChange.bind(this)}
+                onSearch={this.onSearch.bind(this)}
+                // TODO: figure out how to remove this hack; without it, display is
+                // inline-block, and the control does not fill the column.
+                style={{ display: 'block' }}
+                filterOption={false}
+                defaultValue={defaultValue}
+                options={this.props.options}
+            />
+        );
     }
 }

@@ -20,7 +20,7 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & AppModuleSelectProps, "options">;
+type TheProps = Omit<DataProps & AppModuleSelectProps, 'options'>;
 
 interface AppModuleData {
     options: Array<OptionValue<string>>;
@@ -28,12 +28,15 @@ interface AppModuleData {
 
 type AppModuleSelectControllerState = AsyncProcess<AppModuleData, SimpleError>;
 
-export default class AppModuleSelectController extends Component<TheProps, AppModuleSelectControllerState> {
+export default class AppModuleSelectController extends Component<
+    TheProps,
+    AppModuleSelectControllerState
+> {
     stopped: boolean;
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
         this.stopped = false;
     }
@@ -44,7 +47,7 @@ export default class AppModuleSelectController extends Component<TheProps, AppMo
 
     async initialize() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
@@ -52,15 +55,15 @@ export default class AppModuleSelectController extends Component<TheProps, AppMo
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    options
-                }
-            })
+                    options,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -70,7 +73,7 @@ export default class AppModuleSelectController extends Component<TheProps, AppMo
         const client = new CatalogClient({
             token,
             url: catalogURL,
-            timeout
+            timeout,
         });
         const modules = await client.list_basic_module_info({});
         const options = modules
@@ -79,7 +82,7 @@ export default class AppModuleSelectController extends Component<TheProps, AppMo
 
                 return {
                     value: module_name,
-                    label: `${module_name}`
+                    label: `${module_name}`,
                 };
             })
             .sort((a, b) => {
@@ -89,19 +92,23 @@ export default class AppModuleSelectController extends Component<TheProps, AppMo
     }
 
     render() {
-        switch (this.state.status)  {
+        switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading App Modules..." type='inline' />
+                return (
+                    <Loading message="Loading App Modules..." type="inline" />
+                );
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
             case AsyncProcessStatus.SUCCESS:
-                return <View
-                    onChange={this.props.onChange}
-                    options={this.state.value.options}
-                    defaultValue={this.props.defaultValue}
-                    value={this.props.value}
-                />;
+                return (
+                    <View
+                        onChange={this.props.onChange}
+                        options={this.state.value.options}
+                        defaultValue={this.props.defaultValue}
+                        value={this.props.value}
+                    />
+                );
         }
     }
 }

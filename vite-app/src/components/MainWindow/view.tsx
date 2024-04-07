@@ -16,25 +16,28 @@ export interface MainWindowProps {
 
 export default class MainWindow extends Component<MainWindowProps> {
     renderMenuSearch() {
-        return <div className={styles.menuSearch}>
-            <div className={styles.menuSearchSearchbar}>
-                <Form.Control type="text" />
+        return (
+            <div className={styles.menuSearch}>
+                <div className={styles.menuSearchSearchbar}>
+                    <Form.Control type="text" />
+                </div>
+                <div className={styles.menuSearchSearchresults}></div>
             </div>
-            <div className={styles.menuSearchSearchresults}></div>
-        </div>
+        );
     }
 
     render() {
         return (
-            <div className={styles.main} data-k-b-testhook-component="mainwindow">
-               <Notifications />
+            <div
+                className={styles.main}
+                data-k-b-testhook-component="mainwindow"
+            >
+                <Notifications />
                 {/* {this.renderMenuSearch()} */}
                 <div className={styles.body}>
                     <div className={styles.contentArea}>
                         <div className={styles.content}>
-                            <Body
-                                {...this.props}
-                            />
+                            <Body {...this.props} />
                         </div>
                     </div>
                 </div>

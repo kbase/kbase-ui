@@ -16,15 +16,18 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & ClientGroupSelectProps, "options">;
+type TheProps = Omit<DataProps & ClientGroupSelectProps, 'options'>;
 
 type DataState = AsyncProcess<Array<OptionValue<string>>, SimpleError>;
 
-export default class ClientGroupsSelectController extends React.Component<TheProps, DataState> {
+export default class ClientGroupsSelectController extends React.Component<
+    TheProps,
+    DataState
+> {
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
     }
 
@@ -55,21 +58,21 @@ export default class ClientGroupsSelectController extends React.Component<ThePro
 
     async initialize() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
             const value = await this.fetchOptions();
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
-                value
-            })
+                value,
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -80,14 +83,14 @@ export default class ClientGroupsSelectController extends React.Component<ThePro
             token,
             url: serviceWizardURL,
             timeout,
-            version: this.props.jobBrowserBFFConfig.version
+            version: this.props.jobBrowserBFFConfig.version,
         });
         const clientGroups = await client.get_client_groups();
         const clientGroupOptions = clientGroups.client_groups
             .map((clientGroup) => {
                 return {
                     value: clientGroup,
-                    label: clientGroup
+                    label: clientGroup,
                 };
             })
             .sort((a, b) => {
@@ -110,11 +113,13 @@ export default class ClientGroupsSelectController extends React.Component<ThePro
             case AsyncProcessStatus.PENDING:
                 return this.renderLoading();
             case AsyncProcessStatus.SUCCESS:
-                return <View
-                    onChange={this.props.onChange}
-                    options={this.state.value}
-                    defaultValue={this.props.defaultValue}
-                />;
+                return (
+                    <View
+                        onChange={this.props.onChange}
+                        options={this.state.value}
+                        defaultValue={this.props.defaultValue}
+                    />
+                );
             case AsyncProcessStatus.ERROR:
                 return this.renderError(this.state.error);
         }

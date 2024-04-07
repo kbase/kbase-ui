@@ -16,16 +16,15 @@ interface OutputObjectCellProps {
 export default class OutputObjectCellView extends Component<OutputObjectCellProps> {
     renderParams() {
         if (this.props.cell.metadata.kbase.outputCell.widget) {
-            return <RenderJSON
-                value={
-                    this.props.cell
-                        .metadata.kbase
-                        .outputCell
-                        .widget.params
-                }
-            />
+            return (
+                <RenderJSON
+                    value={
+                        this.props.cell.metadata.kbase.outputCell.widget.params
+                    }
+                />
+            );
         }
-        return <Empty message="unknown" />
+        return <Empty message="unknown" />;
     }
     render() {
         if (!('outputCell' in this.props.cell.metadata.kbase)) {
@@ -106,23 +105,17 @@ export default class OutputObjectCellView extends Component<OutputObjectCellProp
                                                         id="saved-at-tooltip"
                                                         tooltip={name}
                                                     >
-                                                        <span>
-                                                            {name}
-                                                        </span>
+                                                        <span>{name}</span>
                                                     </EZTooltip>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>Tag</th>
-                                                <td>
-                                                    {tag}
-                                                </td>
+                                                <td>{tag}</td>
                                             </tr>
                                             <tr>
                                                 <th>Params</th>
-                                                <td>
-                                                    {this.renderParams()}
-                                                </td>
+                                                <td>{this.renderParams()}</td>
                                             </tr>
                                         </tbody>
                                     </Table>

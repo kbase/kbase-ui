@@ -1,15 +1,14 @@
 // import { DynamicServiceClient, DynamicServiceClientParams } from '../lib/comm/DynamicServiceClient';
 
-import { JSONObject } from "lib/json";
-import { JSONLikeObject } from "lib/jsonLike";
-import { DynamicServiceClient } from "lib/kb_lib/comm/JSONRPC11/DynamicServiceClient";
+import { JSONObject } from 'lib/json';
+import { JSONLikeObject } from 'lib/jsonLike';
+import { DynamicServiceClient } from 'lib/kb_lib/comm/JSONRPC11/DynamicServiceClient';
 
 // Metrics client --
 // TODO: move
 // TODO: use a more dynamic dynamic service client??
 
 // interface MetricsServiceParams extends DynamicServiceClientParams { }
-
 
 export interface JobState extends JSONLikeObject {
     app_id: string;
@@ -36,7 +35,6 @@ export interface JobState extends JSONLikeObject {
     workspace_name: string;
 }
 
-
 interface GetAppMetricsParam extends JSONObject {
     epoch_range: [number, number];
     user_ids: Array<string>;
@@ -45,7 +43,7 @@ interface GetAppMetricsResult extends JSONLikeObject {
     job_states: Array<JobState>;
 }
 
-interface GetJobsParam extends JSONObject{
+interface GetJobsParam extends JSONObject {
     epoch_range: [number, number];
     user_ids: Array<string>;
 }
@@ -64,11 +62,19 @@ interface GetJobResult extends JSONLikeObject {
 export default class MetricsServiceClient extends DynamicServiceClient {
     module: string = 'kb_Metrics';
 
-    async getJobs({ epoch_range, user_ids }: GetJobsParam): Promise<GetJobsResult> {
-        const [result]  = await this.callFunc<Array<GetJobsParam>, Array<JSONObject>>('get_jobs', [{
-            epoch_range,
-            user_ids
-        }]);
+    async getJobs({
+        epoch_range,
+        user_ids,
+    }: GetJobsParam): Promise<GetJobsResult> {
+        const [result] = await this.callFunc<
+            Array<GetJobsParam>,
+            Array<JSONObject>
+        >('get_jobs', [
+            {
+                epoch_range,
+                user_ids,
+            },
+        ]);
         return result as GetJobsResult;
 
         // return this.callFunc<GetJobsParam, GetJobsResult>('get_jobs', {
@@ -78,18 +84,31 @@ export default class MetricsServiceClient extends DynamicServiceClient {
     }
 
     async getJob({ job_id }: GetJobParam): Promise<GetJobResult> {
-        const [result] = await this.callFunc<Array<GetJobParam>, Array<JSONObject>>('get_job', [{
-            job_id
-        }]);
+        const [result] = await this.callFunc<
+            Array<GetJobParam>,
+            Array<JSONObject>
+        >('get_job', [
+            {
+                job_id,
+            },
+        ]);
 
         return result as GetJobResult;
     }
 
-    async getAppMetrics({ epoch_range, user_ids }: GetAppMetricsParam): Promise<GetAppMetricsResult> {
-        const [result] = await this.callFunc<Array<GetAppMetricsParam>, Array<JSONObject>>('get_job',[{
-            epoch_range,
-            user_ids
-        }]);
+    async getAppMetrics({
+        epoch_range,
+        user_ids,
+    }: GetAppMetricsParam): Promise<GetAppMetricsResult> {
+        const [result] = await this.callFunc<
+            Array<GetAppMetricsParam>,
+            Array<JSONObject>
+        >('get_job', [
+            {
+                epoch_range,
+                user_ids,
+            },
+        ]);
         return result as GetAppMetricsResult;
     }
 }

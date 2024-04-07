@@ -16,7 +16,7 @@ export interface ConfigEditorProps {
     config: Config;
 }
 
-interface ConfigEditorState { }
+interface ConfigEditorState {}
 
 export default class ConfigEditor extends Component<
     ConfigEditorProps,

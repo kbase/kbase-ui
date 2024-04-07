@@ -44,7 +44,6 @@ export default class TableResizer {
         window.removeEventListener('resize', this.resizeListener);
     }
 
-
     onNoRows(body: HTMLElement) {
         // need a special hack to keep the no-data display happy.
         body.style.flex = 'none';
@@ -56,8 +55,8 @@ export default class TableResizer {
     }
 
     async getRowsPerPage() {
-        // a hack for now... 
-        // loop until table is rendered the first time... 
+        // a hack for now...
+        // loop until table is rendered the first time...
         return await new Promise<number>((resolve, reject) => {
             const retries = 20;
             let tries = 0;
@@ -78,15 +77,21 @@ export default class TableResizer {
                 window.setTimeout(loop, 100);
             };
             const fun = () => {
-                const body = document.querySelector(`.${this.wrapperClass} .ant-table-body`);
+                const body = document.querySelector(
+                    `.${this.wrapperClass} .ant-table-body`,
+                );
                 if (!body) {
                     return;
                 }
-                const header = document.querySelector(`.${this.wrapperClass} .ant-table-body .ant-table-thead`);
+                const header = document.querySelector(
+                    `.${this.wrapperClass} .ant-table-body .ant-table-thead`,
+                );
                 if (!header) {
                     return;
                 }
-                const rows = document.querySelectorAll(`.${this.wrapperClass} .ant-table-body .ant-table-row`);
+                const rows = document.querySelectorAll(
+                    `.${this.wrapperClass} .ant-table-body .ant-table-row`,
+                );
                 if (rows.length === 0) {
                     console.warn('cannot calculate row height -- no rows!');
                     this.onNoRows(body as HTMLElement);
@@ -95,7 +100,9 @@ export default class TableResizer {
 
                 const rowHeight = (rows.item(0) as HTMLElement).offsetHeight;
 
-                const height = (body as HTMLElement).clientHeight - (header as HTMLElement).offsetHeight;
+                const height =
+                    (body as HTMLElement).clientHeight -
+                    (header as HTMLElement).offsetHeight;
                 const rowsPerPage = Math.floor(height / rowHeight);
                 return rowsPerPage;
             };

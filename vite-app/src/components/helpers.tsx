@@ -1,3 +1,3 @@
 export function NA() {
-    return <span style={{fontStyle: 'italic'}}>n/a</span>
+    return <span style={{ fontStyle: 'italic' }}>n/a</span>;
 }

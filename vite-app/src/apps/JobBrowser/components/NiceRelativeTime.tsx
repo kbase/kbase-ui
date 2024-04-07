@@ -25,10 +25,13 @@ const intervals = [
     // between 1 hour and 1 day, every 30 minutes
     [60 * 60 * 24 * 1000, 60 * 1000 * 30],
     // over 1 day, once per day
-    [Infinity, 60 * 60 * 24 * 1000]
+    [Infinity, 60 * 60 * 24 * 1000],
 ];
 
-export default class NiceRelativeTime extends React.Component<NiceRelativeTimeProps, NiceRelativeTimeState> {
+export default class NiceRelativeTime extends React.Component<
+    NiceRelativeTimeProps,
+    NiceRelativeTimeState
+> {
     nowTimer: number | null;
     interval: number;
     constructor(props: NiceRelativeTimeProps) {
@@ -37,7 +40,7 @@ export default class NiceRelativeTime extends React.Component<NiceRelativeTimePr
         this.nowTimer = null;
 
         this.state = {
-            now: new Date()
+            now: new Date(),
         };
 
         this.interval = this.calcInterval();
@@ -86,7 +89,14 @@ export default class NiceRelativeTime extends React.Component<NiceRelativeTimePr
 
     render() {
         if (this.props.showTooltip === false) {
-            return <span>{niceRelativeTime(this.props.time, { absoluteAfter: 30, now: this.state.now })}</span>;
+            return (
+                <span>
+                    {niceRelativeTime(this.props.time, {
+                        absoluteAfter: 30,
+                        now: this.state.now,
+                    })}
+                </span>
+            );
         }
 
         const fullDate = (
@@ -97,7 +107,7 @@ export default class NiceRelativeTime extends React.Component<NiceRelativeTimePr
                     year: 'numeric',
                     hour: 'numeric',
                     minute: 'numeric',
-                    timeZoneName: 'short'
+                    timeZoneName: 'short',
                 }).format(this.props.time)}
             </span>
         );
@@ -115,7 +125,10 @@ export default class NiceRelativeTime extends React.Component<NiceRelativeTimePr
         return (
             <Tooltip placement="bottomRight" title={tooltip}>
                 <span data-k-b-testhook-element="label">
-                    {niceRelativeTime(this.props.time, { absoluteAfter: this.props.absoluteAfter || 30, now: this.state.now })}
+                    {niceRelativeTime(this.props.time, {
+                        absoluteAfter: this.props.absoluteAfter || 30,
+                        now: this.state.now,
+                    })}
                 </span>
             </Tooltip>
         );

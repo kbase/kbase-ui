@@ -1,7 +1,12 @@
 import {
-    ViewNone, ViewLoading, ViewError, SearchState, ViewSuccess, AppStat
-} from "./base";
-import { UIError } from "../types/error";
+    ViewNone,
+    ViewLoading,
+    ViewError,
+    SearchState,
+    ViewSuccess,
+    AppStat,
+} from './base';
+import { UIError } from '../types/error';
 
 // App Stats
 
@@ -23,36 +28,40 @@ export interface PublicAppStatsViewDataNone extends PublicAppStatsViewDataBase {
     searchState: SearchState.NONE;
 }
 
-export interface PublicAppStatsViewDataInitialSearching extends PublicAppStatsViewDataBase {
+export interface PublicAppStatsViewDataInitialSearching
+    extends PublicAppStatsViewDataBase {
     searchState: SearchState.INITIAL_SEARCHING;
     query: PublicAppStatsQuery;
 }
 
-export interface PublicAppStatsViewDataSearching extends PublicAppStatsViewDataBase {
+export interface PublicAppStatsViewDataSearching
+    extends PublicAppStatsViewDataBase {
     searchState: SearchState.SEARCHING;
     query: PublicAppStatsQuery;
     rawAppStats: Array<AppStat>;
     appStats: Array<AppStat>;
 }
 
-export interface PublicAppStatsViewDataSearched extends PublicAppStatsViewDataBase {
+export interface PublicAppStatsViewDataSearched
+    extends PublicAppStatsViewDataBase {
     searchState: SearchState.SEARCHED;
     query: PublicAppStatsQuery;
     rawAppStats: Array<AppStat>;
     appStats: Array<AppStat>;
 }
 
-export interface PublicAppStatsViewDataError extends PublicAppStatsViewDataBase {
+export interface PublicAppStatsViewDataError
+    extends PublicAppStatsViewDataBase {
     searchState: SearchState.ERROR;
     error: UIError;
 }
 
 export type PublicAppStatsViewData =
-    PublicAppStatsViewDataNone |
-    PublicAppStatsViewDataInitialSearching |
-    PublicAppStatsViewDataSearching |
-    PublicAppStatsViewDataSearched |
-    PublicAppStatsViewDataError;
+    | PublicAppStatsViewDataNone
+    | PublicAppStatsViewDataInitialSearching
+    | PublicAppStatsViewDataSearching
+    | PublicAppStatsViewDataSearched
+    | PublicAppStatsViewDataError;
 
 // View
 
@@ -61,10 +70,10 @@ export interface PublicAppStatsViewSuccess extends ViewSuccess {
 }
 
 export type PublicAppStatsView =
-    PublicAppStatsViewNone |
-    PublicAppStatsViewLoading |
-    PublicAppStatsViewError |
-    PublicAppStatsViewSuccess;
+    | PublicAppStatsViewNone
+    | PublicAppStatsViewLoading
+    | PublicAppStatsViewError
+    | PublicAppStatsViewSuccess;
 
 // export interface PublicAppStatsView extends TabViewBase {
 //     type: ViewType.PUBLIC_APP_STATS;
@@ -73,4 +82,3 @@ export type PublicAppStatsView =
 //     appStats: Array<AppStat>;
 //     query: PublicAppStatsQuery;
 // }
-

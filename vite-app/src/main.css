@@ -44,7 +44,6 @@ code {
 
 /* Bootstrap Extensions  - new stuff - move somewhere else */
 
-
 /* Make the bootstrap table a bit more plain and unassuming */
 
 .table.table-plain {
@@ -55,7 +54,6 @@ code {
 .table.table-plain th {
     border: none;
 }
-
 
 /* Paragraph with a sane max width */
 
@@ -109,7 +107,7 @@ p:last-child {
 
 .flex-row.-header .flex-col {
     font-weight: bold;
-    color: rgba(150, 150, 150, 1)
+    color: rgba(150, 150, 150, 1);
 }
 
 /* Rando BS fixes */
@@ -117,7 +115,6 @@ p:last-child {
 .fa-spin {
     -webkit-filter: blur(0);
 }
-
 
 .PropertyTable {
     border-collapse: collapse;
@@ -147,9 +144,6 @@ p:last-child {
     padding-left: 0.5rem;
 }
 
-
-
-
 .LayoutTable {
     width: 100%;
     border-collapse: collapse;
@@ -172,8 +166,7 @@ p:last-child {
     border-bottom: 1px solid rgba(200, 200, 200, 0.5);
 }
 
-
-.LayoutTable tr:last-child>td {
+.LayoutTable tr:last-child > td {
     /* border-bottom: 1px solid rgba(100, 100, 100, 0.5); */
     border-bottom: none;
 }

@@ -1,7 +1,7 @@
 export type StatusCall = () => Promise<void>;
 
 interface MonitorParams {
-    callback: StatusCall
+    callback: StatusCall;
     interval: number;
 }
 
@@ -13,11 +13,11 @@ export class Monitor {
     monitoringErrorCount: number;
     monitoringTimer: number | null;
 
-    constructor({callback, interval}: MonitorParams) {
+    constructor({ callback, interval }: MonitorParams) {
         this.statusCall = callback;
 
         this.monitoringInterval = interval;
-        
+
         this.monitorRunning = false;
         this.monitoringRunCount = 0;
         this.monitoringErrorCount = 0;
@@ -51,7 +51,7 @@ export class Monitor {
     }
 
     async runCallback() {
-        try { 
+        try {
             this.monitoringRunCount += 1;
             return this.statusCall();
         } catch (ex) {

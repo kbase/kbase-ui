@@ -1,11 +1,13 @@
-import PolicyAndAgreement, { PolicyAgreement } from "apps/Auth2/SignInContinue/PolicyAndAgreement";
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import PolicyAndAgreement, {
+    PolicyAgreement,
+} from 'apps/Auth2/SignInContinue/PolicyAndAgreement';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { Auth2 } from "lib/kb_lib/Auth2";
-import { Component } from "react";
-import TermsAndConditionsView from "./view";
+import { Auth2 } from 'lib/kb_lib/Auth2';
+import { Component } from 'react';
+import TermsAndConditionsView from './view';
 
 export interface TermsAndConditionsControllerProps {
     authURL: string;
@@ -16,18 +18,23 @@ export interface TermsAndConditionsControllerProps {
 }
 
 export interface TermsAndConditions {
-    agreement: PolicyAgreement
+    agreement: PolicyAgreement;
 }
 
-type TermsAndConditionsControllerState = AsyncProcess<TermsAndConditions, SimpleError>;
+type TermsAndConditionsControllerState = AsyncProcess<
+    TermsAndConditions,
+    SimpleError
+>;
 
-
-export default class TermsAndConditionsController extends Component<TermsAndConditionsControllerProps, TermsAndConditionsControllerState> {
+export default class TermsAndConditionsController extends Component<
+    TermsAndConditionsControllerProps,
+    TermsAndConditionsControllerState
+> {
     constructor(props: TermsAndConditionsControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
 
     componentDidMount() {
@@ -36,17 +43,17 @@ export default class TermsAndConditionsController extends Component<TermsAndCond
     }
 
     async loadData() {
-        const auth2 = new Auth2({ baseUrl: this.props.authURL })
+        const auth2 = new Auth2({ baseUrl: this.props.authURL });
 
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
             const { policyids } = await auth2.getMe(this.props.token);
 
             const policies = new PolicyAndAgreement({
-                policyids
+                policyids,
             });
 
             const policyAgreement = policies.getPolicyAgreement();
@@ -54,15 +61,15 @@ export default class TermsAndConditionsController extends Component<TermsAndCond
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    agreement: policyAgreement
-                }
+                    agreement: policyAgreement,
+                },
             });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -71,11 +78,15 @@ export default class TermsAndConditionsController extends Component<TermsAndCond
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading />
+                return <Loading />;
             case AsyncProcessStatus.ERROR:
-                return <ErrorMessage message={this.state.error.message} />
+                return <ErrorMessage message={this.state.error.message} />;
             case AsyncProcessStatus.SUCCESS:
-                return <TermsAndConditionsView agreement={this.state.value.agreement} />
+                return (
+                    <TermsAndConditionsView
+                        agreement={this.state.value.agreement}
+                    />
+                );
         }
     }
 }

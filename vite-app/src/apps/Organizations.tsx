@@ -12,63 +12,79 @@ export interface OrganizationsProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface OrganizationsState {
-}
+interface OrganizationsState {}
 
-export default class Organizations extends Component<OrganizationsProps, OrganizationsState> {
+export default class Organizations extends Component<
+    OrganizationsProps,
+    OrganizationsState
+> {
     render() {
         const common = {
-            name: "organizations",
+            name: 'organizations',
             setTitle: this.props.setTitle,
             authState: this.props.authState,
-            config: this.props.config
+            config: this.props.config,
         };
 
         const routeSpecs: Array<SimplePluginRouteSpec> = [
             {
                 path: '^orgs/new$',
                 auth: true,
-                view: 'newOrg'
+                view: 'newOrg',
             },
             {
                 path: '^(org|orgs)$/:organizationId',
                 auth: true,
-                view: 'viewOrg'
+                view: 'viewOrg',
             },
             {
                 path: '^orgs$',
                 auth: true,
-                view: 'browseOrgs'
-            }
-        ]
+                view: 'browseOrgs',
+            },
+        ];
 
-        const routes = routeSpecs.map(({path, view, auth}) => {
-            return  new Route(path, {authenticationRequired: auth}, (props: RouteProps) => {
-                return <PluginWrapper2
-                    {...props}
-                    {...common}
-                    view={view}
-                    syncHash={false}
-                />
-            });
+        const routes = routeSpecs.map(({ path, view, auth }) => {
+            return new Route(
+                path,
+                { authenticationRequired: auth },
+                (props: RouteProps) => {
+                    return (
+                        <PluginWrapper2
+                            {...props}
+                            {...common}
+                            view={view}
+                            syncHash={false}
+                        />
+                    );
+                },
+            );
         });
 
         const authRoute = new Route(
-            '^login|signin|signup$', 
-            {authenticationRequired: false}, 
+            '^login|signin|signup$',
+            { authenticationRequired: false },
             (props: RouteProps) => {
-                return <SignIn 
-                    {...props} 
-                    key={props.hashPath.hash} 
-                    source="authorization"
-                    config={this.props.config}
-                    authState={this.props.authState}
-                    setTitle={this.props.setTitle}
-                />
-            }
-        )
+                return (
+                    <SignIn
+                        {...props}
+                        key={props.hashPath.hash}
+                        source="authorization"
+                        config={this.props.config}
+                        authState={this.props.authState}
+                        setTitle={this.props.setTitle}
+                    />
+                );
+            },
+        );
 
-        return <Router routes={routes} hashPath={this.props.hashPath} authRoute={authRoute}/>
+        return (
+            <Router
+                routes={routes}
+                hashPath={this.props.hashPath}
+                authRoute={authRoute}
+            />
+        );
         // return (
         // <Switch>
         //     <Route

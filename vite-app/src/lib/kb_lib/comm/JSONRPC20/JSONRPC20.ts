@@ -41,15 +41,15 @@ export interface JSONRPC20Request {
 export type JSONRPC20Result = JSONValue;
 
 export interface JSONRPC20ResultResponse {
-    jsonrpc: '2.0',
-    id?: JSONRPCId
-    result: JSONRPC20Result,
+    jsonrpc: '2.0';
+    id?: JSONRPCId;
+    result: JSONRPC20Result;
 }
 
 export interface JSONRPC20ErrorResponse {
-    jsonrpc: '2.0',
-    id?: JSONRPCId
-    error: JSONRPC20Error
+    jsonrpc: '2.0';
+    id?: JSONRPCId;
+    error: JSONRPC20Error;
 }
 
 export interface JSONRPC20Error {
@@ -83,13 +83,13 @@ export function resultOrThrow(response: JSONRPC20Response): JSONRPC20Result {
 //     error: JSONRPCError;
 // }
 
-export type JSONRPC20Response = JSONRPC20ResultResponse | JSONRPC20ErrorResponse;
+export type JSONRPC20Response =
+    | JSONRPC20ResultResponse
+    | JSONRPC20ErrorResponse;
 
-export class ConnectionError extends Error {
-}
+export class ConnectionError extends Error {}
 
-export class RequestError extends Error {
-}
+export class RequestError extends Error {}
 
 /**
  * Constructor parameters
@@ -133,20 +133,20 @@ export class JSONRPCClient {
     // }
 
     /**
-     * Given a method name and parameters, call the known endpoint, process the response, 
-     * and return the result. 
-     * 
+     * Given a method name and parameters, call the known endpoint, process the response,
+     * and return the result.
+     *
      * Exceptions included
-     * 
+     *
      * @param method JSON-RPC 2.0 method name
      * @param params JSON-RPC 2.0 parameters; must be an object or array
-     * @param options An object containing optional parameters 
+     * @param options An object containing optional parameters
      * @returns A
      */
     async callMethod(
         method: string,
         params?: JSONRPC20Params,
-        { timeout }: { timeout?: number } = {}
+        { timeout }: { timeout?: number } = {},
     ): Promise<JSONRPC20Response> {
         // The innocuously named "payload" is the entire request object.
         const payload = {
@@ -154,7 +154,7 @@ export class JSONRPCClient {
             method,
             id: uuid.v4(),
             params,
-        }
+        };
 
         // In practice JSON-RPC 1.1 services at KBase don't care about content-type.
         const headers = new Headers();
@@ -164,12 +164,12 @@ export class JSONRPCClient {
             headers.set('authorization', this.token);
         }
 
-        // The abort controller allows us to abort the request after a specific amount 
+        // The abort controller allows us to abort the request after a specific amount
         // of time passes.
         const controller = new AbortController();
         const timeoutTimer = window.setTimeout(() => {
             controller.abort('Timeout');
-        }, timeout)
+        }, timeout);
 
         let response;
         try {
@@ -178,14 +178,16 @@ export class JSONRPCClient {
                 body: JSON.stringify(payload),
                 headers,
                 mode: 'cors',
-                signal: controller.signal
+                signal: controller.signal,
             });
         } catch (ex) {
             if (ex instanceof DOMException) {
                 console.error('ERROR', this.url, ex);
-                throw new ConnectionError(`Connection error ${ex.name}: ${ex.message}`);
+                throw new ConnectionError(
+                    `Connection error ${ex.name}: ${ex.message}`,
+                );
             } else if (ex instanceof TypeError) {
-                throw new RequestError(`Request error: ${ex.message}`)
+                throw new RequestError(`Request error: ${ex.message}`);
             } else {
                 // Should never occur.
                 throw ex;
@@ -206,13 +208,12 @@ export class JSONRPCClient {
             throw new JSONRPC20Exception({
                 // name: 'parse error',
                 code: 100,
-                message:
-                    `The response from the service could not be parsed (${responseStatus})`,
+                message: `The response from the service could not be parsed (${responseStatus})`,
                 data: {
                     originalMessage:
                         ex instanceof Error ? ex.message : 'Unknown error',
                     responseText,
-                    responseStatus
+                    responseStatus,
                 },
             });
         }

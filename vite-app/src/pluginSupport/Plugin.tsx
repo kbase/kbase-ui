@@ -10,11 +10,10 @@ import styles from './Plugin.module.css';
  * TODO:
  * let us try this:
  * treat this as an async component
- * first, it is NONE, then we check for existence of the plugin's index file by 
+ * first, it is NONE, then we check for existence of the plugin's index file by
  * attempting to load it. If that succeeds we will then proceed to load
  * the iframe controller.
  */
-
 
 export type Params = Record<string, string>;
 
@@ -36,7 +35,6 @@ export interface PluginProps {
     messenger: Messenger;
 }
 
-
 export default class Plugin extends Component<PluginProps> {
     constructor(props: PluginProps) {
         super(props);
@@ -54,7 +52,7 @@ export default class Plugin extends Component<PluginProps> {
     componentDidUpdate(prevProps: PluginProps) {
         if (prevProps.name !== this.props.name) {
             // this.forceUpdate();
-            // If the plugin name changed, we want to check that it has 
+            // If the plugin name changed, we want to check that it has
         }
     }
 
@@ -63,7 +61,8 @@ export default class Plugin extends Component<PluginProps> {
         // which accessed in /deploy, which needs to be mounted into
         // the container.
         const basePath = window.location.pathname;
-        const pluginPath = basePath.split('/')
+        const pluginPath = basePath
+            .split('/')
             .concat(['plugins', this.props.name])
             .filter((pathSegment) => !!pathSegment)
             .join('/');

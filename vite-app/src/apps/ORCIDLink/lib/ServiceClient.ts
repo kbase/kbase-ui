@@ -1,8 +1,6 @@
 import { JSONObject, JSONValue } from 'lib/json';
 import { toJSON } from 'lib/jsonLike';
 
-
-
 export interface ServiceClientParams {
     url: string;
     timeout: number;
@@ -10,10 +8,10 @@ export interface ServiceClientParams {
 }
 
 export interface SearchParams {
-    [key: string]: string
+    [key: string]: string;
 }
 
-export type SearchParams2 = Array<[string, string]>
+export type SearchParams2 = Array<[string, string]>;
 
 /*
  * arg is:
@@ -27,10 +25,10 @@ export type SearchParams2 = Array<[string, string]>
  */
 
 export interface ServiceErrorResponse {
-    code: number,
-    title?: string,
-    message: string,
-    data?: JSONObject
+    code: number;
+    title?: string;
+    message: string;
+    data?: JSONObject;
 }
 
 export class ServiceError extends Error {
@@ -47,14 +45,9 @@ export class ServiceError extends Error {
     }
 }
 
-export class InternalServerError extends ServiceError {
+export class InternalServerError extends ServiceError {}
 
-}
-
-export class ClientError extends ServiceError {
-
-}
-
+export class ClientError extends ServiceError {}
 
 export abstract class ServiceClientBase {
     url: string;
@@ -138,12 +131,12 @@ export abstract class ServiceClientBase {
 
     protected async get<ReturnType>(
         path: string,
-        data?: SearchParams
+        data?: SearchParams,
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
         const headers = new Headers({
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -162,7 +155,7 @@ export abstract class ServiceClientBase {
 
         const response = await fetch(requestURL.toString(), {
             method: 'GET',
-            headers
+            headers,
         });
 
         return this.handleResponse<ReturnType>(response);
@@ -170,12 +163,12 @@ export abstract class ServiceClientBase {
 
     protected async get2<ReturnType>(
         path: string,
-        data?: SearchParams2
+        data?: SearchParams2,
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
         const headers = new Headers({
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -195,19 +188,17 @@ export abstract class ServiceClientBase {
         // const requestURL = `${url}/${path}`;
         const response = await fetch(requestURL.toString(), {
             method: 'GET',
-            headers
+            headers,
         });
 
         return this.handleResponse<ReturnType>(response);
     }
 
-    protected async delete(
-        path: string,
-    ): Promise<void> {
+    protected async delete(path: string): Promise<void> {
         const url = await this.getURL();
 
         const headers = new Headers({
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -217,7 +208,7 @@ export abstract class ServiceClientBase {
         const requestURL = `${url}/${path}`;
         const response = await fetch(requestURL, {
             method: 'DELETE',
-            headers
+            headers,
         });
 
         // TODO: check response status code. Should be 204, otherwise throw error.
@@ -227,13 +218,13 @@ export abstract class ServiceClientBase {
 
     protected async put<ReturnType>(
         path: string,
-        data?: JSONValue
+        data?: JSONValue,
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -244,7 +235,7 @@ export abstract class ServiceClientBase {
 
         const options: RequestInit = {
             method: 'PUT',
-            headers
+            headers,
         };
         if (typeof data !== 'undefined') {
             options.body = JSON.stringify(data);
@@ -257,13 +248,13 @@ export abstract class ServiceClientBase {
 
     protected async post<ReturnType>(
         path: string,
-        data?: JSONValue
+        data?: JSONValue,
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -274,7 +265,7 @@ export abstract class ServiceClientBase {
 
         const options: RequestInit = {
             method: 'POST',
-            headers
+            headers,
         };
         if (typeof data !== 'undefined') {
             options.body = JSON.stringify(data);
@@ -287,13 +278,13 @@ export abstract class ServiceClientBase {
 
     protected async post2<ParamType, ReturnType>(
         path: string,
-        data?: ParamType
+        data?: ParamType,
     ): Promise<ReturnType> {
         const url = await this.getURL();
 
         const headers = new Headers({
             'content-type': 'application/json',
-            accept: 'application/json'
+            accept: 'application/json',
         });
 
         if (this.token) {
@@ -304,7 +295,7 @@ export abstract class ServiceClientBase {
 
         const options: RequestInit = {
             method: 'POST',
-            headers
+            headers,
         };
         if (typeof data !== 'undefined') {
             options.body = JSON.stringify(toJSON(data));
@@ -316,10 +307,8 @@ export abstract class ServiceClientBase {
     }
 }
 
-
 export abstract class ServiceClient extends ServiceClientBase {
     async getURL(): Promise<string> {
         return this.url;
     }
 }
-

@@ -1,11 +1,11 @@
-import Loading from "components/Loading";
-import Well from "components/Well";
-import { AsyncProcessStatus } from "lib/AsyncProcess";
+import Loading from 'components/Loading';
+import Well from 'components/Well';
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { Component } from "react";
-import { Button, ButtonToolbar, Col, Container, Row } from "react-bootstrap";
-import { LinkState, RevokeState, RevokeStatus } from "./Controller";
-import Revoker from "./Revoker";
+import { Component } from 'react';
+import { Button, ButtonToolbar, Col, Container, Row } from 'react-bootstrap';
+import { LinkState, RevokeState, RevokeStatus } from './Controller';
+import Revoker from './Revoker';
 
 export interface ViewProps {
     linkState: LinkState;
@@ -15,8 +15,7 @@ export interface ViewProps {
     setTitle: (title: string) => void;
 }
 
-interface ViewState {
-}
+interface ViewState {}
 
 export default class View extends Component<ViewProps, ViewState> {
     componentDidMount() {
@@ -35,7 +34,9 @@ export default class View extends Component<ViewProps, ViewState> {
                 break;
             case AsyncProcessStatus.ERROR:
                 if (this.props.revokeState.status === RevokeStatus.REVOKED) {
-                    this.props.setTitle('KBaseORCID Link - Revoke - Successfully Revoked');
+                    this.props.setTitle(
+                        'KBaseORCID Link - Revoke - Successfully Revoked',
+                    );
                 } else {
                     this.props.setTitle('KBaseORCID Link - Revoke - Error');
                 }
@@ -46,9 +47,13 @@ export default class View extends Component<ViewProps, ViewState> {
                     // a link, so we should technically be in an ERROR state.
                     // But we should just change the link status to be:
                     // NONE, PENDING, LINKED, NOTLINKED, ERROR
-                    this.props.setTitle('KBase ORCID Link - Successfully Removed');
+                    this.props.setTitle(
+                        'KBase ORCID Link - Successfully Removed',
+                    );
                 } else {
-                    this.props.setTitle('KBaseORCID Link - Confirm Link Removal');
+                    this.props.setTitle(
+                        'KBaseORCID Link - Confirm Link Removal',
+                    );
                 }
                 break;
         }
@@ -94,65 +99,74 @@ export default class View extends Component<ViewProps, ViewState> {
     // }
 
     renderAbout() {
-        return <Well variant="info">
-            <Well.Header icon="sticky-note-o">
-                Note
-            </Well.Header>
-            <Well.Body>
-                <p>
-                    Here you may revoke, or remove, your KBase ORCID® Link.
-                </p>
-                <ul>
-                    <li>This <b>will</b> prevent KBase from accessing your ORCID® account in any way.</li>
-                    <li>This <b>will not</b> affect your ability to sign in via ORCID®.</li>
-                    <li>If you have opted to show your ORCID® iD in your profile, it will no longer be shown.</li>
-                </ul>
-            </Well.Body>
-        </Well>;
+        return (
+            <Well variant="info">
+                <Well.Header icon="sticky-note-o">Note</Well.Header>
+                <Well.Body>
+                    <p>
+                        Here you may revoke, or remove, your KBase ORCID® Link.
+                    </p>
+                    <ul>
+                        <li>
+                            This <b>will</b> prevent KBase from accessing your
+                            ORCID® account in any way.
+                        </li>
+                        <li>
+                            This <b>will not</b> affect your ability to sign in
+                            via ORCID®.
+                        </li>
+                        <li>
+                            If you have opted to show your ORCID® iD in your
+                            profile, it will no longer be shown.
+                        </li>
+                    </ul>
+                </Well.Body>
+            </Well>
+        );
     }
 
     renderLoading() {
-        return <Loading />
+        return <Loading />;
     }
 
     renderError(error: SimpleError) {
-        return <Well variant="danger">
-            <Well.Header>
-                Error
-            </Well.Header>
-            <Well.Body>
-                <p>
-                    {error.message}
-                </p>
-            </Well.Body>
-            <Well.Footer style={{ justifyContent: 'center' }}>
-                <ButtonToolbar>
-                    <Button variant="primary" onClick={this.props.cancel}>
-                        <span className="fa fa-lg fa-mail-reply" />  Return to KBase ORCID® Link home
-                    </Button>
-                </ButtonToolbar>
-            </Well.Footer>
-        </Well>;
+        return (
+            <Well variant="danger">
+                <Well.Header>Error</Well.Header>
+                <Well.Body>
+                    <p>{error.message}</p>
+                </Well.Body>
+                <Well.Footer style={{ justifyContent: 'center' }}>
+                    <ButtonToolbar>
+                        <Button variant="primary" onClick={this.props.cancel}>
+                            <span className="fa fa-lg fa-mail-reply" /> Return
+                            to KBase ORCID® Link home
+                        </Button>
+                    </ButtonToolbar>
+                </Well.Footer>
+            </Well>
+        );
     }
 
     renderRevoked() {
-        return <Well variant="success" style={{ maxWidth: '60em', margin: '0 auto' }}>
-            <Well.Header>
-                Success!
-            </Well.Header>
-            <Well.Body>
-                <p>
-                    The KBase ORCID® Link has been successfully removed.
-                </p>
-            </Well.Body>
-            <Well.Footer style={{ justifyContent: 'center' }}>
-                <ButtonToolbar>
-                    <Button variant="primary" onClick={this.props.cancel}>
-                        <span className="fa fa-mail-reply" /> Done
-                    </Button>
-                </ButtonToolbar>
-            </Well.Footer>
-        </Well>
+        return (
+            <Well
+                variant="success"
+                style={{ maxWidth: '60em', margin: '0 auto' }}
+            >
+                <Well.Header>Success!</Well.Header>
+                <Well.Body>
+                    <p>The KBase ORCID® Link has been successfully removed.</p>
+                </Well.Body>
+                <Well.Footer style={{ justifyContent: 'center' }}>
+                    <ButtonToolbar>
+                        <Button variant="primary" onClick={this.props.cancel}>
+                            <span className="fa fa-mail-reply" /> Done
+                        </Button>
+                    </ButtonToolbar>
+                </Well.Footer>
+            </Well>
+        );
     }
 
     renderState() {
@@ -168,24 +182,24 @@ export default class View extends Component<ViewProps, ViewState> {
                 }
 
             case AsyncProcessStatus.SUCCESS:
-                return <Revoker
-                    revokeState={this.props.revokeState}
-                    revokeLink={this.props.revokeLink}
-                    cancel={this.props.cancel}
-                />
+                return (
+                    <Revoker
+                        revokeState={this.props.revokeState}
+                        revokeLink={this.props.revokeLink}
+                        cancel={this.props.cancel}
+                    />
+                );
         }
     }
 
     render() {
-        return <Container fluid className="p-0 overflow-x-hidden">
-            <Row>
-                <Col>
-                    {this.renderState()}
-                </Col>
-                <Col>
-                    {this.renderAbout()}
-                </Col>
-            </Row>
-        </Container>
+        return (
+            <Container fluid className="p-0 overflow-x-hidden">
+                <Row>
+                    <Col>{this.renderState()}</Col>
+                    <Col>{this.renderAbout()}</Col>
+                </Row>
+            </Container>
+        );
     }
 }

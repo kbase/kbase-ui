@@ -2,11 +2,11 @@
 
 export interface PollParams {
     // callback to trigger a polling action, whatever that is.
-    onPoll: () => Promise<void>,
+    onPoll: () => Promise<void>;
     // callback for progress
-    onProgress?: (progress: number) => void,
-    progressSteps: number,
-    pollInterval: number,
+    onProgress?: (progress: number) => void;
+    progressSteps: number;
+    pollInterval: number;
     watchInterval: number;
 }
 
@@ -16,7 +16,7 @@ export enum PollerState {
     WAITING,
     PAUSED,
     STOPPED,
-    ERROR
+    ERROR,
 }
 
 export class Poll {
@@ -152,7 +152,6 @@ export class Poll {
         this.nextPoll();
     }
 
-
     start() {
         this.status = PollerState.STARTED;
         this.runPoll();
@@ -160,7 +159,9 @@ export class Poll {
 
     updateOnProgress() {
         if (this.params.onProgress) {
-            this.params.onProgress(100 * this.progressCount / this.params.progressSteps);
+            this.params.onProgress(
+                (100 * this.progressCount) / this.params.progressSteps,
+            );
         }
     }
 

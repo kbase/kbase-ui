@@ -1,8 +1,8 @@
-import CountdownClock from "components/CountdownClock";
-import { LinkChoice } from "lib/kb_lib/Auth2";
-import { Component } from "react";
-import { Alert } from "react-bootstrap";
-import TextSpan from "../TextSpan";
+import CountdownClock from 'components/CountdownClock';
+import { LinkChoice } from 'lib/kb_lib/Auth2';
+import { Component } from 'react';
+import { Alert } from 'react-bootstrap';
+import TextSpan from '../TextSpan';
 import './ContinueHeader.css';
 
 export interface ContinueHeaderProps {
@@ -18,12 +18,21 @@ export default class ContinueHeader extends Component<ContinueHeaderProps> {
             return;
         }
 
-        return <Alert variant="warning">
-                You have <TextSpan bold><CountdownClock
-                    endAt={this.props.choice.expires + this.props.serverTimeOffset}
-                    startAt={Date.now()}
-                    onExpired={this.props.cancelChoiceSession}
-                /></TextSpan> to complete linking.
-        </Alert>
+        return (
+            <Alert variant="warning">
+                You have{' '}
+                <TextSpan bold>
+                    <CountdownClock
+                        endAt={
+                            this.props.choice.expires +
+                            this.props.serverTimeOffset
+                        }
+                        startAt={Date.now()}
+                        onExpired={this.props.cancelChoiceSession}
+                    />
+                </TextSpan>{' '}
+                to complete linking.
+            </Alert>
+        );
     }
 }

@@ -12,14 +12,15 @@ interface JobLogGateProps {
     view: JobLogView;
 }
 
-interface JobLogGateState {
-}
+interface JobLogGateState {}
 
 class JobLogGate extends React.Component<JobLogGateProps, JobLogGateState> {
     renderLoading() {
         return (
             <div className="FullyCenteredBox">
-                <span>Loading ... <Spin /></span>
+                <span>
+                    Loading ... <Spin />
+                </span>
             </div>
         );
     }
@@ -27,7 +28,9 @@ class JobLogGate extends React.Component<JobLogGateProps, JobLogGateState> {
     renderNone() {
         return (
             <div className="FullyCenteredBox">
-                <span>None ... <Spin /></span>
+                <span>
+                    None ... <Spin />
+                </span>
             </div>
         );
     }
@@ -36,9 +39,11 @@ class JobLogGate extends React.Component<JobLogGateProps, JobLogGateState> {
         return (
             <div className="FullyCenteredBox">
                 <span>
-                    The job has been <i>created</i>, but not yet <i>queued</i> or <i>running</i>. The log will be displayed when the job starts running ... <Spin />
+                    The job has been <i>created</i>, but not yet <i>queued</i>{' '}
+                    or <i>running</i>. The log will be displayed when the job
+                    starts running ... <Spin />
                 </span>
-            </div >
+            </div>
         );
     }
 
@@ -46,16 +51,15 @@ class JobLogGate extends React.Component<JobLogGateProps, JobLogGateState> {
         return (
             <div className="FullyCenteredBox">
                 <span>
-                    The job is <i>queued</i>. The log will be displayed when the job starts running ... <Spin />
+                    The job is <i>queued</i>. The log will be displayed when the
+                    job starts running ... <Spin />
                 </span>
-            </div >
+            </div>
         );
     }
 
     renderError(view: JobLogViewError) {
-        return (
-            <Alert type="error" message={view.error} />
-        );
+        return <Alert type="error" message={view.error} />;
     }
 
     render() {
@@ -72,9 +76,19 @@ class JobLogGate extends React.Component<JobLogGateProps, JobLogGateState> {
                 return this.renderError(this.props.view);
             case JobLogState.ACTIVE_LOADED:
             case JobLogState.ACTIVE_LOADING:
-                return <JobLog job={this.props.view.job} log={this.props.view.log} />;
+                return (
+                    <JobLog
+                        job={this.props.view.job}
+                        log={this.props.view.log}
+                    />
+                );
             case JobLogState.FINISHED_LOADED:
-                return <JobLog job={this.props.view.job} log={this.props.view.log} />;
+                return (
+                    <JobLog
+                        job={this.props.view.job}
+                        log={this.props.view.log}
+                    />
+                );
         }
     }
 }
@@ -83,22 +97,21 @@ interface JobInfoGateProps {
     view: JobLogView;
 }
 
-interface JobInfoGateState {
-}
+interface JobInfoGateState {}
 
 class JobInfoGate extends React.Component<JobInfoGateProps, JobInfoGateState> {
     renderLoading() {
         return (
             <div className="FullyCenteredBox">
-                <span>Loading Job Info... <Spin /></span>
+                <span>
+                    Loading Job Info... <Spin />
+                </span>
             </div>
         );
     }
 
     renderError(view: JobLogViewError) {
-        return (
-            <Alert type="error" message={view.error} />
-        );
+        return <Alert type="error" message={view.error} />;
     }
     render() {
         switch (this.props.view.status) {
@@ -125,10 +138,12 @@ export interface JobDetailProps {
     view: JobLogView;
 }
 
-interface JobDetailState {
-}
+interface JobDetailState {}
 
-export default class JobDetail extends React.Component<JobDetailProps, JobDetailState> {
+export default class JobDetail extends React.Component<
+    JobDetailProps,
+    JobDetailState
+> {
     renderStatus() {
         switch (this.props.view.status) {
             case JobLogState.NONE:
@@ -137,36 +152,40 @@ export default class JobDetail extends React.Component<JobDetailProps, JobDetail
             case JobLogState.ERROR:
                 return <Alert type="error" message={this.props.view.error} />;
             default:
-                return <JobStatusBadge job={this.props.view.job} showTiming={true} />;
+                return (
+                    <JobStatusBadge
+                        job={this.props.view.job}
+                        showTiming={true}
+                    />
+                );
         }
     }
     renderMiniDetails() {
-        return <div style={{ flex: '0 0 auto' }}>
-            {this.renderStatus()}
-        </div>;
-
+        return <div style={{ flex: '0 0 auto' }}>{this.renderStatus()}</div>;
     }
     selectTab(selectedTab: string) {
         this.setState({
-            selectedTab
+            selectedTab,
         });
     }
 
     render() {
-        const tabs = [{
-            tab: 'log',
-            title: 'Log',
-            renderBody: () => {
-                return <JobLogGate view={this.props.view} />;
-            }
-        },
-        {
-            tab: 'detail',
-            title: 'Detail',
-            renderBody: () => {
-                return <JobInfoGate view={this.props.view} />;
-            }
-        }];
+        const tabs = [
+            {
+                tab: 'log',
+                title: 'Log',
+                renderBody: () => {
+                    return <JobLogGate view={this.props.view} />;
+                },
+            },
+            {
+                tab: 'detail',
+                title: 'Detail',
+                renderBody: () => {
+                    return <JobInfoGate view={this.props.view} />;
+                },
+            },
+        ];
         return (
             <React.Fragment>
                 {this.renderMiniDetails()}

@@ -1,4 +1,7 @@
-import { UserPermission, assertUserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
+import {
+    UserPermission,
+    assertUserPermission,
+} from 'lib/kb_lib/comm/coreServices/Workspace';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { PERM_MAPPING } from './Definitions';
@@ -38,7 +41,6 @@ export default class ShareUser extends Component<ShareUserProps> {
                                 <option
                                     value={permissionCode}
                                     key={permissionCode}
-
                                 >
                                     {PERM_MAPPING[permissionCode]}
                                 </option>

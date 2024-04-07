@@ -13,19 +13,19 @@ export interface LoadingProps extends PropsWithChildren {
     type?: Type;
     message?: string;
     pause?: number;
-    style?: CSSProperties
+    style?: CSSProperties;
 }
 
 type LoadingState = AsyncProcess<null, null>;
 
 export default class Loading extends Component<LoadingProps, LoadingState> {
     timer: number | null = null;
-    
+
     constructor(props: LoadingProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
 
     componentDidMount() {
@@ -36,22 +36,21 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         this.timer = window.setTimeout(() => {
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
-                value: null
-            })
+                value: null,
+            });
         }, this.props.pause || DEFAULT_PAUSE);
     }
 
     renderMessage() {
         if (this.props.message) {
-            return <>
-                {' '}
-                <span className={styles.message}>
-                    {this.props.message}
-                </span>
-            </>;
+            return (
+                <>
+                    {' '}
+                    <span className={styles.message}>{this.props.message}</span>
+                </>
+            );
         }
         return this.props.children;
-
     }
 
     renderLoading() {
@@ -62,7 +61,7 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
                         <span className="fa fa-sm fa-spinner fa-pulse"></span>
                     );
                 case 'normal':
-                    return <Spinner animation="border" size="sm" />
+                    return <Spinner animation="border" size="sm" />;
                 // return <span className="fa fa-spinner fa-pulse margin-bottom"></span>;
                 default:
                     return (
@@ -72,15 +71,23 @@ export default class Loading extends Component<LoadingProps, LoadingState> {
         })();
         if (this.props.type === 'inline') {
             return (
-                <div className={styles.inline} style={{...(this.props.style || {}) }}>
-                    {spinner}{this.renderMessage()}
+                <div
+                    className={styles.inline}
+                    style={{ ...(this.props.style || {}) }}
+                >
+                    {spinner}
+                    {this.renderMessage()}
                 </div>
             );
         } else {
             return (
-                <div className={styles.container} style={{...(this.props.style || {}) }}>
+                <div
+                    className={styles.container}
+                    style={{ ...(this.props.style || {}) }}
+                >
                     <div className={styles.loading}>
-                        {spinner}{this.renderMessage()}
+                        {spinner}
+                        {this.renderMessage()}
                     </div>
                 </div>
             );

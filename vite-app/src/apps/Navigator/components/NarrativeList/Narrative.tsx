@@ -11,12 +11,21 @@ export interface NarrativeProps {
     onSelect: () => void;
 }
 
-interface NarrativeState { }
+interface NarrativeState {}
 
-export default class Narrative extends React.Component<NarrativeProps, NarrativeState> {
+export default class Narrative extends React.Component<
+    NarrativeProps,
+    NarrativeState
+> {
     render() {
-        const { access_group, obj_id, version, narrative_title, timestamp, creator } =
-            this.props.narrative;
+        const {
+            access_group,
+            obj_id,
+            version,
+            narrative_title,
+            timestamp,
+            creator,
+        } = this.props.narrative;
 
         const title = (() => {
             if (narrative_title.trim().length === 0) {
@@ -38,12 +47,12 @@ export default class Narrative extends React.Component<NarrativeProps, Narrative
             if (this.props.narrative.is_public) {
                 return [
                     'globe',
-                    'This Narrative is "public" - it may be viewed by any KBase user'
+                    'This Narrative is "public" - it may be viewed by any KBase user',
                 ];
             }
             return [
                 'lock',
-                'This Narrative is "private" - it may only be viewed by you and anyone you have directly shared it with'
+                'This Narrative is "private" - it may only be viewed by you and anyone you have directly shared it with',
             ];
         })();
 

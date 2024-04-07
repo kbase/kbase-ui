@@ -1,5 +1,4 @@
-
-.TypeView-Overview  table.table th {
+.TypeView-Overview table.table th {
     width: 11em;
 }
 
@@ -11,7 +10,6 @@
 .TypeView-Overview table.table.-moduleVersions {
     width: auto;
 }
-
 
 .TypeView-Overview {
     flex: 1 1 0;

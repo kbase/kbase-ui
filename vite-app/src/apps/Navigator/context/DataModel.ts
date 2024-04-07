@@ -137,8 +137,9 @@ export class DataModel {
     }
 
     makeSearchQueryKey(searchParams: SearchParams): string {
-        return `category:${searchParams.category};query:${searchParams.query || ''
-            };sort:${searchParams.sort}`;
+        return `category:${searchParams.category};query:${
+            searchParams.query || ''
+        };sort:${searchParams.sort}`;
     }
 
     zapCache() {
@@ -146,7 +147,7 @@ export class DataModel {
     }
 
     async searchFromSearchParams(
-        searchParams: SearchParams
+        searchParams: SearchParams,
     ): Promise<SearchResults> {
         const searchQueryKey = this.makeSearchQueryKey(searchParams);
 
@@ -158,7 +159,7 @@ export class DataModel {
         // Get as much cache as we can get
         const cached = this.cache.slice(
             searchParams.offset,
-            searchParams.offset + searchParams.limit
+            searchParams.offset + searchParams.limit,
         );
 
         // Fetch the rest
@@ -174,9 +175,8 @@ export class DataModel {
         let narratives: Array<NarrativeSearchDoc>;
 
         if (cached.length < searchParams.limit) {
-            const { count, hits } = await this.searchClient.searchNarratives(
-                actualSearchParams
-            );
+            const { count, hits } =
+                await this.searchClient.searchNarratives(actualSearchParams);
             narratives = cached.concat(hits);
             this.filterCount = count;
             this.cache = this.cache.concat(hits);
@@ -189,9 +189,8 @@ export class DataModel {
                 actualSearchParams.query &&
                 actualSearchParams.query.length > 0
             ) {
-                const { count } = await this.searchClient.searchSummary(
-                    actualSearchParams
-                );
+                const { count } =
+                    await this.searchClient.searchSummary(actualSearchParams);
                 return count;
             } else {
                 return this.filterCount;

@@ -40,7 +40,7 @@ enum CellIcons {
     widget = 'fa fa-wrench',
     data = 'fa fa-database',
     output = 'fa fa-arrow-right',
-    serviceWidget = 'fa fa-flask'
+    serviceWidget = 'fa fa-flask',
 }
 
 /**
@@ -110,7 +110,14 @@ export class TypeIcon extends Component<TypeIconProps, TypeIconState> {
                 );
             } else {
                 return (
-                    <span className="fa-stack fa-lg" style={{fontSize: this.props.size ? `${this.props.size}%` : '100%'}}>
+                    <span
+                        className="fa-stack fa-lg"
+                        style={{
+                            fontSize: this.props.size
+                                ? `${this.props.size}%`
+                                : '100%',
+                        }}
+                    >
                         <span
                             className="fa fa-circle fa-stack-2x"
                             style={{ color: this.state.iconInfo.color }}
@@ -169,7 +176,7 @@ export class AppCellIcon extends Component<AppIconProps, AppIconState> {
         });
         const iconInfo = await iconProvider.appIcon(
             this.props.appId,
-            this.props.appTag as AppTag
+            this.props.appTag as AppTag,
         );
         this.setState({
             iconInfo: iconInfo,
@@ -243,7 +250,7 @@ export function DefaultIcon(props: DefaultIconProps) {
         case 'error':
             icon = 'fa-exclamation-triangle';
             break;
-        case 'serviceWidget': 
+        case 'serviceWidget':
             icon = CellIcons.serviceWidget;
             break;
         default:

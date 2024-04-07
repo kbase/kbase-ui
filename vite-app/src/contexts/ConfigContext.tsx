@@ -1,10 +1,18 @@
 import { resourceURL } from 'lib/navigation';
 import React, { PropsWithChildren } from 'react';
 import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
-import { Config, PluginInfo as ConfigPluginInfo, DeployConfig } from '../types/config';
+import {
+    Config,
+    PluginInfo as ConfigPluginInfo,
+    DeployConfig,
+} from '../types/config';
 import { BuildInfo, GitInfo, PluginsInfo } from '../types/info';
 
-function buildUIURL(config: Config, path: string, params?: Record<string, string>): URL {
+function buildUIURL(
+    config: Config,
+    path: string,
+    params?: Record<string, string>,
+): URL {
     if (params) {
         const search = new URLSearchParams(params).toString();
         return new URL(`${config.deploy.ui.origin}#${path}&${search}`);
@@ -12,21 +20,20 @@ function buildUIURL(config: Config, path: string, params?: Record<string, string
     return new URL(`${config.deploy.ui.origin}#${path}`);
 }
 
-// export type NavigationPathToURL = ({path, params, type}: NavigationPath, 
+// export type NavigationPathToURL = ({path, params, type}: NavigationPath,
 //                                     newWindow: boolean) => URL;
 
 /**
  * Holds the current config information
  */
 export interface ConfigInfo {
-    config: Config,
-    pluginsInfo: PluginsInfo,
-    gitInfo: GitInfo,
-    buildInfo: BuildInfo
+    config: Config;
+    pluginsInfo: PluginsInfo;
+    gitInfo: GitInfo;
+    buildInfo: BuildInfo;
     // Some handy config utilities.
-    uiURL: (path: string, params?: Record<string, string>) => URL
+    uiURL: (path: string, params?: Record<string, string>) => URL;
     // navigationPathToURL: NavigationPathToURL
-
 }
 
 export type ConfigState = AsyncProcess<ConfigInfo, string>;
@@ -89,42 +96,49 @@ export default class ConfigWrapper extends React.Component<
             },
         });
         try {
-            const rawConfig = await (
+            const rawConfig = (await (
                 await fetch(resourceURL('deploy/config.json'))
-            ).json() as DeployConfig;
+            ).json()) as DeployConfig;
 
-            const gitInfo = await (
+            const gitInfo = (await (
                 await fetch(resourceURL('build/git-info.json'))
-            ).json() as GitInfo
+            ).json()) as GitInfo;
 
-            const buildInfo = await (
+            const buildInfo = (await (
                 await fetch(resourceURL('build/build-info.json'))
-            ).json() as BuildInfo;
+            ).json()) as BuildInfo;
 
-            const pluginsInfo = await (
+            const pluginsInfo = (await (
                 await fetch(resourceURL('plugins/plugin-manifest.json'))
-            ).json() as PluginsInfo;
+            ).json()) as PluginsInfo;
 
             const uiURL = (path: string, params?: Record<string, string>) => {
                 return buildUIURL(config, path, params);
-            }
+            };
 
             // Note that this build info is used by plugins, so we have to maintain it.
 
-            const configPluginsInfo: Array<ConfigPluginInfo> = pluginsInfo.map((pluginInfo) => {
-                return {
-                    name: pluginInfo.configs.plugin.package.name,
-                    globalName: pluginInfo.configs.ui.globalName,
-                    repoName: "need repo name!",
-                    branch: "don't always have branch",
-                    gitAccount: "need account",
-                    // remove for now
-                    // gitInfo: gitInfoToConfig(pluginInfo.git),
-                    url: "url here",
-                    version: pluginInfo.configs.ui.version
-                }
-            });
-            const config: Config = { ...rawConfig, buildInfo, gitInfo, plugins: configPluginsInfo };
+            const configPluginsInfo: Array<ConfigPluginInfo> = pluginsInfo.map(
+                (pluginInfo) => {
+                    return {
+                        name: pluginInfo.configs.plugin.package.name,
+                        globalName: pluginInfo.configs.ui.globalName,
+                        repoName: 'need repo name!',
+                        branch: "don't always have branch",
+                        gitAccount: 'need account',
+                        // remove for now
+                        // gitInfo: gitInfoToConfig(pluginInfo.git),
+                        url: 'url here',
+                        version: pluginInfo.configs.ui.version,
+                    };
+                },
+            );
+            const config: Config = {
+                ...rawConfig,
+                buildInfo,
+                gitInfo,
+                plugins: configPluginsInfo,
+            };
             this.setState({
                 configState: {
                     status: AsyncProcessStatus.SUCCESS,

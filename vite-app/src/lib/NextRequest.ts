@@ -1,4 +1,3 @@
-
 /**
  * The "next request" captures the concept of a navigation target which will be invoked
  * follwing some event. The primary use case is authentication - if an route is
@@ -6,8 +5,8 @@
  * a "next request" object wi
  */
 
-import { urlToNavigationPath } from "contexts/RouterContext";
-import { NavigationPath } from "./navigation";
+import { urlToNavigationPath } from 'contexts/RouterContext';
+import { NavigationPath } from './navigation';
 
 export interface NextRequestObject {
     path: NavigationPath;
@@ -20,8 +19,8 @@ export interface NextRequestObject {
 export function nextRequestFromURL(url: URL): NextRequestObject {
     const path = urlToNavigationPath(url);
     return {
-        path
-    }
+        path,
+    };
 }
 
 export function nextRequestFromCurrentURL(): NextRequestObject {

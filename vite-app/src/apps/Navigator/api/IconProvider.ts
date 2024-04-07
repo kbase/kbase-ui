@@ -101,12 +101,12 @@ export default class IconProvider {
             const nms = new NarrativeMethodStoreClient({
                 url: this.nmsURL,
                 // token: this.token,
-                timeout: 1000
+                timeout: 1000,
             });
             try {
                 const result = await nms.get_method_brief_info({
                     ids: [appId],
-                    tag: appTag
+                    tag: appTag,
                 });
 
                 const icon = result.icon.url;
@@ -143,7 +143,7 @@ export default class IconProvider {
         // anything else is nonsensical.
         if (!objectType) {
             console.warn(
-                `[typeIcon] Using default type icon for object type "${objectType}"`
+                `[typeIcon] Using default type icon for object type "${objectType}"`,
             );
             return this.defaultType;
         }

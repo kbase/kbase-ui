@@ -96,7 +96,7 @@ export default class RenderJSON extends Component<RenderJSONProps> {
                 return '';
             default:
                 return this.renderJSONString(
-                    `not representable: "${typeof data}"`
+                    `not representable: "${typeof data}"`,
                 );
         }
     }

@@ -1,15 +1,26 @@
-import { faBan, faCheck, faCircleQuestion, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Component, PropsWithChildren, ReactNode } from "react";
+import {
+    faBan,
+    faCheck,
+    faCircleQuestion,
+    faExclamationTriangle,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Component, PropsWithChildren, ReactNode } from 'react';
 import styles from './Notification.module.css';
 
 // Unfortunately too loosely typed?
 // export type Variant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' |
 // 'info' | 'dark' | 'light' | string;
 
-export type StrictVariant = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'dark' | 'light';
-
-
+export type StrictVariant =
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'dark'
+    | 'light';
 
 export interface NotificationAlertProps extends PropsWithChildren {
     variant: StrictVariant;
@@ -18,13 +29,12 @@ export interface NotificationAlertProps extends PropsWithChildren {
     icon?: ReactNode;
     renderControls?: () => ReactNode;
     renderBody?: () => ReactNode;
-
 }
 
 export class NotificationAlert extends Component<NotificationAlertProps> {
     renderLevelBackgroundVariant(): string {
         if (this.props.unselected) {
-            return ''
+            return '';
         }
         return `bg-${this.props.variant}-subtle`;
     }
@@ -42,11 +52,14 @@ export class NotificationAlert extends Component<NotificationAlertProps> {
             return this.props.icon;
         }
         switch (this.props.variant) {
-            case 'danger': return <FontAwesomeIcon icon={faBan} />
-            case 'success': return <FontAwesomeIcon icon={faCheck} />
-            case 'info': return <FontAwesomeIcon icon={faCircleQuestion} />;
-            case 'warning': return <FontAwesomeIcon icon={faExclamationTriangle} />;
-
+            case 'danger':
+                return <FontAwesomeIcon icon={faBan} />;
+            case 'success':
+                return <FontAwesomeIcon icon={faCheck} />;
+            case 'info':
+                return <FontAwesomeIcon icon={faCircleQuestion} />;
+            case 'warning':
+                return <FontAwesomeIcon icon={faExclamationTriangle} />;
         }
     }
 
@@ -54,9 +67,11 @@ export class NotificationAlert extends Component<NotificationAlertProps> {
         if (!this.props.renderControls) {
             return;
         }
-        return <div className={styles.NotificationControls}>
-            {this.props.renderControls()}
-        </div>;
+        return (
+            <div className={styles.NotificationControls}>
+                {this.props.renderControls()}
+            </div>
+        );
     }
 
     render() {
@@ -64,16 +79,22 @@ export class NotificationAlert extends Component<NotificationAlertProps> {
             styles.Notification,
             `${this.renderLevelBackgroundVariant()}`,
             `${this.renderLevelBorderVariant()}`,
-            `${this.renderLevelTextVariant()}`
-        ]
-        return <div className={classNames.join(' ')}>
-            <div className={styles.NotificationIcon}>
-                {this.renderVariantIcon()}
+            `${this.renderLevelTextVariant()}`,
+        ];
+        return (
+            <div className={classNames.join(' ')}>
+                <div className={styles.NotificationIcon}>
+                    {this.renderVariantIcon()}
+                </div>
+                {this.renderControlsColumn()}
+                <div className={styles.NotificationMessage}>
+                    {this.props.renderBody
+                        ? this.props.renderBody()
+                        : this.props.message
+                          ? this.props.message
+                          : this.props.children}
+                </div>
             </div>
-            {this.renderControlsColumn()}
-            <div className={styles.NotificationMessage}>
-                {this.props.renderBody ? this.props.renderBody() : (this.props.message ? this.props.message : this.props.children)}
-            </div>
-        </div>
+        );
     }
 }

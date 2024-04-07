@@ -13,7 +13,7 @@ $spinner-animation-speed: 1.25s;
 $form-label-font-weight: bold;
 $form-label-color: rgb(150, 150, 150);
 
-@import "bootstrap/scss/bootstrap";
+@import 'bootstrap/scss/bootstrap';
 
 .table.subdued-headers th {
     color: rgba(125, 125, 125);

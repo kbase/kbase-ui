@@ -45,7 +45,7 @@
 .JobLog .FlexTable-body .FlexTable-col.message {
     font-family: monospace;
     font-size: 90%;
-    white-space: pre-wrap
+    white-space: pre-wrap;
 }
 
 /* antd tweak */

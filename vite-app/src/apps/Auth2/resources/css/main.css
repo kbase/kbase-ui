@@ -1,7 +1,7 @@
-@import url("flex-tabs.css");
+@import url('flex-tabs.css');
 
 .form-row:hover {
-    background-color: #CCC;
+    background-color: #ccc;
 }
 
 .form-sub-row {
@@ -10,10 +10,11 @@
     box-sizing: border-box;
 }
 
-.form-sub-row:nth-last-child() {}
+.form-sub-row:nth-last-child() {
+}
 
 .form-sub-row:hover {
-    border: 1px #EEE solid;
+    border: 1px #eee solid;
 }
 
 .form-row {
@@ -22,7 +23,7 @@
 
 .field-doc {
     margin-bottom: 4px;
-    color: #AAA;
+    color: #aaa;
 }
 
 .form-row:hover .field-doc {
@@ -78,13 +79,16 @@
     border-left: 3px silver solid;
 }
 
-.policy-markdown a {}
+.policy-markdown a {
+}
 
 .policy-markdown a:link,
-.policy-markdown a:visited {}
+.policy-markdown a:visited {
+}
 
 .policy-markdown a:hover,
-.policy-markdown a:active {}
+.policy-markdown a:active {
+}
 
 /* responsive youtube */
 

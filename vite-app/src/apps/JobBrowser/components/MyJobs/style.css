@@ -18,7 +18,6 @@
     white-space: nowrap;
 }
 
-
 .MyJobs-table .ant-table-header-column {
     /* max-width: 0; */
     overflow-x: hidden;
@@ -54,98 +53,116 @@
     flex-direction: column;
 }
 
-
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading {
+.MyJobs-table.ant-table-wrapper > .ant-spin-nested-loading {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    > .ant-table-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-body {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    > .ant-table-content
+    > .ant-table-body {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table-pagination.ant-pagination {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table-pagination.ant-pagination {
     flex: 0 0 auto;
 }
 
-.MyJobs-table.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table .ant-table-row {
+.MyJobs-table.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    .ant-table-row {
     height: 30px;
 }
 
-
-.MyJobs .Table-row>.Table-cell:nth-child(1) {
+.MyJobs .Table-row > .Table-cell:nth-child(1) {
     flex: 0 0 4em;
     align-items: center;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(2) {
+.MyJobs .Table-row > .Table-cell:nth-child(2) {
     flex: 1 1 0px;
     min-width: 10em;
 }
 
-
-.MyJobs .Table-row>.Table-cell:nth-child(3) {
+.MyJobs .Table-row > .Table-cell:nth-child(3) {
     min-width: 10em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(4) {
+.MyJobs .Table-row > .Table-cell:nth-child(4) {
     flex: 0 0 8em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(5) {
+.MyJobs .Table-row > .Table-cell:nth-child(5) {
     flex: 0 0 8em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(6) {
+.MyJobs .Table-row > .Table-cell:nth-child(6) {
     flex: 0 0 8em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(7) {
+.MyJobs .Table-row > .Table-cell:nth-child(7) {
     flex: 0 0 8em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(8) {
+.MyJobs .Table-row > .Table-cell:nth-child(8) {
     flex: 0 0 8em;
 }
 
-.MyJobs .Table-row>.Table-cell:nth-child(9) {
+.MyJobs .Table-row > .Table-cell:nth-child(9) {
     flex: 0 0 4em;
     align-items: center;
-
 }
 
 .MyJobs .-controlBar {
     margin: 10px;
 }
-
-
 
 .ant-modal.FullScreenModal {
     /* width: 80% !important;
@@ -184,8 +201,6 @@
     flex: 0 0 auto;
 }
 
-
-
 .ant-tabs.FullHeightTabs {
     flex: 1 1 0px;
     display: flex;
@@ -193,14 +208,14 @@
     min-height: 0;
 }
 
-.ant-tabs.FullHeightTabs>.ant-tabs-content {
+.ant-tabs.FullHeightTabs > .ant-tabs-content {
     flex: 1 1 0px !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 0;
 }
 
-.ant-tabs.FullHeightTabs>.ant-tabs-content>.ant-tabs-tabpane {
+.ant-tabs.FullHeightTabs > .ant-tabs-content > .ant-tabs-tabpane {
     flex: 1 1 0px !important;
     display: flex !important;
     flex-direction: column !important;
@@ -208,7 +223,6 @@
 }
 
 /* flex table */
-
 
 .FlexTable {
     flex: 1 1 0px;
@@ -276,7 +290,6 @@
     justify-content: center;
 }
 
-
 .ScrollingFlexTable.ant-table-wrapper {
     flex: 1 1 0px;
     display: flex;
@@ -284,46 +297,64 @@
     min-height: 0;
 }
 
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading {
+.ScrollingFlexTable.ant-table-wrapper > .ant-spin-nested-loading {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container {
+.ScrollingFlexTable.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table {
+.ScrollingFlexTable.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content {
+.ScrollingFlexTable.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    > .ant-table-content {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-scroll {
+.ScrollingFlexTable.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    > .ant-table-content
+    > .ant-table-scroll {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
     min-height: 0;
 }
 
-
-.ScrollingFlexTable.ant-table-wrapper>.ant-spin-nested-loading>.ant-spin-container>.ant-table>.ant-table-content>.ant-table-scroll>.ant-table-header {
+.ScrollingFlexTable.ant-table-wrapper
+    > .ant-spin-nested-loading
+    > .ant-spin-container
+    > .ant-table
+    > .ant-table-content
+    > .ant-table-scroll
+    > .ant-table-header {
     flex: 0 0 auto;
 }
-
 
 /* */
 .PreciseTable {
@@ -338,7 +369,6 @@
     white-space: nowrap;
 }
 
-
 .PreciseTable .ant-table-column-title {
     overflow-x: hidden;
     text-overflow: ellipsis;
@@ -349,7 +379,6 @@
     text-align: right;
     padding-right: 1em;
 }
-
 
 .InfoTable {
     display: flex;
@@ -372,4 +401,3 @@
     flex: 1 1 0px;
     text-align: left;
 }
-

@@ -17,30 +17,38 @@ interface SignInButtonState {
     imageState: string;
 }
 
-export default class SignInButton extends Component<SignInButtonProps, SignInButtonState> {
+export default class SignInButton extends Component<
+    SignInButtonProps,
+    SignInButtonState
+> {
     constructor(props: SignInButtonProps) {
         super(props);
         this.state = {
             loading: false,
-            imageState: 'normal'
+            imageState: 'normal',
         };
     }
 
     renderSpinner() {
         if (this.state.loading) {
-            return <div className="-loading">
-                <span className="fa fa-spinner fa-pulse fa-3x" />
-            </div>
+            return (
+                <div className="-loading">
+                    <span className="fa fa-spinner fa-pulse fa-3x" />
+                </div>
+            );
         }
     }
 
     doSignIn() {
-        this.setState({
-            loading: true,
-            imageState: 'disabled'
-        }, () => {
-            this.props.doSignIn();
-        });
+        this.setState(
+            {
+                loading: true,
+                imageState: 'disabled',
+            },
+            () => {
+                this.props.doSignIn();
+            },
+        );
     }
 
     providerLogoSrc() {
@@ -59,26 +67,35 @@ export default class SignInButton extends Component<SignInButtonProps, SignInBut
     renderProviderButtonLogo() {
         const logoSrc = this.providerLogoSrc();
         if (logoSrc) {
-            return <img src={logoSrc} alt={this.props.provider.label} />
+            return <img src={logoSrc} alt={this.props.provider.label} />;
         } else {
-            return <span>{this.props.provider.label}</span>
+            return <span>{this.props.provider.label}</span>;
         }
     }
 
     render() {
         const buttonLabel = `Sign In button for the ${this.props.provider.label} identity provider`;
-        return <Button title={buttonLabel}
-            role="button"
-            style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-            variant="outline-primary"
-            disabled={this.state.loading}
-            onClick={this.doSignIn.bind(this)}>
-            <div style={{ flex: '1 1 0' }}>
-                {this.renderProviderButtonLogo()}
-            </div>
-            <div style={{ flex: '0 0 auto' }}>
-                {this.props.provider.label}
-            </div>
-        </Button>
+        return (
+            <Button
+                title={buttonLabel}
+                role="button"
+                style={{
+                    flex: '1 1 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+                variant="outline-primary"
+                disabled={this.state.loading}
+                onClick={this.doSignIn.bind(this)}
+            >
+                <div style={{ flex: '1 1 0' }}>
+                    {this.renderProviderButtonLogo()}
+                </div>
+                <div style={{ flex: '0 0 auto' }}>
+                    {this.props.provider.label}
+                </div>
+            </Button>
+        );
     }
 }

@@ -1,4 +1,4 @@
-import GenericClient from "@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient";
+import GenericClient from '@kbase/ui-lib/lib/comm/JSONRPC11/GenericClient';
 
 export interface UserProfile {
     user: {
@@ -31,7 +31,7 @@ export default class UserModel {
     }
 
     async fetchProfiles(
-        usernames: string[]
+        usernames: string[],
     ): Promise<Array<UserProfile | null>> {
         const userProfiles: Array<UserProfile> = [];
 
@@ -62,7 +62,7 @@ export default class UserModel {
         profiles.forEach((profile: UserProfile | null, index: number) => {
             if (profile === null) {
                 throw new Error(
-                    `User profile not found for "${usersToFetch[index]}"`
+                    `User profile not found for "${usersToFetch[index]}"`,
                 );
             }
             userProfiles.push(profile);

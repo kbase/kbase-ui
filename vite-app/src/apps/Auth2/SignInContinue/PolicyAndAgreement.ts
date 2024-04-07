@@ -1,5 +1,5 @@
-import { UserPolicy } from "lib/kb_lib/Auth2";
-import Policy, { CurrentTermsAndConditionsPolicy } from "./Policy";
+import { UserPolicy } from 'lib/kb_lib/Auth2';
+import Policy, { CurrentTermsAndConditionsPolicy } from './Policy';
 
 // import policyData from '../resources/agreements/terms-and-conditions.json';
 
@@ -72,7 +72,7 @@ export interface PolicyAgreement {
  * A policy agreement that only exists in memory - it is not committed to the user's
  * account yet so does not have an "agreed at" timestamp. This is the form that is
  * submitted to the auth service to signify an agreement to the indicated policy and version.
- * 
+ *
  * Differentiated from a "UserPolicy" (probablyl better named "PolicyAgreement") because
  * this one does not have an agreement timestamp, and the id and version or separated (!).
  * The latter is a quirk of the auth2 api. The reason for the lack of timestamp is that
@@ -85,14 +85,14 @@ export interface PendingPolicyAgreement {
 }
 
 export interface PolicyAndAgreementParams {
-    policyids: Array<UserPolicy>;  // from the auth service user record
+    policyids: Array<UserPolicy>; // from the auth service user record
 }
 
 export default class PolicyAndAgreement {
     policy: Policy = new Policy();
-    userAgreements: Array<UserPolicyAgrement>
+    userAgreements: Array<UserPolicyAgrement>;
     // policyAgreements: Array<PolicyAgreement>;
-    constructor({policyids}: PolicyAndAgreementParams) {
+    constructor({ policyids }: PolicyAndAgreementParams) {
         this.userAgreements = this.parsePolicyAgreements(policyids);
         // this.policyAgreements = this.getPolicyAgreements(this.userAgreements);
     }
@@ -121,17 +121,19 @@ export default class PolicyAndAgreement {
 
     /**
      * Converts the policy agreements (from a user's account) into something more directly usable.
-     * 
-     * @param policyIds 
-     * @returns 
+     *
+     * @param policyIds
+     * @returns
      */
-    parsePolicyAgreements(policyIds: Array<UserPolicy>): Array<UserPolicyAgrement> {
-        return policyIds.map(({id, agreedon}) => {
+    parsePolicyAgreements(
+        policyIds: Array<UserPolicy>,
+    ): Array<UserPolicyAgrement> {
+        return policyIds.map(({ id, agreedon }) => {
             const [policyId, policyVersion] = id.split('.');
             return {
                 id: policyId,
                 version: parseInt(policyVersion, 10),
-                agreedAt: new Date(agreedon)
+                agreedAt: new Date(agreedon),
             };
         });
     }
@@ -139,11 +141,11 @@ export default class PolicyAndAgreement {
     /**
      * Gets a list of "policy agreements" which are aligned to the current set of user
      * agreements (as defined in "terms-and-conditions.json").
-     * 
+     *
      * Note: Ideally, this logic would reside in the auth service.
-     * 
-     * @param userPolicyAgreements 
-     * @returns 
+     *
+     * @param userPolicyAgreements
+     * @returns
      */
     // getPolicyAgreements(userPolicyAgreements: Array<UserPolicyAgrement>): Array<PolicyAgreement> {
     //     const now = Date.now();
@@ -193,8 +195,8 @@ export default class PolicyAndAgreement {
     //             })();
 
     //             agreements.push({
-    //                 id: policy.id, version, title: policy.title, 
-    //                 publishedAt: new Date(begin), expiredAt, agreedAt, 
+    //                 id: policy.id, version, title: policy.title,
+    //                 publishedAt: new Date(begin), expiredAt, agreedAt,
     //                 status, statusSort,  url
     //             });
     //         });
@@ -213,24 +215,23 @@ export default class PolicyAndAgreement {
     //         });
     // }
 
-     /**
+    /**
      * Returns the current active policy, and whether the user has agreed to it yet or not.
      *
      * @returns
      */
-     getPolicyAgreement(): PolicyAgreement {
+    getPolicyAgreement(): PolicyAgreement {
         const currentPolicy = this.policy.currentPolicy();
 
-        const agreements = this.userAgreements
-            .filter(({id, version}) => {
-                return (currentPolicy.id === id && currentPolicy.version === version);
-            });
+        const agreements = this.userAgreements.filter(({ id, version }) => {
+            return currentPolicy.id === id && currentPolicy.version === version;
+        });
 
         return {
             currentPolicy: currentPolicy,
             agreement: agreements.length > 0 ? agreements[0] : null,
-            hasPreviousAgreements: this.userAgreements.length > 0
-        }
+            hasPreviousAgreements: this.userAgreements.length > 0,
+        };
 
         // policy.versions.forEach(({begin, end, version, url}) => {
         //         // const document = 'document' in policyVersion ? policyVersion.document : null;
@@ -275,8 +276,8 @@ export default class PolicyAndAgreement {
         //         })();
 
         //         agreements.push({
-        //             id: policy.id, version, title: policy.title, 
-        //             publishedAt: new Date(begin), expiredAt, agreedAt, 
+        //             id: policy.id, version, title: policy.title,
+        //             publishedAt: new Date(begin), expiredAt, agreedAt,
         //             status, statusSort,  url
         //         });
         //     });

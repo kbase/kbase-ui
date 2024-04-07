@@ -34,25 +34,28 @@ export enum PerformanceMeasurementsStatus {
 }
 
 export interface PerformanceMeasurementsBase {
-    status: PerformanceMeasurementsStatus
+    status: PerformanceMeasurementsStatus;
 }
 
-export interface PerformanceMeasurementsSuccess extends PerformanceMeasurementsBase{
-    status: PerformanceMeasurementsStatus.SUCCESS,
+export interface PerformanceMeasurementsSuccess
+    extends PerformanceMeasurementsBase {
+    status: PerformanceMeasurementsStatus.SUCCESS;
     version: string;
     measurements: PerformanceMetrics;
 }
 
-export interface PerformanceMeasurementsError extends PerformanceMeasurementsBase { 
-    status: PerformanceMeasurementsStatus.ERROR,
+export interface PerformanceMeasurementsError
+    extends PerformanceMeasurementsBase {
+    status: PerformanceMeasurementsStatus.ERROR;
     message: string;
 }
 
-export type PerformanceMeasurements = PerformanceMeasurementsSuccess | PerformanceMeasurementsError;
-
+export type PerformanceMeasurements =
+    | PerformanceMeasurementsSuccess
+    | PerformanceMeasurementsError;
 
 export default class ServicePerformance {
-    params: ServicePerformanceParams
+    params: ServicePerformanceParams;
     constructor(params: ServicePerformanceParams) {
         this.params = params;
     }
@@ -69,7 +72,9 @@ export default class ServicePerformance {
         return total;
     }
 
-    async measurePerformance(call: () => Promise<string>): Promise<PerformanceMetrics> {
+    async measurePerformance(
+        call: () => Promise<string>,
+    ): Promise<PerformanceMetrics> {
         const measures: Array<number> = [];
         const next = async (itersLeft: number): Promise<PerformanceMetrics> => {
             if (itersLeft === 0) {
@@ -212,12 +217,20 @@ export default class ServicePerformance {
     async measure(): Promise<PerformanceMeasurements> {
         const ver = this.getAPICall();
         try {
-            const [version, measurements] =  await Promise.all([ver(), this.measurePerformance(ver)]);
-            return {status: PerformanceMeasurementsStatus.SUCCESS, version, measurements}
+            const [version, measurements] = await Promise.all([
+                ver(),
+                this.measurePerformance(ver),
+            ]);
+            return {
+                status: PerformanceMeasurementsStatus.SUCCESS,
+                version,
+                measurements,
+            };
         } catch (ex) {
-            return {status: PerformanceMeasurementsStatus.ERROR, 
-                message: ex instanceof Error ? ex.message : 'Unknown error'
-            }
+            return {
+                status: PerformanceMeasurementsStatus.ERROR,
+                message: ex instanceof Error ? ex.message : 'Unknown error',
+            };
         }
     }
 }

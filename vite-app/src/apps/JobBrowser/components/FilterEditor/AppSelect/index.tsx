@@ -17,24 +17,27 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & AppSelectProps, "options">;
+type TheProps = Omit<DataProps & AppSelectProps, 'options'>;
 
 // interface DataState {
 //     options: Array<OptionValue<string>> | null;
 // }
 
 export interface AppSelect {
-    options: Array<OptionValue<string>>
+    options: Array<OptionValue<string>>;
 }
 
-type AppSelectControllerState = AsyncProcess<AppSelect, SimpleError>
+type AppSelectControllerState = AsyncProcess<AppSelect, SimpleError>;
 
-export default class AppSelectController extends Component<TheProps, AppSelectControllerState> {
+export default class AppSelectController extends Component<
+    TheProps,
+    AppSelectControllerState
+> {
     // stopped: boolean;
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
+            status: AsyncProcessStatus.NONE,
         };
         // this.stopped = false;
     }
@@ -55,7 +58,7 @@ export default class AppSelectController extends Component<TheProps, AppSelectCo
 
     async initialize() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
 
         try {
@@ -63,16 +66,16 @@ export default class AppSelectController extends Component<TheProps, AppSelectCo
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    options
-                }
-            })
+                    options,
+                },
+            });
         } catch (ex) {
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
-            })
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
+            });
         }
     }
 
@@ -81,7 +84,7 @@ export default class AppSelectController extends Component<TheProps, AppSelectCo
         const client = new NarrativeMethodStoreClient({
             token,
             url: nmsURL,
-            timeout
+            timeout,
         });
         const apps = await client.list_methods({});
         const appOptions = apps
@@ -90,7 +93,7 @@ export default class AppSelectController extends Component<TheProps, AppSelectCo
 
                 return {
                     value: id,
-                    label: `${name} (${module_name})`
+                    label: `${name} (${module_name})`,
                 };
             })
             .sort((a, b) => {
@@ -103,15 +106,17 @@ export default class AppSelectController extends Component<TheProps, AppSelectCo
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading Apps..." type='inline' />
+                return <Loading message="Loading Apps..." type="inline" />;
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
             case AsyncProcessStatus.SUCCESS:
-                return <View
-                onChange={this.props.onChange}
-                options={this.state.value.options}
-                defaultValue={this.props.defaultValue}
-            />
+                return (
+                    <View
+                        onChange={this.props.onChange}
+                        options={this.state.value.options}
+                        defaultValue={this.props.defaultValue}
+                    />
+                );
         }
     }
 }

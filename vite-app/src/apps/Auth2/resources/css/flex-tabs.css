@@ -4,7 +4,7 @@
     flex: 1 1 0px;
 }
 
-.flex-tabs>.-tabs {
+.flex-tabs > .-tabs {
     flex: 0 0 2.8em;
     text-align: bottom;
     display: flex;
@@ -15,7 +15,7 @@
     text-overflow: ellipsis;
 }
 
-.flex-tabs>.-tabs>.-tab {
+.flex-tabs > .-tabs > .-tab {
     cursor: pointer;
     padding: 0 8px 0 8px;
     background-color: transparent;
@@ -26,7 +26,7 @@
     border-bottom: 1px solid #ddd;
 }
 
-.flex-tabs>.-tabs>.-tab-rest {
+.flex-tabs > .-tabs > .-tab-rest {
     flex: 1 1 0px;
     border-bottom: 1px solid #ddd;
 }
@@ -35,7 +35,7 @@
     padding-left: 0px;
 } */
 
-.flex-tabs>.-tabs>.-tab>.-label {
+.flex-tabs > .-tabs > .-tab > .-label {
     line-height: 2.8em;
     padding: 0 8px;
     /* display: inline-block;
@@ -44,21 +44,19 @@ vertical-align: middle; */
     color: #337ab7;
 }
 
-
-.flex-tabs>.-tabs>.-tab:hover {
+.flex-tabs > .-tabs > .-tab:hover {
     background-color: #eeeeee;
 }
 
-.flex-tabs>.-tabs>.-tab.-active:hover {
+.flex-tabs > .-tabs > .-tab.-active:hover {
     background-color: transparent;
 }
 
-
-.flex-tabs>.-tabs>.-tab.-active>.-label {
+.flex-tabs > .-tabs > .-tab.-active > .-label {
     color: #555555;
 }
 
-.flex-tabs>.-tabs>.-tab.-active {
+.flex-tabs > .-tabs > .-tab.-active {
     /*border: 2px rgba(200, 200, 200, 0.5) solid;*/
     /* background-color: rgba(200, 200, 200, 0.5); */
     color: #000;
@@ -72,7 +70,7 @@ vertical-align: middle; */
 
 /* Panels */
 
-.flex-tabs>.-panels {
+.flex-tabs > .-panels {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
@@ -87,8 +85,9 @@ vertical-align: middle; */
     overflow-y: auto;
 }
 
-.flex-tabs>.-panels>.-panel.-inactive {
+.flex-tabs > .-panels > .-panel.-inactive {
     display: none;
 }
 
-.flex-tabs>.-panels>.-panel.-active {}
+.flex-tabs > .-panels > .-panel.-active {
+}

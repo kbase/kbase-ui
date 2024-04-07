@@ -1,25 +1,28 @@
-import { Component } from "react";
-import CountdownClock from "./CountdownClock";
+import { Component } from 'react';
+import CountdownClock from './CountdownClock';
 
 export interface CountdownAlarmClockProps {
     expiresIn?: number;
     expiresAt?: number;
     onExpired: () => void;
-    render: (remaining: number) => JSX.Element
+    render: (remaining: number) => JSX.Element;
 }
 
 enum CountdownAlarmClockStatus {
     NONE = 'NONE',
     RUNNING = 'RUNNING',
-    DONE = 'DONE'
+    DONE = 'DONE',
 }
 
 interface CountdownAlarmClockState {
     status: CountdownAlarmClockStatus;
-    remaining: number
+    remaining: number;
 }
 
-export default class CountdownAlarmClock extends Component<CountdownAlarmClockProps, CountdownAlarmClockState>  {
+export default class CountdownAlarmClock extends Component<
+    CountdownAlarmClockProps,
+    CountdownAlarmClockState
+> {
     clock: CountdownClock;
     constructor(props: CountdownAlarmClockProps) {
         super(props);
@@ -28,11 +31,11 @@ export default class CountdownAlarmClock extends Component<CountdownAlarmClockPr
             expiresIn: this.props.expiresIn,
             expiresAt: this.props.expiresAt,
             onTick: this.onTick.bind(this),
-            onExpired: this.onExpired.bind(this)
+            onExpired: this.onExpired.bind(this),
         });
         this.state = {
             status: CountdownAlarmClockStatus.NONE,
-            remaining: this.clock.remaining()
+            remaining: this.clock.remaining(),
         };
     }
 
@@ -50,14 +53,14 @@ export default class CountdownAlarmClock extends Component<CountdownAlarmClockPr
     onTick(remaining: number) {
         this.setState({
             status: CountdownAlarmClockStatus.RUNNING,
-            remaining
+            remaining,
         });
     }
 
     onExpired() {
         this.props.onExpired();
         this.setState({
-            status: CountdownAlarmClockStatus.DONE
+            status: CountdownAlarmClockStatus.DONE,
         });
     }
 

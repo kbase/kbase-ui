@@ -1,12 +1,10 @@
-import {
-    CSSProperties
-} from 'react';
+import { CSSProperties } from 'react';
 
 const styles: {
-    [key: string]: CSSProperties
+    [key: string]: CSSProperties;
 } = {
     Code: {
-        fontFamily: 'monospace'
+        fontFamily: 'monospace',
     },
     Title: {
         fontWeight: 'bold',
@@ -22,7 +20,7 @@ const styles: {
         // padding: '4px',
         // margin: '3px',
         // backgroundColor: 'rgba(200, 200, 200, 0.2)',
-    }
-}
+    },
+};
 
 export default styles;

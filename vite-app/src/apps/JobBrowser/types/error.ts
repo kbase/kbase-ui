@@ -1,9 +1,6 @@
-import { JSONObject } from "./json";
+import { JSONObject } from './json';
 
-export enum UIErrorCode {
-
-}
-
+export enum UIErrorCode {}
 
 export interface UIError {
     code: number;

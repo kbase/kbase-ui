@@ -2,7 +2,6 @@ import { Tooltip } from 'antd';
 import * as React from 'react';
 import { niceElapsed } from '../lib/time';
 
-
 const SECOND = 1000;
 // const MINUTE = 60 * SECOND;
 // const HOUR = 60 * MINUTE;
@@ -24,21 +23,24 @@ interface NiceElapsedTimeState {
     clockTime: number;
 }
 
-export default class NiceElapsedTime extends React.Component<NiceElapsedTimeProps, NiceElapsedTimeState> {
+export default class NiceElapsedTime extends React.Component<
+    NiceElapsedTimeProps,
+    NiceElapsedTimeState
+> {
     clockTimer: number | null;
 
     constructor(props: NiceElapsedTimeProps) {
         super(props);
         this.clockTimer = null;
         this.state = {
-            clockTime: Date.now()
+            clockTime: Date.now(),
         };
     }
 
     startClock() {
         this.clockTimer = window.setInterval(() => {
             this.setState({
-                clockTime: Date.now()
+                clockTime: Date.now(),
             });
         }, CLOCK_INTERVAL_SECOND);
     }
@@ -83,13 +85,10 @@ export default class NiceElapsedTime extends React.Component<NiceElapsedTimeProp
         }
         const { label: tooltipContent } = niceElapsed(elapsed, {
             precision: this.props.precision,
-
         });
         return (
             <Tooltip placement="bottomRight" title={tooltip}>
-                <span data-k-b-testhook-element="label">
-                    {tooltipContent}
-                </span>
+                <span data-k-b-testhook-element="label">{tooltipContent}</span>
             </Tooltip>
         );
     }

@@ -12,11 +12,11 @@
 //     Features
 // ) => {
 
-import { UserPolicy } from "lib/kb_lib/Auth2";
+import { UserPolicy } from 'lib/kb_lib/Auth2';
 
 import policiesData from '../resources/agreements/policies.json';
 
-const policies = policiesData as unknown as Policies
+const policies = policiesData as unknown as Policies;
 
 /**
  * These interfaces model the policy data stored in policies.json.
@@ -43,7 +43,7 @@ export type PolicyVersion = PolicyVersionWithDocument | PolicyVersionWithURL;
 export interface Policy {
     id: string;
     title: string;
-    versions: Array<PolicyVersion>
+    versions: Array<PolicyVersion>;
 }
 
 export type Policies = Array<Policy>;
@@ -90,15 +90,13 @@ export interface PendingPolicyAgreement {
 export interface PolicyAndAgreementParams {
     // authURL: string;
     // authorization: string;
-    policyids: Array<UserPolicy>;  // from the auth service user record
+    policyids: Array<UserPolicy>; // from the auth service user record
 }
-
-
 
 export default class PolicyAndAgreement {
     // auth2Client: Auth2;
     policyAgreements: Array<PolicyAgreement>;
-    constructor({policyids}: PolicyAndAgreementParams) {
+    constructor({ policyids }: PolicyAndAgreementParams) {
         // this.runtime = runtime;
         const userAgreements = this.parsePolicyAgreements(policyids);
         this.policyAgreements = this.getPolicyAgreements(userAgreements);
@@ -176,17 +174,19 @@ export default class PolicyAndAgreement {
 
     /**
      * Converts the policy agreements into something more directly usable.
-     * 
-     * @param policyIds 
-     * @returns 
+     *
+     * @param policyIds
+     * @returns
      */
-    parsePolicyAgreements(policyIds: Array<UserPolicy>): Array<UserPolicyAgrement> {
-        return policyIds.map(({id, agreedon}) => {
+    parsePolicyAgreements(
+        policyIds: Array<UserPolicy>,
+    ): Array<UserPolicyAgrement> {
+        return policyIds.map(({ id, agreedon }) => {
             const [policyId, policyVersion] = id.split('.');
             return {
                 id: policyId,
                 version: parseInt(policyVersion, 10),
-                agreedAt: new Date(agreedon)
+                agreedAt: new Date(agreedon),
             };
         });
     }
@@ -225,58 +225,92 @@ export default class PolicyAndAgreement {
     //     this.useAgreements = useAgreements;
     // }
 
-    getPolicyAgreements(userPolicyAgreements: Array<UserPolicyAgrement>): Array<PolicyAgreement> {
+    getPolicyAgreements(
+        userPolicyAgreements: Array<UserPolicyAgrement>,
+    ): Array<PolicyAgreement> {
         const now = Date.now();
-        return policies.reduce<Array<PolicyAgreement>>((policyAgreements, {id, title, versions}) => {
-            versions.forEach((policyVersion) => {
-                const document = 'document' in policyVersion ? policyVersion.document : null;
-                const url = 'url' in policyVersion ? policyVersion.url : null;
-                const {version, begin, end} = policyVersion;
-                // Simply gets the agreement time, if present for this user in their
-                // "policyids" list.
-                const agreedAt = userPolicyAgreements
-                    .map(({id: idAgreed, version: versionAgreed, agreedAt}) => {
-                        if (idAgreed === id && versionAgreed === version) {
-                            return agreedAt;
-                        }
-                    })
-                    .filter((agreedAt) => {
-                        return !!agreedAt;
-                    })[0] || null;
+        return policies.reduce<Array<PolicyAgreement>>(
+            (policyAgreements, { id, title, versions }) => {
+                versions.forEach((policyVersion) => {
+                    const document =
+                        'document' in policyVersion
+                            ? policyVersion.document
+                            : null;
+                    const url =
+                        'url' in policyVersion ? policyVersion.url : null;
+                    const { version, begin, end } = policyVersion;
+                    // Simply gets the agreement time, if present for this user in their
+                    // "policyids" list.
+                    const agreedAt =
+                        userPolicyAgreements
+                            .map(
+                                ({
+                                    id: idAgreed,
+                                    version: versionAgreed,
+                                    agreedAt,
+                                }) => {
+                                    if (
+                                        idAgreed === id &&
+                                        versionAgreed === version
+                                    ) {
+                                        return agreedAt;
+                                    }
+                                },
+                            )
+                            .filter((agreedAt) => {
+                                return !!agreedAt;
+                            })[0] || null;
 
-                // Similar to above, but this is a boolean indicating whether the
-                // previous version of the current agreement was agreed to. This is used
-                // to differentiate between a totally new policy and a policy which has
-                // been updated.
-                // TODO: THIS IS WRONG! Fix!
-                const previouslyAgreedTo = userPolicyAgreements
-                    .some(({id: idAgreed, version: versionAgreed}) => {
-                        return (id == idAgreed && version == versionAgreed + 1);
+                    // Similar to above, but this is a boolean indicating whether the
+                    // previous version of the current agreement was agreed to. This is used
+                    // to differentiate between a totally new policy and a policy which has
+                    // been updated.
+                    // TODO: THIS IS WRONG! Fix!
+                    const previouslyAgreedTo = userPolicyAgreements.some(
+                        ({ id: idAgreed, version: versionAgreed }) => {
+                            return (
+                                id == idAgreed && version == versionAgreed + 1
+                            );
+                        },
+                    );
+
+                    const expiredAt = end ? new Date(end) : null;
+
+                    const [status, statusSort]: [
+                        PolicyAgreementStatus,
+                        number,
+                    ] = (() => {
+                        if (expiredAt) {
+                            if (expiredAt.getTime() <= now) {
+                                // We don't care whether it was agreed to or not.
+                                return ['expired', 3];
+                            }
+                            // otherwise, this agreement version has not yet expired and is
+                            // still effective.
+                        }
+                        if (agreedAt) {
+                            return ['current', 2];
+                        }
+                        return [previouslyAgreedTo ? 'updated' : 'new', 1];
+                    })();
+
+                    policyAgreements.push({
+                        id,
+                        version,
+                        title,
+                        publishedAt: new Date(begin),
+                        expiredAt,
+                        agreedAt,
+                        status,
+                        statusSort,
+                        document,
+                        url,
                     });
-
-                const expiredAt = end ? new Date(end) : null;
-
-                const [status, statusSort]: [PolicyAgreementStatus, number] = (() => {
-                    if (expiredAt) {
-                        if (expiredAt.getTime() <= now) {
-                            // We don't care whether it was agreed to or not.
-                            return ['expired', 3];
-                        }
-                        // otherwise, this agreement version has not yet expired and is
-                        // still effective.
-                    }
-                    if (agreedAt) {
-                        return ['current', 2];
-                    }
-                    return [previouslyAgreedTo ? 'updated' : 'new', 1];
-                })();
-
-                policyAgreements.push({
-                    id, version, title, publishedAt: new Date(begin), expiredAt, agreedAt, status, statusSort,  document, url
                 });
-            });
-            return policyAgreements;
-        }, []);
+                return policyAgreements;
+            },
+            [],
+        );
     }
 
     /**
@@ -285,9 +319,8 @@ export default class PolicyAndAgreement {
      * @returns
      */
     getNewPolicies() {
-        return this.policyAgreements
-            .filter(({status}) => {
-                return ['new', 'updated'].includes(status);
-            });
+        return this.policyAgreements.filter(({ status }) => {
+            return ['new', 'updated'].includes(status);
+        });
     }
 }

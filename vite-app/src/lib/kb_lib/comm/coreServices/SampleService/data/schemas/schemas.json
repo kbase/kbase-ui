@@ -8,9 +8,7 @@
         },
         "title": "Biome",
         "description": "Biome from ENVO (child of ENVO:00000428)",
-        "examples": [
-            "FENVO:01001831"
-        ],
+        "examples": ["FENVO:01001831"],
         "type": "string",
         "format": "ontology-term",
         "ancestorTerm": "ENVO:00000428",
@@ -25,9 +23,7 @@
         },
         "title": "City/Township",
         "description": "City or Township where the sample was collected",
-        "examples": [
-            "Palisades"
-        ],
+        "examples": ["Palisades"],
         "type": "string"
     },
     {
@@ -39,9 +35,7 @@
         },
         "title": "Collection time",
         "description": "Date amd time when the sample was collected in ISO 8601 format",
-        "examples": [
-            "2021-04-28T09:10:23-07:00"
-        ],
+        "examples": ["2021-04-28T09:10:23-07:00"],
         "type": "string"
     },
     {
@@ -53,9 +47,7 @@
         },
         "title": "Comment",
         "description": "Free form Comment",
-        "examples": [
-            "TODO"
-        ],
+        "examples": ["TODO"],
         "type": "string"
     },
     {
@@ -67,9 +59,7 @@
         },
         "title": "Continent",
         "description": "Continent",
-        "examples": [
-            "North America"
-        ],
+        "examples": ["North America"],
         "type": "string"
     },
     {
@@ -81,9 +71,7 @@
         },
         "title": "Country",
         "description": "Country",
-        "examples": [
-            "United States"
-        ],
+        "examples": ["United States"],
         "type": "string"
     },
     {
@@ -95,9 +83,7 @@
         },
         "title": "County",
         "description": "County",
-        "examples": [
-            "Alameda"
-        ],
+        "examples": ["Alameda"],
         "type": "string"
     },
     {
@@ -110,9 +96,7 @@
         },
         "title": "Depth",
         "description": "depth in meters below ground surface (m BGS)",
-        "examples": [
-            5
-        ],
+        "examples": [5],
         "type": "number"
     },
     {
@@ -124,9 +108,7 @@
         },
         "title": "Description",
         "description": "Free text to describe features of a sample such as its components, texture, color, shape, etc.",
-        "examples": [
-            "dredge with 50 pieces of basalt and mud"
-        ],
+        "examples": ["dredge with 50 pieces of basalt and mud"],
         "type": "string"
     },
     {
@@ -141,10 +123,7 @@
         },
         "title": "Elevation",
         "description": "Elevation at which a sample was collected. Use negative values for depth below sea level. Minimum elevation if a range is provided for the elevation/depth below sea level.",
-        "examples": [
-            678.5,
-            -4536
-        ],
+        "examples": [678.5, -4536],
         "type": "number"
     },
     {
@@ -159,10 +138,7 @@
         },
         "title": "Elevation End",
         "description": "End elevation at which a sample was collected. Use negative values for depth below sea level. Minimum elevation if a range is provided for the elevation/depth below sea level.",
-        "examples": [
-            673.5,
-            -4520
-        ],
+        "examples": [673.5, -4520],
         "type": "number"
     },
     {
@@ -175,9 +151,7 @@
         },
         "title": "AODC",
         "description": "units in cells per gram",
-        "examples": [
-            200456.8368
-        ],
+        "examples": [200456.8368],
         "type": "number",
         "minimum": 0
     },
@@ -190,12 +164,7 @@
         },
         "title": "Aquifer",
         "description": "Aquifer",
-        "examples": [
-            "B",
-            "wB",
-            "U/wB",
-            "wB"
-        ],
+        "examples": ["B", "wB", "U/wB", "wB"],
         "type": "string"
     },
     {
@@ -207,11 +176,7 @@
         },
         "title": "Area Name",
         "description": "Area Name",
-        "examples": [
-            "Area 2",
-            "Background A",
-            "Area 4"
-        ],
+        "examples": ["Area 2", "Background A", "Area 4"],
         "type": "string"
     },
     {
@@ -224,9 +189,7 @@
         },
         "title": "Average Water Level",
         "description": "units in ft above mean sea level (ft AMSL)",
-        "examples": [
-            1006.01
-        ],
+        "examples": [1006.01],
         "type": "number"
     },
     {
@@ -239,9 +202,7 @@
         },
         "title": "Biomass Carbon",
         "description": "units in milligrams per gram",
-        "examples": [
-            0.98
-        ],
+        "examples": [0.98],
         "type": "number",
         "minimum": 0
     },
@@ -255,9 +216,7 @@
         },
         "title": "BONCAT Activity",
         "description": "units in cells per gram",
-        "examples": [
-            1270000
-        ],
+        "examples": [1270000],
         "type": "number",
         "minimum": 0
     },
@@ -271,9 +230,7 @@
         },
         "title": "Boring depth",
         "description": "boring depth in ft below groud surface (ft BGS)",
-        "examples": [
-            50.25
-        ],
+        "examples": [50.25],
         "type": "number",
         "minimum": 0
     },
@@ -287,9 +244,7 @@
         },
         "title": "Boring Diameter",
         "description": "boring diameter in inches",
-        "examples": [
-            8
-        ],
+        "examples": [8],
         "type": "number",
         "minimum": 0
     },
@@ -302,10 +257,7 @@
         },
         "title": "Boring Refusal",
         "description": "Boring Refusal (Y/N)",
-        "examples": [
-            "Y",
-            "N"
-        ],
+        "examples": ["Y", "N"],
         "type": "string"
     },
     {
@@ -317,9 +269,7 @@
         },
         "title": "Collection time",
         "description": "Collection Time",
-        "examples": [
-            "9:39:00 AM"
-        ],
+        "examples": ["9:39:00 AM"],
         "type": "string"
     },
     {
@@ -331,9 +281,7 @@
         },
         "title": "Condition",
         "description": "Condition",
-        "examples": [
-            "Open"
-        ],
+        "examples": ["Open"],
         "type": "string"
     },
     {
@@ -346,9 +294,7 @@
         },
         "title": "Conductivity",
         "description": "conductivity in millisiemens per centimeter",
-        "examples": [
-            802.65
-        ],
+        "examples": [802.65],
         "type": "number"
     },
     {
@@ -360,9 +306,7 @@
         },
         "title": "DAPI Cell Count",
         "description": "DAPI cell count in cells per gram",
-        "examples": [
-            9690000
-        ],
+        "examples": [9690000],
         "type": "number"
     },
     {
@@ -374,9 +318,7 @@
         },
         "title": "Date",
         "description": "Date (YYYY-MM-DD)",
-        "examples": [
-            "2019-06-18"
-        ],
+        "examples": ["2019-06-18"],
         "type": "string"
     },
     {
@@ -389,9 +331,7 @@
         },
         "title": "DNA Picogreen Total",
         "description": "units in nanograms",
-        "examples": [
-            228.6658163
-        ],
+        "examples": [228.6658163],
         "type": "number"
     },
     {
@@ -404,9 +344,7 @@
         },
         "title": "Drive Casing End Depth",
         "description": "drive casing end depth in ft below ground surface (ft BGS)",
-        "examples": [
-            27
-        ],
+        "examples": [27],
         "type": "number"
     },
     {
@@ -419,9 +357,7 @@
         },
         "title": "Drive Casing ID",
         "description": "drive casing inner diameter in inches",
-        "examples": [
-            2.625
-        ],
+        "examples": [2.625],
         "type": "number",
         "minimum": 0
     },
@@ -435,9 +371,7 @@
         },
         "title": "Drive Casing OD",
         "description": "drive casing outer diameter in inches",
-        "examples": [
-            3.25
-        ],
+        "examples": [3.25],
         "type": "number",
         "minimum": 0
     },
@@ -451,9 +385,7 @@
         },
         "title": "Drive Casing Start Depth",
         "description": "units in ft below ground surface (ft BGS)",
-        "examples": [
-            10
-        ],
+        "examples": [10],
         "type": "number"
     },
     {
@@ -465,9 +397,7 @@
         },
         "title": "Drive Casing Type",
         "description": "Drive Casing Type",
-        "examples": [
-            "GP DT-32"
-        ],
+        "examples": ["GP DT-32"],
         "type": "string"
     },
     {
@@ -479,9 +409,7 @@
         },
         "title": "Experiment Name",
         "description": "Experiment Name",
-        "examples": [
-            "100 Well"
-        ],
+        "examples": ["100 Well"],
         "type": "string"
     },
     {
@@ -494,10 +422,7 @@
         },
         "title": "Filter",
         "description": "Filter pore size in microns",
-        "examples": [
-            "2",
-            "10"
-        ],
+        "examples": ["2", "10"],
         "type": "number",
         "minimum": 0
     },
@@ -510,11 +435,7 @@
         },
         "title": "Fraction",
         "description": "Fraction",
-        "examples": [
-            "Spin Down",
-            "Total Cells",
-            ".2um"
-        ],
+        "examples": ["Spin Down", "Total Cells", ".2um"],
         "type": "string"
     },
     {
@@ -526,9 +447,7 @@
         },
         "title": "Fractures/Cavities/WaterBreaks",
         "description": "Fractures/Cavities/WaterBreaks",
-        "examples": [
-            "WB @ 14, 41"
-        ],
+        "examples": ["WB @ 14, 41"],
         "type": "string"
     },
     {
@@ -540,10 +459,7 @@
         },
         "title": "Functional Area",
         "description": "Functional Area",
-        "examples": [
-            "S-3 Site",
-            "New Hope Pond"
-        ],
+        "examples": ["S-3 Site", "New Hope Pond"],
         "type": "string"
     },
     {
@@ -555,10 +471,7 @@
         },
         "title": "Geological Zone",
         "description": "Geological Zone",
-        "examples": [
-            "Saturated",
-            "Vadose"
-        ],
+        "examples": ["Saturated", "Vadose"],
         "type": "string"
     },
     {
@@ -571,9 +484,7 @@
         },
         "title": "Ground Elevation",
         "description": "ground elevation in ft above mean sea level (ft AMSL)",
-        "examples": [
-            1004.62
-        ],
+        "examples": [1004.62],
         "type": "number"
     },
     {
@@ -585,11 +496,7 @@
         },
         "title": "Installation Method",
         "description": "Method of installation",
-        "examples": [
-            "CORE",
-            "AUGER",
-            "MANUAL"
-        ],
+        "examples": ["CORE", "AUGER", "MANUAL"],
         "type": "string"
     },
     {
@@ -601,9 +508,7 @@
         },
         "title": "Leucine Activity (ngC/day cell)",
         "description": "units in ngC/day cell",
-        "examples": [
-            0.000576856
-        ],
+        "examples": [0.000576856],
         "type": "number"
     },
     {
@@ -616,9 +521,7 @@
         },
         "title": "Lower Seal End Depth",
         "description": "Lower seal end depth in ft below ground surface (ft BGS)",
-        "examples": [
-            22.1
-        ],
+        "examples": [22.1],
         "type": "number"
     },
     {
@@ -631,9 +534,7 @@
         },
         "title": "Lower Seal Start Depth",
         "description": "Lower seal start depth in ft below ground surface (ft BGS)",
-        "examples": [
-            20.25
-        ],
+        "examples": [20.25],
         "type": "number"
     },
     {
@@ -645,10 +546,7 @@
         },
         "title": "Lower Seal Type",
         "description": "Lower Seal Type (BENT; BENT-PEL)",
-        "examples": [
-            "BENT-PEL",
-            "BENT"
-        ],
+        "examples": ["BENT-PEL", "BENT"],
         "type": "string"
     },
     {
@@ -660,10 +558,7 @@
         },
         "title": "Maturation Time",
         "description": "Maturation Time",
-        "examples": [
-            "24hr",
-            "72hr"
-        ],
+        "examples": ["24hr", "72hr"],
         "type": "string"
     },
     {
@@ -676,9 +571,7 @@
         },
         "title": "Max Water Level",
         "description": "Maximum water level in ft above mean sea level (ft AMSL)",
-        "examples": [
-            1008.41
-        ],
+        "examples": [1008.41],
         "type": "number"
     },
     {
@@ -690,11 +583,7 @@
         },
         "title": "Method",
         "description": "Method",
-        "examples": [
-            "BONCAT",
-            "PMA",
-            "No PMA"
-        ],
+        "examples": ["BONCAT", "PMA", "No PMA"],
         "type": "string"
     },
     {
@@ -707,9 +596,7 @@
         },
         "title": "Min Water Level",
         "description": "Minimum water level in ft above mean sea level (ft AMSL)",
-        "examples": [
-            1002.99
-        ],
+        "examples": [1002.99],
         "type": "number"
     },
     {
@@ -722,9 +609,7 @@
         },
         "title": "Moisture",
         "description": "percent moisture",
-        "examples": [
-            11.26
-        ],
+        "examples": [11.26],
         "type": "number",
         "minimum": 0,
         "maximum": 100
@@ -738,10 +623,7 @@
         },
         "title": "Open",
         "description": "Open (yes/no)",
-        "examples": [
-            "yes",
-            "no"
-        ],
+        "examples": ["yes", "no"],
         "type": "string"
     },
     {
@@ -754,9 +636,7 @@
         },
         "title": "Open Casing Depth",
         "description": "Open casing depth in ft below ground surface (ft BGS)",
-        "examples": [
-            92
-        ],
+        "examples": [92],
         "type": "number"
     },
     {
@@ -769,9 +649,7 @@
         },
         "title": "Open Casing ID",
         "description": "open casing inner diameter in inches (in)",
-        "examples": [
-            6.12
-        ],
+        "examples": [6.12],
         "type": "number",
         "minimum": 0
     },
@@ -785,9 +663,7 @@
         },
         "title": "Open Casing OD",
         "description": "open casing outer diameter in inches (in)",
-        "examples": [
-            6.62
-        ],
+        "examples": [6.62],
         "type": "number",
         "minimum": 0
     },
@@ -800,10 +676,7 @@
         },
         "title": "Open Casing Type",
         "description": "Open Casing Type (SF25; STL)",
-        "examples": [
-            "SF25",
-            "STL"
-        ],
+        "examples": ["SF25", "STL"],
         "type": "string"
     },
     {
@@ -816,9 +689,7 @@
         },
         "title": "Open Hole Depth",
         "description": "Open hole depth in ft below ground surface (ft BGS)",
-        "examples": [
-            92
-        ],
+        "examples": [92],
         "type": "number"
     },
     {
@@ -831,9 +702,7 @@
         },
         "title": "Open Hole Diameter",
         "description": "Open hole diameter in inches",
-        "examples": [
-            10
-        ],
+        "examples": [10],
         "type": "number",
         "minimum": 0
     },
@@ -847,9 +716,7 @@
         },
         "title": "Open Interval Diameter",
         "description": "Open interval diameter in inches",
-        "examples": [
-            6
-        ],
+        "examples": [6],
         "type": "number",
         "minimum": 0
     },
@@ -863,9 +730,7 @@
         },
         "title": "Open Interval End Depth",
         "description": "Open interval end depth in ft below ground surface (ft BGS)",
-        "examples": [
-            125
-        ],
+        "examples": [125],
         "type": "number"
     },
     {
@@ -878,9 +743,7 @@
         },
         "title": "Open Interval Start Depth",
         "description": "Open interval start depth in ft below ground surface (ft BGS)",
-        "examples": [
-            92
-        ],
+        "examples": [92],
         "type": "number"
     },
     {
@@ -893,9 +756,7 @@
         },
         "title": "Organic Carbon",
         "description": "Organic carbon in milligrams per gram dry weight",
-        "examples": [
-            0.532
-        ],
+        "examples": [0.532],
         "type": "number",
         "minimum": 0
     },
@@ -908,9 +769,7 @@
         },
         "title": "Origination or Plug/Abandon",
         "description": "Origination or Plug/Abandon (Date)",
-        "examples": [
-            "02/06/92"
-        ],
+        "examples": ["02/06/92"],
         "type": "string"
     },
     {
@@ -923,9 +782,7 @@
         },
         "title": "Packing Depth End",
         "description": "Packind depth end in ft below ground surface (ft BGS)",
-        "examples": [
-            17.5
-        ],
+        "examples": [17.5],
         "type": "number"
     },
     {
@@ -938,9 +795,7 @@
         },
         "title": "Packing Depth Start",
         "description": "Packind depth start in ft below ground surface (ft BGS)",
-        "examples": [
-            15.08
-        ],
+        "examples": [15.08],
         "type": "number"
     },
     {
@@ -952,10 +807,7 @@
         },
         "title": "Packing Type",
         "description": "Packing Type (e.g. SAND; SAND-2)",
-        "examples": [
-            "SAND",
-            "SAND-2"
-        ],
+        "examples": ["SAND", "SAND-2"],
         "type": "string"
     },
     {
@@ -968,9 +820,7 @@
         },
         "title": "Pore Water Extraction",
         "description": "Pore water extraction in microliters",
-        "examples": [
-            200
-        ],
+        "examples": [200],
         "type": "number"
     },
     {
@@ -982,9 +832,7 @@
         },
         "title": "Recovery Factor",
         "description": "Recovery Factor",
-        "examples": [
-            1.57
-        ],
+        "examples": [1.57],
         "type": "number"
     },
     {
@@ -996,9 +844,7 @@
         },
         "title": "Redox Potential",
         "description": "Redox Potential",
-        "examples": [
-            421.5
-        ],
+        "examples": [421.5],
         "type": "number"
     },
     {
@@ -1010,12 +856,7 @@
         },
         "title": "Replicate",
         "description": "Replicate",
-        "examples": [
-            "A1",
-            "A2",
-            "B1",
-            "C"
-        ],
+        "examples": ["A1", "A2", "B1", "C"],
         "type": "string"
     },
     {
@@ -1043,9 +884,7 @@
         },
         "title": "Screen Bottom Elevation",
         "description": "Screen bottom elevation in ft above mean sea level (ft AMSL)",
-        "examples": [
-            985.27
-        ],
+        "examples": [985.27],
         "type": "number"
     },
     {
@@ -1058,9 +897,7 @@
         },
         "title": "Screen End Depth",
         "description": "Screen end depth in ft below ground surface (ft BGS)",
-        "examples": [
-            14.39
-        ],
+        "examples": [14.39],
         "type": "number"
     },
     {
@@ -1073,9 +910,7 @@
         },
         "title": "Screen Start Depth",
         "description": "Screen start depth in ft below ground surface (ft BGS)",
-        "examples": [
-            14.14
-        ],
+        "examples": [14.14],
         "type": "number"
     },
     {
@@ -1088,9 +923,7 @@
         },
         "title": "Screen Top Elevation",
         "description": "Screen top elevation in ft above mean sea level (ft AMSL)",
-        "examples": [
-            "985.52:was"
-        ],
+        "examples": ["985.52:was"],
         "type": "number"
     },
     {
@@ -1102,9 +935,7 @@
         },
         "title": "Screen Type",
         "description": "Screen Type",
-        "examples": [
-            "PP/.02"
-        ],
+        "examples": ["PP/.02"],
         "type": "string"
     },
     {
@@ -1116,10 +947,7 @@
         },
         "title": "Screened",
         "description": "Screened (yes/no)",
-        "examples": [
-            "yes",
-            "no"
-        ],
+        "examples": ["yes", "no"],
         "type": "string"
     },
     {
@@ -1132,9 +960,7 @@
         },
         "title": "Screened Interval",
         "description": "Screened interval in ft",
-        "examples": [
-            0.25
-        ],
+        "examples": [0.25],
         "type": "number"
     },
     {
@@ -1146,9 +972,7 @@
         },
         "title": "Time Zone",
         "description": "Time Zone (relative to UTC)",
-        "examples": [
-            "UTC-4"
-        ],
+        "examples": ["UTC-4"],
         "type": "string"
     },
     {
@@ -1161,9 +985,7 @@
         },
         "title": "Top of Casing Elevation",
         "description": "Top of casing elevation in ft above mean sea level (ft AMSL)",
-        "examples": [
-            1000.9076
-        ],
+        "examples": [1000.9076],
         "type": "number"
     },
     {
@@ -1176,9 +998,7 @@
         },
         "title": "Top of Casing Stickup",
         "description": "Top of casing stickup in ft",
-        "examples": [
-            1.84
-        ],
+        "examples": [1.84],
         "type": "number"
     },
     {
@@ -1191,9 +1011,7 @@
         },
         "title": "Top of Fresh Bedrock",
         "description": "Top of fresh bedrock in ft below ground surface (ft BGS)",
-        "examples": [
-            6.4
-        ],
+        "examples": [6.4],
         "type": "number"
     },
     {
@@ -1206,9 +1024,7 @@
         },
         "title": "Top of Weathered Bedrock",
         "description": "Top of weathered bedrock in ft below ground surface (ft BGS)",
-        "examples": [
-            8
-        ],
+        "examples": [8],
         "type": "number"
     },
     {
@@ -1221,9 +1037,7 @@
         },
         "title": "Total Carbon",
         "description": "Total carbon in milligrams per gram dry weight",
-        "examples": [
-            0.3689
-        ],
+        "examples": [0.3689],
         "type": "number",
         "minimum": 0
     },
@@ -1237,9 +1051,7 @@
         },
         "title": "Total Nitrogen",
         "description": "Total nitrogen in milligrams per gram dry weight",
-        "examples": [
-            0.0572
-        ],
+        "examples": [0.0572],
         "type": "number",
         "minimum": 0
     },
@@ -1252,10 +1064,7 @@
         },
         "title": "Treatment",
         "description": "Treatment",
-        "examples": [
-            "HPG",
-            "No HPG"
-        ],
+        "examples": ["HPG", "No HPG"],
         "type": "string"
     },
     {
@@ -1268,9 +1077,7 @@
         },
         "title": "Upper Seal End Depth",
         "description": "Upper seal end depth in ft below ground surface (ft BGS)",
-        "examples": [
-            12
-        ],
+        "examples": [12],
         "type": "number"
     },
     {
@@ -1283,9 +1090,7 @@
         },
         "title": "Upper Seal Start Depth",
         "description": "Upper seal start depth in ft below ground surface (ft BGS)",
-        "examples": [
-            10
-        ],
+        "examples": [10],
         "type": "number"
     },
     {
@@ -1297,10 +1102,7 @@
         },
         "title": "Upper Seal Type",
         "description": "Upper Seal Type",
-        "examples": [
-            "BENT",
-            "BENT-PEL"
-        ],
+        "examples": ["BENT", "BENT-PEL"],
         "type": "string"
     },
     {
@@ -1313,9 +1115,7 @@
         },
         "title": "Well Casing Depth",
         "description": "Well casing depth in ft below ground surface (ft BGS)",
-        "examples": [
-            45.25
-        ],
+        "examples": [45.25],
         "type": "number"
     },
     {
@@ -1328,9 +1128,7 @@
         },
         "title": "Well Casing ID",
         "description": "Well casing inner diameter. units in inches",
-        "examples": [
-            3.975
-        ],
+        "examples": [3.975],
         "type": "number",
         "minimum": 0
     },
@@ -1344,9 +1142,7 @@
         },
         "title": "Well Casing OD",
         "description": "Well casing outer diameter. units in inches",
-        "examples": [
-            4.5
-        ],
+        "examples": [4.5],
         "type": "number",
         "minimum": 0
     },
@@ -1359,10 +1155,7 @@
         },
         "title": "Well Casing Type",
         "description": "Well Casing Type",
-        "examples": [
-            "SP",
-            "MP"
-        ],
+        "examples": ["SP", "MP"],
         "type": "string"
     },
     {
@@ -1374,10 +1167,7 @@
         },
         "title": "Well Name",
         "description": "Well Name (ID)",
-        "examples": [
-            "GW085",
-            "GW098"
-        ],
+        "examples": ["GW085", "GW098"],
         "type": "string"
     },
     {
@@ -1389,10 +1179,7 @@
         },
         "title": "Well Status",
         "description": "Status of Well",
-        "examples": [
-            "Active",
-            "Inactive"
-        ],
+        "examples": ["Active", "Inactive"],
         "type": "string"
     },
     {
@@ -1404,10 +1191,7 @@
         },
         "title": "Type of Well",
         "description": "Type of Welll (SP; MP)",
-        "examples": [
-            "SP",
-            "MP"
-        ],
+        "examples": ["SP", "MP"],
         "type": "string"
     },
     {
@@ -1419,10 +1203,7 @@
         },
         "title": "Environmental Package",
         "description": "Environmental Package (MIxS vocabulary)",
-        "examples": [
-            "Water",
-            "Soil"
-        ],
+        "examples": ["Water", "Soil"],
         "type": "string"
     },
     {
@@ -1434,9 +1215,7 @@
         },
         "title": "Feature",
         "description": "Feature from ENVO (child of ENVO:01000813)",
-        "examples": [
-            "ENVO:00000314"
-        ],
+        "examples": ["ENVO:00000314"],
         "type": "string",
         "format": "ontology-term",
         "ancestorTerm": "ENVO:01000813",
@@ -1451,9 +1230,7 @@
         },
         "title": "Ecosystem Type",
         "description": "GOLD biosample identifier",
-        "examples": [
-            "Gb0291112"
-        ],
+        "examples": ["Gb0291112"],
         "type": "string"
     },
     {
@@ -1465,9 +1242,7 @@
         },
         "title": "Community",
         "description": "Community Sampled",
-        "examples": [
-            "microbial communities"
-        ],
+        "examples": ["microbial communities"],
         "type": "string"
     },
     {
@@ -1479,9 +1254,7 @@
         },
         "title": "Ecosystem (GOLD)",
         "description": "Ecosystem (GOLD)",
-        "examples": [
-            "Environmental"
-        ],
+        "examples": ["Environmental"],
         "type": "string"
     },
     {
@@ -1493,9 +1266,7 @@
         },
         "title": "Ecosystem Category",
         "description": "Ecosystem Category (GOLD)",
-        "examples": [
-            "Aquatic"
-        ],
+        "examples": ["Aquatic"],
         "type": "string"
     },
     {
@@ -1507,9 +1278,7 @@
         },
         "title": "Ecosystem Path ID",
         "description": "Ecosystem Path ID (GOLD)",
-        "examples": [
-            3948
-        ],
+        "examples": [3948],
         "type": "string"
     },
     {
@@ -1521,9 +1290,7 @@
         },
         "title": "Ecosystem Subtype",
         "description": "Ecosystem Subtype (GOLD)",
-        "examples": [
-            "Lake"
-        ],
+        "examples": ["Lake"],
         "type": "string"
     },
     {
@@ -1535,9 +1302,7 @@
         },
         "title": "Ecosystem Type",
         "description": "Ecosystem Type (GOLD)",
-        "examples": [
-            "Freshwater"
-        ],
+        "examples": ["Freshwater"],
         "type": "string"
     },
     {
@@ -1549,9 +1314,7 @@
         },
         "title": "Habitat",
         "description": "Sample Habitat (MIGS-6)",
-        "examples": [
-            "Lake sediment"
-        ],
+        "examples": ["Lake sediment"],
         "type": "string"
     },
     {
@@ -1563,9 +1326,7 @@
         },
         "title": "Specific Ecosystem Term",
         "description": "Specific Ecosystem (GOLD)",
-        "examples": [
-            "Sediment"
-        ],
+        "examples": ["Sediment"],
         "type": "string"
     },
     {
@@ -1577,9 +1338,7 @@
         },
         "title": "GOLD study identifier",
         "description": "GOLD study identifier",
-        "examples": [
-            "Gs0131983"
-        ],
+        "examples": ["Gs0131983"],
         "type": "string"
     },
     {
@@ -1596,9 +1355,7 @@
         },
         "title": "Latitude",
         "description": "Latitude of the location where the sample was collected in WGS 84 coordinate system. ('Start latitude' for linear sampling features such as dredges.) Needs to be entered in decimal degrees. Negative values for South latitudes.",
-        "examples": [
-            5.89634
-        ],
+        "examples": [5.89634],
         "type": "number",
         "minimum": -90,
         "maximum": 90
@@ -1617,9 +1374,7 @@
         },
         "title": "Latitude End",
         "description": "End latitude of the location where the sample was collected in WGS 84 coordinate system. ('End latitude' for linear sampling features such as dredges.) Needs to be entered in decimal degrees. Negative values for South latitudes.",
-        "examples": [
-            5.89634
-        ],
+        "examples": [5.89634],
         "type": "number",
         "minimum": -90,
         "maximum": 90
@@ -1633,10 +1388,7 @@
         },
         "title": "Locality",
         "description": "Name of the specific place where your sample was collected. This could be the name of a mine, a volcanic field, a vent field, or similar",
-        "examples": [
-            "Franklin Mine",
-            "Craters of the Moon National Park"
-        ],
+        "examples": ["Franklin Mine", "Craters of the Moon National Park"],
         "type": "string"
     },
     {
@@ -1648,9 +1400,7 @@
         },
         "title": "Locality description",
         "description": "Additional information about the specific place where your sample was collected",
-        "examples": [
-            "on private land"
-        ],
+        "examples": ["on private land"],
         "type": "string"
     },
     {
@@ -1662,9 +1412,7 @@
         },
         "title": "Location description",
         "description": "Free text description of the location",
-        "examples": [
-            "flank of volcanic cone"
-        ],
+        "examples": ["flank of volcanic cone"],
         "type": "string"
     },
     {
@@ -1681,9 +1429,7 @@
         },
         "title": "Longitude",
         "description": "Longitude of the location where the sample was collected in WGS 84 cooridinate system. ('Start longitude' for linear sampling features such as dredges.) Needs to be entered in decimal degrees. Negative values for 'West' longitudes.",
-        "examples": [
-            -103.785
-        ],
+        "examples": [-103.785],
         "type": "number",
         "minimum": -180,
         "maximum": 180
@@ -1702,9 +1448,7 @@
         },
         "title": "Longitude End",
         "description": "End longitude of the location where the sample was collected in WGS 84 cooridinate system. Needs to be entered in decimal degrees. Negative values for 'West' longitudes.",
-        "examples": [
-            -103.285
-        ],
+        "examples": [-103.285],
         "type": "number",
         "minimum": -180,
         "maximum": 180
@@ -1718,9 +1462,7 @@
         },
         "title": "Material",
         "description": "Material from ENVO (child of ENVO:00010483)",
-        "examples": [
-            "ENVO:01001614"
-        ],
+        "examples": ["ENVO:01001614"],
         "type": "string",
         "format": "ontology-term",
         "ancestorTerm": "ENVO:00010483",
@@ -1735,9 +1477,7 @@
         },
         "title": "Modification Date",
         "description": "Modification date",
-        "examples": [
-            "01-OCT-19 11.32.17.481000000 AM"
-        ],
+        "examples": ["01-OCT-19 11.32.17.481000000 AM"],
         "type": "string"
     },
     {
@@ -1749,10 +1489,7 @@
         },
         "title": "Sample Name",
         "description": "name validator",
-        "examples": [
-            "SAM1234",
-            "IEMEG0001"
-        ],
+        "examples": ["SAM1234", "IEMEG0001"],
         "type": "string",
         "maxLength": 240
     },
@@ -1765,9 +1502,7 @@
         },
         "title": "NCBI taxonomy name",
         "description": "NCBI Taxonomy Name",
-        "examples": [
-            "soil metagenome"
-        ],
+        "examples": ["soil metagenome"],
         "type": "string"
     },
     {
@@ -1779,10 +1514,7 @@
         },
         "title": "NMDC OMICS type",
         "description": "NMDC OMICS Type",
-        "examples": [
-            "Metagenome",
-            "Metatranscriptome"
-        ],
+        "examples": ["Metagenome", "Metatranscriptome"],
         "type": "string"
     },
     {
@@ -1794,10 +1526,7 @@
         },
         "title": "Other name(s)",
         "description": "Other name(s) used for the sample.",
-        "examples": [
-            "TRPOW",
-            "T-PROW"
-        ],
+        "examples": ["TRPOW", "T-PROW"],
         "type": "string"
     },
     {
@@ -1810,9 +1539,7 @@
         },
         "title": "pH",
         "description": "pH of sample",
-        "examples": [
-            7
-        ],
+        "examples": [7],
         "type": "number",
         "minimum": -10,
         "maximum": 20
@@ -1826,9 +1553,7 @@
         },
         "title": "Purpose",
         "description": "Purpose of the Sample",
-        "examples": [
-            "Biogeochemistry, geochemistry and microbiology"
-        ],
+        "examples": ["Biogeochemistry, geochemistry and microbiology"],
         "type": "string"
     },
     {
@@ -1840,11 +1565,7 @@
         },
         "title": "Template",
         "description": "Template Format",
-        "examples": [
-            "SESAR",
-            "ENIGMA",
-            "KBASE"
-        ],
+        "examples": ["SESAR", "ENIGMA", "KBASE"],
         "type": "string"
     },
     {
@@ -1857,9 +1578,7 @@
         },
         "title": "Age (max)",
         "description": "Maximum geological age in years",
-        "examples": [
-            4.6
-        ],
+        "examples": [4.6],
         "type": "number",
         "minimum": 0
     },
@@ -1873,9 +1592,7 @@
         },
         "title": "Age (min)",
         "description": "minimum geological age in years",
-        "examples": [
-            4.2
-        ],
+        "examples": [4.2],
         "type": "number",
         "minimum": 0
     },
@@ -1888,9 +1605,7 @@
         },
         "title": "Age Unit",
         "description": "Unit for the age provided",
-        "examples": [
-            "Ma"
-        ],
+        "examples": ["Ma"],
         "type": "string"
     },
     {
@@ -1902,9 +1617,7 @@
         },
         "title": "Current archive contact",
         "description": "Address and/or email of the person who should be contacted for information about or access to the sample.",
-        "examples": [
-            "curator@ldeo.columbia.edu"
-        ],
+        "examples": ["curator@ldeo.columbia.edu"],
         "type": "string"
     },
     {
@@ -1916,9 +1629,7 @@
         },
         "title": "Original archive contact",
         "description": "Address and/or email of the person who should be contacted for information about the sample's original archive.",
-        "examples": [
-            "curator@ldeo.columbia.edu"
-        ],
+        "examples": ["curator@ldeo.columbia.edu"],
         "type": "string"
     },
     {
@@ -1930,10 +1641,7 @@
         },
         "title": "Current archive",
         "description": "Name of institution, museum, or repository where the sample is currently stored.",
-        "examples": [
-            "Lamont Deep Sea Core Repository",
-            "Palisades, NY"
-        ],
+        "examples": ["Lamont Deep Sea Core Repository", "Palisades, NY"],
         "type": "string"
     },
     {
@@ -1945,10 +1653,7 @@
         },
         "title": "Original archive",
         "description": "Name of institution, museum, or repository where the sample is originally stored.",
-        "examples": [
-            "Lamont Deep Sea Core Repository",
-            "Palisades, NY"
-        ],
+        "examples": ["Lamont Deep Sea Core Repository", "Palisades, NY"],
         "type": "string"
     },
     {
@@ -1960,10 +1665,7 @@
         },
         "title": "Classification",
         "description": "Taxonomy (formal classification) Formal categorization of sample.",
-        "examples": [
-            "Igneous>Plutonic>Felsic",
-            "Plagioclase"
-        ],
+        "examples": ["Igneous>Plutonic>Felsic", "Plagioclase"],
         "type": "string"
     },
     {
@@ -1975,9 +1677,7 @@
         },
         "title": "Classification Comment",
         "description": "Classification Comment",
-        "examples": [
-            "TODO"
-        ],
+        "examples": ["TODO"],
         "type": "string"
     },
     {
@@ -1989,9 +1689,7 @@
         },
         "title": "Collection date",
         "description": "Date when the sample was collected.",
-        "examples": [
-            "2015-03-31"
-        ],
+        "examples": ["2015-03-31"],
         "type": "string"
     },
     {
@@ -2003,9 +1701,7 @@
         },
         "title": "Collection date (end)",
         "description": "Date when the sample collection was finished (if a date range is provided).",
-        "examples": [
-            "2015-03-31"
-        ],
+        "examples": ["2015-03-31"],
         "type": "string"
     },
     {
@@ -2017,12 +1713,7 @@
         },
         "title": "Collection date precision",
         "description": "Precision to display the collection date and time.",
-        "examples": [
-            "year",
-            "month",
-            "day",
-            "time"
-        ],
+        "examples": ["year", "month", "day", "time"],
         "type": "string"
     },
     {
@@ -2034,10 +1725,7 @@
         },
         "title": "Collection method",
         "description": "Method by which a sample was collected",
-        "examples": [
-            "Dredging",
-            "Manual"
-        ],
+        "examples": ["Dredging", "Manual"],
         "type": "string"
     },
     {
@@ -2063,9 +1751,7 @@
         },
         "title": "Collection time",
         "description": "Time when the sample was collected.",
-        "examples": [
-            "12:05:03Z"
-        ],
+        "examples": ["12:05:03Z"],
         "type": "string"
     },
     {
@@ -2077,9 +1763,7 @@
         },
         "title": "Collection time (end)",
         "description": "End time when the sample was collected.",
-        "examples": [
-            "13:05:01Z"
-        ],
+        "examples": ["13:05:01Z"],
         "type": "string"
     },
     {
@@ -2091,9 +1775,7 @@
         },
         "title": "Collector/Chief Scientist name",
         "description": "Name of the person who collected the sample. In case of larger field programs, name of chief scientist responsible for sample collection.",
-        "examples": [
-            "Jane Smith"
-        ],
+        "examples": ["Jane Smith"],
         "type": "string"
     },
     {
@@ -2105,9 +1787,7 @@
         },
         "title": "Collector/Chief Scientist address",
         "description": "Institution, address, & email of the collector or chief scientist.",
-        "examples": [
-            "Woods Hole Oceanographic Institution, Woods Hole, MA"
-        ],
+        "examples": ["Woods Hole Oceanographic Institution, Woods Hole, MA"],
         "type": "string"
     },
     {
@@ -2120,9 +1800,7 @@
         },
         "title": "Depth in Core (max)",
         "description": "maximum depth in core in meters",
-        "examples": [
-            0.003
-        ],
+        "examples": [0.003],
         "type": "number"
     },
     {
@@ -2135,9 +1813,7 @@
         },
         "title": "Depth in Core (min)",
         "description": "Minimum depth in core in meters",
-        "examples": [
-            0.001
-        ],
+        "examples": [0.001],
         "type": "number"
     },
     {
@@ -2149,10 +1825,7 @@
         },
         "title": "Depth scale",
         "description": "Unit in which the depth is provided",
-        "examples": [
-            "MBSF",
-            "cm"
-        ],
+        "examples": ["MBSF", "cm"],
         "type": "string"
     },
     {
@@ -2165,9 +1838,7 @@
         },
         "title": "Easting",
         "description": "Easting in meters",
-        "examples": [
-            305294
-        ],
+        "examples": [305294],
         "type": "number"
     },
     {
@@ -2180,10 +1851,7 @@
         },
         "title": "Elevation end",
         "description": "Elevation end in meters",
-        "examples": [
-            "673.5",
-            "-4520"
-        ],
+        "examples": ["673.5", "-4520"],
         "type": "number"
     },
     {
@@ -2196,10 +1864,7 @@
         },
         "title": "Elevation start",
         "description": "Elevation start in meters",
-        "examples": [
-            "678.5",
-            "-4536"
-        ],
+        "examples": ["678.5", "-4536"],
         "type": "number"
     },
     {
@@ -2211,12 +1876,7 @@
         },
         "title": "Elevation Unit",
         "description": "Unit in which elevation start and/or end are provided in.",
-        "examples": [
-            "meters",
-            "feet",
-            "miles",
-            "kilometers"
-        ],
+        "examples": ["meters", "feet", "miles", "kilometers"],
         "type": "string"
     },
     {
@@ -2228,11 +1888,7 @@
         },
         "title": "Field name (informal classification)",
         "description": "Taxonomy (field name) Informal classification of sample.",
-        "examples": [
-            "basalt",
-            "amphibole",
-            "sea water"
-        ],
+        "examples": ["basalt", "amphibole", "sea water"],
         "type": "string"
     },
     {
@@ -2244,9 +1900,7 @@
         },
         "title": "Field program/cruise",
         "description": "Name or identifier of the field program (cruise or expedition), during which the sample was collected.",
-        "examples": [
-            "TN182"
-        ],
+        "examples": ["TN182"],
         "type": "string"
     },
     {
@@ -2258,9 +1912,7 @@
         },
         "title": "Geological Age",
         "description": "Age of a sample as described by the stratigraphic era, period, state, etc.",
-        "examples": [
-            "Cretaceous"
-        ],
+        "examples": ["Cretaceous"],
         "type": "string"
     },
     {
@@ -2272,10 +1924,7 @@
         },
         "title": "Geological Unit",
         "description": "A body of rock established as a distinct entity in the classification of the Earth's rocks, e.g. Supergroup, Group, Formation, or Flow",
-        "examples": [
-            "Coconino Sandstone",
-            "Fig Tree Formation"
-        ],
+        "examples": ["Coconino Sandstone", "Fig Tree Formation"],
         "type": "string"
     },
     {
@@ -2287,9 +1936,7 @@
         },
         "title": "IGSN",
         "description": "IGSN assigned by SESAR",
-        "examples": [
-            "IEMEG0001"
-        ],
+        "examples": ["IEMEG0001"],
         "type": "string"
     },
     {
@@ -2301,10 +1948,7 @@
         },
         "title": "Is Archived",
         "description": "Is Archived",
-        "examples": [
-            "Y",
-            "N"
-        ],
+        "examples": ["Y", "N"],
         "type": "string"
     },
     {
@@ -2316,10 +1960,7 @@
         },
         "title": "Launch ID",
         "description": "Further identifying information about the launch",
-        "examples": [
-            "3969",
-            "J2-434"
-        ],
+        "examples": ["3969", "J2-434"],
         "type": "string"
     },
     {
@@ -2331,10 +1972,7 @@
         },
         "title": "Launch platform name",
         "description": "The name of the launch used to collect the sample.",
-        "examples": [
-            "Alvin",
-            "Jason II"
-        ],
+        "examples": ["Alvin", "Jason II"],
         "type": "string"
     },
     {
@@ -2346,9 +1984,7 @@
         },
         "title": "Launch type",
         "description": "The type of launch used to collect the sample.",
-        "examples": [
-            "HOV"
-        ],
+        "examples": ["HOV"],
         "type": "string"
     },
     {
@@ -2360,10 +1996,7 @@
         },
         "title": "Material (SESAR)",
         "description": "Material that the sample consists of using SESAR vocabulary.",
-        "examples": [
-            "Rock",
-            "Liquid>Aqueous"
-        ],
+        "examples": ["Rock", "Liquid>Aqueous"],
         "type": "string"
     },
     {
@@ -2375,9 +2008,7 @@
         },
         "title": "Navigation type",
         "description": "Navigation type",
-        "examples": [
-            "GPS"
-        ],
+        "examples": ["GPS"],
         "type": "string"
     },
     {
@@ -2390,9 +2021,7 @@
         },
         "title": "Northing",
         "description": "Northing in meters",
-        "examples": [
-            4111279
-        ],
+        "examples": [4111279],
         "type": "number"
     },
     {
@@ -2404,9 +2033,7 @@
         },
         "title": "Parent IGSN",
         "description": "IGSN of Parent Sample",
-        "examples": [
-            "IEMEG0002"
-        ],
+        "examples": ["IEMEG0002"],
         "type": "string"
     },
     {
@@ -2418,10 +2045,7 @@
         },
         "title": "Name of physiographic feature",
         "description": "Name of the physiographic feature that you entered",
-        "examples": [
-            "East Pacific Rise",
-            "Dead Sea"
-        ],
+        "examples": ["East Pacific Rise", "Dead Sea"],
         "type": "string"
     },
     {
@@ -2433,10 +2057,7 @@
         },
         "title": "Primary physiographic feature",
         "description": "Type of physical feature that your sample was collected from (see suggested list)",
-        "examples": [
-            "volcano",
-            "mid-ocean ridge"
-        ],
+        "examples": ["volcano", "mid-ocean ridge"],
         "type": "string"
     },
     {
@@ -2448,9 +2069,7 @@
         },
         "title": "Platform description",
         "description": "Description of platform for the cruise.",
-        "examples": [
-            "TODO"
-        ],
+        "examples": ["TODO"],
         "type": "string"
     },
     {
@@ -2462,9 +2081,7 @@
         },
         "title": "Platform name",
         "description": "Name of platform for the cruise.",
-        "examples": [
-            "R/V Roger Revelle"
-        ],
+        "examples": ["R/V Roger Revelle"],
         "type": "string"
     },
     {
@@ -2476,9 +2093,7 @@
         },
         "title": "Platform type",
         "description": "Type of platform for the cruise.",
-        "examples": [
-            "Ship"
-        ],
+        "examples": ["Ship"],
         "type": "string"
     },
     {
@@ -2490,9 +2105,7 @@
         },
         "title": "Current Registrant Name",
         "description": "Registrant of the sample in SESAR",
-        "examples": [
-            "Jane Smith"
-        ],
+        "examples": ["Jane Smith"],
         "type": "string"
     },
     {
@@ -2504,9 +2117,7 @@
         },
         "title": "Organization Registrant Name",
         "description": "Registrant organization of the sample in SESAR",
-        "examples": [
-            "Jane Smith"
-        ],
+        "examples": ["Jane Smith"],
         "type": "string"
     },
     {
@@ -2518,9 +2129,7 @@
         },
         "title": "Related Identifiers",
         "description": "IGSN of Related Samples",
-        "examples": [
-            "IEMEG0003"
-        ],
+        "examples": ["IEMEG0003"],
         "type": "string"
     },
     {
@@ -2532,9 +2141,7 @@
         },
         "title": "Related URL",
         "description": "Related URL associated with the samples",
-        "examples": [
-            "https://doi.org/10.1594/IEDA/999999"
-        ],
+        "examples": ["https://doi.org/10.1594/IEDA/999999"],
         "type": "string",
         "format": "url"
     },
@@ -2547,9 +2154,7 @@
         },
         "title": "Related URL Description",
         "description": "Free text description of the related URL",
-        "examples": [
-            "DOI for related published data"
-        ],
+        "examples": ["DOI for related published data"],
         "type": "string"
     },
     {
@@ -2561,9 +2166,7 @@
         },
         "title": "Related URL Type",
         "description": "Related URL type. Either DOI or Regular URL",
-        "examples": [
-            "DOI"
-        ],
+        "examples": ["DOI"],
         "type": "string"
     },
     {
@@ -2575,9 +2178,7 @@
         },
         "title": "Relation Type",
         "description": "Relation Type",
-        "examples": [
-            "TODO"
-        ],
+        "examples": ["TODO"],
         "type": "string"
     },
     {
@@ -2589,9 +2190,7 @@
         },
         "title": "Release date",
         "description": "Date when sample metadata is publicly accessible and searchable. If null, defaults to date of registration (recommended).",
-        "examples": [
-            "2018-03-15"
-        ],
+        "examples": ["2018-03-15"],
         "type": "string"
     },
     {
@@ -2603,9 +2202,7 @@
         },
         "title": "Sample Type",
         "description": "Sample Type",
-        "examples": [
-            "Core, Core Section"
-        ],
+        "examples": ["Core, Core Section"],
         "type": "string"
     },
     {
@@ -2617,10 +2214,7 @@
         },
         "title": "Size",
         "description": "Size of the registered object, such as the dimension of a specimen, the length of a core, or the weight of a dredge",
-        "examples": [
-            "2x4",
-            "45"
-        ],
+        "examples": ["2x4", "45"],
         "type": "string"
     },
     {
@@ -2632,10 +2226,7 @@
         },
         "title": "Size unit",
         "description": "Unit for the numerical value provided for 'size'.",
-        "examples": [
-            "cm",
-            "kg"
-        ],
+        "examples": ["cm", "kg"],
         "type": "string"
     },
     {
@@ -2647,9 +2238,7 @@
         },
         "title": "State/Province",
         "description": "State or Province where the sample was collected",
-        "examples": [
-            "Alaska"
-        ],
+        "examples": ["Alaska"],
         "type": "string"
     },
     {
@@ -2661,10 +2250,7 @@
         },
         "title": "Sub-object type",
         "description": "More descriptive Object Type. This applies only to samples with Object Type set to Individual Sample.",
-        "examples": [
-            "Thin section",
-            "Powder"
-        ],
+        "examples": ["Thin section", "Powder"],
         "type": "string"
     },
     {
@@ -2676,10 +2262,7 @@
         },
         "title": "Vertical Datum",
         "description": "Vertical datum used to calculate the elevation",
-        "examples": [
-            "NAVD88",
-            "MSL"
-        ],
+        "examples": ["NAVD88", "MSL"],
         "type": "string"
     },
     {
@@ -2691,9 +2274,7 @@
         },
         "title": "Zone",
         "description": "Zone for the geographic Cartesian coordinate \"11R\"",
-        "examples": [
-            "11R"
-        ],
+        "examples": ["11R"],
         "type": "string"
     },
     {
@@ -2706,9 +2287,7 @@
         },
         "title": "Size",
         "description": "Size in meters cubed",
-        "examples": [
-            0.025
-        ],
+        "examples": [0.025],
         "type": "number"
     },
     {
@@ -2720,9 +2299,7 @@
         },
         "title": "State/Province",
         "description": "State or Province",
-        "examples": [
-            "Alaska"
-        ],
+        "examples": ["Alaska"],
         "type": "string"
     },
     {
@@ -2734,9 +2311,7 @@
         },
         "title": "Study DOI",
         "description": "Study DOI",
-        "examples": [
-            "TODO"
-        ],
+        "examples": ["TODO"],
         "type": "string"
     },
     {
@@ -2748,9 +2323,7 @@
         },
         "title": "Study Principal Investigator",
         "description": "Study Principal Investigator",
-        "examples": [
-            "Charles Darwin"
-        ],
+        "examples": ["Charles Darwin"],
         "type": "string"
     },
     {
@@ -2763,9 +2336,7 @@
         },
         "title": "Temperature",
         "description": "Temperature (Celsius)",
-        "examples": [
-            22.1
-        ],
+        "examples": [22.1],
         "type": "number"
     },
     {
@@ -2777,9 +2348,7 @@
         },
         "title": "URL",
         "description": "URL for Sample",
-        "examples": [
-            "http://igsn.org/IEBWE0001"
-        ],
+        "examples": ["http://igsn.org/IEBWE0001"],
         "type": "string",
         "format": "url"
     }

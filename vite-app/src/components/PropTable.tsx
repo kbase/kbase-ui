@@ -1,7 +1,11 @@
 import { Component, CSSProperties } from 'react';
 import styles from './PropTable.module.css';
 
-export type PropTableColumnValue = string | JSX.Element | (() => JSX.Element) | undefined;
+export type PropTableColumnValue =
+    | string
+    | JSX.Element
+    | (() => JSX.Element)
+    | undefined;
 
 export type PropTableRow = [string, PropTableColumnValue];
 
@@ -19,7 +23,7 @@ export interface PropTableProps {
     };
 }
 
-interface PropTableState { }
+interface PropTableState {}
 
 export default class PropTable extends Component<
     PropTableProps,

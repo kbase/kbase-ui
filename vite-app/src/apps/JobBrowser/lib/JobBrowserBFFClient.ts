@@ -1,6 +1,6 @@
-import { JSONLikeObject, toJSONObject } from "lib/jsonLike";
-import { DynamicServiceClient } from "lib/kb_lib/comm/JSONRPC20/DynamicServiceClient";
-import { JSONObject } from "../types/json";
+import { JSONLikeObject, toJSONObject } from 'lib/jsonLike';
+import { DynamicServiceClient } from 'lib/kb_lib/comm/JSONRPC20/DynamicServiceClient';
+import { JSONObject } from '../types/json';
 
 // Metrics client --
 // TODO: move
@@ -53,7 +53,12 @@ Job State
 */
 
 export type JobStatus =
-    'create' | 'queue' | 'run' | 'complete' | 'error' | 'terminate';
+    | 'create'
+    | 'queue'
+    | 'run'
+    | 'complete'
+    | 'error'
+    | 'terminate';
 
 export type ClientGroup = string;
 
@@ -94,7 +99,7 @@ export interface JSONRPC2Error extends JSONObject {
     data: JSONObject | null;
 }
 
-export interface JSONRPC11Error  extends JSONObject {
+export interface JSONRPC11Error extends JSONObject {
     code: number;
     message: string;
     error: JSONObject | string | null;
@@ -136,16 +141,16 @@ export interface JobStateTerminate extends JobStateBase {
 }
 
 export type JobState =
-    JobStateCreate |
-    JobStateQueue |
-    JobStateRun |
-    JobStateComplete |
-    JobStateError |
-    JobStateTerminate;
+    | JobStateCreate
+    | JobStateQueue
+    | JobStateRun
+    | JobStateComplete
+    | JobStateError
+    | JobStateTerminate;
 
-export type AppType = "narrative" | "unknown";
+export type AppType = 'narrative' | 'unknown';
 
-export interface AppInfo extends JSONLikeObject{
+export interface AppInfo extends JSONLikeObject {
     id: string;
     module_name: string;
     function_name: string;
@@ -155,10 +160,9 @@ export interface AppInfo extends JSONLikeObject{
     icon_url?: string;
 }
 
-export interface Context {
-}
+export interface Context {}
 
-export interface JobContextBase  extends JSONLikeObject {
+export interface JobContextBase extends JSONLikeObject {
     type: 'narrative' | 'workspace' | 'export' | 'unknown';
 }
 
@@ -169,7 +173,7 @@ export interface JobContextNarrative extends JobContextBase {
         is_accessible: boolean;
         is_deleted: boolean;
         name: string;
-    },
+    };
     narrative: {
         title: string | null;
         is_temporary: boolean;
@@ -197,10 +201,10 @@ export interface JobContextUnknown extends JobContextBase {
 export type NodeClass = string;
 
 export type JobContext =
-    JobContextNarrative |
-    JobContextWorkspace |
-    JobContextExport |
-    JobContextUnknown;
+    | JobContextNarrative
+    | JobContextWorkspace
+    | JobContextExport
+    | JobContextUnknown;
 
 export interface JobInfoBase extends JSONLikeObject {
     job_id: string;
@@ -237,12 +241,12 @@ export interface JobInfoTerminate extends JobInfoBase {
 }
 
 export type JobInfo =
-    JobInfoCreate |
-    JobInfoQueue |
-    JobInfoRun |
-    JobInfoComplete |
-    JobInfoError |
-    JobInfoTerminate;
+    | JobInfoCreate
+    | JobInfoQueue
+    | JobInfoRun
+    | JobInfoComplete
+    | JobInfoError
+    | JobInfoTerminate;
 
 // METHOD PARAMS AND RESULT TYPES
 
@@ -285,7 +289,7 @@ export interface GetJobsResult {
 
 // get_job_log
 
-// TODO: stricter typing 
+// TODO: stricter typing
 export interface GetJobLogParams extends ParamsBase, ParamsCollectionBase {
     job_id: JobID;
     search?: Array<string>;
@@ -341,7 +345,7 @@ export default class JobBrowserBFFClient extends DynamicServiceClient {
     }
 
     async get_job_log(params: GetJobLogParams): Promise<GetJobLogResult> {
-        const result =  await this.callFunc('get_job_log', toJSONObject(params));
+        const result = await this.callFunc('get_job_log', toJSONObject(params));
         return result as unknown as GetJobLogResult;
     }
 

@@ -6,7 +6,7 @@ export interface AutoPostFormProps {
     action: string;
 }
 
-interface AutoPostFormState { }
+interface AutoPostFormState {}
 
 export default class AutoPostForm extends Component<
     AutoPostFormProps,
@@ -31,8 +31,10 @@ export default class AutoPostForm extends Component<
 
         const paramInputs = Array.from(Object.entries(params)).map(
             ([name, value]) => {
-                return  <input type="hidden" key={name} name={name} value={value} />;
-            }
+                return (
+                    <input type="hidden" key={name} name={name} value={value} />
+                );
+            },
         );
 
         return (

@@ -1,6 +1,6 @@
 .SignInContinueView {
-    flex: 1 1 0px;  
-    display: flex; 
+    flex: 1 1 0px;
+    display: flex;
     flex-direction: column;
     overflow-y: auto;
     margin: 0 1rem;
@@ -22,5 +22,5 @@
 }
 
 .SignInContinueView .-body {
-    flex: 1 1 0;    
+    flex: 1 1 0;
 }

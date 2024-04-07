@@ -63,7 +63,7 @@ export interface UserProfileAffiliation {
     ended?: number | null;
 }
 
-export type UserProfileAffiliations = Array<UserProfileAffiliation>
+export type UserProfileAffiliations = Array<UserProfileAffiliation>;
 
 export interface UserProfileUserdata {
     // Required by form so should always be present
@@ -73,7 +73,7 @@ export interface UserProfileUserdata {
     organization?: string | null;
     department?: string;
     gravatarDefault?: string; // not required unless avatarOptions === 'gravatar'
-    affiliations?: UserProfileAffiliations
+    affiliations?: UserProfileAffiliations;
     city?: string;
     state?: string;
     postalCode?: string;
@@ -83,7 +83,7 @@ export interface UserProfileUserdata {
     researchInterestsOther?: string | null;
     jobTitle?: string;
     jobTitleOther?: string;
-    fundingSource?: string
+    fundingSource?: string;
 }
 
 export interface UserProfilePreferenceSetting {
@@ -92,42 +92,43 @@ export interface UserProfilePreferenceSetting {
     updatedAt: number;
 }
 
-export type UserProfilePreferences = Record<string, UserProfilePreferenceSetting>
+export type UserProfilePreferences = Record<
+    string,
+    UserProfilePreferenceSetting
+>;
 
 export interface UserProfileUpdate {
     user: UserProfileUser;
     profile: {
         userdata: UserProfileUserdata;
         preferences: UserProfilePreferences;
-    }
+    };
 }
 
 export interface UpdateUserProfileParams {
-    profile: UserProfileUpdate
+    profile: UserProfileUpdate;
 }
-
 
 export interface UserProfileInitial {
     user: UserProfileUser;
     profile: {
         userdata: UserProfileUserdata;
-    }
+    };
 }
 
 export interface SetUserProfileParams {
-    profile: UserProfileInitial
+    profile: UserProfileInitial;
 }
 
 export interface SearchUsersParams extends JSONObject {
-    filter_users: string
+    filter_users: string;
 }
-
 
 export default class UserProfileClient extends ServiceClient {
     module: string = 'UserProfile';
 
     async get_user_profile(
-        params: GetUserProfileParams
+        params: GetUserProfileParams,
     ): Promise<GetUserProfileResult> {
         const [result] = await this.callFunc<
             JSONArrayOf<GetUserProfileParams>,
@@ -138,23 +139,23 @@ export default class UserProfileClient extends ServiceClient {
 
     async update_user_profile(params: UpdateUserProfileParams): Promise<void> {
         return await this.callFuncEmptyResult<[JSONValue]>(
-            'update_user_profile', 
-            [toJSON(params)])
+            'update_user_profile',
+            [toJSON(params)],
+        );
     }
 
     async set_user_profile(params: SetUserProfileParams): Promise<void> {
-        return await this.callFuncEmptyResult<[JSONValue]>(
-            'set_user_profile', 
-            [toJSON(params)])
+        return await this.callFuncEmptyResult<[JSONValue]>('set_user_profile', [
+            toJSON(params),
+        ]);
     }
 
     async filter_users(params: SearchUsersParams): Promise<Array<User>> {
-        const [result] =  await this.callFunc<Array<JSONObject>, Array<JSONObject>>(
-            'filter_users', 
-            [params]
-        );
+        const [result] = await this.callFunc<
+            Array<JSONObject>,
+            Array<JSONObject>
+        >('filter_users', [params]);
 
         return result as unknown as Array<User>;
     }
-    
 }

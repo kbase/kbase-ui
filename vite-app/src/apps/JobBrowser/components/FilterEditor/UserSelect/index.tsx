@@ -13,18 +13,21 @@ export interface DataProps {
 }
 
 // type TheProps = Omit<DataProps & FilterEditorProps, "narratives">;
-type TheProps = Omit<DataProps & UserSelectProps, "options" | "search">;
+type TheProps = Omit<DataProps & UserSelectProps, 'options' | 'search'>;
 
 interface DataState {
     options: Array<OptionValue<string>> | null;
 }
 
-export default class UserSelectController extends Component<TheProps, DataState> {
+export default class UserSelectController extends Component<
+    TheProps,
+    DataState
+> {
     stopped: boolean;
     constructor(props: TheProps) {
         super(props);
         this.state = {
-            options: null
+            options: null,
         };
         this.stopped = false;
     }
@@ -37,7 +40,7 @@ export default class UserSelectController extends Component<TheProps, DataState>
         // const options = await this.fetchOptions();
         if (!this.stopped) {
             this.setState({
-                options: []
+                options: [],
             });
         }
     }
@@ -47,34 +50,36 @@ export default class UserSelectController extends Component<TheProps, DataState>
         const client = new UserProfileClient({
             url: userProfileServiceURL,
             token,
-            timeout:  10000
+            timeout: 10000,
         });
-        const users = await client.filter_users({filter_users: term});
+        const users = await client.filter_users({ filter_users: term });
         const options = users
-            .map(({username, realname}) => {
+            .map(({ username, realname }) => {
                 return {
                     value: username,
-                    label: `${realname} (${username})`
+                    label: `${realname} (${username})`,
                 };
             })
             .sort((a, b) => {
                 return a.label.localeCompare(b.label);
             });
         this.setState({
-            options
+            options,
         });
     }
 
     render() {
         if (this.state.options) {
-            return <View
-                changed={this.props.changed}
-                search={this.search.bind(this)}
-                options={this.state.options}
-                defaultValue={this.props.defaultValue}
-            />;
+            return (
+                <View
+                    changed={this.props.changed}
+                    search={this.search.bind(this)}
+                    options={this.state.options}
+                    defaultValue={this.props.defaultValue}
+                />
+            );
         } else {
-            return "loading...";
+            return 'loading...';
         }
     }
 }

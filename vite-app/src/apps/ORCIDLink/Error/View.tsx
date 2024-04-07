@@ -7,14 +7,13 @@ import { Button, Col, Container, Row } from 'react-bootstrap';
 import styles from '../Error.styles';
 import { ErrorInfo } from '../lib/ORCIDLinkClient';
 
-
 export type ErrorViewProps = PropsWithChildren<{
     errorCode: number;
     errorInfo: ErrorInfo;
     title: string;
     message: string;
     setTitle: (title: string) => void;
-    info?: JSONValue
+    info?: JSONValue;
 }>;
 
 export default class ErrorView extends Component<ErrorViewProps> {
@@ -22,7 +21,6 @@ export default class ErrorView extends Component<ErrorViewProps> {
         this.props.setTitle('KBase ORCID Link - Error');
 
         // TODO: need a controller!
-
     }
 
     renderInfo() {
@@ -32,46 +30,48 @@ export default class ErrorView extends Component<ErrorViewProps> {
         return (
             <>
                 <div style={styles.Title}>Additional Info</div>
-                <PresentableJSON
-                    data={this.props.info}
-                    tableStyle=""
-                />
+                <PresentableJSON data={this.props.info} tableStyle="" />
             </>
         );
     }
 
     renderErrorInfo() {
         const { code, title, description } = this.props.errorInfo;
-        return <Container fluid>
-            <Row>
-                <Col className="fw-bold text-secondary" style={{ flex: '0 0 7rem' }}>
-                    Error Code
-                </Col>
-                <Col md="auto">
-                    {code}
-                </Col>
-            </Row>
-            <Row>
-                <Col className="fw-bold text-secondary" style={{ flex: '0 0 7rem' }}>
-                    Title
-                </Col>
-                <Col md="auto">
-                    {title}
-                </Col>
-            </Row>
-            <Row>
-                <Col className="fw-bold text-secondary" style={{ flex: '0 0 7rem' }}>
-                    Description
-                </Col>
-                <Col md="auto">
-                    {description}
-                </Col>
-            </Row>
-        </Container>
+        return (
+            <Container fluid>
+                <Row>
+                    <Col
+                        className="fw-bold text-secondary"
+                        style={{ flex: '0 0 7rem' }}
+                    >
+                        Error Code
+                    </Col>
+                    <Col md="auto">{code}</Col>
+                </Row>
+                <Row>
+                    <Col
+                        className="fw-bold text-secondary"
+                        style={{ flex: '0 0 7rem' }}
+                    >
+                        Title
+                    </Col>
+                    <Col md="auto">{title}</Col>
+                </Row>
+                <Row>
+                    <Col
+                        className="fw-bold text-secondary"
+                        style={{ flex: '0 0 7rem' }}
+                    >
+                        Description
+                    </Col>
+                    <Col md="auto">{description}</Col>
+                </Row>
+            </Container>
+        );
     }
 
     onClose() {
-        navigate("orcidlink");
+        navigate('orcidlink');
     }
 
     renderDescription(description: Array<string>) {
@@ -80,7 +80,9 @@ export default class ErrorView extends Component<ErrorViewProps> {
         });
     }
     renderCode() {
-        return <div style={styles.Code}>Error Code: {this.props.errorCode}</div>
+        return (
+            <div style={styles.Code}>Error Code: {this.props.errorCode}</div>
+        );
     }
     renderBody() {
         return (
@@ -88,9 +90,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                 {/* <div style={styles.Description}>
                     {this.renderDescription(this.props.description)}
                 </div> */}
-                <div style={styles.Message}>
-                    {this.props.message}
-                </div>
+                <div style={styles.Message}>{this.props.message}</div>
                 <hr />
                 {this.renderErrorInfo()}
             </div>
@@ -99,12 +99,8 @@ export default class ErrorView extends Component<ErrorViewProps> {
     render() {
         return (
             <Well variant="danger">
-                <Well.Header>
-                    {this.props.title}
-                </Well.Header>
-                <Well.Body>
-                    {this.renderBody()}
-                </Well.Body>
+                <Well.Header>{this.props.title}</Well.Header>
+                <Well.Body>{this.renderBody()}</Well.Body>
                 <Well.Footer>
                     <Button variant="primary" onClick={this.onClose.bind(this)}>
                         <span className="fa fa-mail-reply" /> Done

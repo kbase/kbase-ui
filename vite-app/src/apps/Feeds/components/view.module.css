@@ -56,7 +56,6 @@
     margin-top: 0.5rem;
 }
 
-
 .NavCol {
     flex: 1 1 0;
 }
@@ -66,16 +65,13 @@
     margin-left: 1rem;
 }
 
-
-
-
 .NavCol {
     flex: 1 1 0;
     overflow-y: auto;
     /* background-color: rgba(200, 200, 200, 0.5); */
 }
 .NavColHeader {
-    flex: 
+    flex:;
 }
 .NavColFeeds {
     flex: 1 1 0;
@@ -126,9 +122,8 @@
 }
 
 .FeedsNavigatorItemSelected:hover {
-    background-color: rgba(150, 150, 150, 1.0);
+    background-color: rgba(150, 150, 150, 1);
 }
-
 
 .FeedsNavigatorTitleCol {
     flex: 1 1 0;
@@ -144,7 +139,7 @@
 }
 
 .FeedsNavigatorTotalCol {
-    flex: 0 0 3rem
+    flex: 0 0 3rem;
 }
 
 .FeedsNavigatorNewCol {
