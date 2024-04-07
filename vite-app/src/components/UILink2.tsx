@@ -3,15 +3,15 @@ import { NavigationType } from 'lib/navigation';
 import { CSSProperties, Component, PropsWithChildren } from 'react';
 
 export interface UILinkProps extends PropsWithChildren {
-  path: string;
-  type: NavigationType;
-  params?: Record<string, string>;
-  newWindow?: boolean;
-  label?: string;
-  linkIsLabel?: boolean;
-  title?: string;
-  className?: string;
-  style?: CSSProperties;
+    path: string;
+    type: NavigationType;
+    params?: Record<string, string>;
+    newWindow?: boolean;
+    label?: string;
+    linkIsLabel?: boolean;
+    title?: string;
+    className?: string;
+    style?: CSSProperties;
 }
 /**
  * Creates a link to another ui endpoint.
@@ -31,45 +31,48 @@ export interface UILinkProps extends PropsWithChildren {
  *
  */
 export default class UILink extends Component<UILinkProps> {
-  renderLabel(url: URL) {
-    if (this.props.linkIsLabel) {
-      return url.toString();
-    }
-    if (this.props.label) {
-      return this.props.label;
-    }
-    return this.props.children;
-  }
-  render() {
-    const {} = this.props.path;
-    const url = navigationPathToURL(
-      { path: this.props.path, params: this.props.params, type: this.props.type },
-      !!this.props.newWindow,
-    );
-
-    const target = (() => {
-      if (this.props.type === 'kbaseui') {
-        if (this.props.newWindow) {
-          return '_blank';
+    renderLabel(url: URL) {
+        if (this.props.linkIsLabel) {
+            return url.toString();
         }
-        return '_self';
-      }
-      if (this.props.newWindow) {
-        return '_blank';
-      }
-      return '_top';
-    })();
+        if (this.props.label) {
+            return this.props.label;
+        }
+        return this.props.children;
+    }
+    render() {
+        const url = navigationPathToURL(
+            {
+                path: this.props.path,
+                params: this.props.params,
+                type: this.props.type,
+            },
+            !!this.props.newWindow,
+        );
 
-    return (
-      <a
-        href={url.toString()}
-        title={this.props.title}
-        target={target}
-        className={this.props.className}
-        style={this.props.style}
-      >
-        {this.renderLabel(url)}
-      </a>
-    );
-  }
+        const target = (() => {
+            if (this.props.type === 'kbaseui') {
+                if (this.props.newWindow) {
+                    return '_blank';
+                }
+                return '_self';
+            }
+            if (this.props.newWindow) {
+                return '_blank';
+            }
+            return '_top';
+        })();
+
+        return (
+            <a
+                href={url.toString()}
+                title={this.props.title}
+                target={target}
+                className={this.props.className}
+                style={this.props.style}
+            >
+                {this.renderLabel(url)}
+            </a>
+        );
+    }
 }

@@ -1,4 +1,4 @@
-import AsyncQueue from './kb_lib/asyncQueue';
+import AsyncQueue from './AsyncQueue';
 import { tryPromise, UIError } from './kb_lib/Utils';
 
 interface Channel {
@@ -10,17 +10,19 @@ interface MessageHandler {
     subscriptionMap: Map<string, Subscription>;
 }
 
+export type Payload = unknown;
+
 export interface SubscriptionDef {
     channel?: string;
     message: string;
-    handler: (payload: any) => void;
+    handler: (payload: Payload) => void;
 }
 
 interface Subscription {
     id: string;
     channelName: string;
     message: string;
-    handler: (payload: any) => void;
+    handler: (payload: Payload) => void;
 }
 
 export interface SubscriptionRef {
@@ -32,7 +34,7 @@ export interface SubscriptionRef {
 interface PublishDefinition {
     channel: string;
     message: string;
-    payload: any;
+    payload: Payload;
 }
 
 export class Messenger {
@@ -50,10 +52,12 @@ export class Messenger {
         return 'sub_' + this.subId;
     }
 
-    on(channel: string, message: string, handler: (payload: any) => void) {
+    on(channel: string, message: string, handler: (payload: Payload) => void) {
         return this.receive({
-            channel, message, handler
-        })
+            channel,
+            message,
+            handler,
+        });
     }
 
     receive(subscriptionDef: SubscriptionDef): SubscriptionRef {
@@ -107,14 +111,14 @@ export class Messenger {
             return false;
         }
         const messageListener = channel.messageHandlers.get(
-            subscriptionRef.message
+            subscriptionRef.message,
         );
         if (!messageListener) {
             return false;
         }
 
         const subscription = messageListener.subscriptionMap.get(
-            subscriptionRef.id
+            subscriptionRef.id,
         );
         if (!subscription) {
             return false;
@@ -124,18 +128,20 @@ export class Messenger {
         messageListener.subscriptions = messageListener.subscriptions.filter(
             (listener) => {
                 return listener.id !== subscriptionRef.id;
-            }
+            },
         );
         return true;
     }
 
-    send(channel: string, message: string, payload: any) {
+    send(channel: string, message: string, payload: unknown) {
         this.publish({
-            channel, message, payload
-        })
+            channel,
+            message,
+            payload,
+        });
     }
 
-    publish({channel: channelName, message, payload}: PublishDefinition) {
+    publish({ channel: channelName, message, payload }: PublishDefinition) {
         const channel = this.channels.get(channelName);
         if (!channel) {
             return;
@@ -169,7 +175,7 @@ export class Messenger {
         });
     }
 
-    sendPromise({channel: channelName, message, payload}: PublishDefinition) {
+    sendPromise({ channel: channelName, message, payload }: PublishDefinition) {
         const channel = this.channels.get(channelName);
         if (!channel) {
             return;
@@ -179,7 +185,7 @@ export class Messenger {
             return;
         }
 
-        return tryPromise<any>(() => {
+        return tryPromise<unknown>(() => {
             const channel = this.channels.get(channelName);
             if (!channel) {
                 throw new Error('Channel not found : ' + channelName);
@@ -197,9 +203,7 @@ export class Messenger {
                         this.queue.addItem(
                             async () => {
                                 try {
-                                    resolve(
-                                        subscription.handler(payload)
-                                    );
+                                    resolve(subscription.handler(payload));
                                 } catch (ex) {
                                     console.error(ex);
                                     reject(
@@ -215,16 +219,16 @@ export class Messenger {
                                             code: 'message-handler-handler-error',
                                             suggestion:
                                                 'This is an application error, not your fault',
-                                        })
+                                        }),
                                     );
                                 }
                             },
                             async (err) => {
                                 reject(err);
-                            }
+                            },
                         );
                     });
-                })
+                }),
             );
         });
     }

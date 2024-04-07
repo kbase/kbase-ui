@@ -10,7 +10,7 @@ import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import {
     NarrativeSearch,
     SearchOptions,
-    SearchParams
+    SearchParams,
 } from 'lib/clients/NarrativeSearch';
 import { Row } from '../components/ScalableScroller/DataProviderState';
 // import ActionQueue from './ActionQueue';
@@ -19,7 +19,7 @@ import MessageQueue, { Queue } from './MessageQueue';
 import {
     NarrativeSelectedBy,
     NavigatorContext,
-    NavigatorContextState
+    NavigatorContextState,
 } from './NavigatorContext';
 
 const BUFFER_INTERVAL = 200;
@@ -93,7 +93,7 @@ export default class NavigatorContextWrapper extends Component<
     dataModel: DataModel;
     setRangeBuffer = new RollupBuffer<SetRangePayload>(
         BUFFER_INTERVAL,
-        this.handleSetRangeBuffer.bind(this)
+        this.handleSetRangeBuffer.bind(this),
     );
     constructor(props: NavigatorContextWrapperProps) {
         super(props);
@@ -151,7 +151,7 @@ export default class NavigatorContextWrapper extends Component<
                     }
 
                     switch (
-                    this.state.navigatorContextState.searchState.status
+                        this.state.navigatorContextState.searchState.status
                     ) {
                         case SearchStatus.NONE:
                         case SearchStatus.ERROR:
@@ -203,7 +203,7 @@ export default class NavigatorContextWrapper extends Component<
                             break;
                         }
                     }
-                    resolve(nextQueue);
+                    return nextQueue;
                 });
             },
         });
@@ -227,7 +227,7 @@ export default class NavigatorContextWrapper extends Component<
                         {
                             offset: from,
                             limit: to - from + 1,
-                        }
+                        },
                     );
                     this.setState(
                         {
@@ -244,7 +244,7 @@ export default class NavigatorContextWrapper extends Component<
                         },
                         () => {
                             resolve(null);
-                        }
+                        },
                     );
                 });
             },
@@ -252,9 +252,9 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 're-searching',
-            task: (payload: JSONObject, _: Queue<JSONObject>) => {
+            task: (payload: JSONObject) => {
                 // condense all the requests of this type to 1.
-                let nextQueue: Queue<JSONObject> | null = null;
+                const nextQueue: Queue<JSONObject> | null = null;
                 // const lastSuchItem = queue
                 //     .filter((item) => {
                 //         return item.id === 're-search';
@@ -285,7 +285,7 @@ export default class NavigatorContextWrapper extends Component<
                     const searchParams = Object.assign(
                         {},
                         this.state.navigatorContextState.searchState
-                            .searchParams
+                            .searchParams,
                     );
                     searchParams.offset = from;
                     searchParams.limit = to - from + 1;
@@ -304,7 +304,7 @@ export default class NavigatorContextWrapper extends Component<
                         },
                         () => {
                             resolve(nextQueue);
-                        }
+                        },
                     );
                 });
             },
@@ -312,7 +312,7 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'searching',
-            task: (payload: JSONObject, _: Queue<JSONObject>) => {
+            task: (payload: JSONObject) => {
                 const to = payload['to'] as number;
                 const from = payload['from'] as number;
                 return new Promise((resolve) => {
@@ -329,7 +329,7 @@ export default class NavigatorContextWrapper extends Component<
                     const searchParams = Object.assign(
                         {},
                         this.state.navigatorContextState.searchState
-                            .searchParams
+                            .searchParams,
                     );
                     searchParams.offset = from;
                     searchParams.limit = to - from + 1;
@@ -348,7 +348,7 @@ export default class NavigatorContextWrapper extends Component<
                         },
                         () => {
                             resolve(null);
-                        }
+                        },
                     );
                 });
             },
@@ -356,105 +356,99 @@ export default class NavigatorContextWrapper extends Component<
 
         this.messageQueue.register({
             name: 'search',
-            task: () => {
-                return new Promise(async (resolve) => {
-                    switch (
-                    this.state.navigatorContextState.searchState.status
+            task: async () => {
+                switch (this.state.navigatorContextState.searchState.status) {
+                    case SearchStatus.NONE:
+                    case SearchStatus.INITIAL:
+                    case SearchStatus.ERROR:
+                        return null;
+                    case SearchStatus.MEASURED:
+                    case SearchStatus.SEARCHING:
+                    case SearchStatus.SEARCHED:
+                    case SearchStatus.SEARCHED_NOT_FOUND:
+                    case SearchStatus.RE_SEARCHING:
+                }
+
+                const searchParams =
+                    this.state.navigatorContextState.searchState.searchParams;
+
+                try {
+                    const { narratives, totalCount, filterCount } =
+                        await this.dataModel.searchFromSearchParams(
+                            searchParams,
+                        );
+
+                    const items = narratives.map((narrative, index) => {
+                        return {
+                            index: index + searchParams.offset,
+                            value: narrative,
+                        };
+                    });
+
+                    const nextState: NavigatorContextWrapperState = {
+                        ...this.state,
+                        navigatorContextState: {
+                            ...this.state.navigatorContextState,
+                            searchState: {
+                                ...this.state.navigatorContextState.searchState,
+                                status: SearchStatus.SEARCHED,
+                                items,
+                                filterCount,
+                                totalCount,
+                            },
+                        },
+                    };
+                    const selectedBy =
+                        nextState.navigatorContextState.userInteractions
+                            .narrativeSelectedBy;
+                    if (
+                        selectedBy === NarrativeSelectedBy.NONE &&
+                        narratives.length > 0
                     ) {
-                        case SearchStatus.NONE:
-                        case SearchStatus.INITIAL:
-                        case SearchStatus.ERROR:
-                            resolve(null);
-                            return;
-                        case SearchStatus.MEASURED:
-                        case SearchStatus.SEARCHING:
-                        case SearchStatus.SEARCHED:
-                        case SearchStatus.SEARCHED_NOT_FOUND:
-                        case SearchStatus.RE_SEARCHING:
+                        nextState.navigatorContextState.selectedNarrative = {
+                            ...nextState.navigatorContextState
+                                .selectedNarrative,
+                            status: AsyncProcessStatus.SUCCESS,
+                            value: {
+                                narrativeDoc: narratives[0],
+                            },
+                        };
+                        nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                            NarrativeSelectedBy.SEARCH;
                     }
 
-                    const searchParams =
-                        this.state.navigatorContextState.searchState
-                            .searchParams;
-
-                    try {
-                        const { narratives, totalCount, filterCount } =
-                            await this.dataModel.searchFromSearchParams(
-                                searchParams
-                            );
-
-                        const items = narratives.map((narrative, index) => {
-                            return {
-                                index: index + searchParams.offset,
-                                value: narrative,
-                            };
-                        });
-
-                        const nextState: NavigatorContextWrapperState = {
+                    this.setState(nextState);
+                } catch (ex) {
+                    if (ex instanceof Error) {
+                        this.setState({
                             ...this.state,
                             navigatorContextState: {
                                 ...this.state.navigatorContextState,
                                 searchState: {
-                                    ...this.state.navigatorContextState.searchState,
-                                    status: SearchStatus.SEARCHED,
-                                    items,
-                                    filterCount,
-                                    totalCount,
+                                    status: SearchStatus.ERROR,
+                                    error: {
+                                        message: ex.message,
+                                    },
                                 },
                             },
-                        };
-                        const selectedBy =
-                            nextState.navigatorContextState.userInteractions
-                                .narrativeSelectedBy;
-                        if (
-                            selectedBy === NarrativeSelectedBy.NONE &&
-                            narratives.length > 0
-                        ) {
-                            nextState.navigatorContextState.selectedNarrative = {
-                                ...nextState.navigatorContextState
-                                    .selectedNarrative,
-                                status: AsyncProcessStatus.SUCCESS,
-                                value: {
-                                    narrativeDoc: narratives[0],
-                                },
-                            };
-                            nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
-                                NarrativeSelectedBy.SEARCH;
-                        }
-
-                        this.setState(nextState, () => {
-                            resolve(null);
                         });
-                    } catch (ex) {
-                        if (ex instanceof Error) {
-                            this.setState({
-                                ...this.state,
-                                navigatorContextState: {
-                                    ...this.state.navigatorContextState,
-                                    searchState: {
-                                        status: SearchStatus.ERROR,
-                                        error: {
-                                            message: ex.message
-                                        }
-                                    }
-                                }
-                            })
-                        } else {
-                            this.setState({
-                                ...this.state,
-                                navigatorContextState: {
-                                    ...this.state.navigatorContextState,
-                                    searchState: {
-                                        status: SearchStatus.ERROR,
-                                        error: {
-                                            message: 'Unknown Error'
-                                        }
-                                    }
-                                }
-                            })
-                        }
+                    } else {
+                        this.setState({
+                            ...this.state,
+                            navigatorContextState: {
+                                ...this.state.navigatorContextState,
+                                searchState: {
+                                    status: SearchStatus.ERROR,
+                                    error: {
+                                        message: 'Unknown Error',
+                                    },
+                                },
+                            },
+                        });
                     }
-                });
+                }
+
+                return null;
             },
         });
     }
@@ -509,7 +503,7 @@ export default class NavigatorContextWrapper extends Component<
 
         const searchParams = Object.assign(
             {},
-            this.state.navigatorContextState.searchState.searchParams
+            this.state.navigatorContextState.searchState.searchParams,
         );
         searchParams.category = category;
 
@@ -565,7 +559,7 @@ export default class NavigatorContextWrapper extends Component<
 
         const searchParams = Object.assign(
             {},
-            this.state.navigatorContextState.searchState.searchParams
+            this.state.navigatorContextState.searchState.searchParams,
         );
         searchParams.sort = sort;
 
@@ -615,7 +609,7 @@ export default class NavigatorContextWrapper extends Component<
 
         const searchParams = Object.assign(
             {},
-            this.state.navigatorContextState.searchState.searchParams
+            this.state.navigatorContextState.searchState.searchParams,
         );
         searchParams.query = query;
 
@@ -669,7 +663,7 @@ export default class NavigatorContextWrapper extends Component<
 
         const searchParams = Object.assign(
             {},
-            this.state.navigatorContextState.searchState.searchParams
+            this.state.navigatorContextState.searchState.searchParams,
         );
 
         switch (this.state.navigatorContextState.searchState.status) {
@@ -758,79 +752,78 @@ export default class NavigatorContextWrapper extends Component<
     }
 
     async search(searchParams: SearchParams) {
-        this.searchTasks.add(() => {
-            return new Promise<void>(async (resolve) => {
-                switch (this.state.navigatorContextState.searchState.status) {
-                    case SearchStatus.NONE:
-                    case SearchStatus.INITIAL:
-                    case SearchStatus.ERROR:
-                        return;
-                    case SearchStatus.MEASURED:
-                    case SearchStatus.SEARCHING:
-                    case SearchStatus.SEARCHED:
-                    case SearchStatus.SEARCHED_NOT_FOUND:
-                    case SearchStatus.RE_SEARCHING:
-                }
+        this.searchTasks.add(async () => {
+            switch (this.state.navigatorContextState.searchState.status) {
+                case SearchStatus.NONE:
+                case SearchStatus.INITIAL:
+                case SearchStatus.ERROR:
+                    return;
+                case SearchStatus.MEASURED:
+                case SearchStatus.SEARCHING:
+                case SearchStatus.SEARCHED:
+                case SearchStatus.SEARCHED_NOT_FOUND:
+                case SearchStatus.RE_SEARCHING:
+            }
 
-                try {
-                    const { narratives, totalCount, filterCount } =
-                        await this.dataModel.searchFromSearchParams(searchParams);
+            try {
+                const { narratives, totalCount, filterCount } =
+                    await this.dataModel.searchFromSearchParams(searchParams);
 
-                    const items = narratives.map((narrative, index) => {
-                        return {
-                            index: index + searchParams.offset,
-                            value: narrative,
-                        };
-                    });
+                const items = narratives.map((narrative, index) => {
+                    return {
+                        index: index + searchParams.offset,
+                        value: narrative,
+                    };
+                });
 
-                    const nextState: NavigatorContextWrapperState = {
-                        ...this.state,
-                        navigatorContextState: {
-                            ...this.state.navigatorContextState,
-                            searchState: {
-                                ...this.state.navigatorContextState.searchState,
-                                status: SearchStatus.SEARCHED,
-                                items,
-                                filterCount,
-                                totalCount,
-                            },
+                const nextState: NavigatorContextWrapperState = {
+                    ...this.state,
+                    navigatorContextState: {
+                        ...this.state.navigatorContextState,
+                        searchState: {
+                            ...this.state.navigatorContextState.searchState,
+                            status: SearchStatus.SEARCHED,
+                            items,
+                            filterCount,
+                            totalCount,
+                        },
+                    },
+                };
+                const selectedBy =
+                    nextState.navigatorContextState.userInteractions
+                        .narrativeSelectedBy;
+                if (
+                    selectedBy === NarrativeSelectedBy.NONE &&
+                    narratives.length > 0
+                ) {
+                    nextState.navigatorContextState.selectedNarrative = {
+                        ...this.state.navigatorContextState.selectedNarrative,
+                        status: AsyncProcessStatus.SUCCESS,
+                        value: {
+                            narrativeDoc: narratives[0],
                         },
                     };
-                    const selectedBy =
-                        nextState.navigatorContextState.userInteractions
-                            .narrativeSelectedBy;
-                    if (
-                        selectedBy === NarrativeSelectedBy.NONE &&
-                        narratives.length > 0
-                    ) {
-                        nextState.navigatorContextState.selectedNarrative = {
-                            ...this.state.navigatorContextState.selectedNarrative,
-                            status: AsyncProcessStatus.SUCCESS,
-                            value: {
-                                narrativeDoc: narratives[0],
-                            },
-                        };
-                        nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
-                            NarrativeSelectedBy.SEARCH;
-                    }
-
-                    this.setState(nextState, () => {
-                        resolve();
-                    });
-                } catch (ex) {
-                    this.setState({
-                        navigatorContextState: {
-                            ...this.state.navigatorContextState,
-                            selectedNarrative: {
-                                ...this.state.navigatorContextState.selectedNarrative,
-                                status: AsyncProcessStatus.ERROR,
-                                error:
-                                    ex instanceof Error ? ex.message : 'Unknown error',
-                            },
-                        },
-                    });
+                    nextState.navigatorContextState.userInteractions.narrativeSelectedBy =
+                        NarrativeSelectedBy.SEARCH;
                 }
-            });
+
+                this.setState(nextState);
+            } catch (ex) {
+                this.setState({
+                    navigatorContextState: {
+                        ...this.state.navigatorContextState,
+                        selectedNarrative: {
+                            ...this.state.navigatorContextState
+                                .selectedNarrative,
+                            status: AsyncProcessStatus.ERROR,
+                            error:
+                                ex instanceof Error
+                                    ? ex.message
+                                    : 'Unknown error',
+                        },
+                    },
+                });
+            }
         });
     }
 

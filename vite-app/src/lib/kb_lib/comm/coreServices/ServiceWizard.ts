@@ -20,27 +20,27 @@ export interface ServiceStatus {
     health: string;
 }
 
-function isString(x: any, p: string): boolean {
-    if (typeof x === 'object' && Reflect.has(x, p)) {
-        if (typeof (Reflect.get(x, p) as unknown as any) === 'string') {
+function isString(x: unknown, p: string): boolean {
+    if (typeof x === 'object' && x !== null && Reflect.has(x, p)) {
+        if (typeof Reflect.get(x, p) === 'string') {
             return true;
         }
     }
     return false;
 }
 
-function isNumber(x: any, p: string): boolean {
-    if (typeof x === 'object' && Reflect.has(x, p)) {
-        if (typeof (Reflect.get(x, p) as unknown as any) === 'number') {
+function isNumber(x: unknown, p: string): boolean {
+    if (typeof x === 'object' && x !== null && Reflect.has(x, p)) {
+        if (typeof Reflect.get(x, p) === 'number') {
             return true;
         }
     }
     return false;
 }
 
-function isArray(x: any, p: string, subType: string): boolean {
-    if (typeof x === 'object' && Reflect.has(x, p)) {
-        const value = Reflect.get(x, p) as unknown;
+function isArray(x: unknown, p: string, subType: string): boolean {
+    if (typeof x === 'object' && x !== null && Reflect.has(x, p)) {
+        const value = Reflect.get(x, p);
         if (typeof value === 'object' && value instanceof Array) {
             if (value.length === 0) {
                 return true;
@@ -53,7 +53,7 @@ function isArray(x: any, p: string, subType: string): boolean {
     return false;
 }
 
-function isGetServiceStatusResult(x: any): x is GetServiceStatusResult {
+function isGetServiceStatusResult(x: unknown): x is GetServiceStatusResult {
     if (
         isString(x, 'module_name') &&
         isString(x, 'version') &&
@@ -110,7 +110,7 @@ export class ServiceWizardClient extends ServiceClient {
     // }
 
     async get_service_status(
-        params: GetServiceStatusParams
+        params: GetServiceStatusParams,
     ): Promise<GetServiceStatusResult> {
         const [result] = await this.callFunc<
             Array<GetServiceStatusParams>,
@@ -123,7 +123,7 @@ export class ServiceWizardClient extends ServiceClient {
             return result;
         } else {
             throw new Error(
-                'Sorry, result does not conform to "GetServiceStatusResult"'
+                'Sorry, result does not conform to "GetServiceStatusResult"',
             );
         }
     }

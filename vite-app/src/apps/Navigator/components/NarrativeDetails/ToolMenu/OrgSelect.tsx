@@ -32,8 +32,8 @@ export default class OrgSelect extends Component<OrgListProps, OrgListState> {
         };
     }
 
-    handleOrgChange = (selected: any) => {
-        this.setState({ selectedOrgId: selected?.value || '' });
+    handleOrgChange = (selectedOrgId: string) => {
+        this.setState({ selectedOrgId });
     };
 
     render() {
@@ -61,7 +61,9 @@ export default class OrgSelect extends Component<OrgListProps, OrgListState> {
                                 className="basic-single"
                                 classNamePrefix="select"
                                 options={this.orgOptions}
-                                onChange={this.handleOrgChange}
+                                onChange={(newValue) => {
+                                    this.handleOrgChange(newValue?.value || '');
+                                }}
                             />
                         </Col>
                         <Col md="auto">

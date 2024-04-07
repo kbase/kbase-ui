@@ -27,7 +27,7 @@ export type ControlledFieldType = 'string' | 'number' | 'boolean';
 export interface ControlledFieldBase extends JSONSchema {
     type: ControlledFieldType;
     kbase: {
-        format: {};
+        format: Record<string, number | string | boolean>;
         unit: string;
         sample: {
             key: string;

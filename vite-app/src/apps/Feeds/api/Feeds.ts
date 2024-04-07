@@ -1,4 +1,4 @@
-import { RestClient } from "./RestClient";
+import { RestClient } from './RestClient';
 
 const API_PATH = 'api/V1/notification';
 
@@ -11,8 +11,8 @@ const API_PATH = 'api/V1/notification';
 
 export interface FeedEntity {
     id: string; // e.g. username
-    name: string // e.g. realname
-    type: string // "user"
+    name: string; // e.g. realname
+    type: string; // "user"
 }
 
 export interface FeedActor extends FeedEntity {
@@ -21,7 +21,7 @@ export interface FeedActor extends FeedEntity {
     // type: string // "user"
 }
 
-export interface FeedObject extends FeedEntity{
+export interface FeedObject extends FeedEntity {
     // id: string;
     // name: string;
     // type: string ; // "group"
@@ -34,8 +34,8 @@ export interface FeedTarget extends FeedEntity {
 }
 
 export interface FeedItem {
-    actor: FeedActor
-    context: null | Record<string, any>
+    actor: FeedActor;
+    context: null | Record<string, string>;
     created: number;
     expires: number;
     external_key: string;
@@ -49,7 +49,7 @@ export interface FeedItem {
 }
 
 export interface Feed {
-    feed: Array<FeedItem>
+    feed: Array<FeedItem>;
     name: string;
     unseen: number;
 }
@@ -67,7 +67,7 @@ export interface Notification {
     verb: string;
     object: string;
     level: number;
-    context: Record<string, string>
+    context: Record<string, string>;
 }
 
 export interface GlobalNotification {
@@ -84,11 +84,10 @@ export interface UnseenNotificationCount {
 }
 
 export interface UnseenNotificationCountResult {
-    unseen: UnseenNotificationCount
+    unseen: UnseenNotificationCount;
 }
 
 export class FeedsAPI extends RestClient {
-
     /**
      * Returns the list of notifications for a single user.
      * @param {object} options
@@ -97,8 +96,10 @@ export class FeedsAPI extends RestClient {
      *  - level - string or int
      *  - includeSeen - boolean
      */
-    async getNotifications(options: GetNotificationsOptions): Promise<Notifications> {
-        let params = [];
+    async getNotifications(
+        options: GetNotificationsOptions,
+    ): Promise<Notifications> {
+        const params = [];
         if (options.reverseSort) {
             params.push('rev=1');
         }
@@ -111,7 +112,7 @@ export class FeedsAPI extends RestClient {
         if (options.includeSeen) {
             params.push('seen=1');
         }
-        let path = 'api/V1/notifications/?' + params.join('&');
+        const path = 'api/V1/notifications/?' + params.join('&');
 
         return this.makeCall('GET', path);
     }
@@ -159,7 +160,9 @@ export class FeedsAPI extends RestClient {
      * @param {Array} noteIds - array of note id strings
      */
     markUnseen(noteIds: Array<string>) {
-        return this.makeCall('POST', `${API_PATH}/unsee`, { note_ids: noteIds });
+        return this.makeCall('POST', `${API_PATH}/unsee`, {
+            note_ids: noteIds,
+        });
     }
 
     /**
@@ -169,7 +172,8 @@ export class FeedsAPI extends RestClient {
      * @param {string} noteId - a single notification id
      */
     expireGlobalNotification(noteId: string) {
-        return this.makeCall('POST', `${API_PATH}/expire`, { note_ids: [noteId] });
+        return this.makeCall('POST', `${API_PATH}/expire`, {
+            note_ids: [noteId],
+        });
     }
-
 }

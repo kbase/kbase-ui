@@ -1,6 +1,7 @@
 import Cache from 'lib/kb_lib/comm/Cache';
 import {
-    ServiceStatus, ServiceWizardClient
+    ServiceStatus,
+    ServiceWizardClient,
 } from 'lib/kb_lib/comm/coreServices/ServiceWizard';
 import { ServiceClientBase, ServiceClientParams } from './ServiceClient';
 
@@ -9,7 +10,7 @@ const MONITORING_FREQUENCY = 60000;
 const WAITER_TIMEOUT = 30000;
 const WAITER_FREQUENCY = 100;
 
-var moduleCache = new Cache<ServiceStatus>({
+const moduleCache = new Cache<ServiceStatus>({
     itemLifetime: ITEM_LIFETIME,
     monitoringFrequency: MONITORING_FREQUENCY,
     waiterTimeout: WAITER_TIMEOUT,
@@ -17,10 +18,10 @@ var moduleCache = new Cache<ServiceStatus>({
 });
 
 export interface SearchParams {
-    [key: string]: string
+    [key: string]: string;
 }
 
-export type SearchParams2 = Array<[string, string]>
+export type SearchParams2 = Array<[string, string]>;
 
 /*
  * arg is:
@@ -89,7 +90,7 @@ export abstract class DynamicServiceClient extends ServiceClientBase {
                     version: this.version,
                 });
                 return status;
-            }
+            },
         );
         return moduleInfo.url;
     }
@@ -149,7 +150,7 @@ export abstract class MultiServiceClient extends ServiceClientBase {
                         version: this.version,
                     });
                     return status;
-                }
+                },
             );
             return moduleInfo.url;
         }

@@ -1,6 +1,5 @@
 import { AuthClient } from './Auth2Client';
 import { AuthError, AuthErrorInfo } from './Auth2Error';
-import { HTML } from './HTML';
 import { HttpHeader, Response } from './HttpClient';
 import { HttpQuery } from './HttpUtils';
 
@@ -206,6 +205,30 @@ export interface LoginChoice {
   expires: number;
 }
 
+// TODO: this may be the same as Identity
+export interface LinkChoiceIdentity {
+    id: string;
+    provider: string;
+    username: string;
+    provusername: string;
+    user: string;
+}
+
+export interface LinkChoiceResponse {
+    haslinks: boolean;
+    idents: Array<Identity>
+    linked: Array<LinkChoiceIdentity>
+    id: string;
+    expires: number;
+    cancelurl: string;
+    pickurl: string;
+    canlink: boolean;
+    provider: string;
+    provusername: string;
+    linkeduser?: string;
+    user: string;
+  }
+
 export interface LinkChoice {
   id: string;
   expires: number;
@@ -292,6 +315,30 @@ export interface PutMeInput {
   email: string;
 }
 
+export interface LoginUsernameSuggestResult {
+    availablename: string;
+}
+
+export interface Auth2ErrorData {
+    code: number; /// TODO: not sure if this exists
+    appcode: number;
+    apperror: string;
+    callid: string;
+    httpcode: number;
+    httpstatus: string;
+    message: string;
+    time: number;
+}
+
+export interface Auth2ErrorResponse {
+    error: Auth2ErrorData
+}
+
+export type UserSearchResult = Record<string, string>;
+
+// TODO: don't know about this typing - educated guess, but don't actually use this call 
+export type AdminUserSearchResult = Record<string, Identity>;
+
 // Classes
 
 export interface AuthConfig {
@@ -340,7 +387,7 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result: Response) => {
-        return this.processResult(result, 200);
+        return this.processResult(result, 200) as RootInfo;
       });
   }
 
@@ -350,120 +397,120 @@ export class Auth2 {
           There is no return value, nor any way of verifying that the server
           did the correct thing.
       */
-  loginStart(config: LoginOptions): void {
-    // Set the client state cookie.
-    // const state = JSON.stringify(config.state);
+//   loginStart(config: LoginOptions): void {
+//     // Set the client state cookie.
+//     // const state = JSON.stringify(config.state);
 
-    // Punt over to the auth service
-    const html = new HTML();
-    const t = html.tagMaker();
-    const form = t('form');
-    const input = t('input');
-    // const button = t('button');
+//     // Punt over to the auth service
+//     const html = new HTML();
+//     const t = html.tagMaker();
+//     const form = t('form');
+//     const input = t('input');
+//     // const button = t('button');
 
-    const search = new HttpQuery({
-      state: JSON.stringify(config.state),
-    }).toString();
+//     const search = new HttpQuery({
+//       state: JSON.stringify(config.state),
+//     }).toString();
 
-    const url = `${document.location.origin}?${search}`;
+//     const url = `${document.location.origin}?${search}`;
 
-    const query = {
-      provider: config.provider,
-      redirecturl: url,
-      stayloggedin: config.stayLoggedIn ? 'true' : 'false',
-    };
+//     const query = {
+//       provider: config.provider,
+//       redirecturl: url,
+//       stayloggedin: config.stayLoggedIn ? 'true' : 'false',
+//     };
 
-    const formId = html.genId();
+//     const formId = html.genId();
 
-    const content = form(
-      {
-        method: 'post',
-        id: formId,
-        action: this.makePath(endpoints.loginStart),
-        style: {
-          display: 'hidden',
-        },
-      },
-      [
-        input(
-          {
-            type: 'hidden',
-            name: 'provider',
-            value: query.provider,
-          },
-          [],
-        ),
-        input(
-          {
-            type: 'hidden',
-            name: 'redirecturl',
-            value: query.redirecturl,
-          },
-          [],
-        ),
-        input(
-          {
-            type: 'hidden',
-            name: 'environment',
-            value: 'bar',
-          },
-          [],
-        ),
-      ],
-    );
+//     const content = form(
+//       {
+//         method: 'post',
+//         id: formId,
+//         action: this.makePath(endpoints.loginStart),
+//         style: {
+//           display: 'hidden',
+//         },
+//       },
+//       [
+//         input(
+//           {
+//             type: 'hidden',
+//             name: 'provider',
+//             value: query.provider,
+//           },
+//           [],
+//         ),
+//         input(
+//           {
+//             type: 'hidden',
+//             name: 'redirecturl',
+//             value: query.redirecturl,
+//           },
+//           [],
+//         ),
+//         input(
+//           {
+//             type: 'hidden',
+//             name: 'environment',
+//             value: 'bar',
+//           },
+//           [],
+//         ),
+//       ],
+//     );
 
-    const donorNode = document.createElement('div');
+//     const donorNode = document.createElement('div');
 
-    // xss safe (all values internal)
-    donorNode.innerHTML = content;
-    document.body.appendChild(donorNode);
+//     // xss safe (all values internal)
+//     donorNode.innerHTML = content;
+//     document.body.appendChild(donorNode);
 
-    (document.getElementById(formId) as HTMLFormElement).submit();
-  }
+//     (document.getElementById(formId) as HTMLFormElement).submit();
+//   }
 
-  linkStart(token: string, config: LinkOptions): void {
-    const html = new HTML();
-    const t = html.tagMaker();
-    const form = t('form');
-    const input = t('input');
+//   linkStart(token: string, config: LinkOptions): void {
+//     const html = new HTML();
+//     const t = html.tagMaker();
+//     const form = t('form');
+//     const input = t('input');
 
-    const query = {
-      provider: config.provider,
-    };
+//     const query = {
+//       provider: config.provider,
+//     };
 
-    const formId = html.genId();
+//     const formId = html.genId();
 
-    const content = form(
-      {
-        method: 'POST',
-        id: formId,
-        action: [this.config.baseUrl, endpoints.linkStart].join('/'),
-        style: {
-          display: 'hidden',
-        },
-      },
-      [
-        input(
-          {
-            type: 'hidden',
-            name: 'provider',
-            value: query.provider,
-          },
-          [],
-        ),
-        input({
-          type: 'hidden',
-          name: 'token',
-          value: token,
-        }),
-      ],
-    );
+//     const content = form(
+//       {
+//         method: 'POST',
+//         id: formId,
+//         action: [this.config.baseUrl, endpoints.linkStart].join('/'),
+//         style: {
+//           display: 'hidden',
+//         },
+//       },
+//       [
+//         input(
+//           {
+//             type: 'hidden',
+//             name: 'provider',
+//             value: query.provider,
+//           },
+//           [],
+//         ),
+//         input({
+//           type: 'hidden',
+//           name: 'token',
+//           value: token,
+//         }),
+//       ],
+//     );
 
-    // xss safe (all values internal)
-    config.node.innerHTML = content;
+//     // xss safe (all values internal)
+//     config.node.innerHTML = content;
 
-    (document.getElementById(formId) as HTMLFormElement).submit();
-  }
+//     (document.getElementById(formId) as HTMLFormElement).submit();
+//   }
 
   /*
       POST /me/unlink/:id
@@ -507,13 +554,13 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result: Response) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
-  logout(token: string): Promise<any> {
+  logout(token: string): Promise<void> {
     const httpClient = new AuthClient();
-
     return httpClient
       .request({
         method: 'POST',
@@ -527,11 +574,12 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result: Response) => {
-        return this.processResult(result, 200);
+        this.processResult(result, 200);
+        return;
       });
   }
 
-  revokeToken(token: string, tokenid: string): Promise<any> {
+  revokeToken(token: string, tokenid: string): Promise<void> {
     const httpClient = new AuthClient();
 
     return httpClient
@@ -546,11 +594,12 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result: Response) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
-  revokeAllTokens(token: string): Promise<any> {
+  revokeAllTokens(token: string): Promise<void> {
     const httpClient = new AuthClient();
 
     return httpClient
@@ -565,7 +614,8 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result: Response) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
@@ -605,7 +655,7 @@ export class Auth2 {
       });
   }
 
-  putMe(token: string, data: PutMeInput): Promise<any> {
+  putMe(token: string, data: PutMeInput): Promise<void> {
     const httpClient = new AuthClient();
     return httpClient
       .request({
@@ -689,7 +739,7 @@ export class Auth2 {
       });
   }
 
-  loginCancel(): Promise<null> {
+  loginCancel(): Promise<void> {
     const httpClient = new AuthClient();
     return httpClient
       .request({
@@ -702,11 +752,12 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
-  linkCancel(): Promise<null> {
+  linkCancel(): Promise<void> {
     const httpClient = new AuthClient();
     return httpClient
       .request({
@@ -719,7 +770,8 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
@@ -744,7 +796,7 @@ export class Auth2 {
       timeout: TIMEOUT,
     });
 
-    return this.processResult(result, 200);
+    return this.processResult(result, 200) as LoginPickResult;
   }
 
   async loginCreate(data: LoginCreateOptions): Promise<LoginCreateResult> {
@@ -762,11 +814,11 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 201);
+        return this.processResult(result, 201) as LoginCreateResult;
       });
   }
 
-  loginUsernameSuggest(username: string): Promise<any> {
+  loginUsernameSuggest(username: string): Promise<LoginUsernameSuggestResult> {
     const httpClient = new AuthClient();
     return httpClient
       .request({
@@ -779,7 +831,7 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 200);
+        return this.processResult(result, 200) as LoginUsernameSuggestResult;
       });
   }
 
@@ -798,7 +850,7 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 200);
+        return this.processResult(result, 200) as LinkChoiceResponse;
       })
       .then((response) => {
         // The link choice structure provided by the auth2 service has evolved
@@ -832,7 +884,7 @@ export class Auth2 {
       });
   }
 
-  linkPick(token: string, identityId: string): Promise<any> {
+  linkPick(token: string, identityId: string): Promise<void> {
     const data = {
       id: identityId,
     };
@@ -851,11 +903,12 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 204);
+        this.processResult(result, 204);
+        return;
       });
   }
 
-  processResult(result: Response, expectedResponse: number): any {
+  processResult(result: Response, expectedResponse: number): unknown {
     if (result.status >= 200 && result.status < 300) {
       if (expectedResponse !== result.status) {
         throw new AuthError({
@@ -891,7 +944,7 @@ export class Auth2 {
       // AuthorizationError - for 401s
       // ClientError - for 400s
       // ServerError - for 500s
-      let auth2ErrorData: any;
+      let auth2ErrorData: Auth2ErrorResponse | null = null;
       let errorResponse: AuthErrorInfo;
       const errorText = result.response;
       try {
@@ -905,7 +958,7 @@ export class Auth2 {
         switch (mediaType) {
           case 'application/json':
             errorResponse = (() => {
-              auth2ErrorData = JSON.parse(errorText);
+              auth2ErrorData = JSON.parse(errorText) as Auth2ErrorResponse;
               const code =
                 auth2ErrorData.error.code || auth2ErrorData.error.appcode || auth2ErrorData.error.httpcode || 0;
               return {
@@ -976,7 +1029,7 @@ export class Auth2 {
     }
   }
 
-  userSearch(token: string, searchInput: UserSearchInput): Promise<any> {
+  userSearch(token: string, searchInput: UserSearchInput): Promise<UserSearchResult> {
     const httpClient = new AuthClient();
 
     const path = this.makePath([endpoints.userSearch, searchInput.prefix]);
@@ -999,11 +1052,11 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 200);
+        return this.processResult(result, 200) as UserSearchResult;
       });
   }
 
-  adminUserSearch(token: string, searchInput: UserSearchInput): Promise<any> {
+  adminUserSearch(token: string, searchInput: UserSearchInput): Promise<AdminUserSearchResult> {
     const httpClient = new AuthClient();
 
     const search = new HttpQuery({
@@ -1024,11 +1077,11 @@ export class Auth2 {
         timeout: TIMEOUT,
       })
       .then((result) => {
-        return this.processResult(result, 200);
+        return this.processResult(result, 200) as AdminUserSearchResult;
       });
   }
 
-  getAdminUser(token: string, username: string): Promise<any> {
+  getAdminUser(token: string, username: string): Promise<unknown> {
     const httpClient = new AuthClient();
     return httpClient
       .request({

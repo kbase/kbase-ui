@@ -1,6 +1,7 @@
 import Cache from '../Cache';
 import {
-    ServiceStatus, ServiceWizardClient
+    ServiceStatus,
+    ServiceWizardClient,
 } from '../coreServices/ServiceWizard';
 import { JSONRPC20Params, JSONRPC20Result } from './JSONRPC20';
 import { ServiceClient, ServiceClientParams } from './ServiceClient';
@@ -19,7 +20,7 @@ const WAITER_FREQUENCY = 100;
 //     module_name: string;
 // }
 
-var moduleCache = new Cache<ServiceStatus>({
+const moduleCache = new Cache<ServiceStatus>({
     itemLifetime: ITEM_LIFETIME,
     monitoringFrequency: MONITORING_FREQUENCY,
     waiterTimeout: WAITER_TIMEOUT,
@@ -101,7 +102,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
                     version: this.version,
                 });
                 return status;
-            }
+            },
         );
         this.module = moduleInfo.module_name;
         this.url = moduleInfo.url;
@@ -110,7 +111,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
 
     async callFunc(
         funcName: string,
-        params?: JSONRPC20Params
+        params?: JSONRPC20Params,
     ): Promise<JSONRPC20Result> {
         await this.lookupModule();
         return super.callFunc(funcName, params);

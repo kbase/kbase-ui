@@ -1,8 +1,14 @@
-import { FilterSpec } from "../lib/JobBrowserBFFClient";
-import { EpochTime } from "../types/base";
-import { UIError } from "../types/error";
-import { JobEventHistory } from "../types/jobState";
-import { SimpleView, ViewError, ViewLoading, ViewNone, ViewSuccess } from "./base";
+import { FilterSpec } from '../lib/JobBrowserBFFClient';
+import { EpochTime } from '../types/base';
+import { UIError } from '../types/error';
+import { JobEventHistory } from '../types/jobState';
+import {
+    SimpleView,
+    ViewError,
+    ViewLoading,
+    ViewNone,
+    ViewSuccess,
+} from './base';
 
 export type ClientGroup = string;
 export type JobID = string;
@@ -11,7 +17,7 @@ export enum JobContextType {
     NARRATIVE,
     WORKSPACE,
     EXPORT,
-    UNKNOWN
+    UNKNOWN,
 }
 
 export interface JobContextBase {
@@ -47,12 +53,12 @@ export interface JobContextUnknown extends JobContextBase {
 }
 
 export type JobContext =
-    JobContextNarrative |
-    JobContextWorkspace |
-    JobContextExport |
-    JobContextUnknown;
+    | JobContextNarrative
+    | JobContextWorkspace
+    | JobContextExport
+    | JobContextUnknown;
 
-export type AppType = "narrative" | "unknown";
+export type AppType = 'narrative' | 'unknown';
 
 export interface App {
     id: string;
@@ -76,14 +82,13 @@ export interface JobRequest {
     };
 }
 
-
 // HMM trying this approach...
 
 // Job Activity represents the active state of a job.
-// It follows the progression of a job from creation, to 
+// It follows the progression of a job from creation, to
 // being queued, to running, and to being finished.
 
-// Note that we distinguish between the final, resting state of 
+// Note that we distinguish between the final, resting state of
 // a job ("finished"), and the nature of the final state -
 // complete, error, or terminate
 
@@ -91,20 +96,20 @@ export enum JobActivity {
     CREATE,
     QUEUE,
     RUN,
-    FINISH
+    FINISH,
 }
 
 export enum JobFate {
     COMPLETE,
     ERROR,
-    TERMINATE
+    TERMINATE,
 }
 
 // Job Activity
 
 export interface JobActivityBase {
     activity: JobActivity;
-    timeline: {};
+    timeline: unknown;
 }
 
 export interface JobActivityCreate {
@@ -147,7 +152,7 @@ export interface JobActivityFinishComplete extends JobActivityFinishBase {
 }
 
 export interface JobActivityFinishError extends JobActivityFinishBase {
-    fate: JobFate.ERROR,
+    fate: JobFate.ERROR;
     error: {
         code: number;
         message: string;
@@ -155,27 +160,25 @@ export interface JobActivityFinishError extends JobActivityFinishBase {
 }
 
 export interface JobActivityFinishTerminate extends JobActivityFinishBase {
-    fate: JobFate.TERMINATE,
+    fate: JobFate.TERMINATE;
     terminate: {
         code: number;
     };
 }
 
 export type JobActivityState =
-    JobActivityCreate |
-    JobActivityQueue |
-    JobActivityRun |
-    JobActivityFinishComplete |
-    JobActivityFinishError |
-    JobActivityFinishTerminate;
+    | JobActivityCreate
+    | JobActivityQueue
+    | JobActivityRun
+    | JobActivityFinishComplete
+    | JobActivityFinishError
+    | JobActivityFinishTerminate;
 
 // The second aspect of the job state is the finish state.
-// This represents the conditions under which the job reached its 
-// ultimate state. 
-// Note that the finish states do not have a timestamp, since there 
+// This represents the conditions under which the job reached its
+// ultimate state.
+// Note that the finish states do not have a timestamp, since there
 // is no further change over time.
-
-
 
 // Now put it all together!
 
@@ -197,7 +200,7 @@ export interface JobStateRun extends JobStateBase {
     activity: JobActivityRun;
 }
 
-// NB this covers 
+// NB this covers
 export interface JobStateComplete extends JobStateBase {
     activity: JobActivityFinishComplete;
 }
@@ -238,12 +241,12 @@ export interface JobStateTerminate extends JobStateBase {
 // }
 
 export type JobState =
-    JobStateCreate |
-    JobStateQueue |
-    JobStateRun |
-    JobStateComplete |
-    JobStateError |
-    JobStateTerminate;
+    | JobStateCreate
+    | JobStateQueue
+    | JobStateRun
+    | JobStateComplete
+    | JobStateError
+    | JobStateTerminate;
 
 // export type Job = JobState;
 export interface Job {
@@ -256,7 +259,13 @@ export interface Job {
 //     jobs: Array<Job>;
 // }
 
-export type TimeRangePresets = 'lastHour' | 'last48Hours' | 'lastWeek' | 'lastMonth' | 'lastYear' | 'allTime';
+export type TimeRangePresets =
+    | 'lastHour'
+    | 'last48Hours'
+    | 'lastWeek'
+    | 'lastMonth'
+    | 'lastYear'
+    | 'allTime';
 
 export interface TimeRangePreset {
     kind: 'preset';
@@ -283,8 +292,13 @@ export interface SortSpec {
 }
 
 // TODO: unify with the same definition in JobBrowserBFFClient.ts
-export type JobSearchStatus = 'create' | 'queue' | 'run' | 'complete' | 'error' | 'terminate';
-
+export type JobSearchStatus =
+    | 'create'
+    | 'queue'
+    | 'run'
+    | 'complete'
+    | 'error'
+    | 'terminate';
 
 export interface JobsSearchExpression {
     query?: string;
@@ -311,7 +325,7 @@ export enum ViewType {
     MY_JOBS,
     USER_JOBS,
     PUBLIC_APP_STATS,
-    USER_SUMMARY
+    USER_SUMMARY,
 }
 
 // Jobs
@@ -328,7 +342,7 @@ export enum JobSearchState {
     INITIAL_SEARCHING,
     SEARCHING,
     READY,
-    ERROR
+    ERROR,
 }
 
 // MyJobs view
@@ -350,7 +364,7 @@ export interface MyJobsViewDataNone extends MyJobsViewDataBase {
 // When the "my jobs" viewer has been loaded, the first thing to
 // do is to build up a view of the initial jobs. This is done by applying
 // some default search params to a search. These params are used to BOTH
-// populate the search controls which ar not empty, and also to 
+// populate the search controls which ar not empty, and also to
 // conduct an initial search.
 export interface MyJobsViewDataInitialSearching extends MyJobsViewDataBase {
     searchState: JobSearchState.INITIAL_SEARCHING;
@@ -375,11 +389,11 @@ export interface MyJobsViewDataError extends MyJobsViewDataBase {
 }
 
 export type MyJobsViewData =
-    MyJobsViewDataNone |
-    MyJobsViewDataInitialSearching |
-    MyJobsViewDataSearching |
-    MyJobsViewDataReady |
-    MyJobsViewDataError;
+    | MyJobsViewDataNone
+    | MyJobsViewDataInitialSearching
+    | MyJobsViewDataSearching
+    | MyJobsViewDataReady
+    | MyJobsViewDataError;
 
 // Top level view
 
@@ -450,10 +464,10 @@ export interface UserJobsViewDataError extends UserJobsViewDataBase {
 }
 
 export type UserJobsViewData =
-    UserJobsViewDataInitialSearching |
-    UserJobsViewDataSearching |
-    UserJobsViewDataReady |
-    UserJobsViewDataError;
+    | UserJobsViewDataInitialSearching
+    | UserJobsViewDataSearching
+    | UserJobsViewDataReady
+    | UserJobsViewDataError;
 
 // Top Level View
 
@@ -461,11 +475,10 @@ export interface UserJobsViewSuccess extends ViewSuccess {
     data: UserJobsViewData;
 }
 export type UserJobsView =
-    UserJobsViewNone |
-    UserJobsViewLoading |
-    UserJobsViewError |
-    UserJobsViewSuccess;
-
+    | UserJobsViewNone
+    | UserJobsViewLoading
+    | UserJobsViewError
+    | UserJobsViewSuccess;
 
 // export interface UserJobsView extends TabViewBase {
 //     searchState: SearchState;
@@ -499,10 +512,6 @@ export type UserJobsView =
 
 // export interface StoreState extends StoreState, MyStoreState {
 // }
-
-
-
-
 
 // export interface UserRunSummaryView extends TabViewBase {
 //     type: ViewType.USER_SUMMARY;

@@ -1,21 +1,21 @@
 import { CloseOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
-  Alert,
-  Button,
-  Checkbox,
-  Col,
-  Form,
-  Image,
-  Input,
-  Modal,
-  Radio,
-  Row,
-  Select,
-  Space,
-  Spin,
-  Switch,
-  Tooltip,
-  message,
+    Alert,
+    Button,
+    Checkbox,
+    Col,
+    Form,
+    Image,
+    Input,
+    Modal,
+    Radio,
+    Row,
+    Select,
+    Space,
+    Spin,
+    Switch,
+    Tooltip,
+    message,
 } from 'antd';
 import Link from 'antd/es/typography/Link';
 import UILink from 'components/UILink2';
@@ -655,7 +655,7 @@ function Profile(props: ProfileProps) {
         </Form.Item>
         <div style={{ fontStyle: 'italic' }}>
           If your email address is not registered at{' '}
-          <a href="https://gravatar.com" target="_blank">
+          <a href="https://gravatar.com" target="_blank" rel="noopener noreferrer">
             gravatar
           </a>
           , the {gravatarHelpLink} you select above will be used instead.

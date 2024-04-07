@@ -1,4 +1,7 @@
-import { AuthenticationState, AuthenticationStatus } from 'contexts/EuropaContext';
+import {
+    AuthenticationState,
+    AuthenticationStatus,
+} from 'contexts/EuropaContext';
 import { navigate } from 'lib/navigation';
 import { Component } from 'react';
 import { Alert } from 'react-bootstrap';
@@ -7,7 +10,7 @@ import * as uuid from 'uuid';
 import ErrorView, { ErrorInfo } from '../components/ErrorView';
 import { isEqual } from '../lib/kb_lib/Utils';
 import { WindowChannel, WindowChannelInit } from '../lib/kb_lib/windowChannel';
-import { Messenger } from '../lib/messenger';
+import { Messenger, SubscriptionRef } from '../lib/messenger';
 import { Config } from '../types/config';
 import AutoPostForm from './AutoPostForm';
 import IFrame, { IFrameProps } from './IFrame';
@@ -96,20 +99,21 @@ const SHOW_SLOW_LOADING_AFTER = 3000;
 const SHOW_SUPER_SLOW_LOADING_AFTER = 15000;
 const PLUGIN_STARTUP_TIMEOUT = 60000;
 
-
 // TODO: improve this - should only be the struct ever sent, but could survey all
 // plugins to ensure they comply.
 export type NavigationString = string;
 export type NavigationStruct = {
-    path: string,
-    params: { [x: string]: string }
-}
+    path: string;
+    params: { [x: string]: string };
+};
 export type Navigation = NavigationString | NavigationStruct;
 
-export default class IFrameController extends Component<IFrameControllerProps,
-    IFrameControllerState> {
+export default class IFrameController extends Component<
+    IFrameControllerProps,
+    IFrameControllerState
+> {
     id: string;
-    receivers: Array<any>;
+    receivers: Array<SubscriptionRef>;
     channel: WindowChannel | null;
     hostChannelId: string;
     pluginChannelId: string;
@@ -145,7 +149,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             },
             () => {
                 this.monitorLoad(start);
-            }
+            },
         );
     }
 
@@ -177,7 +181,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 },
                 () => {
                     this.monitorSlowLoad(start);
-                }
+                },
             );
         }, SHOW_LOADING_AFTER);
     }
@@ -196,7 +200,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 },
                 () => {
                     this.monitorSuperSlowLoad(start);
-                }
+                },
             );
         }, SHOW_SLOW_LOADING_AFTER);
     }
@@ -215,7 +219,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 },
                 () => {
                     this.monitorTooLongLoad(start);
-                }
+                },
             );
         }, SHOW_SUPER_SLOW_LOADING_AFTER);
     }
@@ -272,7 +276,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
             });
         });
 
-        this.channel.on('open-window', ({ url }) => {
+        this.channel.on('open-window', (payload) => {
+            const { url } = payload as { url: string };
             window.location.href = url;
         });
 
@@ -280,7 +285,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
         //     this.runtime.service('instrumentation').send(instrumentation);
         // });
 
-        this.channel.on('ui-navigate', (to: Navigation) => {
+        this.channel.on('ui-navigate', (payload: unknown) => {
+            const to = payload as Navigation;
             //
             // OK. here we need to translation the navigation
             // request to an actual navigation.
@@ -310,7 +316,11 @@ export default class IFrameController extends Component<IFrameControllerProps,
             navigate(path, params);
         });
 
-        this.channel.on('post-form', (config) => {
+        this.channel.on('post-form', (payload: unknown) => {
+            const config = payload as {
+                action: string;
+                params: Record<string, string>;
+            };
             this.formPost(config);
         });
 
@@ -322,7 +332,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
             window.document.body.click();
         });
 
-        this.channel.on('set-title', ({ title }) => {
+        this.channel.on('set-title', (payload: unknown) => {
+            const { title } = payload as { title: string };
             this.props.setTitle(title);
         });
 
@@ -422,7 +433,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
                 return null;
-            case AuthenticationStatus.AUTHENTICATED:
+            case AuthenticationStatus.AUTHENTICATED: {
                 const {
                     token,
                     account: { user, display, email, roles },
@@ -436,6 +447,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                         return id;
                     }),
                 };
+            }
         }
     }
 
@@ -459,7 +471,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                         email,
                     });
                 },
-            })
+            }),
         );
         this.receivers.push(
             this.props.messenger.receive({
@@ -468,7 +480,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                 handler: () => {
                     this.channel!.send('loggedout', {});
                 },
-            })
+            }),
         );
     }
 
@@ -485,7 +497,8 @@ export default class IFrameController extends Component<IFrameControllerProps,
             this.channel!.once(
                 'ready',
                 PLUGIN_STARTUP_TIMEOUT,
-                ({ channelId }: { channelId?: string }) => {
+                (payload: unknown) => {
+                    const { channelId } = payload as { channelId?: string };
                     this.channel!.setPartner(channelId || this.pluginChannelId);
 
                     const params = Object.assign({}, this.props.routeParams);
@@ -496,7 +509,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                             case AuthenticationStatus.NONE:
                             case AuthenticationStatus.UNAUTHENTICATED:
                                 return null;
-                            case AuthenticationStatus.AUTHENTICATED:
+                            case AuthenticationStatus.AUTHENTICATED: {
                                 const {
                                     token,
                                     account: { user, display, email, roles },
@@ -510,6 +523,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                                         return id;
                                     }),
                                 };
+                            }
                         }
                     })();
 
@@ -529,7 +543,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                         const config = this.props.config;
                         const services: { [k: string]: object } = {};
                         for (const [key, value] of Object.entries(
-                            config.services
+                            config.services,
                         )) {
                             services[key] = value;
                             if (value.aliases) {
@@ -557,7 +571,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                     // Any sends to the channel should only be enabled after the
                     // start message is received.
                     this.setupChannelSends();
-                }
+                },
             );
 
             // Sent by the plugin to indicate that the plugin has finished loading.
@@ -586,7 +600,10 @@ export default class IFrameController extends Component<IFrameControllerProps,
                     view: this.props.view,
                     to: this.props.view,
                     // NB: the "view" param provided for compatability with some plugins.
-                    params: {...this.props.routeParams, view: this.props.view},
+                    params: {
+                        ...this.props.routeParams,
+                        view: this.props.view,
+                    },
                     path: this.props.original,
                 });
                 resolve();
@@ -597,9 +614,10 @@ export default class IFrameController extends Component<IFrameControllerProps,
             this.channel!.once(
                 'start-error',
                 PLUGIN_STARTUP_TIMEOUT,
-                (config) => {
+                (payload: unknown) => {
+                    const config = payload as { message: string };
                     reject(new Error(config.message));
-                }
+                },
             );
         });
     }
@@ -695,7 +713,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                                         url: 'https://www.kbase.us/support',
                                         description: [
                                             'Visit KBase Support to see if other users have experienced the ' +
-                                            'issue, and if not, create a support ticket.',
+                                                'issue, and if not, create a support ticket.',
                                         ],
                                     },
                                 ],
@@ -725,7 +743,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                                         title: 'Wait a while and try again',
                                         description: [
                                             'This condition may be temporary, e.g. network issues; if you ' +
-                                            'wait a period of time and retry, the issue may have been resolved.',
+                                                'wait a period of time and retry, the issue may have been resolved.',
                                         ],
                                     },
                                     {
@@ -733,7 +751,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
                                         url: 'https://www.kbase.us/support',
                                         description: [
                                             'Visit KBase Support to see if other users have experienced the ' +
-                                            'issue, and if not, create a support ticket.',
+                                                'issue, and if not, create a support ticket.',
                                         ],
                                     },
                                 ],
@@ -753,7 +771,7 @@ export default class IFrameController extends Component<IFrameControllerProps,
             // original is the full hash string
             original: this.props.original,
             config: this.props.config,
-            syncHash: this.props.syncHash
+            syncHash: this.props.syncHash,
         };
 
         return <IFrame {...props} />;

@@ -9,7 +9,7 @@ interface ListenerParams {
 class Listener {
     name: string;
     callback: (payload: Payload) => void;
-    onError?: (error: any) => void;
+    onError?: (error: Error) => void;
 
     constructor({ name, callback, onError }: ListenerParams) {
         this.name = name;
@@ -18,7 +18,7 @@ class Listener {
     }
 }
 
-type Payload = any;
+type Payload = unknown;
 
 interface WaitingListenerParams extends ListenerParams {
     timeout?: number;
@@ -63,7 +63,7 @@ type Envelope = PlainEnvelope | RequestEnvelope | ReplyEnvelope;
 
 class Message {
     name: string;
-    payload: any;
+    payload: Payload;
     id: string;
     created: Date;
     envelope: Envelope;
@@ -74,7 +74,7 @@ class Message {
         envelope,
     }: {
         name: string;
-        payload: any;
+        payload: Payload;
         envelope: Envelope;
     }) {
         this.name = name;
@@ -95,12 +95,12 @@ class Message {
 
 interface Handler {
     started: Date;
-    handler: (response: any) => any;
+    handler: (response: unknown) => void;
 }
 
 interface ReplyHandler {
     started: Date;
-    handler: (status: 'ok' | 'error', response: any) => any;
+    handler: (status: 'ok' | 'error', response: unknown) => void;
 }
 
 export interface WindowChannelInitParams {
@@ -251,7 +251,7 @@ export class WindowChannel {
             this.awaitingResponses.has(message.envelope.inReplyTo)
         ) {
             const response = this.awaitingResponses.get(
-                message.envelope.inReplyTo
+                message.envelope.inReplyTo,
             );
             this.awaitingResponses.delete(message.envelope.inReplyTo);
             if (response) {
@@ -271,7 +271,11 @@ export class WindowChannel {
                     listener.callback(message.payload);
                 } catch (ex) {
                     if (listener.onError) {
-                        listener.onError(ex);
+                        listener.onError(
+                            ex instanceof Error
+                                ? ex
+                                : new Error('Unknown Error'),
+                        );
                     }
                 }
             });
@@ -346,8 +350,8 @@ export class WindowChannel {
 
     on(
         messageId: string,
-        callback: (payload: any) => any,
-        onError?: (error: any) => void
+        callback: (payload: unknown) => void,
+        onError?: (error: unknown) => unknown,
     ) {
         this.listen(
             new Listener({
@@ -358,7 +362,7 @@ export class WindowChannel {
                         onError(error);
                     }
                 },
-            })
+            }),
         );
     }
 
@@ -382,47 +386,48 @@ export class WindowChannel {
         this.sendMessage(message);
     }
 
-    sendRequest(
-        message: Message,
-        handler: (status: 'ok' | 'error', response: any) => any
-    ) {
-        if (!this.running) {
-            throw new Error('Not running - may not send ');
-        }
-        this.awaitingResponses.set(message.envelope.id, {
-            started: new Date(),
-            handler,
-        });
-        this.sendMessage(message);
-    }
+    // Not used anywhere now
+    // sendRequest(
+    //     message: Message,
+    //     handler: (status: 'ok' | 'error', response: any) => void
+    // ) {
+    //     if (!this.running) {
+    //         throw new Error('Not running - may not send ');
+    //     }
+    //     this.awaitingResponses.set(message.envelope.id, {
+    //         started: new Date(),
+    //         handler,
+    //     });
+    //     this.sendMessage(message);
+    // }
 
-    request(name: string, payload: Payload) {
-        return new Promise((resolve, reject) => {
-            const envelope: RequestEnvelope = {
-                type: 'request',
-                from: this.id,
-                to: this.partnerId,
-                created: Date.now(),
-                id: uuidv4(),
-            };
-            const message = new Message({
-                name,
-                payload,
-                envelope,
-            });
-            this.sendRequest(
-                message,
-                (status: 'ok' | 'error', response: any) => {
-                    if (status === 'ok') {
-                        resolve(response);
-                    } else {
-                        // TODO: tighten up the typing!!!
-                        reject(new Error(response.message));
-                    }
-                }
-            );
-        });
-    }
+    // request(name: string, payload: Payload) {
+    //     return new Promise((resolve, reject) => {
+    //         const envelope: RequestEnvelope = {
+    //             type: 'request',
+    //             from: this.id,
+    //             to: this.partnerId,
+    //             created: Date.now(),
+    //             id: uuidv4(),
+    //         };
+    //         const message = new Message({
+    //             name,
+    //             payload,
+    //             envelope,
+    //         });
+    //         this.sendRequest(
+    //             message,
+    //             (status: 'ok' | 'error', response: any) => {
+    //                 if (status === 'ok') {
+    //                     resolve(response);
+    //                 } else {
+    //                     // TODO: tighten up the typing!!!
+    //                     reject(new Error(response.message));
+    //                 }
+    //             }
+    //         );
+    //     });
+    // }
 
     startMonitor() {
         window.setTimeout(() => {
@@ -430,7 +435,7 @@ export class WindowChannel {
 
             // first take care of listeners awaiting a message.
             for (const [id, listeners] of Array.from(
-                this.waitingListeners.entries()
+                this.waitingListeners.entries(),
             )) {
                 const newListeners = listeners.filter((listener) => {
                     if (listener instanceof WaitingListener) {
@@ -439,14 +444,14 @@ export class WindowChannel {
                             try {
                                 if (listener.onError) {
                                     listener.onError(
-                                        new Error('timout after ' + elapsed)
+                                        new Error('timout after ' + elapsed),
                                     );
                                 }
                             } catch (ex) {
                                 console.error(
                                     'Error calling error handler',
                                     id,
-                                    ex
+                                    ex,
                                 );
                             }
                             return false;
@@ -482,7 +487,7 @@ export class WindowChannel {
         name: string,
         timeout: number,
         callback: (payload: Payload) => void,
-        onError?: (error: Error) => void
+        onError?: (error: Error) => void,
     ) {
         this.listenOnce(
             new WaitingListener({
@@ -494,7 +499,7 @@ export class WindowChannel {
                         onError(error);
                     }
                 },
-            })
+            }),
         );
     }
 
@@ -510,7 +515,7 @@ export class WindowChannel {
                     onError: (error) => {
                         reject(error);
                     },
-                })
+                }),
             );
         });
     }
@@ -534,7 +539,7 @@ export class WindowChannel {
             this.window.removeEventListener(
                 'message',
                 this.currentListener,
-                false
+                false,
             );
         }
         return this;

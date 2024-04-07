@@ -1,7 +1,7 @@
 interface QueueItem {
     id: number;
     callback: () => Promise<void>;
-    errorCallback?: (error: any) => void;
+    errorCallback?: (error: Error) => void;
 }
 
 export default class AsyncQueue {
@@ -25,8 +25,14 @@ export default class AsyncQueue {
             } catch (ex) {
                 console.error('Error processing queue item');
                 console.error(ex);
-                if (item.errorCallback) {
-                    item.errorCallback(ex);
+                if (ex instanceof Error) {
+                    if (item.errorCallback) {
+                        item.errorCallback(
+                            ex instanceof Error
+                                ? ex
+                                : new Error('Unknown Error'),
+                        );
+                    }
                 }
             } finally {
                 this.start();
@@ -44,7 +50,9 @@ export default class AsyncQueue {
                 console.error('Error processing queue item');
                 console.error(ex);
                 if (item.errorCallback) {
-                    item.errorCallback(ex);
+                    item.errorCallback(
+                        ex instanceof Error ? ex : new Error('Unknown Error'),
+                    );
                 }
             }
         }
@@ -68,7 +76,10 @@ export default class AsyncQueue {
         return this.itemId;
     }
 
-    addItem(callback: () => Promise<void>, errorCallback?: (error: any) => Promise<void>): void {
+    addItem(
+        callback: () => Promise<void>,
+        errorCallback?: (error: Error) => Promise<void>,
+    ): void {
         const item: QueueItem = {
             id: this.nextItemId(),
             callback,

@@ -1,4 +1,3 @@
-
 /**
  * A generic REST(ish) API caller.
  * Really simple. This just ensures that a URL and token exist,
@@ -38,7 +37,7 @@ export class RestClient {
      * @param {string} path
      * @param {object} options
      */
-    async makeCall(method: string, path: string, data?: any) {
+    async makeCall(method: string, path: string, data?: unknown) {
         // remove the first slash, if present
         if (path.startsWith('/')) {
             path = path.substring(1);
@@ -47,16 +46,16 @@ export class RestClient {
         if (!['GET', 'POST', 'PUT', 'DELETE'].includes(method)) {
             throw new Error('Method ' + method + ' not usable');
         }
-        let url = this.endpoint + path;
-        let request: RequestInit = {
+        const url = this.endpoint + path;
+        const request: RequestInit = {
             method,
             cache: 'no-cache',
             headers: {
                 'Content-type': 'application/json; charset=utf-8',
-                'Authorization': this.token
+                Authorization: this.token,
             },
             redirect: 'follow',
-            referrer: 'no-referrer'
+            referrer: 'no-referrer',
         };
         if (data) {
             request.body = JSON.stringify(data);
@@ -82,4 +81,3 @@ export class RestClient {
         return response;
     }
 }
-

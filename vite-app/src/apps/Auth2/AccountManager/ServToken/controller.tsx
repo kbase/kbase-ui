@@ -1,15 +1,15 @@
-import ErrorAlert from "components/ErrorAlert";
-import Loading from "components/Loading";
-import { notifySuccess } from "contexts/EuropaContext";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
+import ErrorAlert from 'components/ErrorAlert';
+import Loading from 'components/Loading';
+import { notifySuccess } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
 import { SimpleError } from 'lib/SimpleError';
-import { Auth2, Role, TokenInfoFull } from "lib/kb_lib/Auth2";
-import { Component } from "react";
-import ActiveTokensView from "./view";
+import { Auth2, Role, TokenInfoFull } from 'lib/kb_lib/Auth2';
+import { Component } from 'react';
+import ActiveTokensView from './view';
 
 export interface ServTokensControllerProps {
     token: string;
-    roles: Array<Role>
+    roles: Array<Role>;
     authURL: string;
     setTitle: (title: string) => void;
 }
@@ -22,13 +22,15 @@ export interface ServTokens {
 
 type ServTokensControllerState = AsyncProcess<ServTokens, SimpleError>;
 
-
-export default class ServTokensController extends Component<ServTokensControllerProps, ServTokensControllerState> {
+export default class ServTokensController extends Component<
+    ServTokensControllerProps,
+    ServTokensControllerState
+> {
     constructor(props: ServTokensControllerProps) {
         super(props);
         this.state = {
-            status: AsyncProcessStatus.NONE
-        }
+            status: AsyncProcessStatus.NONE,
+        };
     }
     componentDidMount() {
         this.props.setTitle('Account Manager - Service Tokens');
@@ -40,7 +42,7 @@ export default class ServTokensController extends Component<ServTokensController
             return;
         }
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         try {
             await auth2.revokeToken(this.props.token, tokenToRevoke);
@@ -52,7 +54,7 @@ export default class ServTokensController extends Component<ServTokensController
                     tokens: tokens.filter((token) => {
                         return token.type === 'Service';
                     }),
-                }
+                },
             });
 
             notifySuccess(`Service token "${name}" as been revoked`);
@@ -67,22 +69,24 @@ export default class ServTokensController extends Component<ServTokensController
             return;
         }
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         const authToken = this.props.token;
         try {
-            const {tokens: currentTokens} = await auth2.getTokens(authToken);
+            const { tokens: currentTokens } = await auth2.getTokens(authToken);
 
             // All others
-            await Promise.all(currentTokens
-                .filter(({type}) => {
-                    return type=== 'Service';
-                })
-                .map(({id}) => {
-                    return auth2.revokeToken(authToken, id);
-                }));
+            await Promise.all(
+                currentTokens
+                    .filter(({ type }) => {
+                        return type === 'Service';
+                    })
+                    .map(({ id }) => {
+                        return auth2.revokeToken(authToken, id);
+                    }),
+            );
 
-            const {tokens} = await auth2.getTokens(authToken);
+            const { tokens } = await auth2.getTokens(authToken);
 
             this.setState({
                 status: AsyncProcessStatus.SUCCESS,
@@ -90,8 +94,8 @@ export default class ServTokensController extends Component<ServTokensController
                     ...this.state.value,
                     tokens: tokens.filter((token) => {
                         return token.type === 'Service';
-                    })
-                }
+                    }),
+                },
             });
 
             notifySuccess(`All service tokens have been revoked`);
@@ -103,7 +107,7 @@ export default class ServTokensController extends Component<ServTokensController
 
     async getServerTimeBias() {
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
         const { servertime } = await auth2.root();
         return servertime - Date.now();
@@ -111,10 +115,10 @@ export default class ServTokensController extends Component<ServTokensController
 
     async loadData() {
         this.setState({
-            status: AsyncProcessStatus.PENDING
+            status: AsyncProcessStatus.PENDING,
         });
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
 
         try {
@@ -128,16 +132,16 @@ export default class ServTokensController extends Component<ServTokensController
                         return token.type === 'Service';
                     }),
                     newToken: null,
-                    serverTimeBias
-                }
+                    serverTimeBias,
+                },
             });
         } catch (ex) {
             console.error(ex);
             this.setState({
                 status: AsyncProcessStatus.ERROR,
                 error: {
-                    message: ex instanceof Error ? ex.message : 'Unknown Error'
-                }
+                    message: ex instanceof Error ? ex.message : 'Unknown Error',
+                },
             });
         }
     }
@@ -149,13 +153,13 @@ export default class ServTokensController extends Component<ServTokensController
         }
 
         const auth2 = new Auth2({
-            baseUrl: this.props.authURL
+            baseUrl: this.props.authURL,
         });
-        const authToken = this.props.token
+        const authToken = this.props.token;
         try {
             const newToken = await auth2.createToken(authToken, {
                 name,
-                type: 'service'
+                type: 'service',
             });
 
             this.setState({
@@ -163,8 +167,8 @@ export default class ServTokensController extends Component<ServTokensController
                 value: {
                     ...state.value,
                     newToken,
-                    tokens: state.value.tokens.concat([newToken])
-                }
+                    tokens: state.value.tokens.concat([newToken]),
+                },
             });
 
             notifySuccess(`New service token named "${name}" has been created`);
@@ -182,8 +186,8 @@ export default class ServTokensController extends Component<ServTokensController
             ...this.state,
             value: {
                 ...this.state.value,
-                newToken: null
-            }
+                newToken: null,
+            },
         });
     }
 
@@ -191,20 +195,23 @@ export default class ServTokensController extends Component<ServTokensController
         switch (this.state.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading..." />
-            case AsyncProcessStatus.SUCCESS:
+                return <Loading message="Loading..." />;
+            case AsyncProcessStatus.SUCCESS: {
                 const { tokens, newToken, serverTimeBias } = this.state.value;
-                return <ActiveTokensView
-                    tokens={tokens}
-                    newToken={newToken}
-                    serverTimeBias={serverTimeBias}
-                    revokeToken={this.revokeToken.bind(this)}
-                    revokeAllTokens={this.revokeAllTokens.bind(this)}
-                    createServiceToken={this.createServiceToken.bind(this)}
-                    clearNewToken={this.clearNewToken.bind(this)}
-                />
+                return (
+                    <ActiveTokensView
+                        tokens={tokens}
+                        newToken={newToken}
+                        serverTimeBias={serverTimeBias}
+                        revokeToken={this.revokeToken.bind(this)}
+                        revokeAllTokens={this.revokeAllTokens.bind(this)}
+                        createServiceToken={this.createServiceToken.bind(this)}
+                        clearNewToken={this.clearNewToken.bind(this)}
+                    />
+                );
+            }
             case AsyncProcessStatus.ERROR:
-                return <ErrorAlert message={this.state.error.message} />
+                return <ErrorAlert message={this.state.error.message} />;
         }
     }
 }

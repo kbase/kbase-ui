@@ -2,12 +2,12 @@ import { message } from 'antd';
 import { Job, JobsSearchExpression } from 'apps/JobBrowser/store';
 import { JobStateType } from 'apps/JobBrowser/types/jobState';
 import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
-import React from 'react';
 import { Config } from 'types/config';
 import JobBrowserBFFClient from '../../lib/JobBrowserBFFClient';
 // import { JSONRPC20Exception } from '../../lib/comm/JSONRPC20/JSONRPC20';
 // import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
 import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
+import { Component } from 'react';
 import { AsyncProcessState, DataSource } from '../Table';
 import UserJobsRequest from './UserJobsRequest';
 import View from './view';
@@ -23,13 +23,13 @@ interface DataState {
 
 const userJobsSearchRequests = new UserJobsRequest();
 
-export default class Data extends React.Component<DataProps, DataState> {
+export default class Data extends Component<DataProps, DataState> {
     constructor(props: DataProps) {
         super(props);
         this.state = {
             dataSource: {
-                status: AsyncProcessState.NONE
-            }
+                status: AsyncProcessState.NONE,
+            },
         };
     }
 
@@ -38,14 +38,14 @@ export default class Data extends React.Component<DataProps, DataState> {
             this.setState({
                 dataSource: {
                     ...this.state.dataSource,
-                    status: AsyncProcessState.REPROCESSING
-                }
+                    status: AsyncProcessState.REPROCESSING,
+                },
             });
         } else {
             this.setState({
                 dataSource: {
-                    status: AsyncProcessState.PROCESSING
-                }
+                    status: AsyncProcessState.PROCESSING,
+                },
             });
         }
 
@@ -55,7 +55,7 @@ export default class Data extends React.Component<DataProps, DataState> {
             serviceWizardURL: this.props.config.services.ServiceWizard.url,
             searchExpression,
             version: this.props.config.dynamicServices.JobBrowserBFF.version,
-            timeout: this.props.config.ui.constants.clientTimeout
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
 
         try {
@@ -80,8 +80,8 @@ export default class Data extends React.Component<DataProps, DataState> {
                     limit,
                     offset,
                     page,
-                    pageCount
-                }
+                    pageCount,
+                },
             });
         } catch (ex) {
             if (ex instanceof JSONRPC20Exception) {
@@ -92,9 +92,9 @@ export default class Data extends React.Component<DataProps, DataState> {
                         error: {
                             code: ex.error.code,
                             message: ex.error.message,
-                            data: ex.error.data
-                        }
-                    }
+                            data: ex.error.data,
+                        },
+                    },
                 });
             } else {
                 this.setState({
@@ -102,9 +102,12 @@ export default class Data extends React.Component<DataProps, DataState> {
                         status: AsyncProcessState.ERROR,
                         error: {
                             code: 0,
-                            message: ex instanceof Error ? ex.message : 'Unknown Error'
-                        }
-                    }
+                            message:
+                                ex instanceof Error
+                                    ? ex.message
+                                    : 'Unknown Error',
+                        },
+                    },
                 });
             }
         }
@@ -120,27 +123,29 @@ export default class Data extends React.Component<DataProps, DataState> {
             url: this.props.config.services.ServiceWizard.url,
             token: this.props.authState.authInfo.token,
             timeout: this.props.config.ui.constants.clientTimeout,
-            version: this.props.config.dynamicServices.JobBrowserBFF.version
+            version: this.props.config.dynamicServices.JobBrowserBFF.version,
         });
         client
             .cancel_job({
                 job_id: jobId,
                 timeout,
-                admin: false
+                admin: false,
             })
             .then(() => {
                 const dataSource = this.state.dataSource;
                 message.success('Successfully canceled the job');
-                if (this.state.dataSource.status === AsyncProcessState.SUCCESS) {
+                if (
+                    this.state.dataSource.status === AsyncProcessState.SUCCESS
+                ) {
                     for (const datum of this.state.dataSource.data) {
                         if (datum.id === jobId) {
                             datum.eventHistory.push({
                                 at: new Date().getTime(),
                                 type: JobStateType.TERMINATE,
-                                code: 0
+                                code: 0,
                             });
                             this.setState({
-                                dataSource
+                                dataSource,
                             });
                             return;
                         }
@@ -148,21 +153,24 @@ export default class Data extends React.Component<DataProps, DataState> {
                 }
             })
             .catch((err) => {
-                console.error("error canceling job", err);
+                console.error('error canceling job', err);
                 message.error('Error canceling job: ' + err.message);
             });
     }
 
-    refreshSearch() {
-    }
+    refreshSearch() {}
 
     render() {
-        return <View
-            dataSource={this.state.dataSource}
-            search={this.search.bind(this)}
-            cancelJob={this.cancelJob.bind(this)}
-            refreshSearch={this.refreshSearch.bind(this)}
-            narrativeMethodStoreURL={this.props.config.services.NarrativeMethodStore.url}
-        />;
+        return (
+            <View
+                dataSource={this.state.dataSource}
+                search={this.search.bind(this)}
+                cancelJob={this.cancelJob.bind(this)}
+                refreshSearch={this.refreshSearch.bind(this)}
+                narrativeMethodStoreURL={
+                    this.props.config.services.NarrativeMethodStore.url
+                }
+            />
+        );
     }
 }

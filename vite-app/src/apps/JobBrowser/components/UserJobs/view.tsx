@@ -22,15 +22,15 @@ import JobStatusBadge from '../JobStatusBadge';
 // file imports
 import { CloseOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import {
-  Job,
-  JobContextType,
-  JobsSearchExpression,
-  SortSpec,
-  TimeRange,
-  TimeRangePresets,
+    Job,
+    JobContextType,
+    JobsSearchExpression,
+    SortSpec,
+    TimeRange,
+    TimeRangePresets,
 } from 'apps/JobBrowser/store';
 import { JobEvent, JobStateType } from 'apps/JobBrowser/types/jobState';
-import { FilterSpec, JobContextNarrative } from '../../lib/JobBrowserBFFClient';
+import { FilterSpec } from '../../lib/JobBrowserBFFClient';
 import PubSub from '../../lib/PubSub';
 import DatePicker from '../DatePicker';
 // import FilterEditor, { JobFilter } from "../FilterEditor";
@@ -259,7 +259,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
     this.currentQuery = event.target.value;
   }
 
-  onSubmit(_fields: any) {
+  onSubmit() {
     this.doSearch(true);
   }
 
@@ -364,7 +364,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
 
     const [fromDate, toDate] = range;
 
-    let existingTimeRange = this.state.timeRange;
+    const existingTimeRange = this.state.timeRange;
     let timeRange: TimeRange;
     switch (existingTimeRange.kind) {
       case 'preset':
@@ -475,7 +475,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
   }
 
   renderControlBar() {
-    let filterRowStyle: React.CSSProperties = {
+    const filterRowStyle: React.CSSProperties = {
       position: 'relative',
     };
     if (!this.state.isFilterOpen) {
@@ -570,7 +570,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
     return job.eventHistory[0].at;
   }
 
-  renderNarrativeLink(_context: JobContextNarrative) {
+  renderNarrativeLink() {
     return;
   }
 
@@ -608,22 +608,22 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
         label: 'Narrative',
         render: (job: Job) => {
           switch (job.request.context.type) {
-            case JobContextType.NARRATIVE:
-              const title = job.request.context.title;
-              if (job.request.context.isTemporary) {
-                return (
-                  <Tooltip title={'A temporary, unsaved narrative'}>
-                    <NarrativeLink narrativeID={job.request.context.workspace.id}>Unsaved Narrative</NarrativeLink>
-                  </Tooltip>
-                );
-              } else {
-                return (
-                  <Tooltip title={title || 'n/a'}>
-                    <NarrativeLink narrativeID={job.request.context.workspace.id}>{title || 'n/a'}</NarrativeLink>
-                  </Tooltip>
-                );
-              }
-
+            case JobContextType.NARRATIVE: {
+                const title = job.request.context.title;
+                if (job.request.context.isTemporary) { 
+                    return (
+                    <Tooltip title={'A temporary, unsaved narrative'}>
+                        <NarrativeLink narrativeID={job.request.context.workspace.id}>Unsaved Narrative</NarrativeLink>
+                    </Tooltip>
+                    );
+                } else {
+                    return (
+                    <Tooltip title={title || 'n/a'}>
+                        <NarrativeLink narrativeID={job.request.context.workspace.id}>{title || 'n/a'}</NarrativeLink>
+                    </Tooltip>
+                    );
+                }
+            }
             case JobContextType.WORKSPACE:
               if (job.request.context.workspace.isAccessible) {
                 return job.request.context.workspace.name;
@@ -690,7 +690,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
         id: 'queued',
         label: 'Queued',
         render: (job: Job) => {
-          var [queueState, nextState] = this.lastEventLike(job, JobStateType.QUEUE);
+          const [queueState, nextState] = this.lastEventLike(job, JobStateType.QUEUE);
 
           if (queueState) {
             if (nextState) {
@@ -715,7 +715,7 @@ export default class MyJobs extends React.Component<MyJobsProps, MyJobsState> {
         id: 'run',
         label: 'Run',
         render: (job: Job) => {
-          var [runState, nextState] = this.lastEventLike(job, JobStateType.RUN);
+          const [runState, nextState] = this.lastEventLike(job, JobStateType.RUN);
           if (runState) {
             if (nextState) {
               return (

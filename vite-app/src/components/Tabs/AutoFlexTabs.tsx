@@ -2,7 +2,7 @@ import { Component } from 'react';
 import FlexTabs, { Tab } from './FlexTabs';
 
 export interface AutoFlexTabsProps {
-    tabs: Array<Tab>
+    tabs: Array<Tab>;
 }
 
 interface AutoFlexTabsState {
@@ -11,31 +11,36 @@ interface AutoFlexTabsState {
     selectedTab: string;
 }
 
-export default class AutoFlexTabs extends Component<AutoFlexTabsProps, AutoFlexTabsState> {
+export default class AutoFlexTabs extends Component<
+    AutoFlexTabsProps,
+    AutoFlexTabsState
+> {
     constructor(props: AutoFlexTabsProps) {
         super(props);
 
         this.state = {
             tabOrder: [],
             tabs: new Map(),
-            selectedTab: ''
-        }
+            selectedTab: '',
+        };
     }
     componentDidMount() {
-        let tabOrder: Array<string> = [];
-        let tabs: Map<string, Tab> = new Map();
+        const tabOrder: Array<string> = [];
+        const tabs: Map<string, Tab> = new Map();
         this.props.tabs.forEach((tab) => {
             tabOrder.push(tab.tab);
             tabs.set(tab.tab, tab);
         });
         this.setState({
-            tabOrder, tabs, selectedTab: this.props.tabs[0].tab
-        })
+            tabOrder,
+            tabs,
+            selectedTab: this.props.tabs[0].tab,
+        });
     }
     selectTab(selectedTab: string) {
         this.setState({
-            selectedTab
-        })
+            selectedTab,
+        });
     }
     render() {
         return (
@@ -43,7 +48,8 @@ export default class AutoFlexTabs extends Component<AutoFlexTabsProps, AutoFlexT
                 tabOrder={this.state.tabOrder}
                 selectedTab={this.state.selectedTab}
                 tabs={this.state.tabs}
-                onSelectTab={this.selectTab.bind(this)} />
-        )
+                onSelectTab={this.selectTab.bind(this)}
+            />
+        );
     }
 }

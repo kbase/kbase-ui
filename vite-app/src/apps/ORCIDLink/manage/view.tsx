@@ -1,10 +1,10 @@
-import { Component } from "react";
-import { Tab, Tabs } from "react-bootstrap";
+import { Component } from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
 import { XCircle } from 'react-bootstrap-icons';
-import QueryLinkingSessionsContext from "./linkingSessions";
-import OverviewContext from "./overview";
-import QueryLinks from "./queryLinks/index";
-import ServiceInfoContext from "./serviceInfo";
+import QueryLinkingSessionsContext from './linkingSessions';
+import OverviewContext from './overview';
+import QueryLinks from './queryLinks/index';
+import ServiceInfoContext from './serviceInfo';
 import './view.css';
 
 export interface ORCIDLinkManageProps {
@@ -17,17 +17,20 @@ interface ORCIDLinkManageState {
     activeKey: string | null;
 }
 
-export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps, ORCIDLinkManageState> {
+export default class ORCIDLinkManageView extends Component<
+    ORCIDLinkManageProps,
+    ORCIDLinkManageState
+> {
     constructor(props: ORCIDLinkManageProps) {
         super(props);
         this.state = {
-            activeKey: null
-        }
+            activeKey: null,
+        };
     }
 
     viewLink(username: string) {
         this.setState({
-            activeKey: `link-${username}`
+            activeKey: `link-${username}`,
         });
         this.props.addViewedLink(username);
     }
@@ -35,67 +38,79 @@ export default class ORCIDLinkManageView extends Component<ORCIDLinkManageProps,
     unviewLink(username: string) {
         this.props.removeViewedLink(username);
         this.setState({
-            activeKey: null
-        })
+            activeKey: null,
+        });
     }
 
     render() {
         const viewedLinkTabs = this.props.viewedLinks.map((username) => {
-            const title = <span>
-                Link for {username}
-                <a href="#"
-                    className="text-danger"
-                    style={{ marginLeft: '0.5rem' }}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        this.unviewLink(username);
-                    }}><XCircle /></a>
-            </span>
-            return <Tab eventKey={`link-${username}`} title={title} >
-                <div>
-                    <p>This will be the link for {username}</p>
-                </div>
-            </Tab>
-        })
-
-        return <div className="ORCIDLinkManageView">
-            <Tabs variant="tabs"
-                defaultActiveKey="overview"
-                activeKey={this.state.activeKey || undefined}
-                onSelect={(eventKey: string | null) => {
-                    this.setState({
-                        activeKey: eventKey
-                    })
-                }}
-                mountOnEnter unmountOnExit>
-                <Tab eventKey="overview" title="Overview">
-                    <OverviewContext />
+            const title = (
+                <span>
+                    Link for {username}
+                    <a
+                        href="#"
+                        className="text-danger"
+                        style={{ marginLeft: '0.5rem' }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.unviewLink(username);
+                        }}
+                    >
+                        <XCircle />
+                    </a>
+                </span>
+            );
+            return (
+                <Tab eventKey={`link-${username}`} title={title} key={username}>
+                    <div>
+                        <p>This will be the link for {username}</p>
+                    </div>
                 </Tab>
-                <Tab eventKey="links" title="Links">
-                    <QueryLinks viewLink={this.viewLink.bind(this)} />
-                </Tab>
+            );
+        });
 
-                {...viewedLinkTabs}
+        return (
+            <div className="ORCIDLinkManageView">
+                <Tabs
+                    variant="tabs"
+                    defaultActiveKey="overview"
+                    activeKey={this.state.activeKey || undefined}
+                    onSelect={(eventKey: string | null) => {
+                        this.setState({
+                            activeKey: eventKey,
+                        });
+                    }}
+                    mountOnEnter
+                    unmountOnExit
+                >
+                    <Tab eventKey="overview" title="Overview">
+                        <OverviewContext />
+                    </Tab>
+                    <Tab eventKey="links" title="Links">
+                        <QueryLinks viewLink={this.viewLink.bind(this)} />
+                    </Tab>
 
-                <Tab eventKey="sessions" title="Linking Sessions">
-                    <QueryLinkingSessionsContext />
-                </Tab>
+                    {...viewedLinkTabs}
 
-                <Tab eventKey="audit" title="Audit Trail">
-                    <p>TO DO</p>
-                </Tab>
+                    <Tab eventKey="sessions" title="Linking Sessions">
+                        <QueryLinkingSessionsContext />
+                    </Tab>
 
-                <Tab eventKey="serviceInfo" title="Service Info">
-                    <ServiceInfoContext />
-                </Tab>
+                    <Tab eventKey="audit" title="Audit Trail">
+                        <p>TO DO</p>
+                    </Tab>
 
-                {/* <Tab eventKey="tasks" title="Maintenance Tasks">
+                    <Tab eventKey="serviceInfo" title="Service Info">
+                        <ServiceInfoContext />
+                    </Tab>
+
+                    {/* <Tab eventKey="tasks" title="Maintenance Tasks">
                     <ListGroup style={{ marginTop: '1rem' }}>
                         <ListGroup.Item>Prune expired sessions</ListGroup.Item>
                     </ListGroup>
                 </Tab> */}
-
-            </Tabs>
-        </div>
+                </Tabs>
+            </div>
+        );
     }
 }

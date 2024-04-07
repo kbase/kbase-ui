@@ -9,7 +9,7 @@ interface ChannelListenerParams {
 class ChannelListener {
     name: string;
     callback: (payload: Payload) => void;
-    onError?: (error: any) => void;
+    onError?: (error: Error) => void;
 
     constructor({ name, callback, onError }: ChannelListenerParams) {
         this.name = name;
@@ -18,7 +18,7 @@ class ChannelListener {
     }
 }
 
-type Payload = any;
+type Payload = unknown;
 
 interface ChannelWaitingListenerParams extends ChannelListenerParams {
     timeout?: number;
@@ -63,7 +63,7 @@ type Envelope = PlainEnvelope | RequestEnvelope | ReplyEnvelope;
 
 class Message {
     name: string;
-    payload: any;
+    payload: Payload;
     id: string;
     created: Date;
     envelope: Envelope;
@@ -74,7 +74,7 @@ class Message {
         envelope,
     }: {
         name: string;
-        payload: any;
+        payload: Payload;
         envelope: Envelope;
     }) {
         this.name = name;
@@ -93,7 +93,6 @@ class Message {
     }
 }
 
-
 export interface WindowChannelParams {
     window: Window;
     // host: string;
@@ -109,7 +108,7 @@ interface Stats {
 export class ReceiveChannel {
     private readonly window: Window;
     private readonly id: string;
-    private receiveFromIds: Array<string>
+    private receiveFromIds: Array<string>;
     private waitingListeners: Map<string, Array<ChannelListener>>;
     private listeners: Map<string, Array<ChannelListener>>;
     private currentListener: ((message: MessageEvent) => void) | null;
@@ -198,7 +197,11 @@ export class ReceiveChannel {
                     listener.callback(message.payload);
                 } catch (ex) {
                     if (listener.onError) {
-                        listener.onError(ex);
+                        listener.onError(
+                            ex instanceof Error
+                                ? ex
+                                : new Error('Unknown Error'),
+                        );
                     }
                 }
             });
@@ -233,8 +236,8 @@ export class ReceiveChannel {
 
     on(
         messageId: string,
-        callback: (payload: any) => any,
-        onError?: (error: any) => void
+        callback: (payload: Payload) => void,
+        onError?: (error: Error) => void,
     ) {
         this.listen(
             new ChannelListener({
@@ -245,7 +248,7 @@ export class ReceiveChannel {
                         onError(error);
                     }
                 },
-            })
+            }),
         );
     }
 
@@ -255,7 +258,7 @@ export class ReceiveChannel {
 
             // first take care of listeners awaiting a message.
             for (const [id, listeners] of Array.from(
-                this.waitingListeners.entries()
+                this.waitingListeners.entries(),
             )) {
                 const newListeners = listeners.filter((listener) => {
                     if (listener instanceof ChannelWaitingListener) {
@@ -264,14 +267,14 @@ export class ReceiveChannel {
                             try {
                                 if (listener.onError) {
                                     listener.onError(
-                                        new Error('timout after ' + elapsed)
+                                        new Error('timout after ' + elapsed),
                                     );
                                 }
                             } catch (ex) {
                                 console.error(
                                     'Error calling error handler',
                                     id,
-                                    ex
+                                    ex,
                                 );
                             }
                             return false;
@@ -307,7 +310,7 @@ export class ReceiveChannel {
         name: string,
         timeout: number,
         callback: (payload: Payload) => void,
-        onError?: (error: Error) => void
+        onError?: (error: Error) => void,
     ) {
         this.listenOnce(
             new ChannelWaitingListener({
@@ -319,7 +322,7 @@ export class ReceiveChannel {
                         onError(error);
                     }
                 },
-            })
+            }),
         );
     }
 
@@ -335,7 +338,7 @@ export class ReceiveChannel {
                     onError: (error) => {
                         reject(error);
                     },
-                })
+                }),
             );
         });
     }
@@ -357,11 +360,9 @@ export class ReceiveChannel {
             this.window.removeEventListener(
                 'message',
                 this.currentListener,
-                false
+                false,
             );
         }
         return this;
     }
 }
-
-

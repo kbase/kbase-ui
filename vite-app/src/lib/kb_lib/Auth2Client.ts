@@ -1,18 +1,19 @@
-import {
-    HttpClient,
-    GeneralError,
-    TimeoutError,
-    AbortError,
-    RequestOptions,
-} from './HttpClient';
 import { AuthError } from './Auth2Error';
+import {
+    AbortError,
+    GeneralError,
+    HttpClient,
+    RequestOptions,
+    Response,
+    TimeoutError,
+} from './HttpClient';
 
 export class AuthClient extends HttpClient {
     isGeneralError(error: GeneralError): boolean {
         return error instanceof GeneralError;
     }
 
-    request(options: RequestOptions): Promise<any> {
+    request(options: RequestOptions): Promise<Response> {
         return super.request(options).catch((err) => {
             if (err instanceof GeneralError) {
                 throw new AuthError({
@@ -42,6 +43,8 @@ export class AuthClient extends HttpClient {
                     detail: 'The connection was aborted while communicating with the Auth Service',
                     data: {},
                 });
+            } else {
+                throw new Error('Unknown Error');
             }
         });
     }

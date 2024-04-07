@@ -3,13 +3,13 @@ export interface AuthErrorInfo {
     status?: number;
     message: string;
     detail?: string;
-    data?: any;
+    data?: unknown;
 }
 
 export class AuthError extends Error {
     code: string;
     detail?: string;
-    data?: any;
+    data?: unknown;
     constructor(errorInfo: AuthErrorInfo) {
         super(errorInfo.message);
         Object.setPrototypeOf(this, AuthError.prototype);

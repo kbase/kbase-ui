@@ -130,7 +130,7 @@ export const sorts: Record<string, string> = {
  * @param {SearchOptions} options
  * @return {Promise<SearchResults>}
  */
-const cache: Map<string, any> = new Map();
+const cache: Map<string, unknown> = new Map();
 
 export interface SearchSummary {
     name: string;
@@ -314,7 +314,7 @@ export class NarrativeSearch {
 
                 const { count } = await this.searchWorkspace(summaryParams);
                 return { name, count };
-            })
+            }),
         );
     }
 
@@ -443,7 +443,7 @@ export class NarrativeSearch {
      *   sort parameter, auth (boolean, true if we're looking up personal data), and pageSize
      */
     async searchWorkspace(
-        params: SearchWorkspaceParams
+        params: SearchWorkspaceParams,
     ): Promise<SearchResults> {
         const headers: { [key: string]: string } = {
             'Content-Type': 'application/json',
@@ -472,7 +472,7 @@ export class NarrativeSearch {
 
         if (!response.ok) {
             throw new Error(
-                'An error occurred while searching - ' + response.status
+                'An error occurred while searching - ' + response.status,
             );
         }
         const { result } = await response.json();

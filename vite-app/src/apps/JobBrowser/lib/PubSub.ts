@@ -6,8 +6,8 @@ export interface SubscriptionDefinition {
 }
 
 export interface Subscription {
-    id: string,
-    channelName: string,
+    id: string;
+    channelName: string;
     messageName: string;
 }
 
@@ -22,14 +22,13 @@ export interface Channel {
 export interface PublishDefinition {
     channel: string;
     message: string;
-
 }
 
-export interface Payload { }
+export type Payload = unknown;
 
 export interface Message {
-    id: MessageID,
-    payload: any;
+    id: MessageID;
+    payload: Payload;
 }
 
 const SEND_WINDOW = 1000 / 60;
@@ -56,7 +55,7 @@ export class PubSubProxy {
         this.pubsub = pubsub;
     }
 
-    on(messageID: string, handler: (payload: any) => void) {
+    on(messageID: string, handler: (payload: Payload) => void) {
         const id = this.pubsub.on(messageID, handler);
         this.subscriptions.push(id);
     }
@@ -88,7 +87,7 @@ export default class PubSub {
             }
             messageListener.listeners.forEach((listener: Listener) => {
                 try {
-                    listener.handler(message.payload);
+                    listener.handler(message);
                 } catch (ex) {
                     console.error('ERROR', ex);
                 }
@@ -105,10 +104,10 @@ export default class PubSub {
         }, SEND_WINDOW);
     }
 
-    send(messageID: string, payload: any) {
+    send(messageID: string, payload: Payload) {
         const message: Message = {
             id: messageID,
-            payload
+            payload,
         };
         this.sendQueue.push(message);
         this.processQueue();
@@ -118,13 +117,15 @@ export default class PubSub {
         let messageListener = this.messageListeners.get(messageID);
         if (!messageListener) {
             messageListener = {
-                listeners: []
+                listeners: [],
             };
             this.messageListeners.set(messageID, messageListener);
         }
         const id = uuid();
         const listener = {
-            id, messageID, handler
+            id,
+            messageID,
+            handler,
         };
         messageListener.listeners.push(listener);
         this.allListeners.set(id, listener);

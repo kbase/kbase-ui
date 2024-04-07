@@ -10,221 +10,280 @@ import { Gear } from 'react-bootstrap-icons';
 import styles from './index.module.css';
 
 export interface QueryLinkingSessionsViewProps {
-  linkingSessions: GetLinkingSessionsResult;
-  orcidlinkStatus: StatusResult;
-  pruneExpiredSessions: () => void;
-  deleteStartedSession: (sessionId: string) => void;
-  deleteCompletedSession: (sessionId: string) => void;
+    linkingSessions: GetLinkingSessionsResult;
+    orcidlinkStatus: StatusResult;
+    pruneExpiredSessions: () => void;
+    deleteStartedSession: (sessionId: string) => void;
+    deleteCompletedSession: (sessionId: string) => void;
 }
 
 // interface QueryLinkingSessionsViewState {
 
 // }
 
-export const QueryLinkingSessionsView2: FC<QueryLinkingSessionsViewProps> = (props: QueryLinkingSessionsViewProps) => {
-  // function renderTable() {
-  //     const columns: Array<ColumnDef<LinkRecordPublic>> = [
-  //         {
-  //             id: 'username',
-  //             label: 'Username',
-  //             style: {},
-  //             render: (linkRecord: LinkRecordPublic) => {
-  //                 return linkRecord.username;
-  //             }
-  //         },
-  //         {
-  //             id: 'orcid',
-  //             label: 'ORCID® iD',
-  //             style: {},
-  //             render: (linkRecord: LinkRecordPublic) => {
-  //                 return linkRecord.orcid_auth.orcid;
-  //             }
-  //         }
-  //     ]
-  //     const dataSource: Array<LinkRecordPublic> = [];
-  //     return <DataBrowser heights={{ header: 40, row: 40 }} columns={columns} dataSource={dataSource} />
-  // }
+export const QueryLinkingSessionsView2: FC<QueryLinkingSessionsViewProps> = (
+    props: QueryLinkingSessionsViewProps,
+) => {
+    // function renderTable() {
+    //     const columns: Array<ColumnDef<LinkRecordPublic>> = [
+    //         {
+    //             id: 'username',
+    //             label: 'Username',
+    //             style: {},
+    //             render: (linkRecord: LinkRecordPublic) => {
+    //                 return linkRecord.username;
+    //             }
+    //         },
+    //         {
+    //             id: 'orcid',
+    //             label: 'ORCID® iD',
+    //             style: {},
+    //             render: (linkRecord: LinkRecordPublic) => {
+    //                 return linkRecord.orcid_auth.orcid;
+    //             }
+    //         }
+    //     ]
+    //     const dataSource: Array<LinkRecordPublic> = [];
+    //     return <DataBrowser heights={{ header: 40, row: 40 }} columns={columns} dataSource={dataSource} />
+    // }
 
-  function confirmDeleteStartedSession(sessionId: string): void {
-    const onConfirm = () => {
-      props.deleteStartedSession(sessionId);
-    };
+    function confirmDeleteStartedSession(sessionId: string): void {
+        const onConfirm = () => {
+            props.deleteStartedSession(sessionId);
+        };
 
-    Modal.confirm({
-      title: `Delete session with id ${sessionId}?`,
-      onOk: onConfirm,
-    });
-  }
-
-  function renderInitial() {
-    if (props.linkingSessions.initial_linking_sessions.length === 0) {
-      return <Empty message="No initial linking sessions" size="compact" style={{ marginBottom: '1rem' }} />;
+        Modal.confirm({
+            title: `Delete session with id ${sessionId}?`,
+            onOk: onConfirm,
+        });
     }
-    const rows = props.linkingSessions.initial_linking_sessions.map(
-      ({ username, session_id, created_at, expires_at }) => {
-        return (
-          <tr key={session_id}>
-            <td>
-              <UILink path={`people/${username}`} type="kbaseui" newWindow={true}>
-                {username}
-              </UILink>
-            </td>
-            <td>{session_id}</td>
 
-            <td>
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={created_at} size="compact" />
-            </td>
-            <td>
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={expires_at} size="compact" />
-            </td>
-          </tr>
+    function renderInitial() {
+        if (props.linkingSessions.initial_linking_sessions.length === 0) {
+            return (
+                <Empty
+                    message="No initial linking sessions"
+                    size="compact"
+                    style={{ marginBottom: '1rem' }}
+                />
+            );
+        }
+        const rows = props.linkingSessions.initial_linking_sessions.map(
+            ({ username, session_id, created_at, expires_at }) => {
+                return (
+                    <tr key={session_id}>
+                        <td>
+                            <UILink
+                                path={`people/${username}`}
+                                type="kbaseui"
+                                newWindow={true}
+                            >
+                                {username}
+                            </UILink>
+                        </td>
+                        <td>{session_id}</td>
+
+                        <td>
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={created_at}
+                                size="compact"
+                            />
+                        </td>
+                        <td>
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={expires_at}
+                                size="compact"
+                            />
+                        </td>
+                    </tr>
+                );
+            },
         );
-      },
-    );
-    return (
-      <Table striped>
-        <thead>
-          <tr>
-            <th style={{ width: '30%' }}>Username</th>
-            <th style={{ width: '30%' }}>Session Id</th>
-            <th style={{ width: '20%' }}>Created</th>
-            <th style={{ width: '20%' }}>Expires</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    );
-  }
-
-  function renderStarted() {
-    if (props.linkingSessions.started_linking_sessions.length === 0) {
-      return <Empty message="No started linking sessions" size="compact" style={{ marginBottom: '1rem' }} />;
+        return (
+            <Table striped>
+                <thead>
+                    <tr>
+                        <th style={{ width: '30%' }}>Username</th>
+                        <th style={{ width: '30%' }}>Session Id</th>
+                        <th style={{ width: '20%' }}>Created</th>
+                        <th style={{ width: '20%' }}>Expires</th>
+                    </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </Table>
+        );
     }
-    const rows = props.linkingSessions.started_linking_sessions.map(
-      ({ username, session_id, created_at, expires_at }) => {
-        return (
-          <tr key={session_id}>
-            <td>
-              <UILink path={`people/${username}`} type="kbaseui" newWindow={true}>
-                {username}
-              </UILink>
-            </td>
-            <td>{session_id}</td>
-            <td>
-              {/* {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label} */}
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={created_at} size="compact" />
-            </td>
-            <td>
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={expires_at} size="compact" />
-              {/* <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} /> */}
-              {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
-            </td>
-            <td>
-              <Button
-                variant="outline-danger"
-                onClick={() => {
-                  confirmDeleteStartedSession(session_id);
-                }}
-              >
-                Delete
-              </Button>
-            </td>
-          </tr>
-        );
-      },
-    );
-    return (
-      <Table striped>
-        <thead>
-          <tr>
-            <th style={{ width: '30%' }}>Username</th>
-            <th style={{ width: '30%' }}>Session Id</th>
-            <th style={{ width: '20%' }}>Created</th>
-            <th style={{ width: '20%' }}>Expires</th>
-            <th style={{ width: '4rem' }}></th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    );
-  }
 
-  function renderCompleted() {
-    if (props.linkingSessions.completed_linking_sessions.length === 0) {
-      return <Empty message="No completed linking sessions" size="compact" style={{ marginBottom: '1rem' }} />;
+    function renderStarted() {
+        if (props.linkingSessions.started_linking_sessions.length === 0) {
+            return (
+                <Empty
+                    message="No started linking sessions"
+                    size="compact"
+                    style={{ marginBottom: '1rem' }}
+                />
+            );
+        }
+        const rows = props.linkingSessions.started_linking_sessions.map(
+            ({ username, session_id, created_at, expires_at }) => {
+                return (
+                    <tr key={session_id}>
+                        <td>
+                            <UILink
+                                path={`people/${username}`}
+                                type="kbaseui"
+                                newWindow={true}
+                            >
+                                {username}
+                            </UILink>
+                        </td>
+                        <td>{session_id}</td>
+                        <td>
+                            {/* {niceElapsed(this.props.orcidlinkStatus.current_time - created_at).label} */}
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={created_at}
+                                size="compact"
+                            />
+                        </td>
+                        <td>
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={expires_at}
+                                size="compact"
+                            />
+                            {/* <CountdownClock startAt={this.props.orcidlinkStatus.current_time} endAt={expires_at} onExpired={() => { }} /> */}
+                            {/* {niceElapsed(this.props.orcidlinkStatus.current_time - expires_at).label} */}
+                        </td>
+                        <td>
+                            <Button
+                                variant="outline-danger"
+                                onClick={() => {
+                                    confirmDeleteStartedSession(session_id);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </td>
+                    </tr>
+                );
+            },
+        );
+        return (
+            <Table striped>
+                <thead>
+                    <tr>
+                        <th style={{ width: '30%' }}>Username</th>
+                        <th style={{ width: '30%' }}>Session Id</th>
+                        <th style={{ width: '20%' }}>Created</th>
+                        <th style={{ width: '20%' }}>Expires</th>
+                        <th style={{ width: '4rem' }}></th>
+                    </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </Table>
+        );
     }
-    const rows = props.linkingSessions.completed_linking_sessions.map(
-      ({ username, session_id, created_at, expires_at }) => {
-        return (
-          <tr key={session_id}>
-            <td>
-              <a href={`#people/${username}`} target="_blank">
-                {username}
-              </a>
-            </td>
-            <td>{session_id}</td>
-            <td>
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={created_at} size="compact" />
-            </td>
-            <td>
-              <RelativeTimeClock now={props.orcidlinkStatus.current_time} at={expires_at} size="compact" />
-            </td>
-            <td>
-              <Button
-                variant="danger"
-                onClick={() => {
-                  props.deleteCompletedSession(session_id);
-                }}
-              >
-                Delete
-              </Button>
-            </td>
-          </tr>
+
+    function renderCompleted() {
+        if (props.linkingSessions.completed_linking_sessions.length === 0) {
+            return (
+                <Empty
+                    message="No completed linking sessions"
+                    size="compact"
+                    style={{ marginBottom: '1rem' }}
+                />
+            );
+        }
+        const rows = props.linkingSessions.completed_linking_sessions.map(
+            ({ username, session_id, created_at, expires_at }) => {
+                return (
+                    <tr key={session_id}>
+                        <td>
+                            <a
+                                href={`#people/${username}`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {username}
+                            </a>
+                        </td>
+                        <td>{session_id}</td>
+                        <td>
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={created_at}
+                                size="compact"
+                            />
+                        </td>
+                        <td>
+                            <RelativeTimeClock
+                                now={props.orcidlinkStatus.current_time}
+                                at={expires_at}
+                                size="compact"
+                            />
+                        </td>
+                        <td>
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    props.deleteCompletedSession(session_id);
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        </td>
+                    </tr>
+                );
+            },
         );
-      },
-    );
-    return (
-      <Table striped>
-        <thead>
-          <tr>
-            <th style={{ width: '30%' }}>Username</th>
-            <th style={{ width: '30%' }}>Session Id</th>
-            <th style={{ width: '20%' }}>Created</th>
-            <th style={{ width: '20%' }}>Expires</th>
-            <th style={{ width: '4rem' }}></th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    );
-  }
+        return (
+            <Table striped>
+                <thead>
+                    <tr>
+                        <th style={{ width: '30%' }}>Username</th>
+                        <th style={{ width: '30%' }}>Session Id</th>
+                        <th style={{ width: '20%' }}>Created</th>
+                        <th style={{ width: '20%' }}>Expires</th>
+                        <th style={{ width: '4rem' }}></th>
+                    </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </Table>
+        );
+    }
 
-  function renderTools() {
-    return (
-      <Accordion>
-        <Accordion.Item eventKey="tools">
-          <Accordion.Header>
-            <Gear size="1.5rem" style={{ marginRight: '0.5rem' }} /> Tools
-          </Accordion.Header>
-          <Accordion.Body>
-            <Button onClick={props.pruneExpiredSessions}>Delete Expired Sessions</Button>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
-    );
-  }
+    function renderTools() {
+        return (
+            <Accordion>
+                <Accordion.Item eventKey="tools">
+                    <Accordion.Header>
+                        <Gear size="1.5rem" style={{ marginRight: '0.5rem' }} />{' '}
+                        Tools
+                    </Accordion.Header>
+                    <Accordion.Body>
+                        <Button onClick={props.pruneExpiredSessions}>
+                            Delete Expired Sessions
+                        </Button>
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
+        );
+    }
 
-  return (
-    <div style={{ marginTop: '1rem' }} className={styles.main}>
-      {renderTools()}
-      <h2 style={{ marginTop: '1rem' }}>Initial</h2>
-      {renderInitial()}
-      <h2>Started</h2>
-      {renderStarted()}
-      <h2>Completed</h2>
-      {renderCompleted()}
-    </div>
-  );
+    return (
+        <div style={{ marginTop: '1rem' }} className={styles.main}>
+            {renderTools()}
+            <h2 style={{ marginTop: '1rem' }}>Initial</h2>
+            {renderInitial()}
+            <h2>Started</h2>
+            {renderStarted()}
+            <h2>Completed</h2>
+            {renderCompleted()}
+        </div>
+    );
 };
 
 // export default class QueryLinkingSessionsView extends Component<QueryLinkingSessionsViewProps, QueryLinkingSessionsViewState> {

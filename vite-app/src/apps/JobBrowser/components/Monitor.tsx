@@ -1,7 +1,7 @@
+import { Progress, Switch, Tooltip } from 'antd';
 import * as React from 'react';
-import { Progress, Tooltip, Switch } from 'antd';
-import PubSub, { PubSubProxy } from '../lib/PubSub';
 import { Poller } from '../lib/Poller';
+import PubSub, { PubSubProxy } from '../lib/PubSub';
 
 const MONITORING_INTERVAL = 10000;
 const MONITORING_FEEDBACK_STEPS = 100;
@@ -24,7 +24,10 @@ export interface MonitorState {
     isOpen: boolean;
 }
 
-export default class Monitor extends React.Component<MonitorProps, MonitorState> {
+export default class Monitor extends React.Component<
+    MonitorProps,
+    MonitorState
+> {
     monitoringTimer: number | null;
     monitoringStatusTimer: number | null;
     pollWatcherTimer: number | null;
@@ -48,7 +51,7 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
             pubsub: this.props.pubsub,
             pollInterval: MONITORING_INTERVAL,
             progressSteps: MONITORING_FEEDBACK_STEPS,
-            watchInterval: WATCH_INTERVAL
+            watchInterval: WATCH_INTERVAL,
         });
 
         this.state = {
@@ -57,25 +60,26 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
             isPollingInitiated: false,
             pollingStartedAt: 0,
             isPolling: false,
-            isOpen: this.props.defaultRunning
+            isOpen: this.props.defaultRunning,
         };
     }
 
     onProgress(progress: number) {
         this.setState({
-            pollWaitProgress: progress
+            pollWaitProgress: progress,
         });
     }
 
     componentDidMount() {
-        this.pubsubProxy.on('searching', ({ is }) => {
+        this.pubsubProxy.on('searching', (message: unknown) => {
+            const { is } = message as { is: boolean };
             if (is) {
                 this.setState({
-                    isPolling: true
+                    isPolling: true,
                 });
             } else {
                 this.setState({
-                    isPolling: false
+                    isPolling: false,
                 });
             }
         });
@@ -87,13 +91,11 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
         this.pubsubProxy.off();
     }
 
-    componentDidUpdate() {
-
-    }
+    componentDidUpdate() {}
 
     startMonitoring() {
         this.setState({
-            isMonitoring: true
+            isMonitoring: true,
         });
         this.poller.startPolling();
     }
@@ -101,7 +103,7 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
     stopMonitoring() {
         this.poller.stopPolling();
         this.setState({
-            isMonitoring: false
+            isMonitoring: false,
         });
     }
 
@@ -129,7 +131,8 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
                 defaultChecked={this.state.isOpen}
                 checkedChildren="stop polling"
                 unCheckedChildren="poll"
-                onChange={this.onToggleOpen.bind(this)} />
+                onChange={this.onToggleOpen.bind(this)}
+            />
         );
 
         if (this.state.isMonitoring) {
@@ -142,19 +145,22 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
                             percent={this.state.pollWaitProgress}
                             width={30}
                             strokeWidth={30}
-                            showInfo={false} />
+                            showInfo={false}
+                        />
                     </span>
                 );
             } else {
                 monitoringStatus = (
                     <span>
-                        {' '}<Progress
+                        {' '}
+                        <Progress
                             type="circle"
                             percent={100}
                             width={30}
                             showInfo={false}
                             strokeWidth={30}
-                            strokeColor={'orange'} />
+                            strokeColor={'orange'}
+                        />
                     </span>
                 );
             }
@@ -167,15 +173,11 @@ export default class Monitor extends React.Component<MonitorProps, MonitorState>
         }
         let monitor;
         if (this.state.isOpen) {
-            monitor = <Tooltip title={title}>
-                {monitoringStatus}
-            </Tooltip>;
+            monitor = <Tooltip title={title}>{monitoringStatus}</Tooltip>;
         }
         return (
             <span>
-                {opener}
-                {' '}
-                {monitor}
+                {opener} {monitor}
             </span>
         );
     }

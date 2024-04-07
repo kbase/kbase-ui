@@ -1,16 +1,17 @@
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
-import ErrorMessage from '../../../../components/ErrorMessage';
-import Loading from '../../../../components/Loading';
-import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import { SearchState, SearchStatus } from '../../context/DataModel';
 import { NavigatorContext } from '../../context/NavigatorContext';
 import IconSpinner from '../IconSpinner';
-import AsyncQueue from '../NarrativeList/AsyncQueue';
 import Narrative from '../NarrativeList/Narrative';
 import {
-    DataProviderState, DataProviderStatus, Row
+    DataProviderState,
+    DataProviderStatus,
+    Row,
 } from '../ScalableScroller/DataProviderState';
 import ScalableScroller from '../ScalableScroller/ScalableScroller';
 import styles from './NarrativeListing.module.css';
@@ -56,13 +57,11 @@ export default class NarrativeListing extends Component<
     cache: Array<Row<NarrativeSearchDoc>>;
     totalCount: number | null;
     filterCount: number | null;
-    queue: AsyncQueue;
     constructor(props: NarrativeListingProps) {
         super(props);
         this.cache = [];
         this.totalCount = null;
         this.filterCount = null;
-        this.queue = new AsyncQueue({ queuePauseTime: 100 });
     }
 
     renderRow(narrative: NarrativeSearchDoc) {
@@ -74,7 +73,7 @@ export default class NarrativeListing extends Component<
                             if (
                                 value !== null &&
                                 value.selectedNarrative.status ===
-                                AsyncProcessStatus.SUCCESS
+                                    AsyncProcessStatus.SUCCESS
                             ) {
                                 return (
                                     value.selectedNarrative.value.narrativeDoc
@@ -91,10 +90,10 @@ export default class NarrativeListing extends Component<
                                 onSelect={() => {
                                     updateHistory(
                                         'id',
-                                        String(narrative.access_group)
+                                        String(narrative.access_group),
                                     );
                                     value?.selectNarrative(
-                                        narrative.access_group
+                                        narrative.access_group,
                                     );
                                 }}
                             />
@@ -142,7 +141,7 @@ export default class NarrativeListing extends Component<
                     return (
                         <span>
                             {this.renderNumber(
-                                this.props.searchState.totalCount
+                                this.props.searchState.totalCount,
                             )}{' '}
                             Narratives
                         </span>
@@ -151,11 +150,11 @@ export default class NarrativeListing extends Component<
                     return (
                         <span>
                             {this.renderNumber(
-                                this.props.searchState.filterCount
+                                this.props.searchState.filterCount,
                             )}{' '}
                             Narratives found (out of{' '}
                             {this.renderNumber(
-                                this.props.searchState.totalCount
+                                this.props.searchState.totalCount,
                             )}
                             )
                         </span>

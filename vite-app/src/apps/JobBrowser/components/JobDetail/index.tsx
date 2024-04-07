@@ -13,20 +13,19 @@ const POLLING_PROGRESS_STEPS = 100;
 const POLLING_WATCH_INTERVAL = 1000;
 
 const LIMIT = 10000;
-// TODO: get from somewhere else... 
-
+// TODO: get from somewhere else...
 
 export type JobLog = Array<JobLogEntry>;
 
 export enum JobLogState {
-    NONE = "JobLogState:NONE",
-    JOB_CREATED = "JobLogState:JOB_CREATED",
-    JOB_QUEUED = "JobLogState:JOB_QUEUED",
-    INITIAL_LOADING = "JobLogState:INITIAL_LOADING",
-    ACTIVE_LOADED = "JobLogState:ACTIVE_LOADED",
-    ACTIVE_LOADING = "JobLogState:ACTIVE_LOADING",
-    FINISHED_LOADED = "JobLogState:FINISHED_LOADED",
-    ERROR = "JobLogState:ERROR"
+    NONE = 'JobLogState:NONE',
+    JOB_CREATED = 'JobLogState:JOB_CREATED',
+    JOB_QUEUED = 'JobLogState:JOB_QUEUED',
+    INITIAL_LOADING = 'JobLogState:INITIAL_LOADING',
+    ACTIVE_LOADED = 'JobLogState:ACTIVE_LOADED',
+    ACTIVE_LOADING = 'JobLogState:ACTIVE_LOADING',
+    FINISHED_LOADED = 'JobLogState:FINISHED_LOADED',
+    ERROR = 'JobLogState:ERROR',
 }
 
 // TODO: rename this and other things to JobDetailView...
@@ -49,37 +48,37 @@ export interface JobLogViewInitialLoading {
 }
 
 export interface JobLogViewActiveLoaded {
-    status: JobLogState.ACTIVE_LOADED,
+    status: JobLogState.ACTIVE_LOADED;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewActiveLoading {
-    status: JobLogState.ACTIVE_LOADING,
+    status: JobLogState.ACTIVE_LOADING;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewFinishedLoaded {
-    status: JobLogState.FINISHED_LOADED,
+    status: JobLogState.FINISHED_LOADED;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewError {
-    status: JobLogState.ERROR,
+    status: JobLogState.ERROR;
     error: string;
 }
 
 export type JobLogView =
-    JobLogViewNone |
-    JobLogViewCreated |
-    JobLogViewQueued |
-    JobLogViewInitialLoading |
-    JobLogViewActiveLoaded |
-    JobLogViewActiveLoading |
-    JobLogViewFinishedLoaded |
-    JobLogViewError;
+    | JobLogViewNone
+    | JobLogViewCreated
+    | JobLogViewQueued
+    | JobLogViewInitialLoading
+    | JobLogViewActiveLoaded
+    | JobLogViewActiveLoading
+    | JobLogViewFinishedLoaded
+    | JobLogViewError;
 
 export interface JobLogsStateProps {
     jobID: JobID;
@@ -93,7 +92,10 @@ export interface JobLogsStateProps {
 
 type JobLogsStateState = JobLogView;
 
-export default class JobLogsState extends React.Component<JobLogsStateProps, JobLogsStateState> {
+export default class JobLogsState extends React.Component<
+    JobLogsStateProps,
+    JobLogsStateState
+> {
     poller: Poll;
     // isPolling: boolean;
     // pollerTimer?: number;
@@ -103,17 +105,16 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
         //     onPoll
         // })
 
-
         this.poller = new Poll({
             onPoll: this.runningPollerFunc.bind(this),
             pollInterval: POLLING_INTERVAL,
             progressSteps: POLLING_PROGRESS_STEPS,
-            watchInterval: POLLING_WATCH_INTERVAL
+            watchInterval: POLLING_WATCH_INTERVAL,
         });
         // this.isPolling = false;
 
         this.state = {
-            status: JobLogState.NONE
+            status: JobLogState.NONE,
         };
     }
 
@@ -122,7 +123,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
             token: this.props.token,
             url: this.props.serviceWizardURL,
             timeout: this.props.timeout,
-            version: this.props.jobBrowserBFFConfig.version
+            version: this.props.jobBrowserBFFConfig.version,
         });
 
         const jobs = await jobBrowserBFF.get_jobs({
@@ -133,21 +134,26 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
             timeout: this.props.timeout,
         });
 
-        return serviceJobToUIJob(jobs.jobs[0], 'UNKNOWN');
+        return serviceJobToUIJob(jobs.jobs[0]);
     }
 
-    async getJobLog(offset: number, limit: number): Promise<Array<JobLogEntry>> {
+    async getJobLog(
+        offset: number,
+        limit: number,
+    ): Promise<Array<JobLogEntry>> {
         const jobBrowserBFF = new JobBrowserBFFClient({
             token: this.props.token,
             url: this.props.serviceWizardURL,
             timeout: this.props.timeout,
-            version: this.props.jobBrowserBFFConfig.version
+            version: this.props.jobBrowserBFFConfig.version,
         });
 
         const jobLog = await jobBrowserBFF.get_job_log({
             job_id: this.props.jobID,
-            offset, limit, timeout: this.props.timeout,
-            admin: this.props.admin
+            offset,
+            limit,
+            timeout: this.props.timeout,
+            admin: this.props.admin,
         });
 
         return jobLog.log.map((entry) => {
@@ -155,7 +161,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                 lineNumber: entry.row,
                 message: entry.message,
                 isError: entry.level === 'error',
-                loggedAt: entry.logged_at ? new Date(entry.logged_at) : null
+                loggedAt: entry.logged_at ? new Date(entry.logged_at) : null,
             };
         });
     }
@@ -173,12 +179,15 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
 
     isJobQueued(job: Job): boolean {
         const currentState = job.eventHistory[job.eventHistory.length - 1];
-        return (currentState.type === JobStateType.QUEUE || currentState.type === JobStateType.CREATE);
+        return (
+            currentState.type === JobStateType.QUEUE ||
+            currentState.type === JobStateType.CREATE
+        );
     }
 
     isJobRunning(job: Job): boolean {
         const currentState = job.eventHistory[job.eventHistory.length - 1];
-        return (currentState.type === JobStateType.RUN);
+        return currentState.type === JobStateType.RUN;
     }
 
     currentJobState(job: Job): JobEvent {
@@ -194,14 +203,14 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
         if (state.status !== JobLogState.ACTIVE_LOADED) {
             this.setState({
                 status: JobLogState.ERROR,
-                error: 'Invalid state for polling: ' + state.status
+                error: 'Invalid state for polling: ' + state.status,
             });
             return;
         }
         const { log } = state;
         this.setState({
             status: JobLogState.ACTIVE_LOADING,
-            log
+            log,
         });
         const job = await this.getJob();
 
@@ -209,26 +218,25 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
 
         const newLog = await this.getJobLog(offset, LIMIT);
 
-
         if (this.isJobQueued(job)) {
             this.poller.onPoll(this.queueingPollFunc.bind(this));
         } else if (this.isJobRunning(job)) {
             this.setState({
                 status: JobLogState.ACTIVE_LOADED,
                 log: log.concat(newLog),
-                job
+                job,
             });
         } else {
             this.setState({
                 status: JobLogState.FINISHED_LOADED,
                 log: log.concat(newLog),
-                job
+                job,
             });
             if (this.poller) {
                 this.poller.stop();
             }
         }
-    };
+    }
 
     /*
     The main job of this method is to serve as a polling 
@@ -247,7 +255,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                 this.setState({
                     status: JobLogState.ACTIVE_LOADED,
                     log,
-                    job
+                    job,
                 });
                 this.poller.onPoll(this.runningPollerFunc.bind(this));
             } else {
@@ -257,7 +265,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                         this.setState({
                             status: JobLogState.FINISHED_LOADED,
                             log,
-                            job
+                            job,
                         });
                         break;
                     case JobStateType.ERROR:
@@ -265,7 +273,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                             status: JobLogState.ERROR,
                             // TODO: look more closely, this is all a little weird as we
                             // are using the "JobLogState" for the JobState...
-                            error: 'FOO'
+                            error: 'FOO',
                             // log,
                             // job
                         });
@@ -274,7 +282,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                         this.setState({
                             status: JobLogState.FINISHED_LOADED,
                             log,
-                            job
+                            job,
                         });
                         break;
                 }
@@ -283,11 +291,11 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
         } catch (ex) {
             console.error('ERROR', ex);
         }
-    };
+    }
 
     async getInitialJobLog() {
         this.setState({
-            status: JobLogState.INITIAL_LOADING
+            status: JobLogState.INITIAL_LOADING,
         });
         const job = await this.getJob();
         let log;
@@ -295,7 +303,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
             case JobStateType.CREATE:
                 this.setState({
                     status: JobLogState.JOB_CREATED,
-                    job
+                    job,
                 });
                 this.poller.onPoll(this.queueingPollFunc.bind(this));
                 this.poller.start();
@@ -303,7 +311,7 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
             case JobStateType.QUEUE:
                 this.setState({
                     status: JobLogState.JOB_QUEUED,
-                    job
+                    job,
                 });
                 this.poller.onPoll(this.queueingPollFunc.bind(this));
                 this.poller.start();
@@ -314,14 +322,15 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                     this.setState({
                         status: JobLogState.ACTIVE_LOADED,
                         log,
-                        job
+                        job,
                     });
                     this.poller.onPoll(this.runningPollerFunc.bind(this));
                     this.poller.start();
                 } catch (ex) {
                     this.setState({
                         status: JobLogState.ERROR,
-                        error: ex instanceof Error ? ex.message : 'Unknown Error'
+                        error:
+                            ex instanceof Error ? ex.message : 'Unknown Error',
                     });
                 }
                 return;
@@ -333,12 +342,13 @@ export default class JobLogsState extends React.Component<JobLogsStateProps, Job
                     this.setState({
                         status: JobLogState.FINISHED_LOADED,
                         log,
-                        job
+                        job,
                     });
                 } catch (ex) {
                     this.setState({
                         status: JobLogState.ERROR,
-                        error: ex instanceof Error ? ex.message : 'Unknown Error'
+                        error:
+                            ex instanceof Error ? ex.message : 'Unknown Error',
                     });
                 }
                 return;

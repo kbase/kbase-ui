@@ -1,12 +1,11 @@
-import { JSONValue } from "../json";
+import { JSONValue } from '../json';
 
-export type FeedEntityType = 'user' | 'group' | 'narrative'; 
-
+export type FeedEntityType = 'user' | 'group' | 'narrative';
 
 export interface FeedEntity {
     id: string; // e.g. username
-    name: string // e.g. realname
-    type: string // "user"
+    name: string; // e.g. realname
+    type: string; // "user"
 }
 
 export interface FeedActor extends FeedEntity {
@@ -15,7 +14,7 @@ export interface FeedActor extends FeedEntity {
     // type: string // "user"
 }
 
-export interface FeedObject extends FeedEntity{
+export interface FeedObject extends FeedEntity {
     // id: string;
     // name: string;
     // type: string ; // "group"
@@ -27,16 +26,21 @@ export interface FeedTarget extends FeedEntity {
     // type: string;
 }
 
-export type FeedNotificationContext = Record<string, any>;
+export type FeedNotificationContext = Record<string, unknown>;
 
 // NOTE: I've added 'success', to at least handle front end need - it would be nice if
 // the feeds service had this too. E.g. a job finishes successfully should be a nice,
 // juicey, success notification :)
-export type FeedNotificationLevel = 'error' | 'request' | 'warning' | 'alert' | 'success';
+export type FeedNotificationLevel =
+    | 'error'
+    | 'request'
+    | 'warning'
+    | 'alert'
+    | 'success';
 
 export interface FeedNotification {
-    actor: FeedActor
-    context: null | FeedNotificationContext
+    actor: FeedActor;
+    context: null | FeedNotificationContext;
     created: number;
     expires: number;
     external_key: string;
@@ -50,7 +54,7 @@ export interface FeedNotification {
 }
 
 export interface Feed {
-    feed: Array<FeedNotification>
+    feed: Array<FeedNotification>;
     name: string;
     unseen: number;
 }
@@ -64,7 +68,6 @@ export interface GetNotificationsOptions {
     includeSeen?: boolean;
 }
 
-
 // export interface Notification {
 //     verb: string;
 //     object: string;
@@ -72,23 +75,19 @@ export interface GetNotificationsOptions {
 //     context: Record<string, string>
 // }
 
+export class FeedsError extends Error {}
 
-export class FeedsError extends Error {
-}
-
-export class ServerError extends Error {
-}
+export class ServerError extends Error {}
 
 export function queryToString(query: Map<string, string>): string {
-    return Array.from(query.entries()).map(([key, value]) => {
-        // return Object.keys(query).map((key) => {
-        // const value = query[key];
-        return [
-            key, encodeURIComponent(value)
-        ].join('=');
-    }).join('&');
+    return Array.from(query.entries())
+        .map(([key, value]) => {
+            // return Object.keys(query).map((key) => {
+            // const value = query[key];
+            return [key, encodeURIComponent(value)].join('=');
+        })
+        .join('&');
 }
-
 
 interface FeedsParams {
     token: string;
@@ -111,7 +110,7 @@ export interface UnseenNotificationCount {
 }
 
 export interface UnseenNotificationCountResult {
-    unseen: UnseenNotificationCount
+    unseen: UnseenNotificationCount;
 }
 
 // TODO: timeout!
@@ -122,125 +121,137 @@ export class FeedsClient {
     }
 
     put(path: Array<string>, body: JSONValue) {
-        const url = (this.baseURLPath().concat(path)).join('/');
+        const url = this.baseURLPath().concat(path).join('/');
         return fetch(url, {
             headers: {
                 Authorization: this.params.token,
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             mode: 'cors',
             method: 'PUT',
-            body: JSON.stringify(body)
-        })
-            .then((response) => {
-                if (response.status === 500) {
-                    switch (response.headers.get('Content-Type')) {
-                        case 'application/json':
-                            return response.json()
-                                .then((result) => {
-                                    throw new FeedsError(result);
-                                });
-                        case 'text/plain':
-                            return response.text()
-                                .then((errorText) => {
-                                    throw new ServerError(errorText);
-                                });
-                        default:
-                            throw new Error('Unexpected content type: ' + response.headers.get('Content-Type'));
-                    }
-                } else if (response.status !== 200) {
-                    throw new Error('Unexpected response: ' + response.status + ' : ' + response.statusText);
-                } else {
-                    return response.json()
-                        .then((result) => {
-                            return result;
+            body: JSON.stringify(body),
+        }).then((response) => {
+            if (response.status === 500) {
+                switch (response.headers.get('Content-Type')) {
+                    case 'application/json':
+                        return response.json().then((result) => {
+                            throw new FeedsError(result);
                         });
+                    case 'text/plain':
+                        return response.text().then((errorText) => {
+                            throw new ServerError(errorText);
+                        });
+                    default:
+                        throw new Error(
+                            'Unexpected content type: ' +
+                                response.headers.get('Content-Type'),
+                        );
                 }
-            });
+            } else if (response.status !== 200) {
+                throw new Error(
+                    'Unexpected response: ' +
+                        response.status +
+                        ' : ' +
+                        response.statusText,
+                );
+            } else {
+                return response.json().then((result) => {
+                    return result;
+                });
+            }
+        });
     }
 
     post(path: Array<string>, body: JSONValue) {
-        const url = (this.baseURLPath().concat(path)).join('/');
+        const url = this.baseURLPath().concat(path).join('/');
         return fetch(url, {
             headers: {
                 Authorization: this.params.token,
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             mode: 'cors',
             method: 'POST',
-            body: body ? JSON.stringify(body) : ''
-        })
-            .then((response) => {
-                if (response.status === 500) {
-                    switch (response.headers.get('Content-Type')) {
-                        case 'application/json':
-                            return response.json()
-                                .then((result) => {
-                                    throw new FeedsError(result);
-                                });
-                        case 'text/plain':
-                            return response.text()
-                                .then((errorText) => {
-                                    throw new ServerError(errorText);
-                                });
+            body: body ? JSON.stringify(body) : '',
+        }).then((response) => {
+            if (response.status === 500) {
+                switch (response.headers.get('Content-Type')) {
+                    case 'application/json':
+                        return response.json().then((result) => {
+                            throw new FeedsError(result);
+                        });
+                    case 'text/plain':
+                        return response.text().then((errorText) => {
+                            throw new ServerError(errorText);
+                        });
 
-                        default:
-                            throw new Error('Unexpected content type: ' + response.headers.get('Content-Type'));
-                    }
-                } else if (response.status === 200) {
-                    return response.json();
-                } else if (response.status === 204) {
-                    return null;
-                } else {
-                    throw new Error('Unexpected response: ' + response.status + ' : ' + response.statusText);
+                    default:
+                        throw new Error(
+                            'Unexpected content type: ' +
+                                response.headers.get('Content-Type'),
+                        );
                 }
-            });
+            } else if (response.status === 200) {
+                return response.json();
+            } else if (response.status === 204) {
+                return null;
+            } else {
+                throw new Error(
+                    'Unexpected response: ' +
+                        response.status +
+                        ' : ' +
+                        response.statusText,
+                );
+            }
+        });
     }
 
     postWithResult(path: Array<string>, body: JSONValue) {
-        const url = (this.baseURLPath().concat(path)).join('/');
+        const url = this.baseURLPath().concat(path).join('/');
         return fetch(url, {
             headers: {
                 Authorization: this.params.token,
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             mode: 'cors',
             method: 'POST',
-            body: body ? JSON.stringify(body) : ''
-        })
-            .then((response) => {
-                if (response.status === 500) {
-                    switch (response.headers.get('Content-Type')) {
-                        case 'application/json':
-                            return response.json()
-                                .then((result) => {
-                                    throw new FeedsError(result);
-                                });
-                        case 'text/plain':
-                            return response.text()
-                                .then((errorText) => {
-                                    throw new ServerError(errorText);
-                                });
-                        default:
-                            throw new Error('Unexpected content type: ' + response.headers.get('Content-Type'));
-                    }
-                } else if (response.status === 200) {
-                    return response.json();
-                } else {
-                    throw new Error('Unexpected response: ' + response.status + ' : ' + response.statusText);
+            body: body ? JSON.stringify(body) : '',
+        }).then((response) => {
+            if (response.status === 500) {
+                switch (response.headers.get('Content-Type')) {
+                    case 'application/json':
+                        return response.json().then((result) => {
+                            throw new FeedsError(result);
+                        });
+                    case 'text/plain':
+                        return response.text().then((errorText) => {
+                            throw new ServerError(errorText);
+                        });
+                    default:
+                        throw new Error(
+                            'Unexpected content type: ' +
+                                response.headers.get('Content-Type'),
+                        );
                 }
-            });
+            } else if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error(
+                    'Unexpected response: ' +
+                        response.status +
+                        ' : ' +
+                        response.statusText,
+                );
+            }
+        });
     }
 
     makeUrl(path: Array<string>, query?: Map<string, string>) {
-        const baseUrl = (this.baseURLPath().concat(path)).join('/');
+        const baseUrl = this.baseURLPath().concat(path).join('/');
         if (typeof query !== 'undefined') {
-            return baseUrl +
-                '?' +
-                queryToString(query);
+            return baseUrl + '?' + queryToString(query);
         }
         return baseUrl;
     }
@@ -251,33 +262,38 @@ export class FeedsClient {
             headers: {
                 Authorization: this.params.token,
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             mode: 'cors',
-            method: 'GET'
-        })
-            .then((response) => {
-                if (response.status === 500) {
-                    switch (response.headers.get('Content-Type')) {
-                        case 'application/json':
-                            return response.json()
-                                .then((result) => {
-                                    throw new FeedsError(result);
-                                });
-                        case 'text/plain':
-                            return response.text()
-                                .then((errorText) => {
-                                    throw new ServerError(errorText);
-                                });
-                        default:
-                            throw new Error('Unexpected content type: ' + response.headers.get('Content-Type'));
-                    }
-                } else if (response.status === 200) {
-                    return response.json();
-                } else {
-                    throw new Error('Unexpected response: ' + response.status + ' : ' + response.statusText);
+            method: 'GET',
+        }).then((response) => {
+            if (response.status === 500) {
+                switch (response.headers.get('Content-Type')) {
+                    case 'application/json':
+                        return response.json().then((result) => {
+                            throw new FeedsError(result);
+                        });
+                    case 'text/plain':
+                        return response.text().then((errorText) => {
+                            throw new ServerError(errorText);
+                        });
+                    default:
+                        throw new Error(
+                            'Unexpected content type: ' +
+                                response.headers.get('Content-Type'),
+                        );
                 }
-            });
+            } else if (response.status === 200) {
+                return response.json();
+            } else {
+                throw new Error(
+                    'Unexpected response: ' +
+                        response.status +
+                        ' : ' +
+                        response.statusText,
+                );
+            }
+        });
     }
 
     baseURLPath() {
@@ -289,7 +305,7 @@ export class FeedsClient {
 
         // let params = [];
         if (options.reverseSort) {
-            params.set('rev', "1");
+            params.set('rev', '1');
             // params.push('rev=1');
         }
         if (options.verb) {
@@ -298,7 +314,7 @@ export class FeedsClient {
         }
         if (options.level) {
             // params.push('l=' + options.level);
-            params.set('l', String(options.level))
+            params.set('l', String(options.level));
         }
         if (options.includeSeen) {
             // params.push('seen=1');
@@ -307,29 +323,39 @@ export class FeedsClient {
 
         // options.set('n', String(count));
         // TODO: perhaps make the method types all json compatible?
-        return this.get(['notifications'], params) as unknown as Promise<Feeds>
+        return this.get(['notifications'], params) as unknown as Promise<Feeds>;
     }
 
     getUnseenNotificationsCount(): Promise<UnseenNotificationCountResult> {
-        return (this.get(['notifications', 'unseen_count']) as unknown) as Promise<UnseenNotificationCountResult>;
+        return this.get([
+            'notifications',
+            'unseen_count',
+        ]) as unknown as Promise<UnseenNotificationCountResult>;
     }
 
     seeNotifications(param: JSONValue): Promise<void> {
-        return (this.postWithResult(['notifications', 'see'], param) as unknown) as Promise<void>;
+        return this.postWithResult(
+            ['notifications', 'see'],
+            param,
+        ) as unknown as Promise<void>;
     }
 
     markSeen(notificationIds: Array<string>): Promise<void> {
-        return this.post(['notifications', 'see'], {note_ids: notificationIds})
+        return this.post(['notifications', 'see'], {
+            note_ids: notificationIds,
+        });
     }
 
     markUnseen(notificationIds: Array<string>): Promise<void> {
-        return this.post(['notifications', 'unsee'], {note_ids: notificationIds})
+        return this.post(['notifications', 'unsee'], {
+            note_ids: notificationIds,
+        });
     }
 
     forceExpire(notificationIds: Array<string>, source: string): Promise<void> {
         return this.post(['notifications', 'expire'], {
             note_ids: notificationIds,
-            source
+            source,
         });
     }
 }

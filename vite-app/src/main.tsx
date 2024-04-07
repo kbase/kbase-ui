@@ -11,9 +11,9 @@ import './scss/bootstrap-custom.scss';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
-    <StrictMode> 
+    <StrictMode>
         <App />
-    </StrictMode>
+    </StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function

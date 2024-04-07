@@ -5,7 +5,7 @@ import './FlexTabs.css';
 export interface Tab {
     tab: string;
     title: JSX.Element | string;
-    renderBody: () => JSX.Element
+    renderBody: () => JSX.Element;
 }
 
 export interface TabsProps {
@@ -13,7 +13,7 @@ export interface TabsProps {
     // tabs: Array<Tab>;
     tabs: Map<string, Tab>;
     selectedTab: string;
-    onSelectTab: ((tab: string) => void)
+    onSelectTab: (tab: string) => void;
 }
 
 interface TabsState {
@@ -30,7 +30,7 @@ export default class Tabs extends Component<TabsProps, TabsState> {
 
     selectTab(tabID: string) {
         // this.setState({ selectedTabIndex: tabIndex })
-        this.props.onSelectTab(tabID)
+        this.props.onSelectTab(tabID);
     }
 
     renderTabs() {
@@ -38,20 +38,25 @@ export default class Tabs extends Component<TabsProps, TabsState> {
             const tab = this.props.tabs.get(tabID);
             // TODO: best way to handle this?
             if (!tab) {
-                return <span>
-                    no tab
-                </span>;
+                return <span key={tabID}>no tab</span>;
             }
-            const classNames = ['FlexTabs-tab']
+            const classNames = ['FlexTabs-tab'];
             if (tabID === this.props.selectedTab) {
                 classNames.push('FlexTabs-tab-active');
             }
             return (
                 <span key={tabID} className={classNames.join(' ')}>
-                    <Button type="link" onClick={() => { this.selectTab(tabID) }}>{tab.title}</Button>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            this.selectTab(tabID);
+                        }}
+                    >
+                        {tab.title}
+                    </Button>
                 </span>
-            )
-        })
+            );
+        });
     }
 
     renderTabBody() {
@@ -63,13 +68,11 @@ export default class Tabs extends Component<TabsProps, TabsState> {
     }
 
     render() {
-        return <div className="FlexTabs">
-            <div className="FlexTabs-header">
-                {this.renderTabs()}
+        return (
+            <div className="FlexTabs">
+                <div className="FlexTabs-header">{this.renderTabs()}</div>
+                <div className="FlexTabs-body">{this.renderTabBody()}</div>
             </div>
-            <div className="FlexTabs-body">
-                {this.renderTabBody()}
-            </div>
-        </div>
+        );
     }
 }

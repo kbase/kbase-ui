@@ -1,4 +1,10 @@
-import { CSSProperties, Component, ReactNode, RefObject, createRef } from "react";
+import {
+    CSSProperties,
+    Component,
+    ReactNode,
+    RefObject,
+    createRef,
+} from 'react';
 import './DataTable7.css';
 
 const SCROLL_DELAY = 100;
@@ -9,7 +15,8 @@ function outerDimensions(el: HTMLDivElement) {
     const width = Math.ceil(rect.right - rect.left);
     const height = Math.ceil(rect.bottom - rect.top);
     return {
-        width, height
+        width,
+        height,
     };
 }
 
@@ -17,7 +24,7 @@ export interface ColumnDefinition<T> {
     id: string;
     label: string;
     style: CSSProperties;
-    render: (value: any, rowValue?: T) => ReactNode
+    render: (rowValue: T) => ReactNode;
 }
 
 // export interface RowValue<T> {
@@ -27,16 +34,16 @@ export interface ColumnDefinition<T> {
 
 export interface DataTable7Props<T> {
     heights: {
-        header: number,
-        row: number
-    },
-    columns: Array<ColumnDefinition<T>>
+        header: number;
+        row: number;
+    };
+    columns: Array<ColumnDefinition<T>>;
     // render: {
     //     header: () => ReactElement
     // },
-    dataSource: Array<T>,
+    dataSource: Array<T>;
     // onClick: (rowValue: T) => void
-    bordered: boolean
+    bordered: boolean;
 }
 
 interface DataTable7State {
@@ -44,7 +51,10 @@ interface DataTable7State {
     triggerRefresh: number;
 }
 
-export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTable7State> {
+export default class DataTable7<T> extends Component<
+    DataTable7Props<T>,
+    DataTable7State
+> {
     bodyRef: RefObject<HTMLDivElement>;
     observer: ResizeObserver;
     scrollTimer: number | null;
@@ -60,14 +70,14 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
         this.resizeTimer = null;
         this.state = {
             trigger: false,
-            triggerRefresh: 0
-        }
+            triggerRefresh: 0,
+        };
     }
 
     componentDidMount() {
         window.setTimeout(() => {
             this.setState({
-                trigger: true
+                trigger: true,
             });
         }, 0);
         if (this.bodyRef.current) {
@@ -91,7 +101,7 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
 
         this.resizeTimer = window.setTimeout(() => {
             this.setState({
-                triggerRefresh: new Date().getTime()
+                triggerRefresh: new Date().getTime(),
             });
             this.resizeTimer = null;
         }, SCROLL_DELAY);
@@ -101,17 +111,20 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
         //     height: `${this.props.heights.header}px`
         // };
         // if (this.props.columns) {
-            return (() => {
-                const header = this.props.columns.map(({id, label, style}) => {
-                    return <div 
-                        className="DataTable7-header-col" 
+        return (() => {
+            const header = this.props.columns.map(({ id, label, style }) => {
+                return (
+                    <div
+                        className="DataTable7-header-col"
                         key={id}
-                        style={style || {}}>
+                        style={style || {}}
+                    >
                         {label}
                     </div>
-                });
-                return <div className="DataTable7-header">{header}</div>
-            })();
+                );
+            });
+            return <div className="DataTable7-header">{header}</div>;
+        })();
         // }
         // return (() => {
         //     const header = this.props.render.header();
@@ -129,7 +142,7 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
             return;
         }
 
-        const {height} = outerDimensions(body);
+        const { height } = outerDimensions(body);
         this.firstRow = Math.floor(body.scrollTop / rowHeight);
         if (this.firstRow < 0) {
             this.firstRow = 0;
@@ -138,7 +151,7 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
     }
 
     rowHeight() {
-        return this.props.heights.row; 
+        return this.props.heights.row;
     }
 
     renderRowWrapper(rowValue: T, index: number) {
@@ -150,14 +163,12 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
             top,
             right: '0',
             left: '0',
-            height: `${rowHeight}px`
+            height: `${rowHeight}px`,
         };
 
         // Render actual table row
         const rowColumns = this.renderRow(rowValue);
-        const row = <div className="DataTable7-row">
-                {rowColumns}
-            </div>
+        const row = <div className="DataTable7-row">{rowColumns}</div>;
 
         // Render row wrapper.
         const rowClasses = ['DataTable7-grid-row'];
@@ -165,15 +176,19 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
         //     rowClasses.push('DataTable7-row-highlighted');
         // }
 
-        return <div style={style} 
-            key={index}
-            className={rowClasses.join(' ')}
-            // onDoubleClick={() => {
-            //     this.onRowClick(rowValue);
-            // }}
-            role="row">
-            {row}  
-        </div>
+        return (
+            <div
+                style={style}
+                key={index}
+                className={rowClasses.join(' ')}
+                // onDoubleClick={() => {
+                //     this.onRowClick(rowValue);
+                // }}
+                role="row"
+            >
+                {row}
+            </div>
+        );
     }
 
     renderRow(rowValue: T) {
@@ -184,20 +199,28 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
                     try {
                         return col.render(rowValue);
                     } catch (ex) {
-                        return <span className="text-danger">{ex instanceof Error ? ex.message : 'Unknown error'}</span>
+                        return (
+                            <span className="text-danger">
+                                {ex instanceof Error
+                                    ? ex.message
+                                    : 'Unknown error'}
+                            </span>
+                        );
                     }
                 }
             })();
             const style = col.style || {};
-            return <div className="DataTable7-col"
-                        key={col.id}
-                        style={style}
-                        data-k-b-testhook-cell={col.id}
-                        role="cell">
-                    <div className="DataTable7-col-content">
-                        {content}
-                    </div>
+            return (
+                <div
+                    className="DataTable7-col"
+                    key={col.id}
+                    style={style}
+                    data-k-b-testhook-cell={col.id}
+                    role="cell"
+                >
+                    <div className="DataTable7-col-content">{content}</div>
                 </div>
+            );
         });
     }
 
@@ -206,7 +229,10 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
             return;
         }
 
-        const table = this.props.dataSource.slice(this.firstRow, this.lastRow! + 1);
+        const table = this.props.dataSource.slice(
+            this.firstRow,
+            this.lastRow! + 1,
+        );
         return table.map((rowValue, index) => {
             return this.renderRowWrapper(rowValue, index);
         });
@@ -226,7 +252,7 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
 
         this.scrollTimer = window.setTimeout(() => {
             this.setState({
-                triggerRefresh: new Date().getTime()
+                triggerRefresh: new Date().getTime(),
             });
             this.scrollTimer = null;
         }, SCROLL_DELAY);
@@ -236,29 +262,32 @@ export default class DataTable7<T> extends Component<DataTable7Props<T>, DataTab
         const rows = this.renderRows();
         const tableHeight = this.props.dataSource.length * this.rowHeight();
         const style = {
-            height: `${tableHeight}px`
+            height: `${tableHeight}px`,
         };
-        return <div className="DataTable7-body"
-                 ref={this.bodyRef}
-                 onScroll={this.handleBodyScroll.bind(this)}>
-                <div className="DataTable7-grid"
-                     style={style}>
+        return (
+            <div
+                className="DataTable7-body"
+                ref={this.bodyRef}
+                onScroll={this.handleBodyScroll.bind(this)}
+            >
+                <div className="DataTable7-grid" style={style}>
                     {rows}
                 </div>
             </div>
+        );
     }
 
     render() {
         this.doMeasurements();
-        const classes = [
-            "DataTable7"
-        ];
+        const classes = ['DataTable7'];
         if (this.props.bordered !== false) {
             classes.push('-bordered');
         }
-        return <div className={classes.join(' ')} role="table">
+        return (
+            <div className={classes.join(' ')} role="table">
                 {this.renderHeader()}
                 {this.renderBody()}
             </div>
+        );
     }
 }

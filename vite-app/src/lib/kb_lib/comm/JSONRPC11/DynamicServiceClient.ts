@@ -1,7 +1,8 @@
 import { JSONArray } from '@kbase/ui-lib/lib/json';
 import Cache from '../Cache';
 import {
-    ServiceStatus, ServiceWizardClient
+    ServiceStatus,
+    ServiceWizardClient,
 } from '../coreServices/ServiceWizard';
 import { ServiceClient, ServiceClientParams } from './ServiceClient';
 
@@ -19,7 +20,7 @@ const WAITER_FREQUENCY = 100;
 //     module_name: string;
 // }
 
-var moduleCache = new Cache<ServiceStatus>({
+const moduleCache = new Cache<ServiceStatus>({
     itemLifetime: ITEM_LIFETIME,
     monitoringFrequency: MONITORING_FREQUENCY,
     waiterTimeout: WAITER_TIMEOUT,
@@ -100,7 +101,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
                     version: this.version,
                 });
                 return status;
-            }
+            },
         );
         this.module = moduleInfo.module_name;
         this.url = moduleInfo.url;
@@ -109,7 +110,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
 
     async callFunc<ParamType extends JSONArray, ReturnType extends JSONArray>(
         funcName: string,
-        params: ParamType
+        params: ParamType,
     ): Promise<ReturnType> {
         await this.lookupModule();
         return super.callFunc(funcName, params);
@@ -117,7 +118,7 @@ export abstract class DynamicServiceClient extends ServiceClient {
 
     async callFuncEmptyResult<ParamType extends JSONArray>(
         funcName: string,
-        params: ParamType
+        params: ParamType,
     ): Promise<void> {
         await this.lookupModule();
         return super.callFuncEmptyResult(funcName, params);

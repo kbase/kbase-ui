@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
-import { JSONObject } from "lib/json";
-import WorkspaceClient from "lib/kb_lib/comm/coreServices/Workspace";
+import { JSONObject } from 'lib/json';
+import WorkspaceClient from 'lib/kb_lib/comm/coreServices/Workspace';
 
 /**
  * Interfaces that represent Narrative data returned from the search service.
@@ -51,9 +51,14 @@ export interface NarrativeSearchDoc {
     version: number;
 }
 
-export type CellType = "code" | "markdown";
+export type CellType = 'code' | 'markdown';
 
-export type KBaseCodeCellType = "code" | "data" | "app" | "output" | "serviceWidget" ;
+export type KBaseCodeCellType =
+    | 'code'
+    | 'data'
+    | 'app'
+    | 'output'
+    | 'serviceWidget';
 
 export interface BaseCell {
     cell_type: CellType;
@@ -68,12 +73,12 @@ export interface BaseCell {
 }
 
 export interface MarkdownCell extends BaseCell {
-    cell_type: "markdown";
+    cell_type: 'markdown';
     source: string;
 }
 
 export interface CodeCellBase extends BaseCell {
-    cell_type: "code";
+    cell_type: 'code';
     execution_count: number;
     metadata: {
         kbase: {
@@ -91,7 +96,7 @@ export type GenericParams = { [key: string]: number | string };
 export interface AppCell extends CodeCellBase {
     metadata: {
         kbase: {
-            type: "app";
+            type: 'app';
             attributes: {
                 title: string;
             };
@@ -147,7 +152,7 @@ export interface AppCell extends CodeCellBase {
                         batch_id: null | string;
                         batch_job: boolean;
                         cell_id: string;
-                        child_jobs: Array<any>;
+                        child_jobs: Array<unknown>;
                         status: string;
                         created: number;
                         queued: number;
@@ -157,7 +162,7 @@ export interface AppCell extends CodeCellBase {
                         job_id: string;
                         job_output: {
                             id: string;
-                            result: any;
+                            result: unknown;
                             version: number;
                         };
                         scheduler_id: string;
@@ -174,7 +179,7 @@ export interface AppCell extends CodeCellBase {
 export interface CodeCell extends CodeCellBase {
     metadata: {
         kbase: {
-            type: "code";
+            type: 'code';
             attributes?: {
                 title: string;
             };
@@ -199,7 +204,7 @@ export interface CodeCell extends CodeCellBase {
 export interface DataObjectCell extends CodeCellBase {
     metadata: {
         kbase: {
-            type: "data";
+            type: 'data';
             attributes: {
                 title: string;
             };
@@ -233,7 +238,7 @@ export interface DataObjectCell extends CodeCellBase {
 export interface OutputObjectCell extends CodeCellBase {
     metadata: {
         kbase: {
-            type: "output";
+            type: 'output';
             attributes: {
                 title: string;
             };
@@ -250,11 +255,10 @@ export interface OutputObjectCell extends CodeCellBase {
     };
 }
 
-
 export interface ServiceWidgetCell extends CodeCellBase {
     metadata: {
         kbase: {
-            type: "serviceWidget";
+            type: 'serviceWidget';
             attributes: {
                 title: string;
                 subtitle: string;
@@ -266,9 +270,9 @@ export interface ServiceWidgetCell extends CodeCellBase {
                     widgetName: string;
                     title: string;
                     subtitle: string;
-                    params: Record<string, any>;
+                    params: Record<string, unknown>;
                     isDynamicService: boolean;
-                }
+                };
             };
         };
     };
@@ -278,7 +282,7 @@ export type SomeCodeCell =
     | CodeCell
     | AppCell
     | DataObjectCell
-    | OutputObjectCell 
+    | OutputObjectCell
     | ServiceWidgetCell;
 
 export type Cell = MarkdownCell | SomeCodeCell;
@@ -359,17 +363,16 @@ export default class NarrativeModel {
         const ws = new WorkspaceClient({
             url: this.workspaceURL,
             timeout: this.timeout,
-            token: this.token
+            token: this.token,
         });
 
         // const [result] = await client.callFunc("get_objects2", [
         //   { objects: [{ ref: upa }] },
         // ]);
 
-        const result = await ws.get_objects2(
-            { objects: [{ ref: upa }] },
-        );
-        const narrativeObject = result.data[0].data as unknown as NarrativeObject;
+        const result = await ws.get_objects2({ objects: [{ ref: upa }] });
+        const narrativeObject = result.data[0]
+            .data as unknown as NarrativeObject;
         narrativeObjectCache.set(upa, narrativeObject);
         return narrativeObject;
     }
@@ -382,17 +385,17 @@ export default class NarrativeModel {
         const ws = new WorkspaceClient({
             url: this.workspaceURL,
             timeout: this.timeout,
-            token: this.token
+            token: this.token,
         });
-        const result = await ws.get_permissions_mass(
-            { workspaces: [{ id: wsId }] },
-        );
+        const result = await ws.get_permissions_mass({
+            workspaces: [{ id: wsId }],
+        });
         // )[0].perms[0];
 
         const perms = result.perms[0];
 
         // TODO: um, it should not be possible to see a narrative in search for
         // which one has no permission!
-        return perms[username] || "n";
+        return perms[username] || 'n';
     }
 }

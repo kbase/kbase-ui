@@ -13,7 +13,6 @@ function currentEvent(job: Job): JobEvent {
     return job.eventHistory[job.eventHistory.length - 1];
 }
 
-
 /**
  * Translates a job status value to a color value acceptable for the color
  * prop for the job status tag.
@@ -44,26 +43,29 @@ export interface JobStatusProps {
     showTiming?: boolean;
 }
 
-interface JobStatusState {
+interface JobStatusState {}
 
-}
-
-export default class JobStatusBadge extends Component<JobStatusProps, JobStatusState> {
+export default class JobStatusBadge extends Component<
+    JobStatusProps,
+    JobStatusState
+> {
     renderTag() {
         const label = this.renderJobStatusLabel();
         const color = jobColor(this.props.job);
-        return <Tooltip title={this.renderJobStatusTooltip()}>
-            <Tag color={color}>{label}</Tag>
-        </Tooltip>;
+        return (
+            <Tooltip title={this.renderJobStatusTooltip()}>
+                <Tag color={color}>{label}</Tag>
+            </Tooltip>
+        );
     }
     /**
-* Translates a job status value to a label, with optional icon, suitable for
-* display as the child of the job status tag.
-*
-* @param status - the status of the job
-*
-* @note Since the switch is over an enum, we don't have to worry about the default case
-*/
+     * Translates a job status value to a label, with optional icon, suitable for
+     * display as the child of the job status tag.
+     *
+     * @param status - the status of the job
+     *
+     * @note Since the switch is over an enum, we don't have to worry about the default case
+     */
     renderJobStatusLabel() {
         switch (currentEvent(this.props.job).type) {
             case JobStateType.CREATE:
@@ -94,25 +96,37 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
     renderJobStatusTooltip() {
         const event = currentEvent(this.props.job);
         switch (event.type) {
-            case JobStateType.CREATE:
+            case JobStateType.CREATE: {
                 // A created job is stale if over 5 minutes old
                 const stale = () => {
                     const now = new Date().getTime();
                     const elapsed = now - event.at;
                     if (elapsed > STALE_AFTER) {
-                        return <p>
-                            This job is considered <b>orphaned</b>, since it was created
-                             <NiceElapsedTime from={event.at} to={now} showTooltip /> ago.
-                            A job should move into a queue within {<NiceTimeDuration duration={STALE_AFTER} />}.
-                        </p>;
+                        return (
+                            <p>
+                                This job is considered <b>orphaned</b>, since it
+                                was created
+                                <NiceElapsedTime
+                                    from={event.at}
+                                    to={now}
+                                    showTooltip
+                                />{' '}
+                                ago. A job should move into a queue within{' '}
+                                {<NiceTimeDuration duration={STALE_AFTER} />}.
+                            </p>
+                        );
                     }
                 };
                 return (
                     <div>
-                        <p>This job has been received by the execution engine, but not yet queued for running.</p>
+                        <p>
+                            This job has been received by the execution engine,
+                            but not yet queued for running.
+                        </p>
                         {stale()}
                     </div>
                 );
+            }
             case JobStateType.QUEUE:
                 return (
                     <div>
@@ -120,19 +134,22 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
                             This job has been <b>queued</b> for running
                         </p>
                         <p>
-                            You may inspect the job log by clicking the <InfoCircleOutlined /> button in the leftmost column.
+                            You may inspect the job log by clicking the{' '}
+                            <InfoCircleOutlined /> button in the leftmost
+                            column.
                         </p>
                     </div>
                 );
             case JobStateType.RUN:
                 return (
                     <div>
-
                         <p>
                             This job is currently <b>running</b>.
                         </p>
                         <p>
-                            You may inspect the job log by clicking the <InfoCircleOutlined /> button in the leftmost column.
+                            You may inspect the job log by clicking the{' '}
+                            <InfoCircleOutlined /> button in the leftmost
+                            column.
                         </p>
                     </div>
                 );
@@ -143,7 +160,9 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
                             This job has <b>completed successfully</b>.
                         </p>
                         <p>
-                            You may inspect the job log by clicking the <InfoCircleOutlined /> button in the leftmost column.
+                            You may inspect the job log by clicking the{' '}
+                            <InfoCircleOutlined /> button in the leftmost
+                            column.
                         </p>
                     </div>
                 );
@@ -154,7 +173,9 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
                             This job experienced an <b>error</b>.
                         </p>
                         <p>
-                            You may inspect the error and job log by clicking the <InfoCircleOutlined /> button in the leftmost column.
+                            You may inspect the error and job log by clicking
+                            the <InfoCircleOutlined /> button in the leftmost
+                            column.
                         </p>
                     </div>
                 );
@@ -165,7 +186,9 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
                             This job has been <b>canceled</b>.
                         </p>
                         <p>
-                            You may inspect the job log by clicking the <InfoCircleOutlined /> button in the leftmost column.
+                            You may inspect the job log by clicking the{' '}
+                            <InfoCircleOutlined /> button in the leftmost
+                            column.
                         </p>
                     </div>
                 );
@@ -182,13 +205,13 @@ export default class JobStatusBadge extends Component<JobStatusProps, JobStatusS
                 return <span>-</span>;
             case JobStateType.QUEUE:
             case JobStateType.RUN:
-                return <NiceElapsedTime
-                    from={event.at}
-                    useClock={true} />;
+                return <NiceElapsedTime from={event.at} useClock={true} />;
             default:
-                return <span>
-                    <NiceRelativeTime time={new Date(event.at)} />
-                </span>;
+                return (
+                    <span>
+                        <NiceRelativeTime time={new Date(event.at)} />
+                    </span>
+                );
         }
     }
 

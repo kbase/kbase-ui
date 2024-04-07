@@ -1,7 +1,14 @@
-import { JobInfo } from "./lib/JobBrowserBFFClient";
-import { App, Job, JobContext, JobContextType, TimeRange, TimeRangePresets } from "./store";
-import { EpochTime } from "./types/base";
-import { JobEventHistory, JobStateType } from "./types/jobState";
+import { JobInfo } from './lib/JobBrowserBFFClient';
+import {
+    App,
+    Job,
+    JobContext,
+    JobContextType,
+    TimeRange,
+    TimeRangePresets,
+} from './store';
+import { EpochTime } from './types/base';
+import { JobEventHistory, JobStateType } from './types/jobState';
 
 function makeJobContext(job: JobInfo): JobContext {
     switch (job.context.type) {
@@ -14,8 +21,8 @@ function makeJobContext(job: JobInfo): JobContext {
                     id: job.context.workspace.id,
                     isAccessible: job.context.workspace.is_accessible,
                     name: job.context.workspace.name,
-                    isDeleted: job.context.workspace.is_deleted
-                }
+                    isDeleted: job.context.workspace.is_deleted,
+                },
             };
         case 'workspace':
             return {
@@ -24,8 +31,8 @@ function makeJobContext(job: JobInfo): JobContext {
                     id: job.context.workspace.id,
                     isAccessible: job.context.workspace.is_accessible,
                     name: job.context.workspace.name,
-                    isDeleted: job.context.workspace.is_deleted
-                }
+                    isDeleted: job.context.workspace.is_deleted,
+                },
             };
         case 'export':
             return {
@@ -41,146 +48,174 @@ function makeJobContext(job: JobInfo): JobContext {
 export function serviceJobToEventHistory(job: JobInfo): JobEventHistory {
     switch (job.state.status) {
         case 'create':
-            return [{
-                type: JobStateType.CREATE,
-                at: job.state.create_at
-            }];
+            return [
+                {
+                    type: JobStateType.CREATE,
+                    at: job.state.create_at,
+                },
+            ];
         case 'queue':
-            return [{
-                type: JobStateType.CREATE,
-                at: job.state.create_at
-            }, {
-                type: JobStateType.QUEUE,
-                at: job.state.queue_at
-            }];
+            return [
+                {
+                    type: JobStateType.CREATE,
+                    at: job.state.create_at,
+                },
+                {
+                    type: JobStateType.QUEUE,
+                    at: job.state.queue_at,
+                },
+            ];
         case 'run':
-            return [{
-                type: JobStateType.CREATE,
-                at: job.state.create_at
-            }, {
-                type: JobStateType.QUEUE,
-                at: job.state.queue_at
-            }, {
-                type: JobStateType.RUN,
-                at: job.state.run_at
-            }];
+            return [
+                {
+                    type: JobStateType.CREATE,
+                    at: job.state.create_at,
+                },
+                {
+                    type: JobStateType.QUEUE,
+                    at: job.state.queue_at,
+                },
+                {
+                    type: JobStateType.RUN,
+                    at: job.state.run_at,
+                },
+            ];
         case 'complete':
-            return [{
-                type: JobStateType.CREATE,
-                at: job.state.create_at
-            }, {
-                type: JobStateType.QUEUE,
-                at: job.state.queue_at
-            }, {
-                type: JobStateType.RUN,
-                at: job.state.run_at
-            }, {
-                type: JobStateType.COMPLETE,
-                at: job.state.finish_at
-            }];
+            return [
+                {
+                    type: JobStateType.CREATE,
+                    at: job.state.create_at,
+                },
+                {
+                    type: JobStateType.QUEUE,
+                    at: job.state.queue_at,
+                },
+                {
+                    type: JobStateType.RUN,
+                    at: job.state.run_at,
+                },
+                {
+                    type: JobStateType.COMPLETE,
+                    at: job.state.finish_at,
+                },
+            ];
         case 'error':
             if (job.state.run_at) {
                 return [
                     {
                         type: JobStateType.CREATE,
-                        at: job.state.create_at
-                    }, {
+                        at: job.state.create_at,
+                    },
+                    {
                         type: JobStateType.QUEUE,
-                        at: job.state.queue_at
-                    }, {
+                        at: job.state.queue_at,
+                    },
+                    {
                         type: JobStateType.RUN,
-                        at: job.state.run_at
-                    }, {
+                        at: job.state.run_at,
+                    },
+                    {
                         type: JobStateType.ERROR,
                         at: job.state.finish_at,
                         code: job.state.error.code,
-                        message: job.state.error.message
-                    }
+                        message: job.state.error.message,
+                    },
                 ];
             }
             if (job.state.queue_at) {
                 return [
                     {
                         type: JobStateType.CREATE,
-                        at: job.state.create_at
-                    }, {
+                        at: job.state.create_at,
+                    },
+                    {
                         type: JobStateType.QUEUE,
-                        at: job.state.queue_at
-                    }, {
+                        at: job.state.queue_at,
+                    },
+                    {
                         type: JobStateType.ERROR,
                         at: job.state.finish_at,
                         code: job.state.error.code,
-                        message: job.state.error.message
-                    }
+                        message: job.state.error.message,
+                    },
                 ];
             }
 
             return [
                 {
                     type: JobStateType.CREATE,
-                    at: job.state.create_at
-                }, {
+                    at: job.state.create_at,
+                },
+                {
                     type: JobStateType.QUEUE,
-                    at: job.state.queue_at
-                }, {
+                    at: job.state.queue_at,
+                },
+                {
                     type: JobStateType.ERROR,
                     at: job.state.finish_at,
                     code: job.state.error.code,
-                    message: job.state.error.message
-                }
+                    message: job.state.error.message,
+                },
             ];
         case 'terminate':
             if (job.state.run_at) {
                 return [
                     {
                         type: JobStateType.CREATE,
-                        at: job.state.create_at
-                    }, {
+                        at: job.state.create_at,
+                    },
+                    {
                         type: JobStateType.QUEUE,
-                        at: job.state.queue_at
-                    }, {
+                        at: job.state.queue_at,
+                    },
+                    {
                         type: JobStateType.RUN,
-                        at: job.state.run_at
-                    }, {
+                        at: job.state.run_at,
+                    },
+                    {
                         type: JobStateType.TERMINATE,
                         at: job.state.finish_at,
-                        code: job.state.reason.code
-                    }
+                        code: job.state.reason.code,
+                    },
                 ];
             }
             if (job.state.queue_at) {
                 return [
                     {
                         type: JobStateType.CREATE,
-                        at: job.state.create_at
-                    }, {
+                        at: job.state.create_at,
+                    },
+                    {
                         type: JobStateType.QUEUE,
-                        at: job.state.queue_at
-                    }, {
+                        at: job.state.queue_at,
+                    },
+                    {
                         type: JobStateType.TERMINATE,
                         at: job.state.finish_at,
-                        code: job.state.reason.code
-                    }
+                        code: job.state.reason.code,
+                    },
                 ];
             }
 
             return [
                 {
                     type: JobStateType.CREATE,
-                    at: job.state.create_at
-                }, {
+                    at: job.state.create_at,
+                },
+                {
                     type: JobStateType.QUEUE,
-                    at: job.state.queue_at
-                }, {
+                    at: job.state.queue_at,
+                },
+                {
                     type: JobStateType.TERMINATE,
                     at: job.state.finish_at,
-                    code: job.state.reason.code
-                }
+                    code: job.state.reason.code,
+                },
             ];
     }
 }
 
-export function serviceJobToUIJob(job: JobInfo, _username: string): Job {
+export function serviceJobToUIJob(job: JobInfo): Job {
     const context = makeJobContext(job);
     let app: App | null;
     if (job.app) {
@@ -190,7 +225,7 @@ export function serviceJobToUIJob(job: JobInfo, _username: string): Job {
             functionName: job.app.function_name,
             title: job.app.title,
             type: job.app.type,
-            iconURL: job.app.icon_url
+            iconURL: job.app.icon_url,
         };
     } else {
         app = null;
@@ -201,12 +236,12 @@ export function serviceJobToUIJob(job: JobInfo, _username: string): Job {
             context,
             owner: {
                 username: job.owner.username,
-                realname: job.owner.realname
+                realname: job.owner.realname,
             },
             app,
             clientGroup: job.state.client_group,
         },
-        eventHistory: serviceJobToEventHistory(job)
+        eventHistory: serviceJobToEventHistory(job),
     };
 }
 
@@ -268,6 +303,8 @@ export function extractTimeRange(timeRange: TimeRange): [EpochTime, EpochTime] {
         case 'literal':
             return [timeRange.start, timeRange.end];
         default:
-            throw new Error('Invalid time range kind value (should be impossible');
+            throw new Error(
+                'Invalid time range kind value (should be impossible',
+            );
     }
 }

@@ -131,7 +131,7 @@ export default class ToolMenu extends Component<ToolMenuProps, ToolMenuState> {
         );
     }
 
-    handleSelectMenuItem(eventKey: any) {
+    handleSelectMenuItem(eventKey: string) {
         const content = modalContent[eventKey];
         if (!content) {
             return;
@@ -146,7 +146,14 @@ export default class ToolMenu extends Component<ToolMenuProps, ToolMenuState> {
 
     renderMenu() {
         return (
-            <Dropdown onSelect={this.handleSelectMenuItem.bind(this)}>
+            <Dropdown
+                onSelect={(selection) => {
+                    if (!selection) {
+                        return;
+                    }
+                    this.handleSelectMenuItem.bind(this);
+                }}
+            >
                 <Dropdown.Toggle variant="default">
                     <span className="fa fa-cog fa-2x"></span>
                 </Dropdown.Toggle>

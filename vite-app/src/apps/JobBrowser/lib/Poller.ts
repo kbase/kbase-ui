@@ -1,15 +1,15 @@
-import PubSub, { PubSubProxy } from "./PubSub";
+import PubSub, { PubSubProxy } from './PubSub';
 
 const POLLING_TIMEOUT = 60000;
 
 export interface PollerParams {
     // callback to trigger a polling action, whatever that is.
-    onPoll: () => void,
+    onPoll: () => void;
     // callback for progress
-    onProgress?: (progress: number) => void,
-    pubsub: PubSub,
-    progressSteps: number,
-    pollInterval: number,
+    onProgress?: (progress: number) => void;
+    pubsub: PubSub;
+    progressSteps: number;
+    pollInterval: number;
     watchInterval: number;
 }
 
@@ -19,7 +19,7 @@ export enum PollerState {
     WAITING,
     PAUSED,
     STOPPED,
-    ERROR
+    ERROR,
 }
 
 export class Poller {
@@ -114,7 +114,10 @@ export class Poller {
             }
         };
         const pollWatcherLoop = () => {
-            this.watcherTimer = window.setTimeout(pollWatch, this.params.watchInterval);
+            this.watcherTimer = window.setTimeout(
+                pollWatch,
+                this.params.watchInterval,
+            );
         };
 
         pollWatcherLoop();
@@ -130,7 +133,8 @@ export class Poller {
                 return;
             }
             this.waitTimer = window.setTimeout(
-                this.runPoll.bind(this), this.params.pollInterval
+                this.runPoll.bind(this),
+                this.params.pollInterval,
             );
             this.statusCount = 0;
             pollWaitProgressLoop();
@@ -173,7 +177,8 @@ export class Poller {
         stopped, or paused, should be resumed.
     */
     startListeningForPollingEvent() {
-        this.pubsubProxy.on('searching', ({ is }) => {
+        this.pubsubProxy.on('searching', (message: unknown) => {
+            const { is } = message as { is: boolean };
             if (is) {
                 switch (this.status) {
                     case PollerState.STARTED:
@@ -228,7 +233,9 @@ export class Poller {
 
     updateOnProgress() {
         if (this.params.onProgress) {
-            this.params.onProgress(100 * this.statusCount / this.params.progressSteps);
+            this.params.onProgress(
+                (100 * this.statusCount) / this.params.progressSteps,
+            );
         }
     }
 

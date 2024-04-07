@@ -13,21 +13,21 @@ import ErrorMessage from '../../../../components/ErrorMessage';
 import {
     SearchState,
     SearchStateError,
-    SearchStatus
+    SearchStatus,
 } from '../../context/DataModel';
 import { NavigatorContext } from '../../context/NavigatorContext';
 import NarrativeListing from '../NarrativeListing/NarrativeListing';
 
 interface NarrativeListProps {
     searchState: SearchState;
-    emptyMessage: string
+    emptyMessage: string;
     queryChange: (query: string) => void;
     sortChange: (query: string) => void;
     categoryChange: (category: string) => void;
     refresh: () => void;
 }
 
-interface NarrativeListState { }
+interface NarrativeListState {}
 
 // Like SearchOptions but all optional
 // TODO: may be able to use a TS helper for this...
@@ -112,11 +112,14 @@ export default class NarrativeList extends Component<
         return (
             <NavigatorContext.Consumer>
                 {(value) => {
+                    if (value === null) {
+                        return;
+                    }
                     return (
                         <NarrativeListing
                             emptyMessage={this.props.emptyMessage}
-                            onRowRange={value?.setRange!}
-                            searchState={value?.searchState!}
+                            onRowRange={value.setRange}
+                            searchState={value.searchState}
                         />
                     );
                 }}
@@ -145,7 +148,11 @@ export default class NarrativeList extends Component<
     }
 
     newNarrative() {
-        navigate2({path: 'narrativemanager/new', type: 'kbaseui', newWindow: true});
+        navigate2({
+            path: 'narrativemanager/new',
+            type: 'kbaseui',
+            newWindow: true,
+        });
 
         // window.open("#narrativemanager/new", "_blank")
     }
@@ -198,7 +205,7 @@ export default class NarrativeList extends Component<
                                     loading={isSearching}
                                     value={searchParamThing.query}
                                     onSetVal={this.handleFilterQueryChange.bind(
-                                        this
+                                        this,
                                     )}
                                     onRefresh={this.handleRefresh.bind(this)}
                                     placeholder="Search Narratives"
@@ -213,7 +220,7 @@ export default class NarrativeList extends Component<
                                             searching={isSearching}
                                             sort={searchParamThing.sort}
                                             onSortChange={this.handleFilterSortChange.bind(
-                                                this
+                                                this,
                                             )}
                                         />
                                     </div>

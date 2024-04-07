@@ -1,3 +1,4 @@
+import { objectToRecord } from 'lib/utils';
 import { HttpQuery, QueryMap } from './HttpUtils';
 
 export type HttpHeaderFields = { [key: string]: string };
@@ -35,15 +36,16 @@ export class HttpHeader {
         return fieldsMap;
     }
 
-    public static fromObject(header: any): HttpHeaderFields {
-        const fieldsMap: { [key: string]: string } = {};
+    public static fromObject(headerObject: object): HttpHeaderFields {
+        const header = objectToRecord<string>(headerObject);
+        const fieldsMap: Record<string, string> = {};
         Object.keys(header).forEach((name) => {
             fieldsMap[name.toLowerCase()] = header[name];
         });
         return fieldsMap;
     }
 
-    constructor(initialHeaders?: any) {
+    constructor(initialHeaders?: XMLHttpRequest | object) {
         if (typeof initialHeaders === 'undefined') {
             this.header = {};
         } else if (initialHeaders instanceof XMLHttpRequest) {
@@ -86,7 +88,7 @@ export class HttpHeader {
                             return String(value);
                         default:
                             throw new Error(
-                                `Invalid type for header value: ${typeof value}`
+                                `Invalid type for header value: ${typeof value}`,
                             );
                     }
                 })(this.getHeader(key));
@@ -121,7 +123,7 @@ export class TimeoutError extends Error {
         timeout: number,
         elapsed: number,
         message: string,
-        xhr: XMLHttpRequest
+        xhr: XMLHttpRequest,
     ) {
         super(message);
 
@@ -211,16 +213,16 @@ export class HttpClient {
                         options.timeout,
                         elapsed,
                         'Request timeout',
-                        xhr
-                    )
+                        xhr,
+                    ),
                 );
             };
             xhr.onerror = () => {
                 reject(
                     new GeneralError(
                         `General request error ${options.url}`,
-                        xhr
-                    )
+                        xhr,
+                    ),
                 );
             };
             xhr.onabort = () => {
@@ -263,8 +265,8 @@ export class HttpClient {
                 reject(
                     new GeneralError(
                         `Error applying header before send - ${message}`,
-                        xhr
-                    )
+                        xhr,
+                    ),
                 );
             }
 
@@ -285,8 +287,8 @@ export class HttpClient {
                 } else {
                     reject(
                         new Error(
-                            `Invalid type of data to send: ${typeof options.data}`
-                        )
+                            `Invalid type of data to send: ${typeof options.data}`,
+                        ),
                     );
                 }
             } catch (ex) {

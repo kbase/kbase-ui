@@ -14,7 +14,7 @@ const JOB_LOG_LIMIT = 1000;
 
 export interface JobLogEntry {
     lineNumber: number;
-    loggedAt: Date | null,
+    loggedAt: Date | null;
     message: string;
     isError: boolean;
 }
@@ -26,7 +26,7 @@ export enum JobLogState {
     ACTIVE_LOADED,
     ACTIVE_LOADING,
     FINISHED_LOADED,
-    ERROR
+    ERROR,
 }
 
 export interface JobLogViewNone {
@@ -46,29 +46,37 @@ export interface JobLogViewInitialLoading {
 }
 
 export interface JobLogViewActiveLoaded {
-    status: JobLogState.ACTIVE_LOADED,
+    status: JobLogState.ACTIVE_LOADED;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewActiveLoading {
-    status: JobLogState.ACTIVE_LOADING,
+    status: JobLogState.ACTIVE_LOADING;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewFinishedLoaded {
-    status: JobLogState.FINISHED_LOADED,
+    status: JobLogState.FINISHED_LOADED;
     log: Array<JobLogEntry>;
     job: Job;
 }
 
 export interface JobLogViewError {
-    status: JobLogState.ERROR,
+    status: JobLogState.ERROR;
     error: string;
 }
 
-export type JobLogView = JobLogViewNone | JobLogViewCreated | JobLogViewQueued | JobLogViewInitialLoading | JobLogViewActiveLoaded | JobLogViewActiveLoading | JobLogViewFinishedLoaded | JobLogViewError;
+export type JobLogView =
+    | JobLogViewNone
+    | JobLogViewCreated
+    | JobLogViewQueued
+    | JobLogViewInitialLoading
+    | JobLogViewActiveLoaded
+    | JobLogViewActiveLoading
+    | JobLogViewFinishedLoaded
+    | JobLogViewError;
 
 export interface JobLogsStateProps {
     jobID: JobID;
@@ -82,13 +90,16 @@ export interface JobLogsStateProps {
 
 type JobLogsStateState = JobLogView;
 
-export default class JobLogsState extends Component<JobLogsStateProps, JobLogsStateState> {
+export default class JobLogsState extends Component<
+    JobLogsStateProps,
+    JobLogsStateState
+> {
     pollTimer: number | null;
     stopping: boolean;
     constructor(props: JobLogsStateProps) {
         super(props);
         this.state = {
-            status: JobLogState.NONE
+            status: JobLogState.NONE,
         };
         this.pollTimer = null;
         this.stopping = false;
@@ -99,7 +110,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
             token: this.props.token,
             url: this.props.serviceWizardURL,
             timeout: this.props.timeout,
-            version: this.props.jobBrowserBFFConfig.version
+            version: this.props.jobBrowserBFFConfig.version,
         });
 
         const jobs = await jobBrowserBFF.get_jobs({
@@ -107,24 +118,31 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
             // TODO: admin??
             admin: this.props.admin,
             // TODO: from config
-            timeout: this.props.timeout
+            timeout: this.props.timeout,
         });
 
-        return serviceJobToUIJob(jobs.jobs[0], 'UNKNOWN');
+        return serviceJobToUIJob(jobs.jobs[0]);
     }
 
-    async getJobLog(offset: number, limit: number, timeout: number, admin: boolean): Promise<Array<JobLogEntry>> {
+    async getJobLog(
+        offset: number,
+        limit: number,
+        timeout: number,
+        admin: boolean,
+    ): Promise<Array<JobLogEntry>> {
         const jobBrowserBFF = new JobBrowserBFFClient({
             token: this.props.token,
             url: this.props.serviceWizardURL,
             timeout: this.props.timeout,
-            version: this.props.jobBrowserBFFConfig.version
+            version: this.props.jobBrowserBFFConfig.version,
         });
-
 
         const jobLog = await jobBrowserBFF.get_job_log({
             job_id: this.props.jobID,
-            offset, limit, timeout, admin
+            offset,
+            limit,
+            timeout,
+            admin,
         });
 
         return jobLog.log.map((entry) => {
@@ -132,7 +150,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
                 lineNumber: entry.row,
                 message: entry.message,
                 isError: entry.level === 'error',
-                loggedAt: entry.logged_at ? new Date(entry.logged_at) : null
+                loggedAt: entry.logged_at ? new Date(entry.logged_at) : null,
             };
         });
     }
@@ -148,24 +166,29 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
             if (state.status !== JobLogState.ACTIVE_LOADED) {
                 this.setState({
                     status: JobLogState.ERROR,
-                    error: 'Invalid state for polling: ' + state.status
+                    error: 'Invalid state for polling: ' + state.status,
                 });
                 return;
             }
             const { log } = state;
             this.setState({
                 status: JobLogState.ACTIVE_LOADING,
-                log
+                log,
             });
             const job = await this.getJob();
             const offset = log.length;
-            // TODO: how to mimic offset at end of log (above, done), and 
+            // TODO: how to mimic offset at end of log (above, done), and
             // an indefinite limit? For now, just use 1000.
             const limit = JOB_LOG_LIMIT;
-            // TODO: get from somewhere else... 
+            // TODO: get from somewhere else...
             const timeout = this.props.timeout;
             // TODO: get from somewhere else...
-            const newLog = await this.getJobLog(offset, limit, timeout, this.props.admin);
+            const newLog = await this.getJobLog(
+                offset,
+                limit,
+                timeout,
+                this.props.admin,
+            );
 
             switch (this.currentJobState(job).type) {
                 case JobStateType.CREATE:
@@ -178,7 +201,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
                     this.setState({
                         status: JobLogState.ACTIVE_LOADED,
                         log: log.concat(newLog),
-                        job
+                        job,
                     });
                     loop();
                     break;
@@ -186,7 +209,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
                     this.setState({
                         status: JobLogState.FINISHED_LOADED,
                         log: log.concat(newLog),
-                        job
+                        job,
                     });
             }
         };
@@ -197,7 +220,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
     }
 
     startQueuedPolling() {
-        // TODO: how to mimic offset at end of log (above, done), and 
+        // TODO: how to mimic offset at end of log (above, done), and
         // an indefinite limit? For now, just use 1000.
         const limit = 1000;
 
@@ -213,13 +236,19 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
                 case JobStateType.RUN:
                     this.startPolling();
                     break;
-                default:
-                    var log = await this.getJobLog(0, limit, this.props.timeout, this.props.admin);
+                default: {
+                    const log = await this.getJobLog(
+                        0,
+                        limit,
+                        this.props.timeout,
+                        this.props.admin,
+                    );
                     this.setState({
                         status: JobLogState.FINISHED_LOADED,
                         log,
-                        job
+                        job,
                     });
+                }
             }
         };
 
@@ -232,45 +261,54 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
 
     async getInitialJobLog() {
         this.setState({
-            status: JobLogState.INITIAL_LOADING
+            status: JobLogState.INITIAL_LOADING,
         });
         const job = await this.getJob();
 
-        // TODO: how to mimic offset at end of log (above, done), and 
+        // TODO: how to mimic offset at end of log (above, done), and
         // an indefinite limit? For now, just use 1000.
         const limit = 1000;
-
 
         let log;
         switch (this.currentJobState(job).type) {
             case JobStateType.CREATE:
                 // still queued, eh?
                 this.setState({
-                    status: JobLogState.JOB_CREATED
+                    status: JobLogState.JOB_CREATED,
                 });
                 this.startQueuedPolling();
                 return;
             case JobStateType.QUEUE:
                 // still queued, eh?
                 this.setState({
-                    status: JobLogState.JOB_QUEUED
+                    status: JobLogState.JOB_QUEUED,
                 });
                 this.startQueuedPolling();
                 return;
             case JobStateType.RUN:
-                log = await this.getJobLog(0, limit, this.props.timeout, this.props.admin);
+                log = await this.getJobLog(
+                    0,
+                    limit,
+                    this.props.timeout,
+                    this.props.admin,
+                );
                 this.setState({
                     status: JobLogState.ACTIVE_LOADED,
                     log,
-                    job
+                    job,
                 });
                 return;
             default:
-                log = await this.getJobLog(0, limit, this.props.timeout, this.props.admin);
+                log = await this.getJobLog(
+                    0,
+                    limit,
+                    this.props.timeout,
+                    this.props.admin,
+                );
                 this.setState({
                     status: JobLogState.FINISHED_LOADED,
                     log,
-                    job
+                    job,
                 });
                 return;
         }
@@ -304,9 +342,7 @@ export default class JobLogsState extends Component<JobLogsStateProps, JobLogsSt
     }
 
     renderError(view: JobLogViewError) {
-        return (
-            <Alert type="error" message={view.error} />
-        );
+        return <Alert type="error" message={view.error} />;
     }
 
     // render() {

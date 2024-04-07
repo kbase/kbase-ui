@@ -6,11 +6,17 @@ import { Button, Dropdown, Empty, MenuProps, Spin, Table, Tooltip } from 'antd';
 import ButtonGroup from 'antd/lib/button/button-group';
 // import Papa from 'papaparse';
 
-import { ArrowDownOutlined, CaretRightOutlined, DownloadOutlined, PauseOutlined } from '@ant-design/icons';
+import {
+    ArrowDownOutlined,
+    CaretRightOutlined,
+    DownloadOutlined,
+    PauseOutlined,
+} from '@ant-design/icons';
 // TODO: replace with ClickParam when fixed upstream
 // https://github.com/ant-design/ant-design/issues/25467
 import { Job } from 'apps/JobBrowser/store';
 import { JobStateType } from 'apps/JobBrowser/types/jobState';
+import { objectToRecord } from 'lib/utils';
 import { JobLogEntry } from '.';
 
 export type DownloadFileType = 'csv' | 'tsv' | 'text' | 'json';
@@ -19,7 +25,7 @@ enum PlayState {
     NONE,
     PLAYING,
     PAUSED,
-    DISABLED
+    DISABLED,
 }
 
 export interface JobLogProps {
@@ -35,7 +41,7 @@ interface JobLogState {
 export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
     playLogTimer: number;
     bodyRef: React.RefObject<HTMLDivElement>;
-    // a hack to detect state change... 
+    // a hack to detect state change...
     currentJobEventType: JobStateType | null;
 
     constructor(params: JobLogProps) {
@@ -45,7 +51,7 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         this.currentJobEventType = null;
         this.state = {
             playState: PlayState.NONE,
-            isPaused: false
+            isPaused: false,
         };
     }
     currentEvent(job: Job) {
@@ -65,9 +71,7 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         }
         this.scrollToBottom();
     }
-    componentWillUnmount() {
-
-    }
+    componentWillUnmount() {}
     scrollToBottom() {
         if (this.bodyRef.current === null) {
             return;
@@ -85,8 +89,10 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
             return;
         }
         if (!this.isActive()) {
-            if (lastJobEvent.type === JobStateType.RUN &&
-                this.currentJobEventType === JobStateType.RUN) {
+            if (
+                lastJobEvent.type === JobStateType.RUN &&
+                this.currentJobEventType === JobStateType.RUN
+            ) {
                 return;
             }
         }
@@ -94,22 +100,34 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
     }
     isActive() {
         const currentJobEvent = this.currentEvent(this.props.job);
-        return currentJobEvent.type === JobStateType.QUEUE ||
-            currentJobEvent.type === JobStateType.RUN;
+        return (
+            currentJobEvent.type === JobStateType.QUEUE ||
+            currentJobEvent.type === JobStateType.RUN
+        );
     }
     renderLastLine() {
         let message;
 
         if (this.isActive()) {
-            message = <span>
-                Polling for additional log entries...{' '}
-                <Spin size="small" />
-            </span>;
+            message = (
+                <span>
+                    Polling for additional log entries... <Spin size="small" />
+                </span>
+            );
         } else {
-            message = <div style={{ textAlign: 'center', fontStyle: 'italic' }}>Log complete</div>;
+            message = (
+                <div style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                    Log complete
+                </div>
+            );
         }
         return (
-            <div className="FlexTable-row" key='END' style={{ backgroundColor: 'rgba(200, 200, 200, 0.5)' }} data-end="end">
+            <div
+                className="FlexTable-row"
+                key="END"
+                style={{ backgroundColor: 'rgba(200, 200, 200, 0.5)' }}
+                data-end="end"
+            >
                 <div className="FlexTable-col"></div>
                 <div className="FlexTable-col">{message}</div>
             </div>
@@ -122,23 +140,30 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit',
-            second: '2-digit'
+            second: '2-digit',
         };
         const parts = Intl.DateTimeFormat('en-US', options).formatToParts(date);
-        const partsMap: Map<string, string> = parts.reduce((partsMap, { type, value }) => {
-            partsMap.set(type, value);
-            return partsMap;
-        }, new Map());
-        return <Tooltip title={Intl.DateTimeFormat('en-US', options).format(date)}>
-            <span>{partsMap.get('hour')}:{partsMap.get('minute')}:{partsMap.get('second')}{partsMap.get('dayPeriod')?.toLocaleLowerCase()}</span>
-        </Tooltip>;
+        const partsMap: Map<string, string> = parts.reduce(
+            (partsMap, { type, value }) => {
+                partsMap.set(type, value);
+                return partsMap;
+            },
+            new Map(),
+        );
+        return (
+            <Tooltip title={Intl.DateTimeFormat('en-US', options).format(date)}>
+                <span>
+                    {partsMap.get('hour')}:{partsMap.get('minute')}:
+                    {partsMap.get('second')}
+                    {partsMap.get('dayPeriod')?.toLocaleLowerCase()}
+                </span>
+            </Tooltip>
+        );
     }
     renderJobLog() {
         const log = this.props.log;
         if (log.length === 0) {
-            return (
-                <Empty />
-            );
+            return <Empty />;
         }
         const hasTimestamp = log[0].loggedAt !== null;
         const rows = log.map((entry) => {
@@ -147,39 +172,55 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
                 rowStyle.color = 'red';
             }
             if (hasTimestamp) {
-                return <div className="FlexTable-row" style={rowStyle} key={entry.lineNumber}>
-                    <div className="FlexTable-col lineNumber">
-                        {entry.lineNumber}
+                return (
+                    <div
+                        className="FlexTable-row"
+                        style={rowStyle}
+                        key={entry.lineNumber}
+                    >
+                        <div className="FlexTable-col lineNumber">
+                            {entry.lineNumber}
+                        </div>
+                        <div className="FlexTable-col loggedAt">
+                            {entry.loggedAt
+                                ? this.formatLogDate(entry.loggedAt)
+                                : ''}
+                        </div>
+                        <div className="FlexTable-col message">
+                            {entry.message}
+                        </div>
                     </div>
-                    <div className="FlexTable-col loggedAt">
-                        {entry.loggedAt ? this.formatLogDate(entry.loggedAt) : ''}
-                    </div>
-                    <div className="FlexTable-col message">
-                        {entry.message}
-                    </div>
-                </div>;
+                );
             } else {
-                return <div className="FlexTable-row" style={rowStyle} key={entry.lineNumber}>
-                    <div className="FlexTable-col lineNumber">
-                        {entry.lineNumber}
+                return (
+                    <div
+                        className="FlexTable-row"
+                        style={rowStyle}
+                        key={entry.lineNumber}
+                    >
+                        <div className="FlexTable-col lineNumber">
+                            {entry.lineNumber}
+                        </div>
+                        <div className="FlexTable-col message">
+                            {entry.message}
+                        </div>
                     </div>
-                    <div className="FlexTable-col message">
-                        {entry.message}
-                    </div>
-                </div>;
+                );
             }
         });
-        rows.push(
-            this.renderLastLine()
-        );
+        rows.push(this.renderLastLine());
         if (hasTimestamp) {
             return (
                 <div className="FlexTable" key="log">
                     <div className="FlexTable-header">
                         <div className="FlexTable-row">
-                            <div className="FlexTable-col lineNumber">Line #</div>
+                            <div className="FlexTable-col lineNumber">
+                                Line #
+                            </div>
                             <div className="FlexTable-col loggedAt">At</div>
-                            <div className="FlexTable-col message">Log line</div>
+                            <div className="FlexTable-col message">
+                                Log line
+                            </div>
                         </div>
                     </div>
                     <div className="FlexTable-body" ref={this.bodyRef}>
@@ -192,8 +233,12 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
                 <div className="FlexTable" key="log">
                     <div className="FlexTable-header">
                         <div className="FlexTable-row">
-                            <div className="FlexTable-col lineNumber">Line #</div>
-                            <div className="FlexTable-col message">Log line</div>
+                            <div className="FlexTable-col lineNumber">
+                                Line #
+                            </div>
+                            <div className="FlexTable-col message">
+                                Log line
+                            </div>
                         </div>
                     </div>
                     <div className="FlexTable-body" ref={this.bodyRef}>
@@ -204,9 +249,7 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         }
     }
 
-    renderJobLogRow() {
-
-    }
+    renderJobLogRow() {}
     renderJobLogLines() {
         return (
             <Table
@@ -233,9 +276,15 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
                     key="lineNumber"
                     width="8%"
                     render={(lineNumber: number, logLine: JobLogEntry) => {
-                        const numberDisplay = new Intl.NumberFormat('en-US', { useGrouping: true }).format(lineNumber);
+                        const numberDisplay = new Intl.NumberFormat('en-US', {
+                            useGrouping: true,
+                        }).format(lineNumber);
                         if (logLine.isError) {
-                            return <span className="JobLog-errorText">{numberDisplay}</span>;
+                            return (
+                                <span className="JobLog-errorText">
+                                    {numberDisplay}
+                                </span>
+                            );
                         }
                         return numberDisplay;
                     }}
@@ -251,7 +300,9 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
                     render={(line: string, logLine: JobLogEntry) => {
                         let row;
                         if (logLine.isError) {
-                            row = <span className="JobLog-errorText">{line}</span>;
+                            row = (
+                                <span className="JobLog-errorText">{line}</span>
+                            );
                         } else {
                             row = <span>{line}</span>;
                         }
@@ -263,7 +314,11 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
     }
 
     downloadLog(type: DownloadFileType) {
-        function download(filename: string, contentType: string, content: string) {
+        function download(
+            filename: string,
+            contentType: string,
+            content: string,
+        ) {
             const downloadLink = document.createElement('a');
             const downloadContent = new Blob([content]);
             downloadLink.href = URL.createObjectURL(downloadContent);
@@ -276,39 +331,51 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
             URL.revokeObjectURL(downloadLink.href);
         }
 
-        function generateCSV(data: Array<any>, columns: Array<string>) {
+        function generateCSV(data: Array<JobLogEntry>, columns: Array<string>) {
             function encodeString(s: string) {
                 return `"${s.replace('"', '""')}"`;
             }
-            const header = columns.map((column) => {
-                return encodeString(column);
-            }).join(',');
-            const table = data.map((datum) => {
-                return columns.map((column) => {
-                    const value = datum[column];
-                    if (typeof value === 'undefined') {
-                        return '';
-                    } else if (typeof value === 'string') {
-                        return encodeString(value);
-                    } else if (typeof value === 'number') {
-                        return String(value);
-                    } else if (typeof value === 'boolean') {
-                        return encodeString(value ? 'true' : 'false');
-                    } else if (typeof value === 'object') {
-                        if (value instanceof Date) {
-                            return encodeString(value.toISOString());
-                        } else {
-                            throw new Error("Unsupported object " + value.constructor.name);
-                        }
-                    } else {
-                        throw new Error("Unsupported type");
-                    }
-                }).join(',');
-            }).join('\n');
+            const header = columns
+                .map((column) => {
+                    return encodeString(column);
+                })
+                .join(',');
+            const table = data
+                .map((row) => {
+                    const datum = objectToRecord<unknown>(row);
+                    return columns
+                        .map((column) => {
+                            const value = datum[column];
+                            if (typeof value === 'undefined') {
+                                return '';
+                            } else if (typeof value === 'string') {
+                                return encodeString(value);
+                            } else if (typeof value === 'number') {
+                                return String(value);
+                            } else if (typeof value === 'boolean') {
+                                return encodeString(value ? 'true' : 'false');
+                            } else if (typeof value === 'object') {
+                                if (value instanceof Date) {
+                                    return encodeString(value.toISOString());
+                                } else {
+                                    throw new Error(
+                                        'Unsupported object ' +
+                                            (value === null
+                                                ? 'null'
+                                                : value.constructor.name),
+                                    );
+                                }
+                            } else {
+                                throw new Error('Unsupported type');
+                            }
+                        })
+                        .join(',');
+                })
+                .join('\n');
             return header + '\n' + table;
         }
 
-        function generateTSV(data: Array<any>, columns: Array<string>) {
+        function generateTSV(data: Array<JobLogEntry>, columns: Array<string>) {
             function encodeString(s: string) {
                 const escaped = s
                     .replace('\\', '\\\\')
@@ -317,47 +384,71 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
                     .replace('\r', '\\r');
                 return escaped;
             }
-            const header = columns.map((column) => {
-                return encodeString(column);
-            }).join('\t');
-            const table = data.map((datum) => {
-                return columns.map((column) => {
-                    const value = datum[column];
-                    if (typeof value === 'undefined') {
-                        return '';
-                    } else if (typeof value === 'string') {
-                        return encodeString(value);
-                    } else if (typeof value === 'number') {
-                        return String(value);
-                    } else if (typeof value === 'boolean') {
-                        return encodeString(value ? 'true' : 'false');
-                    } else if (typeof value === 'object') {
-                        if (value instanceof Date) {
-                            return encodeString(value.toISOString());
-                        } else {
-                            throw new Error("Unsupported object " + value.constructor.name);
-                        }
-                    } else {
-                        throw new Error("Unsupported type");
-                    }
-                }).join('\t');
-            }).join('\n');
+            const header = columns
+                .map((column) => {
+                    return encodeString(column);
+                })
+                .join('\t');
+            const table = data
+                .map((row) => {
+                    const datum = objectToRecord<unknown>(row);
+                    return columns
+                        .map((column) => {
+                            const value = datum[column];
+                            if (typeof value === 'undefined') {
+                                return '';
+                            } else if (typeof value === 'string') {
+                                return encodeString(value);
+                            } else if (typeof value === 'number') {
+                                return String(value);
+                            } else if (typeof value === 'boolean') {
+                                return encodeString(value ? 'true' : 'false');
+                            } else if (typeof value === 'object') {
+                                if (value instanceof Date) {
+                                    return encodeString(value.toISOString());
+                                } else {
+                                    throw new Error(
+                                        'Unsupported object ' +
+                                            (value === null
+                                                ? 'null'
+                                                : value.constructor.name),
+                                    );
+                                }
+                            } else {
+                                throw new Error('Unsupported type');
+                            }
+                        })
+                        .join('\t');
+                })
+                .join('\n');
             return header + '\n' + table;
         }
 
         function logToCSV(log: Array<JobLogEntry>): string {
-            return generateCSV(log, ["lineNumber", "loggedAt", "message", "isError"]);
+            return generateCSV(log, [
+                'lineNumber',
+                'loggedAt',
+                'message',
+                'isError',
+            ]);
         }
         function logToTSV(log: Array<JobLogEntry>): string {
-            return generateTSV(log, ["lineNumber", "loggedAt", "message", "isError"]);
+            return generateTSV(log, [
+                'lineNumber',
+                'loggedAt',
+                'message',
+                'isError',
+            ]);
         }
         function logToJSON(log: Array<JobLogEntry>): string {
             return JSON.stringify(log, null, 4);
         }
         function logToText(log: Array<JobLogEntry>): string {
-            return log.map((entry) => {
-                return entry.message;
-            }).join('\n');
+            return log
+                .map((entry) => {
+                    return entry.message;
+                })
+                .join('\n');
         }
 
         let contentType: string;
@@ -390,14 +481,14 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         this.scrollToBottom();
         this.setState({
             playState: PlayState.PLAYING,
-            isPaused: false
+            isPaused: false,
         });
     }
 
     onPauseLog() {
         this.setState({
             playState: PlayState.PAUSED,
-            isPaused: true
+            isPaused: true,
         });
     }
 
@@ -409,18 +500,21 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         switch (this.currentEvent(this.props.job).type) {
             case JobStateType.RUN:
                 if (isPaused) {
-                    playTooltip = 'Click to automatically scroll to the bottom of the logs when new entries arrive';
+                    playTooltip =
+                        'Click to automatically scroll to the bottom of the logs when new entries arrive';
                     pauseTooltip = 'Automatic scrolling is already paused';
                 } else {
                     playTooltip = 'Automatic scrolling is already active';
-                    pauseTooltip = 'Click to pause automatic scrolling to the bottom of the logs when new entries arrive';
+                    pauseTooltip =
+                        'Click to pause automatic scrolling to the bottom of the logs when new entries arrive';
                 }
                 break;
             default:
-                playTooltip = 'Log playing only available when the job is running';
-                pauseTooltip = 'Log playing only available when the job is running';
+                playTooltip =
+                    'Log playing only available when the job is running';
+                pauseTooltip =
+                    'Log playing only available when the job is running';
                 break;
-
         }
         return [playTooltip, pauseTooltip];
     }
@@ -441,58 +535,80 @@ export default class JobLogs extends React.Component<JobLogProps, JobLogState> {
         const [playTooltip, pauseTooltip] = this.renderPlayPauseTooltips();
 
         return (
-            <ButtonGroup >
+            <ButtonGroup>
                 <Tooltip title={playTooltip}>
-                    <Button icon={<CaretRightOutlined />} disabled={irrelevant || !this.state.isPaused} onClick={this.onPlayLog.bind(this)} />
+                    <Button
+                        icon={<CaretRightOutlined />}
+                        disabled={irrelevant || !this.state.isPaused}
+                        onClick={this.onPlayLog.bind(this)}
+                    />
                 </Tooltip>
                 <Tooltip title={pauseTooltip}>
-                    <Button icon={<PauseOutlined />} disabled={irrelevant || this.state.isPaused} onClick={this.onPauseLog.bind(this)} />
+                    <Button
+                        icon={<PauseOutlined />}
+                        disabled={irrelevant || this.state.isPaused}
+                        onClick={this.onPauseLog.bind(this)}
+                    />
                 </Tooltip>
             </ButtonGroup>
         );
     }
-
 
     renderToolbar() {
         const disabled = this.props.log.length === 0;
 
         const items: MenuProps['items'] = [
             {
-                key: 'csv', disabled: disabled, label: 'CSV', onClick: () => this.downloadLog('csv')
+                key: 'csv',
+                disabled: disabled,
+                label: 'CSV',
+                onClick: () => this.downloadLog('csv'),
             },
             {
-                key: 'tsv', disabled: disabled, label: 'TSV', onClick: () => this.downloadLog('tsv')
+                key: 'tsv',
+                disabled: disabled,
+                label: 'TSV',
+                onClick: () => this.downloadLog('tsv'),
             },
             {
-                key: 'json', disabled: disabled, label: 'JSON', onClick: () => this.downloadLog('json')
+                key: 'json',
+                disabled: disabled,
+                label: 'JSON',
+                onClick: () => this.downloadLog('json'),
             },
             {
-                key: 'text', disabled: disabled, label: 'TEXT', onClick: () => this.downloadLog('text')
+                key: 'text',
+                disabled: disabled,
+                label: 'TEXT',
+                onClick: () => this.downloadLog('text'),
             },
-        ]
+        ];
         return (
             <div key="toolbar">
-                <ButtonGroup >
-                    <Dropdown menu={{items}}>
-                        <Button 
+                <ButtonGroup>
+                    <Dropdown menu={{ items }}>
+                        <Button
                             icon={<DownloadOutlined />}
                             onClick={(e) => e.preventDefault()}
                         />
                     </Dropdown>
-                </ButtonGroup>
-                {' '}
+                </ButtonGroup>{' '}
                 <Tooltip title="Jump to bottom of log">
-                    <Button icon={<ArrowDownOutlined />} onClick={this.scrollToBottom.bind(this)} />
-                </Tooltip>
-                {' '}
+                    <Button
+                        icon={<ArrowDownOutlined />}
+                        onClick={this.scrollToBottom.bind(this)}
+                    />
+                </Tooltip>{' '}
                 {this.renderPlayPause()}
             </div>
         );
     }
     render() {
-        return <div className="JobLog">
-            {this.renderToolbar()}
-            {this.renderJobLog()}
-        </div>;
+        return (
+            <div className="JobLog">
+                {this.renderToolbar()}
+                {this.renderJobLog()}
+            </div>
+        );
     }
 }

@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-
-type Payload = any;
+type Payload = unknown;
 
 type EnvelopeType = 'plain' | 'request' | 'reply';
 
@@ -31,7 +30,7 @@ type Envelope = PlainEnvelope | RequestEnvelope | ReplyEnvelope;
 
 class ChannelMessage {
     name: string;
-    payload: any;
+    payload: Payload;
     id: string;
     created: Date;
     envelope: Envelope;
@@ -42,7 +41,7 @@ class ChannelMessage {
         envelope,
     }: {
         name: string;
-        payload: any;
+        payload: unknown;
         envelope: Envelope;
     }) {
         this.name = name;
@@ -61,15 +60,12 @@ class ChannelMessage {
     }
 }
 
-
 // export interface WindowChannelInitParams {
 //     window?: Window;
 //     host?: string;
 //     id?: string;
 //     to?: string;
 // }
-
-
 
 export interface WindowChannelParams {
     window: Window;
@@ -83,7 +79,6 @@ interface Stats {
     received: number;
     ignored: number;
 }
-
 
 export class SendChannel {
     private readonly window: Window;

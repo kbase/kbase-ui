@@ -5,7 +5,6 @@ import { Component } from 'react';
 import HelpLinks from '../HelpLinks';
 import './AuthProblem.css';
 
-
 export interface AuthProblemProps {
     // config: Config;
     // realPath: string;
@@ -19,12 +18,15 @@ interface AuthProblemState {
     redirecting: boolean;
 }
 
-export default class AuthProblem extends Component<AuthProblemProps, AuthProblemState> {
+export default class AuthProblem extends Component<
+    AuthProblemProps,
+    AuthProblemState
+> {
     constructor(props: AuthProblemProps) {
         super(props);
         this.state = {
-            redirecting: false
-        }
+            redirecting: false,
+        };
     }
     componentDidMount() {
         // this.props.setTitle(`Auth Problem - ${this.props.hashPath}`);
@@ -37,7 +39,6 @@ export default class AuthProblem extends Component<AuthProblemProps, AuthProblem
      * object to be routed in the authorization flow within the state parameter.
      */
     redirectToLogin() {
-
         // const {hash, params} = urlToHashPath(new URL(window.location.href));
 
         // const nextRequest: NextRequestObject = {
@@ -58,7 +59,9 @@ export default class AuthProblem extends Component<AuthProblemProps, AuthProblem
         //     url.searchParams.set(key, value);
         // }
 
-        navigate('login', {params: {nextrequest: JSON.stringify(nextRequest)}});
+        navigate('login', {
+            params: { nextrequest: JSON.stringify(nextRequest) },
+        });
     }
 
     renderAuthProblem() {
@@ -74,24 +77,37 @@ export default class AuthProblem extends Component<AuthProblemProps, AuthProblem
         // const nextRequest = nextRequestFromURL(new URL(window.location.href));
 
         return (
-            <div className="AuthProblem" >
+            <div className="AuthProblem">
                 <div className="AuthProblem-graphic">
                     {/* <img src={flapjack} alt="The Flapjack"/> */}
                     <span className="fa fa-lock" style={{ fontSize: '600%' }} />
                 </div>
                 <div className="AuthProblem-content">
-                    <div className="AuthProblem-header" style={{ flex: '1 1 0px' }}>
-                        <p>
-                            Authentication Required
-                        </p>
-
+                    <div
+                        className="AuthProblem-header"
+                        style={{ flex: '1 1 0px' }}
+                    >
+                        <p>Authentication Required</p>
                     </div>
-                    <div className="AuthProblem-message" style={{ flex: '1 1 0px' }}>
+                    <div
+                        className="AuthProblem-message"
+                        style={{ flex: '1 1 0px' }}
+                    >
                         <p>
-                            Sorry, the resource <em>"{this.props.hashPath.hash}"</em> requires that you be logged into KBase.
+                            Sorry, the resource{' '}
+                            <em>
+                                {'"'}
+                                {this.props.hashPath.hash}
+                                {'"'}
+                            </em>{' '}
+                            requires that you be logged into KBase.
                         </p>
 
-                        <p>You may use the <b>Sign In</b> button on the upper right of this page. After logging in you will be returned to this page.</p>
+                        <p>
+                            You may use the <b>Sign In</b> button on the upper
+                            right of this page. After logging in you will be
+                            returned to this page.
+                        </p>
                     </div>
                     <div className="AuthProblem-body">
                         <hr></hr>

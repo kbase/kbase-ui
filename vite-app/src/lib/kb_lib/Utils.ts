@@ -1,3 +1,5 @@
+import { isPlainObject } from 'lib/json';
+
 export class CustomError {
     message: string;
     name: string;
@@ -35,15 +37,20 @@ export const uniqueId = (() => {
  *
  * @static
  */
-export function isEqual(v1: any, v2: any) {
-    const path: Array<any> = [];
-    function iseq(v1: any, v2: any) {
-        const t1 = typeof v1;
-        const t2 = typeof v2;
-        if (t1 !== t2) {
-            return false;
+export function isEqual(v1: unknown, v2: unknown) {
+    const path: Array<unknown> = [];
+    function iseq(v1: unknown, v2: unknown) {
+        // const t1 = typeof v1;
+        // const t2 = typeof v2;
+        // if (t1 !== t2) {
+        //     return false;
+        // }
+
+        if (typeof v1 !== typeof v2) {
+            return;
         }
-        switch (t1) {
+
+        switch (typeof v1) {
             case 'string':
             case 'number':
             case 'boolean':
@@ -52,12 +59,16 @@ export function isEqual(v1: any, v2: any) {
                 }
                 break;
             case 'undefined':
-                if (t2 !== 'undefined') {
+                if (typeof v2 !== 'undefined') {
                     return false;
                 }
                 break;
             case 'object':
-                if (v1 instanceof Array) {
+                if (v1 === null) {
+                    return v2 === null;
+                } else if (v2 === null) {
+                    return false;
+                } else if (v1 instanceof Array && v2 instanceof Array) {
                     if (v1.length !== v2.length) {
                         return false;
                     }
@@ -68,21 +79,32 @@ export function isEqual(v1: any, v2: any) {
                         }
                         path.pop();
                     }
-                } else if (v1 === null) {
-                    if (v2 !== null) {
-                        return false;
-                    }
-                } else if (v2 === null) {
-                    return false;
                 } else {
-                    const k1 = Object.keys(v1).sort();
-                    const k2 = Object.keys(v2).sort();
-                    if (k1.length !== k2.length) {
+                    if (typeof v2 === 'undefined' || v2 === null) {
                         return false;
                     }
-                    for (let i = 0; i < k1.length; i++) {
-                        path.push(k1[i]);
-                        if (!iseq(v1[k1[i]], v2[k1[i]])) {
+
+                    isPlainObject;
+                    const keys1 = Object.keys(v1).sort();
+                    const keys2 = Object.keys(v2).sort();
+
+                    if (keys1.length !== keys2.length) {
+                        return false;
+                    }
+                    for (let i = 0; i < keys1.length; i++) {
+                        path.push(keys1[i]);
+
+                        const k1 = keys1[i];
+                        const k2 = keys2[i];
+
+                        // TODO: should not make such an assertion blindly!
+                        const val1 = v1 as Record<string, unknown>;
+                        const val2 = v2 as Record<string, unknown>;
+
+                        const obj1 = val1[k1];
+                        const obj2 = val2[k2];
+
+                        if (!iseq(obj1, obj2)) {
                             return false;
                         }
                         path.pop();
@@ -135,4 +157,3 @@ export class UIError extends CustomError {
         this.suggestion = suggestion;
     }
 }
-

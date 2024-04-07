@@ -5,13 +5,11 @@ import { AsyncProcess, AsyncProcessStatus } from '../lib/AsyncProcess';
 
 export type Params = Record<string, string>;
 
-
-
 /**
  * Holds the current config information
  */
 export interface RouterInfo {
-    hashPath: HashPath
+    hashPath: HashPath;
 }
 
 export interface ErrorInfo {
@@ -30,18 +28,22 @@ export type RouterState = AsyncProcess<RouterInfo, ErrorInfo>;
 //     return object;
 // }
 
-export function searchParamsToParams(searchParams: URLSearchParams): Record<string, string> {
-    return Array.from(searchParams.entries()).reduce<Params>((accum, [key, value]) => {
-        accum[key] = value;
-        return accum;
-    }, {});
+export function searchParamsToParams(
+    searchParams: URLSearchParams,
+): Record<string, string> {
+    return Array.from(searchParams.entries()).reduce<Params>(
+        (accum, [key, value]) => {
+            accum[key] = value;
+            return accum;
+        },
+        {},
+    );
 }
 
 export interface HashPath {
-    hash: string;  // The hash path (with any matched params removed)
+    hash: string; // The hash path (with any matched params removed)
     params?: Params;
 }
-
 
 // Context
 
@@ -56,7 +58,7 @@ export const RouterContext = React.createContext<RouterState>({
 
 // Auth Wrapper Component
 
-export type RouterWrapperProps = PropsWithChildren<{}>;
+export type RouterWrapperProps = PropsWithChildren;
 
 interface RouterWrapperState {
     routerState: RouterState;
@@ -87,9 +89,9 @@ export default class RouterWrapper extends React.Component<
             routerState: {
                 status: AsyncProcessStatus.SUCCESS,
                 value: {
-                    hashPath: this.getHashPath()
-                }
-            }
+                    hashPath: this.getHashPath(),
+                },
+            },
         };
         this.hashListener = null;
         this.pageShowListener = null;
@@ -99,25 +101,27 @@ export default class RouterWrapper extends React.Component<
         this.hashListener = () => {
             const hashPath = this.getHashPath();
 
-            if (this.state.routerState.status === 'SUCCESS' &&
-                hashPath === this.state.routerState.value.hashPath) {
+            if (
+                this.state.routerState.status === 'SUCCESS' &&
+                hashPath === this.state.routerState.value.hashPath
+            ) {
                 return;
             }
             this.setState({
                 routerState: {
                     status: AsyncProcessStatus.SUCCESS,
                     value: {
-                        hashPath
-                    }
-                }
+                        hashPath,
+                    },
+                },
             });
-        }
+        };
         window.addEventListener('hashchange', this.hashListener);
         this.pageShowListener = (ev: PageTransitionEvent) => {
             if (ev.persisted) {
                 window.location.reload();
             }
-        }
+        };
         window.addEventListener('pageshow', this.pageShowListener);
     }
 
@@ -155,7 +159,8 @@ export function urlToHashPath(url: URL): HashPath {
     const [rawHash, queryString] = url.hash.split('$');
 
     // First we ensure that the hash has no empty path segments.
-    const hash = rawHash.substring(1)
+    const hash = rawHash
+        .substring(1)
         .split('/')
         .filter((pathElement: string) => {
             return pathElement.trim().length > 0;
@@ -166,15 +171,15 @@ export function urlToHashPath(url: URL): HashPath {
 
     const searchParams = new URLSearchParams([
         ...Array.from(hashQuery.entries()),
-        ...Array.from(url.searchParams.entries())
+        ...Array.from(url.searchParams.entries()),
     ]);
 
     const params = searchParamsToParams(searchParams);
 
     return {
         hash,
-        params
-    }
+        params,
+    };
 }
 
 export function urlToNavigationPath(url: URL): NavigationPath {
@@ -186,7 +191,8 @@ export function urlToNavigationPath(url: URL): NavigationPath {
     const [rawHash, queryString] = url.hash.split('$');
 
     // First we ensure that the hash has no empty path segments.
-    const path = rawHash.substring(1)
+    const path = rawHash
+        .substring(1)
         .split('/')
         .filter((pathElement: string) => {
             return pathElement.trim().length > 0;
@@ -197,7 +203,7 @@ export function urlToNavigationPath(url: URL): NavigationPath {
 
     const searchParams = new URLSearchParams([
         ...Array.from(hashQuery.entries()),
-        ...Array.from(url.searchParams.entries())
+        ...Array.from(url.searchParams.entries()),
     ]);
 
     const params = searchParamsToParams(searchParams);
@@ -205,8 +211,8 @@ export function urlToNavigationPath(url: URL): NavigationPath {
     return {
         path,
         params,
-        type: 'kbaseui'
-    }
+        type: 'kbaseui',
+    };
 }
 
 export function kbaseUIBaseURL() {
@@ -218,7 +224,8 @@ export function kbaseUIBaseURL() {
 }
 
 export function europaBaseURL() {
-    const europaHostname = window.location.hostname.split('.')
+    const europaHostname = window.location.hostname
+        .split('.')
         .slice(-3)
         .join('.');
     const url = new URL(window.location.origin);
@@ -229,19 +236,22 @@ export function europaBaseURL() {
 /**
  * Given a NavigationPath object, creates a URL object suitable for usage in a link,
  * button, or window.open.
- * 
+ *
  * Note that for behavior parameterization, we use VITE_ build parameters (our
  * paremeters, but using the Vite environment variable mechanism) and convention.
- * 
- * The convention is that 
- * 
- * @param param0 
- * @param newWindow 
- * @returns 
+ *
+ * The convention is that
+ *
+ * @param param0
+ * @param newWindow
+ * @returns
  */
-export function navigationPathToURL({path, params, type}: NavigationPath, newWindow?: boolean): URL {
-    // Here we take advantage of the fact that the user interface is always accessed on 
-    // ENV.kbase.us or subhost.ENV.kbase.us. In otherwords, the domain always has three 
+export function navigationPathToURL(
+    { path, params, type }: NavigationPath,
+    newWindow?: boolean,
+): URL {
+    // Here we take advantage of the fact that the user interface is always accessed on
+    // ENV.kbase.us or subhost.ENV.kbase.us. In otherwords, the domain always has three
     // parts, we we just extract the final 3 parts, no matter the subdomain.
     // This "convention over configuration" saves some mental space and configuration,
     // of course.
@@ -264,13 +274,13 @@ export function navigationPathToURL({path, params, type}: NavigationPath, newWin
                     }
                 }
             } else {
-                // A url back to kbase-ui within this window requires a hash change 
+                // A url back to kbase-ui within this window requires a hash change
                 // We don't care what the hostname, path prefix are in this case,
                 // because they are already established.
                 url = kbaseUIBaseURL();
-                url.hash = `#${path}`
+                url.hash = `#${path}`;
                 if (params && Object.keys(params).length > 0) {
-                    url.hash += `$${new URLSearchParams(params).toString()}`
+                    url.hash += `$${new URLSearchParams(params).toString()}`;
                 }
             }
             break;
@@ -287,4 +297,3 @@ export function navigationPathToURL({path, params, type}: NavigationPath, newWin
     }
     return url;
 }
-

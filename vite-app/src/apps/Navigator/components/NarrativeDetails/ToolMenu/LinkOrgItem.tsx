@@ -9,10 +9,11 @@ import {
     AsyncProcess,
     AsyncProcessError,
     AsyncProcessStatus,
-    AsyncProcessSuccess
+    AsyncProcessSuccess,
 } from '../../../../../lib/AsyncProcess';
 import OrganizationsClient, {
-    GroupIdentity, GroupInfo
+    GroupIdentity,
+    GroupInfo,
 } from '../../../utils/OrganizationsClient';
 import Model, { LinkOrgResult } from './Model';
 import OrgSelect from './OrgSelect';
@@ -64,11 +65,11 @@ export default class LinkOrgItem extends Component<
             const narrativeModel = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
                 token: this.props.authInfo.token,
-                timeout: this.props.config.ui.constants.clientTimeout
+                timeout: this.props.config.ui.constants.clientTimeout,
             });
             const perm = await narrativeModel.getUserPermission(
                 this.props.narrative.access_group,
-                this.props.authInfo.account.user
+                this.props.authInfo.account.user,
             );
 
             const organizationsClient = new OrganizationsClient({
@@ -77,7 +78,7 @@ export default class LinkOrgItem extends Component<
             });
 
             const linkedOrgs = await organizationsClient.getLinkedOrgs(
-                this.props.narrative.access_group
+                this.props.narrative.access_group,
             );
 
             const linkedOrgIds: Set<string> = new Set();
@@ -140,7 +141,7 @@ export default class LinkOrgItem extends Component<
                 },
                 () => {
                     this.updateState();
-                }
+                },
             );
         } catch (ex) {
             const message = (() => {
@@ -177,22 +178,20 @@ export default class LinkOrgItem extends Component<
                 <Well.Header>
                     Organizations this Narrative is Linked to
                 </Well.Header>
-                <Well.Body>
-                    {renderLinkedOrgs()}
-                </Well.Body>
+                <Well.Body>{renderLinkedOrgs()}</Well.Body>
             </Well>
         );
     }
 
     renderPending() {
         return this.renderModal(
-            <Loading message="Loading..." size="small" type="inline" />
+            <Loading message="Loading..." size="small" type="inline" />,
         );
     }
 
     renderLinkPending() {
         return this.renderModal(
-            <Loading message="Linking..." size="small" type="inline" />
+            <Loading message="Linking..." size="small" type="inline" />,
         );
     }
 
@@ -247,9 +246,9 @@ export default class LinkOrgItem extends Component<
         if (loadProcess.value.perm !== 'a') {
             return this.renderModal(
                 <div style={{ textAlign: 'center' }}>
-                    You don't have permission to request to add this Narrative
-                    to an Organization.
-                </div>
+                    You don&apos;t have permission to request to add this
+                    Narrative to an Organization.
+                </div>,
             );
         }
         return this.renderModal(
@@ -260,7 +259,7 @@ export default class LinkOrgItem extends Component<
                     orgs={loadProcess.value.userOrgs}
                 />
                 <div>{this.makeLinkedOrgsList(loadProcess.value)}</div>
-            </div>
+            </div>,
         );
     }
 

@@ -27,7 +27,10 @@ export type ErrorViewProps = PropsWithChildren<{
 
 export default class ErrorView extends Component<ErrorViewProps> {
     renderInfo() {
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.info) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.info
+        ) {
             return;
         }
         return (
@@ -40,15 +43,18 @@ export default class ErrorView extends Component<ErrorViewProps> {
             </>
         );
     }
-    
+
     renderRemedies() {
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.remedies) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.remedies
+        ) {
             return;
         }
-        const remedies = this.props.errorInfo.remedies.map((remedy) => {
+        const remedies = this.props.errorInfo.remedies.map((remedy, index) => {
             if ('url' in remedy) {
                 return (
-                    <li>
+                    <li key={index}>
                         <a
                             href={remedy.url}
                             target="_blank"
@@ -61,7 +67,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                 );
             } else {
                 return (
-                    <li>
+                    <li key={index}>
                         <span title={remedy.tooltip}>{remedy.title}</span>
                     </li>
                 );
@@ -83,7 +89,9 @@ export default class ErrorView extends Component<ErrorViewProps> {
 
     renderCode() {
         if (this.props.errorInfo && this.props.errorInfo.code) {
-            return <div className={styles.code}>{this.props.errorInfo.code}</div>
+            return (
+                <div className={styles.code}>{this.props.errorInfo.code}</div>
+            );
         }
     }
 
@@ -91,7 +99,10 @@ export default class ErrorView extends Component<ErrorViewProps> {
         if (this.props.render) {
             return this.props.render();
         }
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.message) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.message
+        ) {
             return this.props.children;
         }
         return (
@@ -100,7 +111,9 @@ export default class ErrorView extends Component<ErrorViewProps> {
                 <div className={styles.description}>
                     {this.renderDescription(this.props.errorInfo.description)}
                 </div>
-                <div className={styles.message}>{this.props.errorInfo.message}</div>
+                <div className={styles.message}>
+                    {this.props.errorInfo.message}
+                </div>
                 {this.renderRemedies()}
                 {this.renderInfo()}
             </div>

@@ -5,18 +5,17 @@ import { Component, ReactNode, createRef } from 'react';
 import './Table.css';
 import TableNav, { Term } from './TableNav';
 
-
 const ROW_HEIGHT = 50;
 // const HEADER_HEIGHT = 50;
 // const NAV_HEIGHT = 50;
 const RESIZE_WAIT = 1000;
 
 export enum AsyncProcessState {
-    NONE = "NONE",
-    PROCESSING = "PROCESSING",
-    REPROCESSING = "REPROCESSING",
-    SUCCESS = "SUCCESS",
-    ERROR = "ERROR"
+    NONE = 'NONE',
+    PROCESSING = 'PROCESSING',
+    REPROCESSING = 'REPROCESSING',
+    SUCCESS = 'SUCCESS',
+    ERROR = 'ERROR',
 }
 
 // Simpler Data Source - AsyncProcess
@@ -48,8 +47,12 @@ export interface AsyncProcessReprocessing<T> {
     result: T;
 }
 
-export type AsyncProcess<T> = AsyncProcessNone | AsyncProcessProcessing | AsyncProcessSuccess<T> |
-    AsyncProcessError | AsyncProcessReprocessing<T>;
+export type AsyncProcess<T> =
+    | AsyncProcessNone
+    | AsyncProcessProcessing
+    | AsyncProcessSuccess<T>
+    | AsyncProcessError
+    | AsyncProcessReprocessing<T>;
 
 // Data Source
 
@@ -66,7 +69,7 @@ export interface DataSourceProcessing extends DataSourceBase {
 }
 
 export interface DataSourceSuccess<D> extends DataSourceBase {
-    status: AsyncProcessState.SUCCESS,
+    status: AsyncProcessState.SUCCESS;
     data: Array<D>;
     count: number;
     total: number;
@@ -77,7 +80,7 @@ export interface DataSourceSuccess<D> extends DataSourceBase {
 }
 
 export interface DataSourceReprocessing<D> extends DataSourceBase {
-    status: AsyncProcessState.REPROCESSING,
+    status: AsyncProcessState.REPROCESSING;
     data: Array<D>;
     count: number;
     total: number;
@@ -88,20 +91,20 @@ export interface DataSourceReprocessing<D> extends DataSourceBase {
 }
 
 export interface DataSourceError extends DataSourceBase {
-    status: AsyncProcessState.ERROR,
+    status: AsyncProcessState.ERROR;
     error: {
-        code: number,
-        message: string,
+        code: number;
+        message: string;
         data?: JSONValue;
     };
 }
 
 export type DataSource<D> =
-    DataSourceNone |
-    DataSourceProcessing |
-    DataSourceSuccess<D> |
-    DataSourceReprocessing<D> |
-    DataSourceError;
+    | DataSourceNone
+    | DataSourceProcessing
+    | DataSourceSuccess<D>
+    | DataSourceReprocessing<D>
+    | DataSourceError;
 
 // export class DataSourceException extends Error { }
 
@@ -134,7 +137,7 @@ enum TableStatus {
     NONE,
     LOADING,
     OK,
-    ERROR
+    ERROR,
 }
 
 export interface TableState {
@@ -150,8 +153,7 @@ export interface TableStateLoading {
 }
 
 export interface TableStateOk {
-    status: TableStatus.OK,
-
+    status: TableStatus.OK;
 }
 
 export interface Table2State {
@@ -169,7 +171,7 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
         this.resizing = false;
         this.state = {
             status: TableStatus.NONE,
-            showError: false
+            showError: false,
         };
     }
 
@@ -177,7 +179,7 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
         // measure height
         this.setRowsPerPage();
         this.setState({
-            status: TableStatus.OK
+            status: TableStatus.OK,
         });
         this.listenForResize();
     }
@@ -194,28 +196,30 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
                     return {
                         rowsPerPage,
                         currentPage: null,
-                        pageCount: null
+                        pageCount: null,
                     };
                 case AsyncProcessState.PROCESSING:
                     return {
                         rowsPerPage,
                         currentPage: null,
-                        pageCount: null
+                        pageCount: null,
                     };
                 case AsyncProcessState.REPROCESSING:
                     return (() => {
-                        const newPageCount = Math.ceil(this.props.dataSource.total / rowsPerPage);
+                        const newPageCount = Math.ceil(
+                            this.props.dataSource.total / rowsPerPage,
+                        );
                         if (this.props.dataSource.page > newPageCount) {
                             return {
                                 rowsPerPage,
                                 currentPage: newPageCount,
-                                pageCount: newPageCount
+                                pageCount: newPageCount,
                             };
                         } else {
                             return {
                                 rowsPerPage,
                                 currentPage: null,
-                                pageCount: newPageCount
+                                pageCount: newPageCount,
                             };
                         }
                     })();
@@ -224,22 +228,24 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
                     return {
                         rowsPerPage,
                         currentPage: null,
-                        pageCount: null
+                        pageCount: null,
                     };
                 case AsyncProcessState.SUCCESS:
                     return (() => {
-                        const newPageCount = Math.ceil(this.props.dataSource.total / rowsPerPage);
+                        const newPageCount = Math.ceil(
+                            this.props.dataSource.total / rowsPerPage,
+                        );
                         if (this.props.dataSource.page > newPageCount) {
                             return {
                                 rowsPerPage,
                                 currentPage: newPageCount,
-                                pageCount: newPageCount
+                                pageCount: newPageCount,
                             };
                         } else {
                             return {
                                 rowsPerPage,
                                 currentPage: null,
-                                pageCount: newPageCount
+                                pageCount: newPageCount,
                             };
                         }
                     })();
@@ -274,59 +280,68 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
         }, RESIZE_WAIT);
     }
 
-
     listenForResize() {
         window.addEventListener('resize', this.resizeListener.bind(this));
     }
 
     renderHeader() {
         const cells = this.props.columns.map((column) => {
-            return <div className="Table-cell" key={column.id}>
-                <div className="Table-content">
-                    {column.label}
+            return (
+                <div className="Table-cell" key={column.id}>
+                    <div className="Table-content">{column.label}</div>
                 </div>
-            </div>;
+            );
         });
-        return <div className="Table-header">
-            <div className="Table-row">
-                {cells}
+        return (
+            <div className="Table-header">
+                <div className="Table-row">{cells}</div>
             </div>
-        </div>;
+        );
     }
 
-    renderRow() {
+    renderRow() {}
 
-    }
-
-    renderTableRows(dataSource: DataSourceSuccess<D> | DataSourceReprocessing<D>) {
+    renderTableRows(
+        dataSource: DataSourceSuccess<D> | DataSourceReprocessing<D>,
+    ) {
         if (dataSource.data.length === 0) {
-            return <Empty style={{marginTop: '1rem'}}/>;
+            return <Empty style={{ marginTop: '1rem' }} />;
         }
         return dataSource.data.map((datum, rowNumber) => {
             const cells = this.props.columns.map((column) => {
-                return <div className="Table-cell" key={column.id}>
-                    <div className="Table-content">
-                        {column.render(datum)}
+                return (
+                    <div className="Table-cell" key={column.id}>
+                        <div className="Table-content">
+                            {column.render(datum)}
+                        </div>
                     </div>
-                </div>;
+                );
             });
-            return <div className="Table-row" key={rowNumber}>
-                {cells}
-            </div>;
+            return (
+                <div className="Table-row" key={rowNumber}>
+                    {cells}
+                </div>
+            );
         });
     }
 
     renderJSON(value: JSONValue) {
         if (isJSONObject(value)) {
             const rows = Object.entries(value).map(([key, value]) => {
-                return <tr key={key}>
-                    <th>{key}</th>
-                    <td><div className="JSON">{this.renderJSON(value)}</div></td>
-                </tr>;
+                return (
+                    <tr key={key}>
+                        <th>{key}</th>
+                        <td>
+                            <div className="JSON">{this.renderJSON(value)}</div>
+                        </td>
+                    </tr>
+                );
             });
-            return <table className="JSONObject">
-                <tbody>{rows}</tbody>
-            </table>;
+            return (
+                <table className="JSONObject">
+                    <tbody>{rows}</tbody>
+                </table>
+            );
         } else if (isJSONArray(value)) {
             const rows = value.map((element, index) => {
                 return <div key={index}>{this.renderJSON(element)}</div>;
@@ -336,19 +351,26 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
             switch (typeof value) {
                 case 'string':
                     return <span className="JSONString">{value}</span>;
-                case 'boolean':
-                    const booleanString = value ? "true" : "false";
+                case 'boolean': {
+                    const booleanString = value ? 'true' : 'false';
                     return <span className="JSONBoolean">{booleanString}</span>;
+                }
                 case 'number':
                     return <span className="JSONNumber">{String(value)}</span>;
                 case 'object':
                     if (value === null) {
-                        return <span className="JSONNull">{String(value)}</span>;
+                        return (
+                            <span className="JSONNull">{String(value)}</span>
+                        );
                     } else {
-                        throw new Error('Unsupported json object type: ' + (typeof value));
+                        throw new Error(
+                            'Unsupported json object type: ' + typeof value,
+                        );
                     }
                 default:
-                    throw new Error('Unsupported json value type: ' + (typeof value));
+                    throw new Error(
+                        'Unsupported json value type: ' + typeof value,
+                    );
             }
         }
     }
@@ -394,93 +416,102 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
         // };
         const showDetail = () => {
             this.setState({
-                showError: true
+                showError: true,
             });
         };
-        return <>
-            <Alert
-                type="error"
-                showIcon
-                message={`${dataSource.error.message} (${dataSource.error.code})`}
-                description={
-                    <div>
-                        <Button onClick={showDetail}>
-                            Detail
-                        </Button>
-                        <Button onClick={this.props.reset}>
-                            Reset
-                        </Button>
-                    </div>
-                }
-            />
-            {this.renderErrorModal(dataSource)}
-        </>;
+        return (
+            <>
+                <Alert
+                    type="error"
+                    showIcon
+                    message={`${dataSource.error.message} (${dataSource.error.code})`}
+                    description={
+                        <div>
+                            <Button onClick={showDetail}>Detail</Button>
+                            <Button onClick={this.props.reset}>Reset</Button>
+                        </div>
+                    }
+                />
+                {this.renderErrorModal(dataSource)}
+            </>
+        );
     }
 
     renderErrorModal(dataSource: DataSourceError) {
-        const description = <div style={{
-            flex: '1 1 0px',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            <div>Code: {dataSource.error.code}</div>
-            <div>Message: {dataSource.error.message}</div>
-            <div>Data:</div>
+        const description = (
             <div
-                className="JSON"
                 style={{
-                    overflow: 'auto',
-                    flex: '1 1 0px'
-                }}>
-                {dataSource.error.data && this.renderJSON(dataSource.error.data)}
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <div>Code: {dataSource.error.code}</div>
+                <div>Message: {dataSource.error.message}</div>
+                <div>Data:</div>
+                <div
+                    className="JSON"
+                    style={{
+                        overflow: 'auto',
+                        flex: '1 1 0px',
+                    }}
+                >
+                    {dataSource.error.data &&
+                        this.renderJSON(dataSource.error.data)}
+                </div>
             </div>
-        </div>;
-        return <Modal
-            title="Error Details"
-            visible={this.state.showError}
-            className="FullHeightModal"
-            onCancel={() => {
-                this.setState({
-                    showError: false
-                });
-            }}
-            style={{
-                maxWidth: '50em',
-                top: '20px',
-                bottom: '20px',
-                flex: '1 1 0px',
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-            width="50em"
-            bodyStyle={{
-                flex: '1 1 0px',
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-
-            footer={[
-                <Button key="done"
-                    onClick={() => {
-                        this.setState({
-                            showError: false
-                        });
-                    }}>
-                    Done
-                </Button>,
-                <Button key="reset"
-                    onClick={() => {
-                        this.setState({
-                            showError: false
-                        });
-                        this.props.reset();
-                    }}>
-                    Reset
-                </Button>
-            ]}
-        >
-            {description}
-        </Modal>;
+        );
+        return (
+            <Modal
+                title="Error Details"
+                visible={this.state.showError}
+                className="FullHeightModal"
+                onCancel={() => {
+                    this.setState({
+                        showError: false,
+                    });
+                }}
+                style={{
+                    maxWidth: '50em',
+                    top: '20px',
+                    bottom: '20px',
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+                width="50em"
+                bodyStyle={{
+                    flex: '1 1 0px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+                footer={[
+                    <Button
+                        key="done"
+                        onClick={() => {
+                            this.setState({
+                                showError: false,
+                            });
+                        }}
+                    >
+                        Done
+                    </Button>,
+                    <Button
+                        key="reset"
+                        onClick={() => {
+                            this.setState({
+                                showError: false,
+                            });
+                            this.props.reset();
+                        }}
+                    >
+                        Reset
+                    </Button>,
+                ]}
+            >
+                {description}
+            </Modal>
+        );
     }
 
     /*
@@ -488,11 +519,15 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
     */
 
     renderLoading() {
-        return <Spin>
-            <Alert message="Loading Data"
-                description="The data is loading for the table"
-                type="info" />
-        </Spin>;
+        return (
+            <Spin>
+                <Alert
+                    message="Loading Data"
+                    description="The data is loading for the table"
+                    type="info"
+                />
+            </Spin>
+        );
     }
 
     renderBodyOverlay() {
@@ -500,11 +535,14 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
             case AsyncProcessState.NONE:
             case AsyncProcessState.PROCESSING:
             case AsyncProcessState.REPROCESSING:
-                return <div className="Table-body-processing-overlay">
-                    <div className="Table-spin-container">
-                        <Spin style={{marginRight: '1rem'}}/>{this.props.loadingPhrase || 'Loading...'}
+                return (
+                    <div className="Table-body-processing-overlay">
+                        <div className="Table-spin-container">
+                            <Spin style={{ marginRight: '1rem' }} />
+                            {this.props.loadingPhrase || 'Loading...'}
+                        </div>
                     </div>
-                </div>;
+                );
             case AsyncProcessState.SUCCESS:
             case AsyncProcessState.ERROR:
         }
@@ -514,9 +552,7 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
         const content = ((): ReactNode => {
             switch (this.props.dataSource.status) {
                 case AsyncProcessState.NONE:
-                    // return this.renderLoading();
                 case AsyncProcessState.PROCESSING:
-                    // return this.renderLoading();
                     return;
                 case AsyncProcessState.REPROCESSING:
                     return this.renderTableRows(this.props.dataSource);
@@ -527,47 +563,70 @@ export default class Table2<D> extends Component<TableProps<D>, Table2State> {
             }
         })();
 
-        return <div className="Table-body" ref={this.bodyRef}>
-            {this.renderBodyOverlay()}
-            {content}
-        </div>;
+        return (
+            <div className="Table-body" ref={this.bodyRef}>
+                {this.renderBodyOverlay()}
+                {content}
+            </div>
+        );
     }
 
     renderNav() {
         if (this.state.status === TableStatus.OK) {
             switch (this.props.dataSource.status) {
                 case AsyncProcessState.NONE:
-                    return <TableNav state={{ enabled: false }} noun={this.props.noun} />;
+                    return (
+                        <TableNav
+                            state={{ enabled: false }}
+                            noun={this.props.noun}
+                        />
+                    );
                 case AsyncProcessState.PROCESSING:
-                    return <TableNav state={{ enabled: false }} noun={this.props.noun} />;
+                    return (
+                        <TableNav
+                            state={{ enabled: false }}
+                            noun={this.props.noun}
+                        />
+                    );
                 case AsyncProcessState.REPROCESSING:
                 case AsyncProcessState.SUCCESS:
-                    return <TableNav
-                        state={{
-                            enabled: true,
-                            page: this.props.dataSource.page,
-                            pageCount: this.props.dataSource.pageCount,
-                            total: this.props.dataSource.total,
-                            firstPage: this.props.firstPage,
-                            previousPage: this.props.previousPage,
-                            nextPage: this.props.nextPage,
-                            lastPage: this.props.lastPage
-                        }}
-                        noun={this.props.noun}
-                    />;
+                    return (
+                        <TableNav
+                            state={{
+                                enabled: true,
+                                page: this.props.dataSource.page,
+                                pageCount: this.props.dataSource.pageCount,
+                                total: this.props.dataSource.total,
+                                firstPage: this.props.firstPage,
+                                previousPage: this.props.previousPage,
+                                nextPage: this.props.nextPage,
+                                lastPage: this.props.lastPage,
+                            }}
+                            noun={this.props.noun}
+                        />
+                    );
                 case AsyncProcessState.ERROR:
-                    return <TableNav state={{ enabled: false }} noun={this.props.noun} />;
+                    return (
+                        <TableNav
+                            state={{ enabled: false }}
+                            noun={this.props.noun}
+                        />
+                    );
             }
         } else {
-            return <TableNav state={{ enabled: false }} noun={this.props.noun} />;
+            return (
+                <TableNav state={{ enabled: false }} noun={this.props.noun} />
+            );
         }
     }
 
     render() {
-        return <div className="Table">
-            {this.renderHeader()}
-            {this.renderBody()}
-            {this.renderNav()}
-        </div>;
+        return (
+            <div className="Table">
+                {this.renderHeader()}
+                {this.renderBody()}
+                {this.renderNav()}
+            </div>
+        );
     }
 }

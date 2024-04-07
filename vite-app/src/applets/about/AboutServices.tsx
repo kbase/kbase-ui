@@ -9,7 +9,9 @@ import { AuthenticationState } from '../../contexts/EuropaContext';
 import { AsyncProcess, AsyncProcessStatus } from '../../lib/AsyncProcess';
 import { Config } from '../../types/config';
 import { SERVICES, ServiceDescription } from './ServiceDescription';
-import ServicePerformance, { PerformanceMeasurementsStatus } from './ServicePerformance';
+import ServicePerformance, {
+    PerformanceMeasurementsStatus,
+} from './ServicePerformance';
 
 const ITERATIONS = 5;
 
@@ -21,30 +23,34 @@ export interface AboutServicesProps {
 
 export enum ServiceMeasurementSummaryStatus {
     OK = 'OK',
-    ERROR = 'ERROR'
+    ERROR = 'ERROR',
 }
 
 export interface ServiceMeasurementSummaryBase {
-    status: ServiceMeasurementSummaryStatus
+    status: ServiceMeasurementSummaryStatus;
     description: ServiceDescription;
 }
 
-export interface ServiceMeasurementSummaryOK extends ServiceMeasurementSummaryBase {
-    status: ServiceMeasurementSummaryStatus.OK,
+export interface ServiceMeasurementSummaryOK
+    extends ServiceMeasurementSummaryBase {
+    status: ServiceMeasurementSummaryStatus.OK;
     version: string;
     average: number;
     measures: Array<number>;
 }
 
-export interface ServiceMeasurementSummaryError extends ServiceMeasurementSummaryBase {
-    status: ServiceMeasurementSummaryStatus.ERROR
+export interface ServiceMeasurementSummaryError
+    extends ServiceMeasurementSummaryBase {
+    status: ServiceMeasurementSummaryStatus.ERROR;
     message: string;
 }
 
-export type ServiceMeasurementSummary = ServiceMeasurementSummaryOK | ServiceMeasurementSummaryError;
+export type ServiceMeasurementSummary =
+    | ServiceMeasurementSummaryOK
+    | ServiceMeasurementSummaryError;
 
 interface AboutServicesState {
-    loadState: AsyncProcess<Array<ServiceMeasurementSummary>, SimpleError>
+    loadState: AsyncProcess<Array<ServiceMeasurementSummary>, SimpleError>;
 }
 
 export default class AboutServices extends Component<
@@ -55,9 +61,9 @@ export default class AboutServices extends Component<
         super(props);
         this.state = {
             loadState: {
-                status: AsyncProcessStatus.NONE
-            }
-        }
+                status: AsyncProcessStatus.NONE,
+            },
+        };
     }
 
     componentDidMount() {
@@ -68,46 +74,49 @@ export default class AboutServices extends Component<
 
     async performMeasurements() {
         try {
-            const measurements: Array<ServiceMeasurementSummary> = await Promise.all(SERVICES.map(async (service) => {
-                const measurer = new ServicePerformance({
-                    config: this.props.config,
-                    service,
-                    iterations: ITERATIONS
-                });
-                const result = await measurer.measure();
-                switch (result.status) {
-                    case PerformanceMeasurementsStatus.SUCCESS: {
-                        const {version, measurements } = result;
-                        return {
-                            status: ServiceMeasurementSummaryStatus.OK,
-                            description: service,
-                            version,
-                            ...measurements
+            const measurements: Array<ServiceMeasurementSummary> =
+                await Promise.all(
+                    SERVICES.map(async (service) => {
+                        const measurer = new ServicePerformance({
+                            config: this.props.config,
+                            service,
+                            iterations: ITERATIONS,
+                        });
+                        const result = await measurer.measure();
+                        switch (result.status) {
+                            case PerformanceMeasurementsStatus.SUCCESS: {
+                                const { version, measurements } = result;
+                                return {
+                                    status: ServiceMeasurementSummaryStatus.OK,
+                                    description: service,
+                                    version,
+                                    ...measurements,
+                                };
+                            }
+                            case PerformanceMeasurementsStatus.ERROR:
+                                return {
+                                    status: ServiceMeasurementSummaryStatus.ERROR,
+                                    description: service,
+                                    message: result.message,
+                                };
                         }
-                    }
-                    case PerformanceMeasurementsStatus.ERROR:
-                        return {
-                            status: ServiceMeasurementSummaryStatus.ERROR,
-                            description: service,
-                            message: result.message
-                        }
-                }
-            }));
+                    }),
+                );
             this.setState({
                 loadState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: measurements
-                }
-            })
-           
+                    value: measurements,
+                },
+            });
         } catch (ex) {
             this.setState({
                 loadState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message: ex instanceof Error ? ex.message : 'Unknown error'
-                    }
-                }
+                        message:
+                            ex instanceof Error ? ex.message : 'Unknown error',
+                    },
+                },
             });
         }
     }
@@ -119,11 +128,24 @@ export default class AboutServices extends Component<
                 label: 'Module',
                 style: {},
                 render: (service: ServiceMeasurementSummary) => {
-                    // TODO: should manage to get the service's git url 
-                    return <a href={`${service.description.repoURL}`} target="_blank">{service.description.module}</a>;
+                    // TODO: should manage to get the service's git url
+                    return (
+                        <a
+                            href={`${service.description.repoURL}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            {service.description.module}
+                        </a>
+                    );
                 },
-                sorter: (a: ServiceMeasurementSummary, b: ServiceMeasurementSummary) => {
-                    return a.description.module.localeCompare(b.description.module);
+                sorter: (
+                    a: ServiceMeasurementSummary,
+                    b: ServiceMeasurementSummary,
+                ) => {
+                    return a.description.module.localeCompare(
+                        b.description.module,
+                    );
                 },
             },
             {
@@ -131,20 +153,31 @@ export default class AboutServices extends Component<
                 label: 'Version',
                 style: {},
                 render: (service: ServiceMeasurementSummary) => {
-                    if (service.status === ServiceMeasurementSummaryStatus.ERROR) {
-                        return <div className="text-danger">{service.message}</div>;
+                    if (
+                        service.status === ServiceMeasurementSummaryStatus.ERROR
+                    ) {
+                        return (
+                            <div className="text-danger">{service.message}</div>
+                        );
                     }
                     return <span>{service.version}</span>;
                 },
-                sorter: (a: ServiceMeasurementSummary, b: ServiceMeasurementSummary) => {
+                sorter: (
+                    a: ServiceMeasurementSummary,
+                    b: ServiceMeasurementSummary,
+                ) => {
                     if (a.status === ServiceMeasurementSummaryStatus.ERROR) {
-                        if (b.status  === ServiceMeasurementSummaryStatus.ERROR) {
+                        if (
+                            b.status === ServiceMeasurementSummaryStatus.ERROR
+                        ) {
                             return 0;
                         } else {
                             return -1;
                         }
                     } else {
-                        if (b.status  === ServiceMeasurementSummaryStatus.ERROR) {
+                        if (
+                            b.status === ServiceMeasurementSummaryStatus.ERROR
+                        ) {
                             return 1;
                         } else {
                             return a.version.localeCompare(b.version);
@@ -159,7 +192,10 @@ export default class AboutServices extends Component<
                 render: (service: ServiceMeasurementSummary) => {
                     return <span>{service.description.type}</span>;
                 },
-                sorter: (a: ServiceMeasurementSummary, b: ServiceMeasurementSummary) => {
+                sorter: (
+                    a: ServiceMeasurementSummary,
+                    b: ServiceMeasurementSummary,
+                ) => {
                     return a.description.type.localeCompare(b.description.type);
                 },
             },
@@ -168,31 +204,44 @@ export default class AboutServices extends Component<
                 label: 'Perf (ms/call)',
                 style: {},
                 render: (service: ServiceMeasurementSummary) => {
-                    if (service.status === ServiceMeasurementSummaryStatus.ERROR) {
+                    if (
+                        service.status === ServiceMeasurementSummaryStatus.ERROR
+                    ) {
                         return NA();
                     }
-                    return <span>{Intl.NumberFormat('en-US', {
-                        useGrouping: true,
-                        minimumFractionDigits: 1,
-                        maximumFractionDigits: 1,
-                    }).format(service.average)}</span>;
+                    return (
+                        <span>
+                            {Intl.NumberFormat('en-US', {
+                                useGrouping: true,
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1,
+                            }).format(service.average)}
+                        </span>
+                    );
                 },
-                sorter: (a: ServiceMeasurementSummary, b: ServiceMeasurementSummary) => {
+                sorter: (
+                    a: ServiceMeasurementSummary,
+                    b: ServiceMeasurementSummary,
+                ) => {
                     if (a.status === ServiceMeasurementSummaryStatus.ERROR) {
-                        if (b.status  === ServiceMeasurementSummaryStatus.ERROR) {
+                        if (
+                            b.status === ServiceMeasurementSummaryStatus.ERROR
+                        ) {
                             return 0;
                         } else {
                             return -1;
                         }
                     } else {
-                        if (b.status  === ServiceMeasurementSummaryStatus.ERROR) {
+                        if (
+                            b.status === ServiceMeasurementSummaryStatus.ERROR
+                        ) {
                             return 1;
                         } else {
                             return a.average - b.average;
                         }
                     }
                 },
-            }
+            },
         ];
 
         return (
@@ -214,7 +263,7 @@ export default class AboutServices extends Component<
         );
     }
 
-    renderError({message}: SimpleError) {
+    renderError({ message }: SimpleError) {
         return <ErrorAlert message={message} />;
     }
 
@@ -231,11 +280,12 @@ export default class AboutServices extends Component<
     }
 
     render() {
-        const stretch = this.state.loadState.status === AsyncProcessStatus.SUCCESS;
-        return <Well variant="secondary" stretch={stretch}>
-            <Well.Body>
-                {this.renderState()}
-            </Well.Body>
-        </Well>
+        const stretch =
+            this.state.loadState.status === AsyncProcessStatus.SUCCESS;
+        return (
+            <Well variant="secondary" stretch={stretch}>
+                <Well.Body>{this.renderState()}</Well.Body>
+            </Well>
+        );
     }
 }

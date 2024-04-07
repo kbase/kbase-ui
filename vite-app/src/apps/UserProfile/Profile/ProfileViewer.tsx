@@ -1,7 +1,4 @@
-import {
-    EditOutlined,
-    ExclamationOutlined
-} from '@ant-design/icons';
+import { EditOutlined, ExclamationOutlined } from '@ant-design/icons';
 import {
     Alert,
     Button,
@@ -13,7 +10,7 @@ import {
     Row,
     Space,
     Spin,
-    Tooltip
+    Tooltip,
 } from 'antd';
 import Link from 'antd/es/typography/Link';
 import Well from 'components/Well';
@@ -26,7 +23,6 @@ import { UserProfileAffiliation } from '../API';
 import Orgs from './Orgs/controller';
 import './Profile.css';
 import { ORCIDState, OrgsState, ProfileView } from './controller';
-
 
 export interface ProfileProps {
     profileView: ProfileView;
@@ -42,34 +38,33 @@ export type KeyOfType<Type, ValueType> = keyof {
 };
 
 export interface FormDataAffiliation {
-    title: string
-    organization: string
-    started: string
-    ended?: string | null
+    title: string;
+    organization: string;
+    started: string;
+    ended?: string | null;
 }
 
 export interface FormData {
-    avatarOption: string
-    gravatarDefault?: string
-    jobTitle?: string
-    jobTitleOther?: string
-    department?: string
-    organization?: string
-    country?: string
-    state?: string
-    city?: string
-    postalCode?: string
-    fundingSource?: string
-    researchStatement?: string
-    researchInterests?: Array<string>
-    researchInterestsOther?: string
-    affiliations?: Array<FormDataAffiliation>
-    showORCIDId: boolean
+    avatarOption: string;
+    gravatarDefault?: string;
+    jobTitle?: string;
+    jobTitleOther?: string;
+    department?: string;
+    organization?: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    postalCode?: string;
+    fundingSource?: string;
+    researchStatement?: string;
+    researchInterests?: Array<string>;
+    researchInterestsOther?: string;
+    affiliations?: Array<FormDataAffiliation>;
+    showORCIDId: boolean;
 }
 
 // Note that this should be exported from antd
 // TODO: investigate and possibly create issue on github; stretch - create PR.
-
 
 export interface ReturnLink {
     type: string;
@@ -85,42 +80,58 @@ export interface ReturnLink {
 // class Profile extends React.Component<ProfileProps, ProfileState> {
 function ProfileViewer(props: ProfileProps) {
     function enableEditing() {
-        props.toggleEditing()
+        props.toggleEditing();
     }
 
     function renderUserNutshellViewEmpty() {
         return (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="No User Profile" />
+            <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="No User Profile"
+            />
         );
     }
 
-    function renderSection(title: string, body: string | undefined | JSX.Element) {
-        return <div className="Profile-section">
-            <div className="Profile-section-title">
-                {title}
+    function renderSection(
+        title: string,
+        body: string | undefined | JSX.Element,
+    ) {
+        return (
+            <div className="Profile-section">
+                <div className="Profile-section-title">{title}</div>
+                <div className="Profile-section-body">{body}</div>
             </div>
-            <div className="Profile-section-body">
-                {body}
-            </div>
-        </div>;
+        );
     }
 
     function renderJobTitleView() {
         if (props.profileView.profile.userdata.jobTitle) {
-            renderSection('position',
-                props.profileView.profile.userdata.jobTitle === 'Other' ? props.profileView.profile.userdata.jobTitleOther : props.profileView.profile.userdata.jobTitle
-            )
+            renderSection(
+                'position',
+                props.profileView.profile.userdata.jobTitle === 'Other'
+                    ? props.profileView.profile.userdata.jobTitleOther
+                    : props.profileView.profile.userdata.jobTitle,
+            );
         }
     }
 
     function renderLocationSection() {
-        const { profileView: { profile } } = props;
+        const {
+            profileView: { profile },
+        } = props;
         const location = (() => {
             if (profile.userdata.country === 'United States') {
-                return [profile.userdata.country, profile.userdata.state, profile.userdata.city].filter(x => x).join(', ');
+                return [
+                    profile.userdata.country,
+                    profile.userdata.state,
+                    profile.userdata.city,
+                ]
+                    .filter((x) => x)
+                    .join(', ');
             } else {
-                return [profile.userdata.country, profile.userdata.city].filter(x => x).join(', ');
+                return [profile.userdata.country, profile.userdata.city]
+                    .filter((x) => x)
+                    .join(', ');
             }
         })();
 
@@ -135,25 +146,46 @@ function ProfileViewer(props: ProfileProps) {
         if (!props.profileView.profile.userdata.department) {
             return;
         }
-        return renderSection('department', props.profileView.profile.userdata.department)
+        return renderSection(
+            'department',
+            props.profileView.profile.userdata.department,
+        );
     }
 
     function renderOrganizationSection() {
         if (!props.profileView.profile.userdata.organization) {
             return;
         }
-        return renderSection('organization', props.profileView.profile.userdata.organization);
+        return renderSection(
+            'organization',
+            props.profileView.profile.userdata.organization,
+        );
     }
 
     function renderFundingSourceSection() {
         if (!props.profileView.profile.userdata.fundingSource) {
             return;
         }
-        return renderSection('primary funding source', props.profileView.profile.userdata.fundingSource);
+        return renderSection(
+            'primary funding source',
+            props.profileView.profile.userdata.fundingSource,
+        );
     }
 
     function isNutshellEmpty() {
-        const { profile: { userdata: { jobTitle, department, organization, fundingSource, country, state, city } } } = props.profileView;
+        const {
+            profile: {
+                userdata: {
+                    jobTitle,
+                    department,
+                    organization,
+                    fundingSource,
+                    country,
+                    state,
+                    city,
+                },
+            },
+        } = props.profileView;
         if (jobTitle || department || organization || fundingSource) {
             return false;
         }
@@ -174,45 +206,56 @@ function ProfileViewer(props: ProfileProps) {
             return renderUserNutshellViewEmpty();
         }
 
-        return <>
-            {renderJobTitleView()}
-            {renderDepartmentSection()}
-            {renderOrganizationSection()}
-            {renderFundingSourceSection()}
-            {renderLocationSection()}
-        </>;
+        return (
+            <>
+                {renderJobTitleView()}
+                {renderDepartmentSection()}
+                {renderOrganizationSection()}
+                {renderFundingSourceSection()}
+                {renderLocationSection()}
+            </>
+        );
     }
 
     /**
      * builds User Nutshell card
-     *  - Choose between the non-auth user profile  
-     *    vs. editable user profile 
+     *  - Choose between the non-auth user profile
+     *    vs. editable user profile
      *  - Return either form or plain text
      */
     function renderUserNutshell() {
         return renderUserNutshellView();
     }
 
-
-
     /**
      * builds research statement card
-     *  - Choose between the non-auth user profile  
-     *    vs. editable user profile 
+     *  - Choose between the non-auth user profile
+     *    vs. editable user profile
      *  - Return either form or plain text
      */
     function renderResearchStatement() {
         let statement;
-        const { profile: { userdata: { researchStatement } } } = props.profileView;
+        const {
+            profile: {
+                userdata: { researchStatement },
+            },
+        } = props.profileView;
         if (!researchStatement || researchStatement === '') {
-            statement = <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Research Statement" />;
+            statement = (
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="No Research Statement"
+                />
+            );
         } else {
             // const fixed = this.props.profileUserdata.researchStatement.replace(/\n/, '<br />');
             // statement = <p style={{ whiteSpace: 'pre' }}>{this.props.profileUserdata.researchStatement}</p>;
             marked.use({
-                breaks: true
+                breaks: true,
             });
-            const content = DOMPurify.sanitize(marked.parse(researchStatement, {async: false}) as string);
+            const content = DOMPurify.sanitize(
+                marked.parse(researchStatement, { async: false }) as string,
+            );
             statement = <div dangerouslySetInnerHTML={{ __html: content }} />;
         }
 
@@ -225,57 +268,73 @@ function ProfileViewer(props: ProfileProps) {
         // non-empty array
 
         // TODO: not sure about that last case -- at least explain it
-        if (!affiliations || affiliations.length === 0 || affiliations[0]['title'] === '')
+        if (
+            !affiliations ||
+            affiliations.length === 0 ||
+            affiliations[0]['title'] === ''
+        )
             return (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Affiliations" />
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="No Affiliations"
+                />
             );
 
-        affiliations.sort((a: UserProfileAffiliation, b: UserProfileAffiliation) => {
-            const startedSort = a.started - b.started;
-            if (startedSort !== 0) {
-                return startedSort;
-            }
-
-            const endedSort = (() => {
-                if (!a.ended) {
-                    return -1;
+        affiliations.sort(
+            (a: UserProfileAffiliation, b: UserProfileAffiliation) => {
+                const startedSort = a.started - b.started;
+                if (startedSort !== 0) {
+                    return startedSort;
                 }
-                if (!b.ended) {
-                    return 1;
+
+                const endedSort = (() => {
+                    if (!a.ended) {
+                        return -1;
+                    }
+                    if (!b.ended) {
+                        return 1;
+                    }
+                    return a.ended - b.ended;
+                })();
+
+                if (endedSort !== 0) {
+                    return endedSort;
                 }
-                return a.ended - b.ended;
-            })();
 
-            if (endedSort !== 0) {
-                return endedSort;
-            }
+                const titleSort = a.title.localeCompare(b.title);
+                if (titleSort !== 0) {
+                    return titleSort;
+                }
 
-            const titleSort = a.title.localeCompare(b.title);
-            if (titleSort !== 0) {
-                return titleSort;
-            }
-
-            return a.organization.localeCompare(b.organization);
-        });
+                return a.organization.localeCompare(b.organization);
+            },
+        );
 
         return (
             <table className="LayoutTable">
                 <thead>
                     <tr>
-                        <th style={{ width: "30%" }}>position</th>
-                        <th style={{ width: "40%" }}>organization</th>
-                        <th style={{ width: "30%" }}>tenure</th>
+                        <th style={{ width: '30%' }}>position</th>
+                        <th style={{ width: '40%' }}>organization</th>
+                        <th style={{ width: '30%' }}>tenure</th>
                     </tr>
                 </thead>
                 <tbody>
                     {affiliations
-                        .filter(affiliation => affiliation.title)
+                        .filter((affiliation) => affiliation.title)
                         .map((affiliation, index) => {
-                            return <tr key={index}>
-                                <td>{affiliation.title}</td>
-                                <td>{affiliation.organization}</td>
-                                <td>{affiliation.started} - {affiliation.ended ? affiliation.ended : 'present'}</td>
-                            </tr>;
+                            return (
+                                <tr key={index}>
+                                    <td>{affiliation.title}</td>
+                                    <td>{affiliation.organization}</td>
+                                    <td>
+                                        {affiliation.started} -{' '}
+                                        {affiliation.ended
+                                            ? affiliation.ended
+                                            : 'present'}
+                                    </td>
+                                </tr>
+                            );
                         })}
                 </tbody>
             </table>
@@ -285,9 +344,8 @@ function ProfileViewer(props: ProfileProps) {
     /**
      *   event Handlers
      *
-     * 
+     *
      */
-
 
     // AVATAR
 
@@ -295,7 +353,11 @@ function ProfileViewer(props: ProfileProps) {
         return `https://www.gravatar.com/avatar/${gravatarHash}?s=300&amp;r=pg&d=${gravatarDefault}`;
     }
 
-    function avatarImageSrc(avatarOption: string, gravatarDefault: string | null, gravatarHash?: string): string {
+    function avatarImageSrc(
+        avatarOption: string,
+        gravatarDefault: string | null,
+        gravatarHash?: string,
+    ): string {
         switch (avatarOption) {
             case 'silhouette':
                 // Opting out of gravatar causes this one image to be shown, in all cases.
@@ -305,42 +367,51 @@ function ProfileViewer(props: ProfileProps) {
                     // Should never occur, but may in some old test profiles.
                     return image('nouserpic');
                 }
-                return gravatarURL(gravatarHash, gravatarDefault || 'identicon');
+                return gravatarURL(
+                    gravatarHash,
+                    gravatarDefault || 'identicon',
+                );
             default:
                 // should never occur, but may in some old test profiles.
                 return image('nouserpic');
         }
     }
 
-
     // Set gravatarURL
     function avatarImageSrcView(): string {
-        const { userdata: { avatarOption, gravatarDefault }, gravatarHash } = props.profileView.profile;
-        return avatarImageSrc(avatarOption, gravatarDefault || null, gravatarHash);
+        const {
+            userdata: { avatarOption, gravatarDefault },
+            gravatarHash,
+        } = props.profileView.profile;
+        return avatarImageSrc(
+            avatarOption,
+            gravatarDefault || null,
+            gravatarHash,
+        );
     }
 
-
     function renderAvatarImage(srcRenderer: () => string) {
-        return <Image
-            style={{ maxWidth: '100%', alignSelf: 'center' }}
-            fallback={image('nouserpic')}
-            alt='User avatar'
-            preview={false}
-            src={srcRenderer()}
-        />
-
+        return (
+            <Image
+                style={{ maxWidth: '100%', alignSelf: 'center' }}
+                fallback={image('nouserpic')}
+                alt="User avatar"
+                preview={false}
+                src={srcRenderer()}
+            />
+        );
     }
 
     function renderAvatarView() {
-        return renderAvatarImage(avatarImageSrcView)
+        return renderAvatarImage(avatarImageSrcView);
     }
 
     function renderAvatar() {
-        return <div className="ProfileAvatar">
-            <div className="ProfileAvatar-Avatar">
-                {renderAvatarView()}
+        return (
+            <div className="ProfileAvatar">
+                <div className="ProfileAvatar-Avatar">{renderAvatarView()}</div>
             </div>
-        </div>
+        );
     }
 
     function onORCIDLink() {
@@ -349,15 +420,15 @@ function ProfileViewer(props: ProfileProps) {
         const returnURL = new URL(window.location.href);
         const returnLink = {
             url: returnURL.toString(),
-            label: 'User Profile'
-        }
+            label: 'User Profile',
+        };
         params.return_link = JSON.stringify(returnLink);
 
         navigate2({
             path: 'orcidlink/link',
             type: 'kbaseui',
             params,
-            newWindow: false
+            newWindow: false,
         });
     }
 
@@ -371,47 +442,66 @@ function ProfileViewer(props: ProfileProps) {
                 const showWarnings = () => {
                     Modal.warning({
                         title: 'Warnings',
-                        content: <List bordered dataSource={props.profileView.warnings}
-                            renderItem={(warning) => {
-                                return <List.Item>{warning}</List.Item>
-                            }} />
-                    })
-                }
-                return <Button type="dashed"
-                    icon={<ExclamationOutlined />}
-                    onClick={showWarnings}
-                >Warnings</Button>
+                        content: (
+                            <List
+                                bordered
+                                dataSource={props.profileView.warnings}
+                                renderItem={(warning) => {
+                                    return <List.Item>{warning}</List.Item>;
+                                }}
+                            />
+                        ),
+                    });
+                };
+                return (
+                    <Button
+                        type="dashed"
+                        icon={<ExclamationOutlined />}
+                        onClick={showWarnings}
+                    >
+                        Warnings
+                    </Button>
+                );
             }
         })();
-
-        let button;
 
         const orcidLinkButton2 = (() => {
             if (props.orcidState.status === AsyncProcessStatus.SUCCESS) {
                 if (props.orcidState.value.orcidId) {
                     return;
                 }
-                return <Tooltip title="Click this button to link your KBase account to your ORCID® account">
-                    <Button onClick={() => {
-                        onORCIDLink();
-                    }} >Create KBase ORCID® Link...</Button>
-                </Tooltip>
+                return (
+                    <Tooltip title="Click this button to link your KBase account to your ORCID® account">
+                        <Button
+                            onClick={() => {
+                                onORCIDLink();
+                            }}
+                        >
+                            Create KBase ORCID® Link...
+                        </Button>
+                    </Tooltip>
+                );
             }
         })();
-        button = <Space wrap >
-            <Button
-                icon={<EditOutlined />}
-                type="primary"
-                onClick={enableEditing}>
-                Edit Profile
-            </Button>
-            {orcidLinkButton2}
-            {warnings}
-        </Space>;
+        const button = (
+            <Space wrap>
+                <Button
+                    icon={<EditOutlined />}
+                    type="primary"
+                    onClick={enableEditing}
+                >
+                    Edit Profile
+                </Button>
+                {orcidLinkButton2}
+                {warnings}
+            </Space>
+        );
 
-        return <div className="ButtonBar">
-            <div className="ButtonBar-button">{button}</div>
-        </div>;
+        return (
+            <div className="ButtonBar">
+                <div className="ButtonBar-button">{button}</div>
+            </div>
+        );
     }
 
     function renderResearchInterests() {
@@ -419,12 +509,15 @@ function ProfileViewer(props: ProfileProps) {
     }
 
     function renderResearchInterestsView() {
-        const researchInterests = props.profileView.profile.userdata.researchInterests;
-        if (Array.isArray(researchInterests) &&
-            researchInterests.length > 0) {
+        const researchInterests =
+            props.profileView.profile.userdata.researchInterests;
+        if (Array.isArray(researchInterests) && researchInterests.length > 0) {
             const normalized = researchInterests.map((interest) => {
                 if (interest === 'Other') {
-                    return props.profileView.profile.userdata.researchInterestsOther || interest;
+                    return (
+                        props.profileView.profile.userdata
+                            .researchInterestsOther || interest
+                    );
                 } else {
                     return interest;
                 }
@@ -434,7 +527,7 @@ function ProfileViewer(props: ProfileProps) {
             });
 
             return (
-                <ul className="PrettyList" >
+                <ul className="PrettyList">
                     {normalized.map((interest) => {
                         return <li key={interest}>{interest}</li>;
                     })}
@@ -442,26 +535,46 @@ function ProfileViewer(props: ProfileProps) {
             );
         } else {
             return (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="No Research Interests" />
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="No Research Interests"
+                />
             );
         }
     }
 
     function renderORCIDIcon() {
-        return <img
-            src={image('orcidIcon')}
-            alt="ORCID® icon"
-            style={{ height: '24px', marginRight: '0.25em', flex: '0 0 auto' }} />
+        return (
+            <img
+                src={image('orcidIcon')}
+                alt="ORCID® icon"
+                style={{
+                    height: '24px',
+                    marginRight: '0.25em',
+                    flex: '0 0 auto',
+                }}
+            />
+        );
     }
 
     function renderORCIDIdLink(orcidId: string, orcidSiteURL: string) {
-        return <Link href={`${orcidSiteURL}/${orcidId}`} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            {renderORCIDIcon()}
-            <div style={{ flex: '1 1 0' }}>
-                {orcidSiteURL}/{orcidId}
-            </div>
-        </Link>;
+        return (
+            <Link
+                href={`${orcidSiteURL}/${orcidId}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}
+            >
+                {renderORCIDIcon()}
+                <div style={{ flex: '1 1 0' }}>
+                    {orcidSiteURL}/{orcidId}
+                </div>
+            </Link>
+        );
     }
 
     function renderORCIDIdLinkView(orcidId: string, orcidSiteURL: string) {
@@ -485,7 +598,11 @@ function ProfileViewer(props: ProfileProps) {
             case AsyncProcessStatus.ERROR:
                 return false;
             case AsyncProcessStatus.SUCCESS:
-                return !!(orcidState.value.orcidId && props.profileView.profile.preferences?.showORCIDId?.value && props.profileView.profile.preferences?.showORCIDId.value);
+                return !!(
+                    orcidState.value.orcidId &&
+                    props.profileView.profile.preferences?.showORCIDId?.value &&
+                    props.profileView.profile.preferences?.showORCIDId.value
+                );
         }
     }
 
@@ -494,69 +611,104 @@ function ProfileViewer(props: ProfileProps) {
         switch (orcidState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <tr><td colSpan={2}><Spin /></td></tr>;
-            case AsyncProcessStatus.ERROR:
-                // TODO: improve error - propagate error code.
-                return <tr><td colSpan={2}><Alert showIcon type="error" message={orcidState.error.message} /></td></tr>;
-            case AsyncProcessStatus.SUCCESS:
-                if (orcidState.value.orcidId && props.profileView.profile.preferences?.showORCIDId?.value) {
-                    return <tr>
-                        <th>
-                            ORCID® iD
-                        </th>
-                        <td>
-                            {renderORCIDId(orcidState.value.orcidId, orcidState.value.serviceInfo.runtime_info.orcid_site_url)}
+                return (
+                    <tr>
+                        <td colSpan={2}>
+                            <Spin />
                         </td>
                     </tr>
+                );
+            case AsyncProcessStatus.ERROR:
+                // TODO: improve error - propagate error code.
+                return (
+                    <tr>
+                        <td colSpan={2}>
+                            <Alert
+                                showIcon
+                                type="error"
+                                message={orcidState.error.message}
+                            />
+                        </td>
+                    </tr>
+                );
+            case AsyncProcessStatus.SUCCESS:
+                if (
+                    orcidState.value.orcidId &&
+                    props.profileView.profile.preferences?.showORCIDId?.value
+                ) {
+                    return (
+                        <tr>
+                            <th>ORCID® iD</th>
+                            <td>
+                                {renderORCIDId(
+                                    orcidState.value.orcidId,
+                                    orcidState.value.serviceInfo.runtime_info
+                                        .orcid_site_url,
+                                )}
+                            </td>
+                        </tr>
+                    );
                 }
         }
     }
 
     function renderIdentityView() {
-        return <div>
-            <table className="PropertyTable" style={{ alignSelf: 'center' }}>
-                <tbody>
-                    <tr>
-                        <th>
-                            Username
-                        </th>
-                        <td>
-                            <span data-k-b-testhook-element="username" className="ProfileAvatar-Username">{props.profileView.user.username}</span>
-                        </td>
-                    </tr>
-                    {renderORCIDRow()}
-                </tbody>
-            </table>
-        </div>
+        return (
+            <div>
+                <table
+                    className="PropertyTable"
+                    style={{ alignSelf: 'center' }}
+                >
+                    <tbody>
+                        <tr>
+                            <th>Username</th>
+                            <td>
+                                <span
+                                    data-k-b-testhook-element="username"
+                                    className="ProfileAvatar-Username"
+                                >
+                                    {props.profileView.user.username}
+                                </span>
+                            </td>
+                        </tr>
+                        {renderORCIDRow()}
+                    </tbody>
+                </table>
+            </div>
+        );
     }
 
     const {
         profile: {
-            userdata: {
-                affiliations: rawAffiliations
-            }
-        }
-    } = props.profileView
+            userdata: { affiliations: rawAffiliations },
+        },
+    } = props.profileView;
 
     // Needs to be string for the input control.
-    const affiliations = typeof rawAffiliations === 'undefined' ? [] : rawAffiliations
-        .filter(({ started, title, organization }) => {
-            return (title && title.length && organization && organization.length &&
-                started);
-        })
-        .map(({
-            started, ended, title, organization
-        }) => {
-            const affiliation: FormDataAffiliation = {
-                title, organization,
-                started: String(started)
-            }
-            if (ended) {
-                affiliation.ended = String(ended);
-            }
-            return affiliation;
-
-        });
+    const affiliations =
+        typeof rawAffiliations === 'undefined'
+            ? []
+            : rawAffiliations
+                  .filter(({ started, title, organization }) => {
+                      return (
+                          title &&
+                          title.length &&
+                          organization &&
+                          organization.length &&
+                          started
+                      );
+                  })
+                  .map(({ started, ended, title, organization }) => {
+                      const affiliation: FormDataAffiliation = {
+                          title,
+                          organization,
+                          started: String(started),
+                      };
+                      if (ended) {
+                          affiliation.ended = String(ended);
+                      }
+                      return affiliation;
+                  });
 
     affiliations.sort((a: FormDataAffiliation, b: FormDataAffiliation) => {
         const startedSort = parseInt(a.started, 10) - parseInt(b.started, 10);
@@ -588,12 +740,15 @@ function ProfileViewer(props: ProfileProps) {
 
     return (
         <div className="Profile">
-            <div className="Profile-control-area" style={{ marginBottom: '10px' }}>
+            <div
+                className="Profile-control-area"
+                style={{ marginBottom: '10px' }}
+            >
                 {renderControls()}
-            </div >
-                {/* Padding below to fix antd rows with gutters. */}
-            <div className="Profile-content-area" style={{padding: '0 4px'}}>
-                <Row gutter={8} >
+            </div>
+            {/* Padding below to fix antd rows with gutters. */}
+            <div className="Profile-content-area" style={{ padding: '0 4px' }}>
+                <Row gutter={8}>
                     <Col span={showORCIDId() ? 8 : 6}>
                         <Well variant="secondary" style={{ flex: '1 1 0' }}>
                             <Well.Header className="justify-content-center">
@@ -613,25 +768,31 @@ function ProfileViewer(props: ProfileProps) {
                             {renderAvatar()}
                         </Area> */}
                     </Col>
-                    <Col span={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col
+                        span={6}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
                         <Well variant="secondary" style={{ flex: '1 1 0' }}>
                             <Well.Header className="justify-content-center">
                                 Research Interests
                             </Well.Header>
-                            <Well.Body>
-                                {renderResearchInterests()}
-                            </Well.Body>
+                            <Well.Body>{renderResearchInterests()}</Well.Body>
                         </Well>
                         {/* <Area title="Research Interests">
                             {renderResearchInterests()}
                         </Area> */}
                     </Col>
-                    <Col span={showORCIDId() ? 10 : 12} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col
+                        span={showORCIDId() ? 10 : 12}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
                         <Well variant="secondary" style={{ flex: '1 1 0' }}>
                             <Well.Header className="justify-content-center">
                                 KBase Organizations
                             </Well.Header>
-                            <Well.Body style={{flex: '1 1 0', overflowY: 'auto'}}>
+                            <Well.Body
+                                style={{ flex: '1 1 0', overflowY: 'auto' }}
+                            >
                                 <Orgs orgsState={props.orgsState} />
                             </Well.Body>
                         </Well>
@@ -641,45 +802,48 @@ function ProfileViewer(props: ProfileProps) {
                     </Col>
                 </Row>
                 <Row gutter={8} style={{ marginTop: '1rem' }}>
-                    <Col span={6} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col
+                        span={6}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
                         <Well variant="secondary">
-                            <Well.Body>
-                                {renderUserNutshell()}
-                            </Well.Body>
+                            <Well.Body>{renderUserNutshell()}</Well.Body>
                         </Well>
                         {/* <Area >
                             {renderUserNutshell()}
                         </Area> */}
                     </Col>
-                    <Col span={7} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col
+                        span={7}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
                         <Well variant="secondary">
                             <Well.Header className="justify-content-center">
                                 Research or Personal Statement
                             </Well.Header>
-                            <Well.Body>
-                                {renderResearchStatement()}
-                            </Well.Body>
+                            <Well.Body>{renderResearchStatement()}</Well.Body>
                         </Well>
                         {/* <Area title='Research or Personal Statement'>
                             {renderResearchStatement()}
                         </Area> */}
                     </Col>
-                    <Col span={11} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Col
+                        span={11}
+                        style={{ display: 'flex', flexDirection: 'column' }}
+                    >
                         <Well variant="secondary">
                             <Well.Header className="justify-content-center">
                                 Affiliations
                             </Well.Header>
-                            <Well.Body >
-                                {renderAffiliations()}
-                            </Well.Body>
+                            <Well.Body>{renderAffiliations()}</Well.Body>
                         </Well>
                         {/* <Area title='Affiliations'>
                             {renderAffiliations()}
                         </Area> */}
                     </Col>
-                </Row >
+                </Row>
             </div>
-        </div >
+        </div>
     );
 }
 
