@@ -380,14 +380,7 @@ export default class EuropaConnection {
 
         return new Promise((resolve) => {
             // Europa sends a connect request as well.
-            this.receiveChannel.once('europa.connect', (payload: unknown) => {
-                // TODO: payload assertion
-                // const { channelId } = payload as EuropaConnectPayload;
-
-                // // Now we can switch the channel to our unique channel id.
-                // // TODO: construct with correct channel id
-                // this.sendChannel.setChannelId(channelId);
-
+            this.receiveChannel.once('europa.connect', () => {
                 this.connectionStatus = ConnectionStatus.CONNECTED;
 
                 // Now we await the message telling us about the authentication state and
