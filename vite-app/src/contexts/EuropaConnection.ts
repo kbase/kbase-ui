@@ -179,8 +179,12 @@ export interface EuropaConnectionConstructorParams {
     onAuthenticated: (payload: EuropaAuthenticatedPayload) => void;
     onAuthNavigate: (payload: AuthNavigatePayload) => void;
     spyOnMessages?: boolean;
-    //   onEuropaConnect: (payload: EuropaConnectPayload) => Promise<void>;
 }
+
+// export interface EventListener {
+//     event: string;
+//     listener: () => void;
+// }
 
 export default class EuropaConnection {
     //   connectionState: ConnectionState;
@@ -188,6 +192,8 @@ export default class EuropaConnection {
     params: EuropaConnectionConstructorParams;
     receiveChannel: ReceiveChannel;
     sendChannel: SendChannel;
+    // eventListeners: Array<EventListener> = [];
+    eventUnsubscribers: Array<() => void> = [];
     constructor(params: EuropaConnectionConstructorParams) {
         this.params = params;
 
@@ -352,20 +358,35 @@ export default class EuropaConnection {
         }
     }
 
-    connect(): Promise<void> {
+    connect({
+        sendChannelId,
+        receiveChannelId,
+    }: {
+        sendChannelId: string;
+        receiveChannelId: string;
+    }): Promise<void> {
         // Prepare to receive the start command, with the initial payload from
         // Europa.
         // This event handler should:
         //   - ensure that the payload is valid
         //   - validate auth token if sent
+
+        this.sendChannel.setChannelId(receiveChannelId);
+        this.receiveChannel.setChannelId(sendChannelId);
+
+        console.log('DEBUG: switched to', receiveChannelId, sendChannelId);
+        console.log('DEBUG: kbase-ui receiving on', sendChannelId);
+        console.log('DEBUG: kbase-ui sending on', receiveChannelId);
+
         return new Promise((resolve) => {
             // Europa sends a connect request as well.
             this.receiveChannel.once('europa.connect', (payload: unknown) => {
                 // TODO: payload assertion
-                const { channelId } = payload as EuropaConnectPayload;
+                // const { channelId } = payload as EuropaConnectPayload;
 
-                // Now we can switch the channel to our unique channel id.
-                this.sendChannel.setChannelId(channelId);
+                // // Now we can switch the channel to our unique channel id.
+                // // TODO: construct with correct channel id
+                // this.sendChannel.setChannelId(channelId);
 
                 this.connectionStatus = ConnectionStatus.CONNECTED;
 
@@ -413,10 +434,15 @@ export default class EuropaConnection {
             this.params.onDeauthenticated(payload as DeauthenticatedPayload);
         });
 
+        this.receiveChannel.on('europa.ping', () => {
+            this.sendChannel.send('kbase-ui.pong', {});
+        });
+
         // Listen for hashchange events, forward to Europa.
         // Europa will use this simply to update the local history, and thus the
         // location bar.
-        window.addEventListener('hashchange', (event: HashChangeEvent) => {
+
+        const hashChangeEventListener = (event: HashChangeEvent) => {
             // We like to use URL objects when manipulating URLs.
             const newURL = new URL(event.newURL);
 
@@ -430,6 +456,11 @@ export default class EuropaConnection {
             };
 
             this.sendChannel.send('kbase-ui.navigated', payload);
+        };
+
+        window.addEventListener('hashchange', hashChangeEventListener);
+        this.eventUnsubscribers.push(() => {
+            window.removeEventListener('hashchange', hashChangeEventListener);
         });
 
         this.params.messenger.on('session', 'loggedin', (message: unknown) => {
@@ -466,8 +497,16 @@ export default class EuropaConnection {
     stop() {}
 
     disconnect() {
-        // this.sendChannel.send('kbase-ui.disconnect', {});
-        // this.receiveChannel.stop();
+        // Stop The receive channel.
+        this.receiveChannel.stop();
+        // Set the app state back into waiting.
+        for (const unsubscribe of this.eventUnsubscribers) {
+            try {
+                unsubscribe();
+            } catch (ex) {
+                console.error('Error unsubscribing', ex);
+            }
+        }
     }
 
     sendReady() {}

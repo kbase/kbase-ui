@@ -106,19 +106,10 @@ export interface StartPayload {
     channelId: string;
 }
 
-// export interface AuthenticatedPayload {
-//   token: string;
-//   nextRequest?: NextRequestObject;
-// }
-
 export interface EuropaNavigationPayload {
     path: string;
     params: Record<string, string>;
 }
-
-// export interface DeauthenticatedPayload {
-//   nextRequest: NextRequestObject;
-// }
 
 /**
  * Auth state -
@@ -194,16 +185,12 @@ export const EuropaContext = createContext<EuropaState>({
 
 export type EuropaWrapperProps = PropsWithChildren<{
     config: Config;
-    // TODO: get from the MessengerContext :) :) :)
-    // messenger: Messenger;
-    // defaultPath: NavigationPath;
 }>;
-
-// type EuropaWrapperState = EuropaState;
 
 export interface EuropaWrapperState {
     europaState: EuropaState;
     id: string;
+    originalURL: URL;
 }
 
 /**
@@ -233,6 +220,7 @@ export default class EuropaWrapper extends Component<
                 status: AsyncProcessStatus.NONE,
             },
             id: uuidv4(),
+            originalURL: new URL(window.location.href),
         };
 
         this.instance = uuidv4();
@@ -243,20 +231,78 @@ export default class EuropaWrapper extends Component<
             onDeauthenticated: this.onDeauthenticated.bind(this),
             onAuthenticated: this.onAuthenticated.bind(this),
             onAuthNavigate: this.onAuthNavigate.bind(this),
-            //   onEuropaConnect: this.onEuropaConnect.bind(this),
         });
     }
 
     async componentDidMount() {
-        this.connection.connect();
+        this.setState({
+            europaState: {
+                status: AsyncProcessStatus.PENDING,
+            },
+        });
+
+        // Detect if not running in iframe.
+        if (window === window.parent) {
+            this.setState({
+                europaState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        message: 'kbase-ui only operates within an iframe',
+                    },
+                },
+            });
+            return;
+        }
+
+        // Fix up the url (it will have the channel id param)
+        const url = new URL(this.state.originalURL);
+        const receiveChannelId = url.searchParams.get('receiveChannelId');
+        const sendChannelId = url.searchParams.get('sendChannelId');
+        if (!sendChannelId || !receiveChannelId) {
+            this.setState({
+                europaState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        message: 'Channel ids not provided in initial url',
+                    },
+                },
+            });
+            return;
+        }
+
+        // remove channelId and replace the url.
+        url.searchParams.delete('receiveChannelId');
+        url.searchParams.delete('sendChannelId');
+        window.history.replaceState(null, '', url.toString());
+
+        // Continue connecting to Europa.
+        try {
+            await this.connection.connect({ sendChannelId, receiveChannelId });
+        } catch (ex) {
+            this.setState({
+                europaState: {
+                    status: AsyncProcessStatus.ERROR,
+                    error: {
+                        message:
+                            ex instanceof Error ? ex.message : 'Unknown Error',
+                    },
+                },
+            });
+        }
     }
 
     setTitle(title: string) {
         this.connection.setTitle(title);
     }
 
+    // Dismounting behavior is really only invoked during development; as
     componentWillUnmount() {
         this.connection.disconnect();
+        window.history.replaceState(
+            null,
+            '',
+            this.state.originalURL.toString(),
+        );
     }
 
     onDeauthenticated({ navigation }: DeauthenticatedPayload) {
@@ -393,7 +439,7 @@ export default class EuropaWrapper extends Component<
         token,
         navigation: { path, params },
     }: AuthNavigatePayload) {
-        if (this.state.europaState.status !== AsyncProcessStatus.NONE) {
+        if (this.state.europaState.status !== AsyncProcessStatus.PENDING) {
             return false;
         }
 
