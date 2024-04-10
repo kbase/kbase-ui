@@ -39,7 +39,7 @@
         "@eslint/js": "^9.0.0",
         "@kbase/ui-lib": "0.7.1",
         "@testing-library/jest-dom": "6.4.2",
-        "@testing-library/react": "14.3.0",
+        "@testing-library/react": "15.0.0",
         "@testing-library/user-event": "14.5.2",
         "@types/dompurify": "3.0.5",
         "@types/jest": "29.5.12",
