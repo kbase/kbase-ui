@@ -169,7 +169,7 @@ export function navigateToKBaseUI({
     // if (options.replace) {
     //     window.history.replaceState(null, '', url);
     // } else {
-    window.history.pushState(null, '', url.toString());
+    window.history.replaceState(null, '', url.toString());
     // }
     window.dispatchEvent(
         new HashChangeEvent('hashchange', {
