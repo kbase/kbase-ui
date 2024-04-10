@@ -374,10 +374,6 @@ export default class EuropaConnection {
         this.sendChannel.setChannelId(receiveChannelId);
         this.receiveChannel.setChannelId(sendChannelId);
 
-        console.log('DEBUG: switched to', receiveChannelId, sendChannelId);
-        console.log('DEBUG: kbase-ui receiving on', sendChannelId);
-        console.log('DEBUG: kbase-ui sending on', receiveChannelId);
-
         return new Promise((resolve) => {
             // Europa sends a connect request as well.
             this.receiveChannel.once('europa.connect', () => {
