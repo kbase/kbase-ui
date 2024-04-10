@@ -366,6 +366,7 @@ export default class LoginContinue extends Component<
             console.error('ERROR', ex);
         }
     }
+
     gravatarHash(emailAddress: string) {
         return Md5.hashStr(emailAddress.trim().toLowerCase());
     }

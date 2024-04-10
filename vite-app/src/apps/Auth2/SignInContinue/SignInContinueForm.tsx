@@ -1,4 +1,5 @@
 import CountdownClock from 'components/CountdownClock';
+import Loading from 'components/Loading';
 import Well from 'components/Well';
 import { NextRequestObject } from 'lib/NextRequest';
 import { LoginChoice } from 'lib/kb_lib/Auth2';
@@ -55,10 +56,12 @@ export interface SignInContinueNeedPolicyAgreement extends SignInContinueBase {
 export interface SignInContinuePolicyAgreedTo extends SignInContinueBase {
     status: SignInContinueStatus.POLICY_AGREED_TO;
     agreement: PendingPolicyAgreement;
+    isSubmitting: boolean;
 }
 
 export interface SignInContinueReady extends SignInContinueBase {
     status: SignInContinueStatus.READY;
+    isSubmitting: boolean;
 }
 
 export type SignInContinueState =
@@ -81,6 +84,7 @@ export default class SignInContinue extends Component<
         if (props.policyAgreement.agreement) {
             this.state = {
                 status: SignInContinueStatus.READY,
+                isSubmitting: false,
             };
         } else {
             this.state = {
@@ -100,6 +104,7 @@ export default class SignInContinue extends Component<
             this.setState({
                 status: SignInContinueStatus.POLICY_AGREED_TO,
                 agreement: { id, version },
+                isSubmitting: false,
             });
         } else {
             this.setState({
@@ -197,6 +202,17 @@ export default class SignInContinue extends Component<
             this.state.status === SignInContinueStatus.READY ||
             this.state.status === SignInContinueStatus.POLICY_AGREED_TO;
         // const variant: Variant = canSignIn ? 'primary' : 'secondary';
+
+        const isSubmitting = (() => {
+            switch (this.state.status) {
+                case SignInContinueStatus.READY:
+                case SignInContinueStatus.POLICY_AGREED_TO:
+                    return this.state.isSubmitting;
+                default:
+                    return false;
+            }
+        })();
+
         return (
             <Well variant="primary" disabled={!canSignIn}>
                 <Well.Header icon="sign-in">Sign In to KBase</Well.Header>
@@ -212,7 +228,7 @@ export default class SignInContinue extends Component<
                             <Button
                                 type="submit"
                                 variant="primary"
-                                disabled={!canSignIn}
+                                disabled={!canSignIn || isSubmitting}
                             >
                                 Sign In to KBase account
                                 <TextSpan
@@ -225,10 +241,20 @@ export default class SignInContinue extends Component<
                             <Button
                                 type="button"
                                 variant="danger"
+                                disabled={isSubmitting}
                                 onClick={this.props.doCancel}
                             >
                                 Cancel
                             </Button>
+                            {isSubmitting ? (
+                                <Loading
+                                    size="normal"
+                                    type="inline"
+                                    message="Signing in..."
+                                />
+                            ) : (
+                                ''
+                            )}
                         </Stack>
                     </form>
                 </Well.Body>
@@ -241,9 +267,17 @@ export default class SignInContinue extends Component<
             case SignInContinueStatus.NEED_POLICY_AGREEMENT:
                 break;
             case SignInContinueStatus.POLICY_AGREED_TO:
+                this.setState({
+                    ...this.state,
+                    isSubmitting: true,
+                });
                 this.props.doSignIn(this.state.agreement);
                 break;
             case SignInContinueStatus.READY:
+                this.setState({
+                    ...this.state,
+                    isSubmitting: true,
+                });
                 this.props.doSignIn();
         }
         return false;
