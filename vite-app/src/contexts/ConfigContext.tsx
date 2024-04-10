@@ -20,9 +20,6 @@ function buildUIURL(
     return new URL(`${config.deploy.ui.origin}#${path}`);
 }
 
-// export type NavigationPathToURL = ({path, params, type}: NavigationPath,
-//                                     newWindow: boolean) => URL;
-
 /**
  * Holds the current config information
  */
@@ -33,7 +30,6 @@ export interface ConfigInfo {
     buildInfo: BuildInfo;
     // Some handy config utilities.
     uiURL: (path: string, params?: Record<string, string>) => URL;
-    // navigationPathToURL: NavigationPathToURL
 }
 
 export type ConfigState = AsyncProcess<ConfigInfo, string>;
@@ -148,7 +144,6 @@ export default class ConfigWrapper extends React.Component<
                         gitInfo,
                         buildInfo,
                         uiURL,
-                        // navigationPathToURL: createNavigationPathToURL(config)
                     },
                 },
             });
