@@ -21,7 +21,8 @@
                 "jebbs.plantuml",
                 "srmeyers.git-prefix",
                 "esbenp.prettier-vscode",
-                "dbaeumer.vscode-eslint"
+                "dbaeumer.vscode-eslint",
+                "darkriszty.markdown-table-prettify"
             ],
             "settings": {}
         }

@@ -200,14 +200,27 @@ kbase-ui is attached to Europa through an iframe, whose `scr` attribute is a url
 to an instance of kbase-ui. In a deployment, this will be a deployed kbase-ui
 instance.
 
+This url must have two parameters in the query string `sendChannelId` and
+`receiveChannelId`. These correspond to the channel ids for the Europa/kbase-ui send
+channel and receive channel. The values for these are independent uuids (v4).
+
 For instance:
 
 ```url
-https://legacy.ci.kbase.us
+https://legacy.ci.kbase.us?sendChannelId=FOO&receiveChannelId=BAR
 ```
 
+kbase-ui will overwrite this url in order to remove the channel ids
+
 The url for the iframe never changes after this. All navigation from Europa into
-kbase-ui is through the messaging api.
+kbase-ui is through the messaging api. All navigation within kbase-ui is via
+changes to the fragment identifier (hash) of the window location. Due to the
+fact that, as of present, kbase-ui is operating on a subdomain, cross-domain
+restrictions kick in and the url changes are not reflected in the iframe src
+attribute itself. (In fact, kbase-ui does not have any access to attributes of
+the iframe that launched it, which is why we must pass the channel ids in the
+url ... in a same-origin implementation we would prefer to use iframe element
+attributes.)
 
 Europa and kbase-ui do provide support for hosting kbase-ui on the primary
 domain and with a base path. This configuration provides some benefits: It

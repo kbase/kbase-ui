@@ -1,21 +1,13 @@
 # Environment Variables in kbase-ui
 
-`kbase-ui` relies upon a set of required and optional environment
-variables. It depends upon them in a manner quite characteristic of KBase services, that
-is, indirectly by using them to create a configuration file.
+`kbase-ui` relies upon a set of required and optional environment variables. It
+depends upon them in a manner quite characteristic of KBase services, that is,
+indirectly by using them to create a configuration file as it is started up.
 
-This makes sense, as `kbase-ui`, though at its heart a single page web app,
-statically compiled, and simply loaded into the browser, is deployed and
-operated like any service.
+Upon startup (the Docker command), `kbase-ui` uses `dockerize` to generate two
+files: `nginx.conf` for the `nginx` server, and `config.json`, for `kbase-ui`.
 
-This is due to the fact that it is deployed with its own nginx server, whose sole job is
-to serve up the kbase-ui assets to a browser. This nginx server runs in a
-container. This container uses `dockerize` as its entry point
-
-`kbase-ui` uses `dockerize` to generate two files: `nginx.conf` for the `nginx`
-server, and `config.json`, for `kbase-ui`.
-
-The `nginx` configuration is primarily used to control nginx logging. 
+The `nginx` configuration is primarily used to control nginx logging.
 
 It can also host kbase-ui assets on a path prefix, but this is not utilized at
 present. The path for kbase-ui assets within the nginx server is the root path -
@@ -23,181 +15,302 @@ present. The path for kbase-ui assets within the nginx server is the root path -
 
 The `kbase-ui` configuration is more extensive. It is used to supply:
 
-- the base path (unused),
+- the base path,
 - hostnames for the top level user interface (Europa, Narrative) and services.
 - special auth behavior for prod (backup cookie)
 - feature switches
 
 ## Catalog of Environment Variables
 
-Environment variables are divided into those supporting the kbase-ui web app, and those
-supporting the nginx server. In addition, these are divided into required environment
-variables without defaults and those with defaults, which can be considered optional.
+Environment variables are divided into those supporting the kbase-ui web app,
+and those supporting the nginx server. In addition, these are divided into
+required environment variables without defaults and those with defaults, which
+can be considered optional.
 
-The fulls set of environment variables, therefore, is the intersection. 
+The fulls set of environment variables, therefore, is the intersection.
 
 The full set of required environment variables is:
 
-- `KBASE_ENDPOINT`
-- `UI_HOSTNAME`
+- `KBASE_UI_DOMAIN`
+- `KBASE_DOMAIN`
 
 The full set of optional environment variables is:
 
-- `BASE_PATH`
-- `DEFAULT_PATH`
-- `DEFAULT_PATH_TYPE`
-- `FEATURE_SWITCHES_ENABLED`
-- `FEATURE_SWITCHES_DISABLED`
 - `AUTH2_PROVIDERS`
-- `NGINX_LOG_SYSLOG`
-- `NGINX_LOG_STDOUT`
-- `NGINX_LOG_STDERR`
-- `NGINX_LOG_LEVEL`
+- `BASE_PATH`
+- `DEFAULT_PATH_TYPE`
+- `DEFAULT_PATH`
+- `FEATURE_SWITCHES_DISABLED`
+- `FEATURE_SWITCHES_ENABLED`
 - `NGINX_LISTEN`
+- `NGINX_LOG_LEVEL`
+- `NGINX_LOG_STDERR`
+- `NGINX_LOG_STDOUT`
+- `NGINX_LOG_SYSLOG`
 - `NGINX_SERVER_NAME`
 
-### Web App
+### Web App (kbase-ui)
 
-These environment variables are applied to `deploy/templates/config.json.tmpl`.
+The environemnt variables in this section are used directly by kbase-ui.
+
+During container launch, these environment variables are applied to `/kb/deployment/templates/config.json.tmpl`,
+which produces `/kb/deployment/app/deploy/config.json`. (See the [the deployment
+quickstart](./quick-starts/deployment.md))
 
 #### Required (no defaults)
 
-| Name           | Description                                                                               |
-|----------------|-------------------------------------------------------------------------------------------|
-| KBASE_ENDPOINT | The traditional KBase services url base; e.g. `https://ci.kbase.us/services/`             |
-| UI_HOSTNAME    | The hostname at which Europa, and most KBase user interfaces, operate in this environment |
+| Name         | Description                                                                             |
+|--------------|-----------------------------------------------------------------------------------------|
+| KBASE_DOMAIN | The domain at which Europa, and most KBase user interfaces, operate in this environment |
 
 #### Optional (with defaults)
 
-| Name                      | Default               | Description                                                                               |
-|---------------------------|-----------------------|-------------------------------------------------------------------------------------------|
-| BASE_PATH                 | "/"                   | The base, or prefix, path kbase-ui should expect; currently unused (but had been planned) |
-| DEFAULT_PATH              | "narratives"          | When kbase-ui is asked to show the dashboard, go here [1]                                 |
-| DEFAULT_PATH_TYPE         | "europui"             | The type of path for the above - either "europaui" or "kbaseui"                           |
-| FEATURE_SWITCHES_ENABLED  | ""                    |                                                                                           |
-| FEATURE_SWITCHES_DISABLED | ""                    |                                                                                           |
-| AUTH2_PROVIDERS           | "Google,Globus,OrcID" |                                                                                           |
-
-
+| Name                      | Default               | Description                                                                                       |
+|---------------------------|-----------------------|---------------------------------------------------------------------------------------------------|
+| BASE_PATH                 | "/"                   | The base, or prefix, path kbase-ui should expect; currently unused (but had been planned)         |
+| DEFAULT_PATH              | "narratives"          | When kbase-ui is asked to show the dashboard, go here [1]                                         |
+| DEFAULT_PATH_TYPE         | "europaui"            | The type of path for the above - either "europaui" or "kbaseui"                                   |
+| FEATURE_SWITCHES_ENABLED  | ""                    | Used primarily in CI to enable features that are disabled by default (are under development)      |
+| FEATURE_SWITCHES_DISABLED | ""                    | Used primarily in non-CI environments to disable features not supported in the deploy environment |
+| AUTH2_PROVIDERS           | "Google,Globus,OrcID" | Which identity providers the auth service supports in the deploy environment                      |
 
 ### Nginx Server
 
-These environment variables are applied to `deploy/templates/nginx.conf.tmpl`.
+These environment variables are applied to the nginx config template
+`/kb/deployment/templates/nginx.conf.tmpl` to produce the nginx config file
+`/etc/nginx/nginx.conf`.
+
+Note that the `nginx` configs and their defaults were established many years ago
+by Steve C., and have not been touched since. They should be considered in the
+purview of devops. Local development can take care of itself.
 
 #### Required (no defaults)
 
-| Name           | Description                                                                   |
-|----------------|-------------------------------------------------------------------------------|
-| KBASE_ENDPOINT | The traditional KBase services url base; e.g. `https://ci.kbase.us/services/` |
-| UI_HOSTNAME    | The hostname at which Europa and Narrative operate                            |
-
+| Name            | Description                                               |
+|-----------------|-----------------------------------------------------------|
+| KBASE_DOMAIN    | The hostname at which Europa and Narrative operate        |
+| KBASE_UI_DOMAIN | The domain at which kbase-ui operates in this environment |
 
 #### Optional (with defaults)
 
-| Name              | Default | Description                                                                                                                 |
-|-------------------|---------|-----------------------------------------------------------------------------------------------------------------------------|
-| NGINX_LOG_SYSLOG  | ""      | If provided, sets an `access_log NGINX_LOG_SYSLOG combined;` stanza, where the value is a valid syslog configuration string |
-| NGINX_LOG_STDOUT  | "true"  | if "true", `access_log /dev/stdout;`                                                                                        |
-| NGINX_LOG_STDERR  | "true"  | if "true", `access_log /dev/stderr;`                                                                                        |
-| NGINX_LOG_LEVEL   | "error" | adds given log level to stderr (if enabled) and `/var/log/nginx/error.log`                                                  |
-| NGINX_LISTEN      | "80"    | The port on which to listen for requests                                                                                    |
-| NGINX_SERVER_NAME | "true"  | The host name on which to listen for requests.                                                                              |
+| Name              | Default     | Description                                                                                                                 |
+|-------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------|
+| NGINX_LOG_SYSLOG  | ""          | If provided, sets an `access_log NGINX_LOG_SYSLOG combined;` stanza, where the value is a valid syslog configuration string |
+| NGINX_LOG_STDOUT  | "true"      | if "true", `access_log /dev/stdout;`                                                                                        |
+| NGINX_LOG_STDERR  | "true"      | if "true", `access_log /dev/stderr;`                                                                                        |
+| NGINX_LOG_LEVEL   | "error"     | adds given log level to stderr (if enabled) and `/var/log/nginx/error.log`                                                  |
+| NGINX_LISTEN      | "80"        | The port on which to listen for requests                                                                                    |
+| NGINX_SERVER_NAME | "localhost" | The host name on which to listen for requests.                                                                              |
 
-## Usage in Development
+## Usage in CI
 
-During development, these environment variables are used to generate the configuration
-files manually. This is because local development does not typically use the nginx
-server in the deployment container, but rather runs the web app in development mode in a
-Visual Studio Code devcontainer.
+Here is an example of the current working configuration in the CI Rancher
+service `kbase-ui`:
 
-To generate the configuration files:
+![CI Rancher Environment Variables](./images/ci-rancher-env-vars.png)
 
-1. Set the environment variables:
+## All Environments
 
-    - for ci:
+kbase-ui sports a handy tool to generate environment variables per environment.
 
-    ```shell
-    export KBASE_ENDPOINT=https://ci.kbase.us/services/
-    export UI_HOSTNAME=ci.kbase.us
-    export FEATURE_SWITCHES_ENABLED=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
-    ```
+```shell
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
+```
 
-    For local usage:
+or in the container
 
-    ```shell
-    NGINX_LOG_SYSLOG=
-    ```
+```shell
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./scripts/container/generate-runtime-env
+```
 
-    For the real deployment:
+where:
 
-    ```shell
-    NGINX_LOG_SYSLOG=syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info
-    ```
+- `DEPLOY_ENV` is one of the KBase deployment environments - ci, ci-europa,
+  narrative-dev, next, narrative.
+- `KBASE_UI_HOSTNAME` is the hostname component of the kbase-ui domain; If
+  kbase-ui is operating on a subdomain; defaults to empty string which causes
+  kbase-ui to operate on the primary domain
+- `BASE_PATH` is the url pathname to reach kbase-ui; defaults to empty string
+  and thus kbase-ui operates on the root path
 
-    - for appdev:
+Note that the sister task `generate-runtime-config` will also generate the
+kbase-ui and nginx config files, useful for development and debugging the templates.
 
-    ```shell
-    export KBASE_ENDPOINT=https://appdev.kbase.us/services/
-    export UI_HOSTNAME=appdev.kbase.us
-    export FEATURE_SWITCHES_ENABLED=similar_genomes
-    ```
+### `ci`
 
-    For local usage:
+```shell
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=
-    ```
+which produces:
 
-    For the real deployment:
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+KBASE_UI_DOMAIN='legacy.ci.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='ci.kbase.us'
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=syslog:server=10.58.0.54,facility=local2,tag=appdev,severity=info
-    ```
+Note the usage of single quotes - we don't need string interpolation.
 
-    - for next:
+### `ci-europa`
 
-    ```shell
-    export KBASE_ENDPOINT=https://next.kbase.us/services/
-    export UI_HOSTNAME=next.kbase.us
-    export FEATURE_SWITCHES_ENABLED=similar_genomes
-    ```
+> Lets omit the `BASE_PATH` from hereon, as it defaults to the empty string.
 
-    For local usage:
+```shell
+DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=
-    ```
+which produces:
 
-    For the real deployment:
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+KBASE_UI_DOMAIN='legacy.ci-europa.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='ci-europa.kbase.us'
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=syslog:server=10.58.0.54,facility=local2,tag=next,severity=info
-    ```
+### `next`
 
-    - for prod:
+```shell
+DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
 
-    ```shell
-    export KBASE_ENDPOINT=https://kbase.us/services/
-    export UI_HOSTNAME=narrative.kbase.us
-    export FEATURE_SWITCHES_ENABLED=similar_genomes
-    ```
+which produces:
 
-    For local usage:
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='similar_genomes'
+KBASE_UI_DOMAIN='legacy.next.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='next.kbase.us'
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=
-    ```
+### `narrative-dev`
 
-    For the real deployment:
+```shell
+DEPLOY_ENV='narrative-dev' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
 
-    ```shell
-    NGINX_LOG_SYSLOG=syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info
-    ```
+which produces:
 
-2. Generate the configs
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='similar_genomes'
+KBASE_UI_DOMAIN='legacy.narrative-dev.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='narrative-dev.kbase.us'
+```
 
-    ```shell
-    ./Taskfile render-templates
-    ```
+### `appdev`
 
-## Usage in Deployments
+```shell
+DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
+
+which produces:
+
+```shell
+AUTH2_PROVIDERS='Google,Globus'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='similar_genomes'
+KBASE_UI_DOMAIN='legacy.appdev.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='appdev.kbase.us'
+```
+
+### `narrative2`
+
+```shell
+DEPLOY_ENV='narrative2' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
+
+which produces:
+
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='similar_genomes'
+KBASE_UI_DOMAIN='legacy.narrative2.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='narrative2.kbase.us'
+```
+
+### `narrative` (aka "prod" or "production")
+
+```shell
+DEPLOY_ENV='narrative' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
+
+which produces:
+
+```shell
+AUTH2_PROVIDERS='Google,Globus,OrcID'
+BASE_PATH=''
+DEFAULT_PATH_TYPE='europaui'
+DEFAULT_PATH='narratives'
+FEATURE_SWITCHES_DISABLED=''
+FEATURE_SWITCHES_ENABLED='similar_genomes'
+KBASE_UI_DOMAIN='legacy.narrative.kbase.us'
+NGINX_LISTEN='80'
+NGINX_LOG_LEVEL='error'
+NGINX_LOG_STDERR='true'
+NGINX_LOG_STDOUT='true'
+NGINX_LOG_SYSLOG=''
+NGINX_SERVER_NAME='localhost'
+KBASE_DOMAIN='narrative.kbase.us'
+```

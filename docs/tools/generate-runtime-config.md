@@ -1,6 +1,6 @@
 # Generate Runtime Config
 
-Generate an env file 
+Generate an env file
 
 ## Assets
 
@@ -35,12 +35,11 @@ Created env vars for config.json.tmpl:
 - `BASE_PATH`
 - `DEFAULT_PATH`
 - `DEFAULT_PATH_TYPE`
-- `UI_DOMAIN`
+- `KBASE_DOMAIN`
 - `KBASE_UI_DOMAIN`
 - `FEATURE_SWITCHES_ENABLED`
 - `FEATURE_SWITCHES_DISABLED`
 - `AUTH2_PROVIDERS`
-- `KBASE_ENDPOINT`
 - `NGINX_LOG_SYSLOG`
 - `NGINX_LOG_STDOUT`
 - `NGINX_LOG_STDERR`
