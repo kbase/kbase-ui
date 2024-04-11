@@ -146,13 +146,12 @@ function generate-runtime-env {
     run \
         -e DEPLOY_ENV \
         -e BASE_PATH \
-        -e UI_DOMAIN \
+        -e KBASE_DOMAIN \
         -e KBASE_UI_HOSTNAME \
         -e FEATURE_SWITCHES_ENABLED \
         -e FEATURE_SWITCHES_DISABLED \
         -e DEFAULT_PATH \
         -e DEFAULT_PATH_TYPE \
-        -e KBASE_ENDPOINT \
         --rm \
     node-tool ./scripts/container/generate-runtime-env
 }

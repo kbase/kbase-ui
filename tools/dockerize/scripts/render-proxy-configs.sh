@@ -7,7 +7,7 @@ set -e
 echo "Render development proxy config files"
 echo "Parameters (Environment Variables):"
 echo ""
-echo "UI_DOMAIN = ${UI_DOMAIN}"
+echo "KBASE_DOMAIN = ${KBASE_DOMAIN}"
 echo "KBASE_UI_DOMAIN = ${KBASE_UI_DOMAIN}"
 echo ""
 

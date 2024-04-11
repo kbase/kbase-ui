@@ -5,7 +5,7 @@ pid /var/run/nginx.pid;
 user kbmodule;
 
 # Build Environment Variables:
-# UI_DOMAIN = {{ .Env.UI_DOMAIN }}
+# KBASE_DOMAIN = {{ .Env.KBASE_DOMAIN }}
 # KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
 # BASE_PATH = {{ .Env.BASE_PATH }}
 # NGINX_LOG_SYSLOG = {{ .Env.NGINX_LOG_SYSLOG }}
@@ -15,7 +15,7 @@ user kbmodule;
 # NGINX_LISTEN = {{ .Env.NGINX_LISTEN }}
 # NGINX_SERVER_NAME = {{ .Env.NGINX_SERVER_NAME }}
 
-{{ $subhost := not (eq .Env.UI_DOMAIN .Env.KBASE_UI_DOMAIN) }}
+{{ $subhost := not (eq .Env.KBASE_DOMAIN .Env.KBASE_UI_DOMAIN) }}
 
 {{ if $subhost }}
 # Configured for SUBHOST {{ .Env.KBASE_UI_DOMAIN }}
@@ -82,7 +82,7 @@ http {
             add_header Cache-Control 'no-cache';
 
             {{ if $subhost }}
-            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.UI_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
             {{ else }}
             add_header Content-Security-Policy "frame-ancestors 'self';" always; 
             add_header X-Frame-Options "SAMEORIGIN" always;
@@ -104,7 +104,7 @@ http {
             # expires 0;
 
             {{ if $subhost }}
-            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.UI_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
             {{ else }}
             add_header Content-Security-Policy "frame-ancestors 'self';" always; 
             add_header X-Frame-Options "SAMEORIGIN" always;

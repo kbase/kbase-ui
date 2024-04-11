@@ -2,9 +2,9 @@
     "deploy": {
         "id": "kbase-ui",
         "target": "/kb/deployment/app",
-        "hostname": "{{ .Env.UI_DOMAIN }}",
+        "hostname": "{{ .Env.KBASE_DOMAIN }}",
         "ui": {
-            "origin": "https://{{ .Env.UI_DOMAIN }}"
+            "origin": "https://{{ .Env.KBASE_DOMAIN }}"
         }
     },
     "ui": {
@@ -65,7 +65,7 @@
                 "title": "Submit a Jira Ticket"
             },
             "narrative": {
-                "url": "https://{{ .Env.UI_DOMAIN }}/narrative",
+                "url": "https://{{ .Env.KBASE_DOMAIN }}/narrative",
                 "title": "Narrative User Interface"
             },
             "loginHelp": {
@@ -156,6 +156,7 @@
             }
         }
     },
+    {{ $services_endpoint := (printf "https://%s/services/" .Env.KBASE_DOMAIN) }}
     "services": {
         "Auth2": {
             "module": "Auth2",
@@ -164,7 +165,7 @@
                 "auth",
                 "Auth"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}auth",
+            "url": "{{ $services_endpoint }}auth",
             "cookieName": "kbase_session",
             "extraCookieNames": [],
             "name": "Authorization Version 2",
@@ -206,7 +207,7 @@
             "aliases": [
                 "catalog"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}catalog",
+            "url": "{{ $services_endpoint }}catalog",
             "name": "Catalog",
             "type": "jsonrpc",
             "version": {
@@ -219,7 +220,7 @@
                 "ee2",
                 "ExecutionEngine2"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}ee2",
+            "url": "{{ $services_endpoint }}ee2",
             "name": "Execution Engine2",
             "type": "jsonrpc"
         },
@@ -228,7 +229,7 @@
             "aliases": [
                 "feeds"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}feeds",
+            "url": "{{ $services_endpoint }}feeds",
             "name": "Feeds",
             "type": "rest",
             "version": {
@@ -241,7 +242,7 @@
             "aliases": [
                 "groups"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}groups",
+            "url": "{{ $services_endpoint }}groups",
             "name": "Groups",
             "type": "rest",
             "version": {
@@ -255,7 +256,7 @@
                 "narrative_job_service",
                 "njs"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}njs_wrapper",
+            "url": "{{ $services_endpoint }}njs_wrapper",
             "name": "Narrative Job Service",
             "type": "jsonrpc",
             "version": {
@@ -267,8 +268,8 @@
             "aliases": [
                 "narrative_method_store"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}narrative_method_store/rpc",
-            "image_url": "{{ .Env.KBASE_ENDPOINT }}narrative_method_store/",
+            "url": "{{ $services_endpoint }}narrative_method_store/rpc",
+            "image_url": "{{ $services_endpoint }}narrative_method_store/",
             "name": "Narrative Method Store",
             "type": "jsonrpc",
             "version": {
@@ -280,7 +281,7 @@
             "aliases": [
                 "user_profile"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}user_profile/rpc",
+            "url": "{{ $services_endpoint }}user_profile/rpc",
             "name": "User Profile",
             "type": "jsonrpc",
             "version": {
@@ -289,7 +290,7 @@
         },
         "SampleService": {
             "module": "SampleService",
-            "url": "{{ .Env.KBASE_ENDPOINT }}sampleservice",
+            "url": "{{ $services_endpoint }}sampleservice",
             "name": "Sample Service",
             "type": "jsonrpc"
         },
@@ -298,7 +299,7 @@
             "aliases": [
                 "service_wizard"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}service_wizard",
+            "url": "{{ $services_endpoint }}service_wizard",
             "name": "Service Wizard",
             "type": "jsonrpc",
             "version": {
@@ -310,7 +311,7 @@
             "aliases": [
                 "workspace"
             ],
-            "url": "{{ .Env.KBASE_ENDPOINT }}ws",
+            "url": "{{ $services_endpoint }}ws",
             "name": "Workspace",
             "type": "jsonrpc",
             "version": {
@@ -320,7 +321,7 @@
         "RelationEngine": {
             "module": "RelationEngine",
             "aliases": [],
-            "url": "{{ .Env.KBASE_ENDPOINT }}relation_engine_api",
+            "url": "{{ $services_endpoint }}relation_engine_api",
             "name": "Relation Engine",
             "type": "rest",
             "version": {
@@ -331,22 +332,22 @@
         "SearchAPI2": {
             "module": "SearchAPI2",
             "aliases": [],
-            "url": "{{ .Env.KBASE_ENDPOINT }}searchapi2/rpc",
-            "legacyUrl": "{{ .Env.KBASE_ENDPOINT }}searchapi2/legacy",
+            "url": "{{ $services_endpoint }}searchapi2/rpc",
+            "legacyUrl": "{{ $services_endpoint }}searchapi2/legacy",
             "name": "Search Engine",
             "type": "jsonrpc2"
         },
         "SearchAPI2Legacy": {
             "aliases": [],
             "module": "KBaseSearchEngine",
-            "url": "{{ .Env.KBASE_ENDPOINT }}searchapi2/legacy",
+            "url": "{{ $services_endpoint }}searchapi2/legacy",
             "name": "Search Engine",
             "type": "jsonrpc"
         },
         "ORCIDLink": {
             "aliases": [],
             "module": "ORCIDLink",
-            "url": "{{ .Env.KBASE_ENDPOINT }}orcidlink",
+            "url": "{{ $services_endpoint }}orcidlink",
             "name": "KBase ORCID® Link",
             "type": "rest",
             "version": {
