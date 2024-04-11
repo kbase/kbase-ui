@@ -1,3 +1,5 @@
 FROM node:20
 
+RUN apt-get update && apt-get install -y default-jre
+
 RUN npm install --location=global npm@10.5.2
