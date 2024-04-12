@@ -1,24 +1,16 @@
-# Environment Variables in kbase-ui
+# Environment Variables and Configuration
 
 `kbase-ui` relies upon a set of required and optional environment variables. It
 depends upon them in a manner quite characteristic of KBase services, that is,
 indirectly by using them to create a configuration file as it is started up.
 
 Upon startup (the Docker command), `kbase-ui` uses `dockerize` to generate two
-files: `nginx.conf` for the `nginx` server, and `config.json`, for `kbase-ui`.
-
-The `nginx` configuration is primarily used to control nginx logging.
-
-It can also host kbase-ui assets on a path prefix, but this is not utilized at
-present. The path for kbase-ui assets within the nginx server is the root path -
-`"/"` or `""`.
-
-The `kbase-ui` configuration is more extensive. It is used to supply:
-
-- the base path,
-- hostnames for the top level user interface (Europa, Narrative) and services.
-- special auth behavior for prod (backup cookie)
-- feature switches
+files: `nginx.conf` for the `nginx` server, and `config.json`, for the
+`kbase-ui` web app. The templates for these config files are located in
+`deployment/templates`. They are golang templates, which utilize custom
+functions provided by
+[powerman/dockerize](https://github.com/powerman/dockerize) and
+[sprig](http://masterminds.github.io/sprig/).
 
 ## Catalog of Environment Variables
 
