@@ -231,6 +231,7 @@ export default class EuropaWrapper extends Component<
             onDeauthenticated: this.onDeauthenticated.bind(this),
             onAuthenticated: this.onAuthenticated.bind(this),
             onAuthNavigate: this.onAuthNavigate.bind(this),
+            spyOnMessages: false,
         });
     }
 
@@ -271,9 +272,6 @@ export default class EuropaWrapper extends Component<
         }
 
         // remove channelId and replace the url.
-        url.searchParams.delete('receiveChannelId');
-        url.searchParams.delete('sendChannelId');
-        window.history.replaceState(null, '', url.toString());
 
         // Continue connecting to Europa.
         try {

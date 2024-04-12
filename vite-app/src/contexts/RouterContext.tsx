@@ -203,7 +203,6 @@ export function urlToNavigationPath(url: URL): NavigationPath {
 
     const searchParams = new URLSearchParams([
         ...Array.from(hashQuery.entries()),
-        ...Array.from(url.searchParams.entries()),
     ]);
 
     const params = searchParamsToParams(searchParams);
