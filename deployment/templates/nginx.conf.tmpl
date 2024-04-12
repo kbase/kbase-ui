@@ -76,10 +76,11 @@ http {
 
         # Matches the root - the index page.
         # TODO: this won't work if the base path is empty - fix that.
-        location = /{{ default "" .Env.BASE_PATH }}/ {
+        location = /{{ if .Env.BASE_PATH }}{{ .Env.BASE_PATH }}/{{ end }} {
             allow all;
             # this ensures that a downstream cache service will revalidate.
-            add_header Cache-Control 'no-cache';
+            add_header Cache-Control 'no-store';
+
 
             {{ if $subhost }}
             add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
@@ -92,10 +93,8 @@ http {
             try_files /index.html =404;
         }
   
+        # Matches all other resources
         location ~ /{{ default "" .Env.BASE_PATH }} {
-            # Ensure that index.html is invoked even if a path is
-            # specified and doesn't exist.
-            # try_files $uri /$uri /index.html;
             ssi_silent_errors off;
             allow all;
             # this ensures that a downstream cache service will revalidate.
