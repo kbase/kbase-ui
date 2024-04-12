@@ -60,12 +60,12 @@
         "eslint-plugin-react-hooks": "4.6.0",
         "eslint-plugin-react-refresh": "0.4.6",
         "globals": "^15.0.0",
-        "husky": "9.0.11",
         "jsdom": "24.0.0",
         "lint-staged": "15.2.2",
         "markdownlint": "0.34.0",
         "prettier": "3.2.5",
         "sass": "1.64.",
+        "simple-git-hooks": "2.11.1",
         "standard": "17.1.0",
         "typescript": "5.4.5",
         "typescript-eslint": "7.6.0",
@@ -73,16 +73,14 @@
         "vite-tsconfig-paths": "4.3.2",
         "vitest": "1.5.0"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
     "lint-staged": {
         "src/**/*.{js,jsx,ts,tsx}": [
-            "eslint --check",
+            "eslint",
             "prettier",
-            "vitest"
+            "vitest --passWithNoTests"
         ]
+    },
+    "simple-git-hooks": {
+        "pre-commit": "cd vite-app && npx lint-staged"
     }
 }
