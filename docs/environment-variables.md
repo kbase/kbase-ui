@@ -134,7 +134,25 @@ where:
   and thus kbase-ui operates on the root path
 
 Note that the sister task `generate-runtime-config` will also generate the
-kbase-ui and nginx config files, useful for development and debugging the templates.
+kbase-ui and nginx config files, useful for development and debugging the
+templates.
+
+Also note that this script generates environment variables suitable for running
+kbase-ui locally and in production, with the caveat that with local usage
+`NGINX_LOG_SYSLOG` is not utilized, and is empty in the examples below.
+
+The syslog settings we have been using from gitlab are:
+
+- ci: syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info
+- next: syslog:server=10.58.0.54,facility=local2,tag=next,severity=info
+- appdev: syslog:server=10.58.0.54,facility=local2,tag=appdev,severity=info
+- narrative-dev: syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info
+- narrative: syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info
+
+I have no idea, other than CI and narrative-dev, if these are the settings
+actually used. They are derived from the develop branch of the old kbase-ui
+gitlab ini files; I don't have access to the master branch which has the ini
+files used in non-ci deployments.
 
 ### `ci`
 
