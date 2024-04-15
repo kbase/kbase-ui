@@ -144,6 +144,7 @@ function generate-runtime-env {
         -f tools/node/docker-compose.yml \
         -p kbase-dev \
     run \
+        -e USE_DEFAULTS \
         -e DEPLOY_ENV \
         -e BASE_PATH \
         -e KBASE_DOMAIN \
@@ -184,9 +185,9 @@ function remove-dev-cert {
     rm tools/proxy/contents/ssl/*
 }
 
-function start-local-server {
-	docker compose up
-    docker compose rm -f
+function run-server {
+	docker compose up ${IMAGE:+--no-build}
+    docker compose rm -f 
 }
 
 function build-image {
