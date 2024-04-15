@@ -42,17 +42,34 @@ This is the command for CI Rancher:
 > Some command line options are a bit different, as well as some of the custom
 > templating commands.
 
+We can actually omit this command from Racher altogether, as it matches exactly
+the `COMMAND` in the `Dockerfile`.
+
 ## Environment Variables
 
 As mentioned above, runtime parameterization is by means of environment
 variables.
 
-See [docs/environment-variables](../environment-variables.md) for a description
+See [docs/environment-variables.md](../environment-variables.md) for a description
 of all environment variables.
 
 See [docs/deployment/configuration.md](../deployment/configuration.md) for details.
 
 ## Verifying deployment
 
-After a deployment, you may visit `https://[env.]kbase.us#about` to confirm that
-the expected version has been installed.
+After a deployment, the easiets quick check that you got it right is to visit
+`https://[env.]kbase.us#about` to confirm that the expected version has been
+installed.
+
+Other related strategies are:
+
+- Run integration tests against the deployment
+- Before the deployment use the image locally to evaluate expected changes
+- Run integration tests against a local deployment of the deploy image
+
+## Related Topics
+
+- [creating and using a local build](../development//local-deployment.md)
+- using a GHCR image locally to verify it
+- [environment variables](../environment-variables.md)
+- [configuration design](../design//configuration.md)

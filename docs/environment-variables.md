@@ -106,17 +106,25 @@ service `kbase-ui`:
 kbase-ui sports a handy tool to generate environment variables per environment.
 
 ```shell
-DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
+USE_DEFAULTS='' DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
 ```
 
 or in the container
 
 ```shell
-DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./scripts/container/generate-runtime-env
+USE_DEFAULTS='' DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./scripts/container/generate-runtime-env
+```
+
+The short form, omitting empty variables, would be
+
+```shell
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 ```
 
 where:
 
+- `USE_DEFAULTS` flags whether we want to have any empty variables populated
+  with their default values;
 - `DEPLOY_ENV` is one of the KBase deployment environments - ci, ci-europa,
   narrative-dev, next, narrative.
 - `KBASE_UI_HOSTNAME` is the hostname component of the kbase-ui domain; If
@@ -149,7 +157,28 @@ files used in non-ci deployments.
 ### `ci`
 
 ```shell
-DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+```
+
+which produces:
+
+```shell
+FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+KBASE_UI_DOMAIN='legacy.ci.kbase.us'
+KBASE_DOMAIN='ci.kbase.us'
+```
+
+Note the usage of single quotes - we don't need string interpolation.
+
+Note also that this is not the full set of environment variables. Any missing
+environment variables will have default variables utilized in their respective
+templates.
+
+However, we can also generate the full set of environment variables generated
+with default values provided, by using the `USE_DEFAULTS` option:
+
+```shell
+USE_DEFAULTS=t DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 ```
 
 which produces:
@@ -171,11 +200,7 @@ NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='ci.kbase.us'
 ```
 
-Note the usage of single quotes - we don't need string interpolation.
-
 ### `ci-europa`
-
-> Lets omit the `BASE_PATH` from hereon, as it defaults to the empty string.
 
 ```shell
 DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
@@ -184,19 +209,8 @@ DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-en
 which produces:
 
 ```shell
-AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
 KBASE_UI_DOMAIN='legacy.ci-europa.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='ci-europa.kbase.us'
 ```
 
@@ -209,19 +223,8 @@ DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 which produces:
 
 ```shell
-AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.next.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='next.kbase.us'
 ```
 
@@ -234,19 +237,8 @@ DEPLOY_ENV='narrative-dev' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtim
 which produces:
 
 ```shell
-AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative-dev.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='narrative-dev.kbase.us'
 ```
 
@@ -259,21 +251,15 @@ DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 which produces:
 
 ```shell
+
 AUTH2_PROVIDERS='Google,Globus'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.appdev.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='appdev.kbase.us'
 ```
+
+Note that appdev has a custom setting for `AUTH2_PROVIDERS`, because `ORCID`
+sign in is not supported.
 
 ### `narrative2`
 
@@ -284,19 +270,8 @@ DEPLOY_ENV='narrative2' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-e
 which produces:
 
 ```shell
-AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative2.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='narrative2.kbase.us'
 ```
 
@@ -309,18 +284,7 @@ DEPLOY_ENV='narrative' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-en
 which produces:
 
 ```shell
-AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
-DEFAULT_PATH_TYPE='europaui'
-DEFAULT_PATH='narratives'
-FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative.kbase.us'
-NGINX_LISTEN='80'
-NGINX_LOG_LEVEL='error'
-NGINX_LOG_STDERR='true'
-NGINX_LOG_STDOUT='true'
-NGINX_LOG_SYSLOG=''
-NGINX_SERVER_NAME='localhost'
 KBASE_DOMAIN='narrative.kbase.us'
 ```
