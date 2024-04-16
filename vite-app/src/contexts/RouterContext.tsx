@@ -215,10 +215,11 @@ export function urlToNavigationPath(url: URL): NavigationPath {
 }
 
 export function kbaseUIBaseURL() {
-    // We take the base name from the kbase-ui window.
-    const baseName = window.location.pathname;
-    const url = new URL(window.location.origin);
-    url.pathname = baseName;
+    // We take the base name from the kbase-ui window, since kbase-ui navigation
+    // is conducted by changing the fragment identifier (hash) of the current url.
+    const url = new URL(window.location.href);
+    // Remove the hash.
+    url.hash = '';
     return url;
 }
 
@@ -254,7 +255,6 @@ export function navigationPathToURL(
     // parts, we we just extract the final 3 parts, no matter the subdomain.
     // This "convention over configuration" saves some mental space and configuration,
     // of course.
-    // const europaHostname = window.location.hostname.split('.').slice(-3).join('.');
 
     let url: URL;
     switch (type) {
@@ -277,10 +277,11 @@ export function navigationPathToURL(
                 // We don't care what the hostname, path prefix are in this case,
                 // because they are already established.
                 url = kbaseUIBaseURL();
-                url.hash = `#${path}`;
+                let hash = `#${path}`;
                 if (params && Object.keys(params).length > 0) {
-                    url.hash += `$${new URLSearchParams(params).toString()}`;
+                    hash += `$${new URLSearchParams(params).toString()}`;
                 }
+                url.hash = hash;
             }
             break;
         }
