@@ -441,12 +441,11 @@ export default class EuropaWrapper extends Component<
             return false;
         }
 
-        const auth = new Auth2({
-            baseUrl: this.props.config.services.Auth2.url,
-        });
-
         try {
             if (token) {
+                const auth = new Auth2({
+                    baseUrl: this.props.config.services.Auth2.url,
+                });
                 const [tokenInfo, account] = await Promise.all([
                     auth.getTokenInfo(token),
                     auth.getMe(token),
