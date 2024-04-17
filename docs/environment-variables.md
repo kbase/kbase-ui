@@ -163,7 +163,7 @@ DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
 KBASE_UI_DOMAIN='legacy.ci.kbase.us'
 KBASE_DOMAIN='ci.kbase.us'
 ```
@@ -189,7 +189,7 @@ BASE_PATH=''
 DEFAULT_PATH_TYPE='europaui'
 DEFAULT_PATH='narratives'
 FEATURE_SWITCHES_DISABLED=''
-FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
 KBASE_UI_DOMAIN='legacy.ci.kbase.us'
 NGINX_LISTEN='80'
 NGINX_LOG_LEVEL='error'
@@ -209,7 +209,7 @@ DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-en
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
+FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
 KBASE_UI_DOMAIN='legacy.ci-europa.kbase.us'
 KBASE_DOMAIN='ci-europa.kbase.us'
 ```
@@ -223,7 +223,6 @@ DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.next.kbase.us'
 KBASE_DOMAIN='next.kbase.us'
 ```
@@ -237,7 +236,6 @@ DEPLOY_ENV='narrative-dev' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtim
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative-dev.kbase.us'
 KBASE_DOMAIN='narrative-dev.kbase.us'
 ```
@@ -253,7 +251,6 @@ which produces:
 ```shell
 
 AUTH2_PROVIDERS='Google,Globus'
-FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.appdev.kbase.us'
 KBASE_DOMAIN='appdev.kbase.us'
 ```
@@ -270,7 +267,6 @@ DEPLOY_ENV='narrative2' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-e
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative2.kbase.us'
 KBASE_DOMAIN='narrative2.kbase.us'
 ```
@@ -284,7 +280,6 @@ DEPLOY_ENV='narrative' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-en
 which produces:
 
 ```shell
-FEATURE_SWITCHES_ENABLED='similar_genomes'
 KBASE_UI_DOMAIN='legacy.narrative.kbase.us'
 KBASE_DOMAIN='narrative.kbase.us'
 ```
