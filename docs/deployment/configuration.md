@@ -36,7 +36,7 @@ Here is a laundry list:
 - constants for various kbase-ui features, such as the polling intervals for feeds, auth
   cookie changes, auth token validation checks, service call timeout.
 
-- urls to common documentation and other endpoints 
+- urls to common documentation and other endpoints
 
 - feature switches to enable or disable specific features, usually under development but
   not necessarily
@@ -192,7 +192,7 @@ dynamicServices_TaxonomyAPI_version=auto
 ui_services_menu_hamburger_disabled=
 ui_services_menu_sidebar_disabled=
 
-ui_featureSwitches_enabled=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+ui_featureSwitches_enabled=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
 ui_featureSwitches_disabled=
 
 dynamic_service_proxies=
@@ -219,7 +219,7 @@ The environment variables listed below are supported.
 ### `DEFAULT_PATH`
 
 `kbase-ui` traditionally shows the `#dashbaord` by default - that is, if no other path
-was provided in the url. This was hard coded. 
+was provided in the url. This was hard coded.
 
 Several years ago the dashboard was replaced by the "Narratives Navigator", or
 "Navigator". This is an external url, as the Navigator is a standalone web app. This was
@@ -232,11 +232,11 @@ change it. But it never changed, so that was fine.
 However, in the near future kbase-ui will be run inside an iframe of yet another Kbase
 UI. In this case, the current behavior of redirecting to the Navigator is not desired,
 as the outer UI will handle that. This environment variable allows us to set that path,
-either internal or external. 
+either internal or external.
 
 The internal path is in the form `#path` where the path
 must be prefixed with the `#` url fragment symbol. Any internal path configured within
-the app may be used. 
+the app may be used.
 
 The external path is in the form `/path`, where the path should be prefixed with a `/`
 forward slash. This will cause kbase-ui to navigate to the given path on the same

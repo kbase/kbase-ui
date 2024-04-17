@@ -137,7 +137,7 @@ DEFAULT_PATH="narratives"
 DEFAULT_PATH_TYPE="europaui"
 UI_DOMAIN="ci.kbase.us"
 KBASE_UI_DOMAIN="legacy.ci.kbase.us"
-FEATURE_SWITCHES_ENABLED="search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term"
+FEATURE_SWITCHES_ENABLED="search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term"
 FEATURE_SWITCHES_DISABLED=""
 AUTH2_PROVIDERS="Google,Globus,OrcID"
 KBASE_ENDPOINT="https://ci.kbase.us/services/"
@@ -206,6 +206,5 @@ For CI running locally:
 ```shell
 export KBASE_ENDPOINT=https://ci.kbase.us/services/
 export UI_HOSTNAME=ci.kbase.us
-export FEATURE_SWITCHES_ENABLED=search_features,system_alert_notification,new_provenance_widget,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+export FEATURE_SWITCHES_ENABLED=search_features,system_alert_notification,new_provenance_widget,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
 ```
-
