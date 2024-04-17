@@ -2,7 +2,7 @@
 
 ## Notable changes of interest for deployment
 
-`kbase-ui` now runs in a hosted environment of `Europa`, rather than as a
+`kbase-ui` now runs only in a hosted environment of `Europa`, rather than as a
 standalone web app. However, it is still deployed as it has been for years - as
 a web app hosted by it's own nginx server.
 
@@ -11,59 +11,132 @@ environment variables.
 
 ## Image
 
-Images are created via GHA workflows.
+Images are created from GHA workflows.
 
-A production deployment image is tagged with the release semver 2.0 version. E.g.
-`ghcr.io/kbase/kbase-ui:v1.2.3`.
+Images are tagged in various ways.
 
-Evaluation of pull requests in CI or some other environment can be achieved with
-images built from pull request activity, which have the form
-`ghcr.io/kbase/kbase-ui:pr-123`. Such images are often deployed in CI.
+The canonical image for deployment is a release image. A release image is
+created from, well, a GitHub Release. a release receives a tag in the form
+`v#.#.#` in semver 2.0 format. For example, for release "1.2.3" the image would
+be `ghcr.io/kbase/kbase-ui:v1.2.3`.
+
+Images are also created for pull requests. It is not uncommon to deploy from
+pull requests in CI, or perhaps narrative-dev, in order to evaluate upcoming changes.
+Images built from pull request activity, have the form
+`ghcr.io/kbase/kbase-ui:pr-123`.
+
+Occasionally an image will be manually built. In such cases it will be tagged
+with the branch name, prefixed with "br-". For example, a manual build from
+branch "foo" would be named `ghcr.io/kbase/kbase-ui:br-foo`.
 
 ## Docker Command
 
-The image entrypoint is `dockerize`, so the image's `command` is overridden to
-supply command line arguments to dockerize.
+The image entrypoint is `dockerize`, with the command set to the arguments for
+dockerize. The arguments are responsible for rendering two templates, the
+primary configuration file for kbase-ui, and the nginx server configuration.
+Ultimately, the command also starts the nginx server.
 
-`dockerize` generates configuration files from environment variables supplied by
+The command built into the image is adequate for any normal deployment, and does
+not need to be specified in the deployment service (e.g. Rancher.)
+
+The `dockerize` template rendering consumes ordinary environment variables supplied by
 the deployment service.
 
-> Note that in the previous deployment practice, the configuration environment variables
+> In the previous deployment practice, the configuration environment variables
 > were stored in a "ini" file in our private gitlab.
 
-This is the command for CI Rancher:
-
-```shell
--template /kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf -template /kb/deployment/templates/config.json.tmpl:/kb/deployment/app/deploy/config.json bash -x /kb/deployment/scripts/start-server.bash
-```
-
-> NOTE: kbase-ui uses `powerman/dockerize`, the successor to the original
-> `jwilder/dockerize`, and not the (unmaintained) KBase fork of `jwilder/dockerize`.
-> Some command line options are a bit different, as well as some of the custom
-> templating commands.
-
-We can actually omit this command from Racher altogether, as it matches exactly
-the `COMMAND` in the `Dockerfile`.
+**Note:** kbase-ui uses
+[`powerman/dockerize`](https://github.com/powerman/dockerize), the successor to
+the original `jwilder/dockerize`. It previously used a KBase fork of
+`jwilder/dockerize`. Some command line options have changed, some templating
+commads have a different syntax (notably "default"), and new templating commands
+have been added.
 
 ## Environment Variables
 
 As mentioned above, runtime parameterization is by means of environment
 variables.
 
+The only required environment variables are:
+
+- KBASE_DOMAIN
+- KBASE_UI_DOMAIN
+- NGINX_SYSLOG
+
+and perhaps
+
+- FEATURE_SWITCHES_ENABLED
+- FEATURE_SWITCHES_DISABLED
+
+There are many more environment variables to control kbase-ui, but they have
+sensible defaults that normally do not vary between deployments.
+
 See [docs/environment-variables.md](../environment-variables.md) for a description
 of all environment variables.
 
-See [docs/deployment/configuration.md](../deployment/configuration.md) for details.
+See [docs/deployment/configuration.md](../deployment/configuration.md) for
+details.
+
+Here are the variables required per environment at the time of writing:
+
+### ci
+
+| Variable          | Value                                                           |
+|-------------------|-----------------------------------------------------------------|
+| `KBASE_DOMAIN`    | `ci.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN` | `legacy.ci.kbase.us`                                            |
+| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info` |
+| `FEATURE_SWITCHES_ENABLED` | `search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term` |
+
+### ci-europa
+
+| Variable                   | Value                                                                                                |
+|----------------------------|------------------------------------------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `ci-europa.kbase.us`                                                                                 |
+| `KBASE_UI_DOMAIN`          | `legacy.ci-europa.kbase.us`                                                                          |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=ci-europa,severity=info`                               |
+| `FEATURE_SWITCHES_ENABLED` | `search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term` |
+
+### next
+
+| Variable                   | Value                                                             |
+|----------------------------|-------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `next.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN`          | `legacy.next.kbase.us`                                            |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=next,severity=info` |
+
+### narrative-dev
+
+| Variable                   | Value                                                                      |
+|----------------------------|----------------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `narrative-dev.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN`          | `legacy.narrative-dev.kbase.us`                                            |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=narrative-dev,severity=info` |
+
+### appdev
+
+| Variable                   | Value                                                               |
+|----------------------------|---------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `appdev.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN`          | `legacy.appdev.kbase.us`                                            |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=appdev,severity=info` |
+
+### narrative (production)
+
+| Variable                   | Value                                                             |
+|----------------------------|-------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `narrativerrat.kbase.us`                                          |
+| `KBASE_UI_DOMAIN`          | `legacy.narrative.kbase.us`                                       |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info` |
 
 ## Verifying deployment
 
-After a deployment, the easiets quick check that you got it right is to visit
-`https://[env.]kbase.us#about` to confirm that the expected version has been
-installed.
+After a deployment, you can visit `https://[ENV].kbase.us#about/build` to
+confirm that the expected version has been installed.
 
 Other related strategies are:
 
-- Run integration tests against the deployment
+- Run [integration](../development//integration-tests.md) tests against the deployment
 - Before the deployment use the image locally to evaluate expected changes
 - Run integration tests against a local deployment of the deploy image
 
