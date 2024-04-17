@@ -82,31 +82,15 @@ fi
 #
 # Feature switches.
 #
-# TODO: remove "similar_genomes" feature switch from kbase-ui and landing pages. 
-#       let's do that soon, as we can then get rid of a lot of config below and make
-#       deployment easier.
 #
 if [ "$DEPLOY_ENV" = "ci" ]
 then
-    FEATURE_SWITCHES_ENABLED=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+    FEATURE_SWITCHES_ENABLED=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
 elif [ "$DEPLOY_ENV" = "ci-europa" ]
 then
-    FEATURE_SWITCHES_ENABLED=search_features,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
-elif [ "$DEPLOY_ENV" = "narrative-dev" ]
-then
-    FEATURE_SWITCHES_ENABLED=similar_genomes
-elif [ "$DEPLOY_ENV" = "next" ]
-then
-    FEATURE_SWITCHES_ENABLED=similar_genomes
-elif [ "$DEPLOY_ENV" = "appdev" ]
-then
-    FEATURE_SWITCHES_ENABLED=similar_genomes
-elif [ "$DEPLOY_ENV" = "narrative2" ]
-then
-    FEATURE_SWITCHES_ENABLED=similar_genomes
-elif [ "$DEPLOY_ENV" = "narrative" ]
-then
-    FEATURE_SWITCHES_ENABLED=similar_genomes
+    FEATURE_SWITCHES_ENABLED=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+else
+    FEATURE_SWITCHES_ENABLED=''
 fi
 
 
