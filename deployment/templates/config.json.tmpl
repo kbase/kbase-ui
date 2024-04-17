@@ -109,30 +109,7 @@
             "enabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_ENABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
             "disabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_DISABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
             "available": [
-                {
-                    "id": "orcid_auth_provider",
-                    "title": "ORCiD auth provider",
-                    "description": "The ORCiD auth provider is"
-                },
-                {
-                    "id": "search_features",
-                    "title": "Search over Genome Features"
-                },
-                {
-                    "id": "re-lineage",
-                    "title": "Lineage driven by Relation Engine"
-                },
-                {
-                    "id": "object-link-to-term",
-                    "title": "Data objects linked to ontology terms"
-                },
-                {
-                    "id": "redirect-to-www",
-                    "title": "Redirect to www.kbase.us if not physical path, ui hash path, or token"
-                },
-                {
-                    "id": "sampleset-data-links",
-                    "title": "Enable data links for sample sets"
+
                 }
             ]
         },

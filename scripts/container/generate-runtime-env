@@ -80,21 +80,6 @@ else
 fi
 
 #
-# Feature switches.
-#
-#
-if [ "$DEPLOY_ENV" = "ci" ]
-then
-    FEATURE_SWITCHES_ENABLED=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
-elif [ "$DEPLOY_ENV" = "ci-europa" ]
-then
-    FEATURE_SWITCHES_ENABLED=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
-else
-    FEATURE_SWITCHES_ENABLED=''
-fi
-
-
-#
 # Created env vars for nginx.json.tmpl:
 # Note that these may not be used, but we generate them anyway.
 #

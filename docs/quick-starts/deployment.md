@@ -81,53 +81,51 @@ Here are the variables required per environment at the time of writing:
 
 ### ci
 
-| Variable          | Value                                                           |
-|-------------------|-----------------------------------------------------------------|
-| `KBASE_DOMAIN`    | `ci.kbase.us`                                                   |
-| `KBASE_UI_DOMAIN` | `legacy.ci.kbase.us`                                            |
-| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info` |
-| `FEATURE_SWITCHES_ENABLED` | `search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term` |
+| Variable                   | Value                                                           |
+|----------------------------|-----------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `ci.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN`          | `legacy.ci.kbase.us`                                            |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=ci,severity=info` |
 
 ### ci-europa
 
-| Variable                   | Value                                                                                                |
-|----------------------------|------------------------------------------------------------------------------------------------------|
-| `KBASE_DOMAIN`             | `ci-europa.kbase.us`                                                                                 |
-| `KBASE_UI_DOMAIN`          | `legacy.ci-europa.kbase.us`                                                                          |
-| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=ci-europa,severity=info`                               |
-| `FEATURE_SWITCHES_ENABLED` | `search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term` |
+| Variable                   | Value                                                                  |
+|----------------------------|------------------------------------------------------------------------|
+| `KBASE_DOMAIN`             | `ci-europa.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN`          | `legacy.ci-europa.kbase.us`                                            |
+| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=ci-europa,severity=info` |
 
 ### next
 
-| Variable                   | Value                                                             |
-|----------------------------|-------------------------------------------------------------------|
-| `KBASE_DOMAIN`             | `next.kbase.us`                                                   |
-| `KBASE_UI_DOMAIN`          | `legacy.next.kbase.us`                                            |
-| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=next,severity=info` |
+| Variable          | Value                                                             |
+|-------------------|-------------------------------------------------------------------|
+| `KBASE_DOMAIN`    | `next.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN` | `legacy.next.kbase.us`                                            |
+| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=next,severity=info` |
 
 ### narrative-dev
 
-| Variable                   | Value                                                                      |
-|----------------------------|----------------------------------------------------------------------------|
-| `KBASE_DOMAIN`             | `narrative-dev.kbase.us`                                                   |
-| `KBASE_UI_DOMAIN`          | `legacy.narrative-dev.kbase.us`                                            |
-| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=narrative-dev,severity=info` |
+| Variable          | Value                                                                      |
+|-------------------|----------------------------------------------------------------------------|
+| `KBASE_DOMAIN`    | `narrative-dev.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN` | `legacy.narrative-dev.kbase.us`                                            |
+| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=narrative-dev,severity=info` |
 
 ### appdev
 
-| Variable                   | Value                                                               |
-|----------------------------|---------------------------------------------------------------------|
-| `KBASE_DOMAIN`             | `appdev.kbase.us`                                                   |
-| `KBASE_UI_DOMAIN`          | `legacy.appdev.kbase.us`                                            |
-| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=appdev,severity=info` |
+| Variable          | Value                                                               |
+|-------------------|---------------------------------------------------------------------|
+| `KBASE_DOMAIN`    | `appdev.kbase.us`                                                   |
+| `KBASE_UI_DOMAIN` | `legacy.appdev.kbase.us`                                            |
+| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=appdev,severity=info` |
 
 ### narrative (production)
 
-| Variable                   | Value                                                             |
-|----------------------------|-------------------------------------------------------------------|
-| `KBASE_DOMAIN`             | `narrativerrat.kbase.us`                                          |
-| `KBASE_UI_DOMAIN`          | `legacy.narrative.kbase.us`                                       |
-| `NGINX_SYSLOG`             | `syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info` |
+| Variable          | Value                                                             |
+|-------------------|-------------------------------------------------------------------|
+| `KBASE_DOMAIN`    | `narrativerrat.kbase.us`                                          |
+| `KBASE_UI_DOMAIN` | `legacy.narrative.kbase.us`                                       |
+| `NGINX_SYSLOG`    | `syslog:server=10.58.0.54,facility=local2,tag=prod,severity=info` |
 
 ## Verifying deployment
 
