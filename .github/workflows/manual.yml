@@ -1,14 +1,14 @@
 ---
 name: Manual
 on:
- workflow_dispatch:
+    workflow_dispatch:
 jobs:
-  test:
-    uses: ./.github/workflows/reusable_test.yml
-  build-push:
-    needs: test
-    uses: ./.github/workflows/reusable_build-push.yml
-    with:
-      name: '${{ github.event.repository.name }}'
-      tags: '${{ github.ref_name }}'
-    secrets: inherit
+    test:
+        uses: ./.github/workflows/reusable_test.yml
+    build-push:
+        needs: test
+        uses: ./.github/workflows/reusable_build-push.yml
+        with:
+            name: '${{ github.event.repository.name }}'
+            tags: 'manual-${{ github.ref_name }}'
+        secrets: inherit
