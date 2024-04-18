@@ -8,7 +8,7 @@
 # Environment Variables:
 # BASE_PATH = {{ .Env.BASE_PATH }}
 # UI_DOMAIN = {{ .Env.KBASE_DOMAIN }}
-# KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
+# KBASE_UI_HOSTNAME = {{ .Env.KBASE_UI_HOSTNAME }}
 # KBASE_UI_HOST = {{ .Env.KBASE_UI_HOST }} 
 # KBASE_UI_PORT = {{ .Env.KBASE_UI_PORT }}
 # EUROPA_UI_HOST = {{ .Env.EUROPA_UI_HOST }}
@@ -19,10 +19,16 @@
 # DYNAMIC_SERVICE_PROXIES = {{ .Env.DYNAMIC_SERVICE_PROXIES }}
 # SERVICES_DOMAIN = {{ .Env.SERVICES_DOMAIN }}
 
-{{ $subhost := not (eq .Env.KBASE_DOMAIN .Env.KBASE_UI_DOMAIN) }}
+{{ $subhost := false }}
+{{ $kbase_ui_domain := .Env.KBASE_DOMAIN }}
+{{ if .Env.KBASE_UI_HOSTNAME }}
+    {{ $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN }}
+    {{ $subhost = true }}
+{{ end }}
+
 
 {{ if $subhost }}
-# Configured for SUBHOST {{ .Env.KBASE_UI_DOMAIN }}
+# Configured for SUBHOST {{ $kbase_ui_domain }}
 {{ else }}
 # Configured for SAME HOST
 {{ end }}
@@ -276,11 +282,11 @@ http {
 
         # kbase-ui will be located on a path
         # disable this if the subdomain is used instead.
-        # in this case, BASE_PATH had better not be empty or /.
+        # in this case, KBASE_UI_BASE_PATH had better not be empty or /.
         {{ if not $subhost }}
 
-        {{ if .Env.BASE_PATH }}
-        location /{{ .Env.BASE_PATH }}/ {
+        {{ if .Env.KBASE_UI_BASE_PATH }}
+        location /{{ .Env.KBASE_UI_BASE_PATH }}/ {
             {{ if .Env.KBASE_UI_HOST }}
                 proxy_pass http://{{ .Env.KBASE_UI_HOST }}:{{ or .Env.KBASE_UI_PORT "3000" }};
                 # allows the proxy to start up even though the 
@@ -288,7 +294,7 @@ http {
                 # server {{ .Env.KBASE_UI_HOST }}:80 backup;
                 # keepalive 16;
             {{ else }}
-                proxy_pass https://{{ .Env.KBASE_UI_DOMAIN }};
+                proxy_pass https://{{ $kbase_ui_domain }};
             {{ end }}
 
             proxy_set_header Connection "";
@@ -333,13 +339,13 @@ http {
     # This is de-facto always the case in the current Europa implementation.
     {{ if $subhost }}
     server {
-        server_name {{ .Env.KBASE_UI_DOMAIN }};
+        server_name {{ $kbase_ui_domain }};
         listen 443 ssl;
         ssl_certificate /kb/deployment/ssl/test.crt;
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
 
-        location {{ .Env.BASE_PATH }}/ {
+        location {{ .Env.KBASE_UI_BASE_PATH }}/ {
 
             {{ if .Env.KBASE_UI_HOST }}
                 proxy_pass http://{{ .Env.KBASE_UI_HOST }}:{{ or .Env.KBASE_UI_PORT "3000" }};
@@ -348,7 +354,7 @@ http {
                 # server {{ .Env.KBASE_UI_HOST }}:80 backup;
                 # keepalive 16;
             {{ else }}
-                proxy_pass https://{{ .Env.KBASE_UI_DOMAIN }};
+                proxy_pass https://{{ $kbase_ui_domain }};
             {{ end }}
 
             include /etc/nginx/cors.conf;

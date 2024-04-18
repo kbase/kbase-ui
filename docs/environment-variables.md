@@ -23,13 +23,13 @@ The fulls set of environment variables, therefore, is the intersection.
 
 The full set of required environment variables is:
 
-- `KBASE_UI_DOMAIN`
+- `KBASE_UI_HOSTNAME`
 - `KBASE_DOMAIN`
 
 The full set of optional environment variables is:
 
 - `AUTH2_PROVIDERS`
-- `BASE_PATH`
+- `KBASE_UI_BASE_PATH`
 - `DEFAULT_PATH_TYPE`
 - `DEFAULT_PATH`
 - `FEATURE_SWITCHES_DISABLED`
@@ -59,7 +59,7 @@ quickstart](./quick-starts/deployment.md))
 
 | Name                      | Default               | Description                                                                                       |
 |---------------------------|-----------------------|---------------------------------------------------------------------------------------------------|
-| BASE_PATH                 | "/"                   | The base, or prefix, path kbase-ui should expect; currently unused (but had been planned)         |
+| KBASE_UI_BASE_PATH        | "/"                   | The base, or prefix, path kbase-ui should expect; currently unused (but had been planned)         |
 | DEFAULT_PATH              | "narratives"          | When kbase-ui is asked to show the dashboard, go here [1]                                         |
 | DEFAULT_PATH_TYPE         | "europaui"            | The type of path for the above - either "europaui" or "kbaseui"                                   |
 | FEATURE_SWITCHES_ENABLED  | ""                    | Used primarily in CI to enable features that are disabled by default (are under development)      |
@@ -78,10 +78,10 @@ purview of devops. Local development can take care of itself.
 
 #### Required (no defaults)
 
-| Name            | Description                                               |
-|-----------------|-----------------------------------------------------------|
-| KBASE_DOMAIN    | The hostname at which Europa and Narrative operate        |
-| KBASE_UI_DOMAIN | The domain at which kbase-ui operates in this environment |
+| Name              | Description                                                                                                   |
+|-------------------|---------------------------------------------------------------------------------------------------------------|
+| KBASE_DOMAIN      | The hostname at which Europa and Narrative operate                                                            |
+| KBASE_UI_HOSTNAME | The hostname component, if any, to be prefixed to KBASE_DOMAIN on which kbase-ui operates in this environment |
 
 #### Optional (with defaults)
 
@@ -106,13 +106,13 @@ service `kbase-ui`:
 kbase-ui sports a handy tool to generate environment variables per environment.
 
 ```shell
-USE_DEFAULTS='' DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./Taskfile generate-runtime-env
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' KBASE_UI_BASE_PATH='' ./Taskfile generate-runtime-env
 ```
 
 or in the container
 
 ```shell
-USE_DEFAULTS='' DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' BASE_PATH='' ./scripts/container/generate-runtime-env
+DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' KBASE_UI_BASE_PATH='' ./scripts/container/generate-runtime-env
 ```
 
 The short form, omitting empty variables, would be
@@ -123,14 +123,12 @@ DEPLOY_ENV='ci' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 
 where:
 
-- `USE_DEFAULTS` flags whether we want to have any empty variables populated
-  with their default values;
 - `DEPLOY_ENV` is one of the KBase deployment environments - ci, ci-europa,
   narrative-dev, next, narrative.
 - `KBASE_UI_HOSTNAME` is the hostname component of the kbase-ui domain; If
   kbase-ui is operating on a subdomain; defaults to empty string which causes
   kbase-ui to operate on the primary domain
-- `BASE_PATH` is the url pathname to reach kbase-ui; defaults to empty string
+- `KBASE_UI_BASE_PATH` is the url pathname to reach kbase-ui; defaults to empty string
   and thus kbase-ui operates on the root path
 
 Note that the sister task `generate-runtime-config` will also generate the
@@ -164,33 +162,30 @@ which produces:
 
 ```shell
 FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
-KBASE_UI_DOMAIN='legacy.ci.kbase.us'
+KBASE_UI_HOSTNAME='legacy'
 KBASE_DOMAIN='ci.kbase.us'
 ```
 
 Note the usage of single quotes - we don't need string interpolation.
 
 Note also that this is not the full set of environment variables. Any missing
-environment variables will have default variables utilized in their respective
-templates.
-
-However, we can also generate the full set of environment variables generated
-with default values provided, by using the `USE_DEFAULTS` option:
+environment variables will have default variables provided by the script or in
+their respective templates.
 
 ```shell
-USE_DEFAULTS=t DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
+DEPLOY_ENV='ci-europa' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 ```
 
 which produces:
 
 ```shell
 AUTH2_PROVIDERS='Google,Globus,OrcID'
-BASE_PATH=''
+KBASE_UI_BASE_PATH=''
 DEFAULT_PATH_TYPE='europaui'
 DEFAULT_PATH='narratives'
 FEATURE_SWITCHES_DISABLED=''
 FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
-KBASE_UI_DOMAIN='legacy.ci.kbase.us'
+KBASE_UI_HOSTNAME='legacy'
 NGINX_LISTEN='80'
 NGINX_LOG_LEVEL='error'
 NGINX_LOG_STDERR='true'
@@ -210,7 +205,6 @@ which produces:
 
 ```shell
 FEATURE_SWITCHES_ENABLED='search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term'
-KBASE_UI_DOMAIN='legacy.ci-europa.kbase.us'
 KBASE_DOMAIN='ci-europa.kbase.us'
 ```
 
@@ -223,7 +217,6 @@ DEPLOY_ENV='next' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-env
 which produces:
 
 ```shell
-KBASE_UI_DOMAIN='legacy.next.kbase.us'
 KBASE_DOMAIN='next.kbase.us'
 ```
 
@@ -236,7 +229,6 @@ DEPLOY_ENV='narrative-dev' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtim
 which produces:
 
 ```shell
-KBASE_UI_DOMAIN='legacy.narrative-dev.kbase.us'
 KBASE_DOMAIN='narrative-dev.kbase.us'
 ```
 
@@ -251,7 +243,6 @@ which produces:
 ```shell
 
 AUTH2_PROVIDERS='Google,Globus'
-KBASE_UI_DOMAIN='legacy.appdev.kbase.us'
 KBASE_DOMAIN='appdev.kbase.us'
 ```
 
@@ -267,7 +258,6 @@ DEPLOY_ENV='narrative2' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-e
 which produces:
 
 ```shell
-KBASE_UI_DOMAIN='legacy.narrative2.kbase.us'
 KBASE_DOMAIN='narrative2.kbase.us'
 ```
 
@@ -280,6 +270,5 @@ DEPLOY_ENV='narrative' KBASE_UI_HOSTNAME='legacy' ./Taskfile generate-runtime-en
 which produces:
 
 ```shell
-KBASE_UI_DOMAIN='legacy.narrative.kbase.us'
 KBASE_DOMAIN='narrative.kbase.us'
 ```

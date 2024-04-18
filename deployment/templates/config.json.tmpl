@@ -108,10 +108,7 @@
         "featureSwitches": {
             "enabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_ENABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
             "disabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_DISABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "available": [
-
-                }
-            ]
+            "available": []
         },
         "constants": {
             "clientTimeout": 900000,

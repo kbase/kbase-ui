@@ -8,7 +8,7 @@ echo "Render development proxy config files"
 echo "Parameters (Environment Variables):"
 echo ""
 echo "KBASE_DOMAIN = ${KBASE_DOMAIN}"
-echo "KBASE_UI_DOMAIN = ${KBASE_UI_DOMAIN}"
+echo "KBASE_UI_HOSTNAME = ${KBASE_UI_HOSTNAME}"
 echo ""
 
 

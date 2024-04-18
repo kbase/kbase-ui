@@ -69,9 +69,9 @@ which produces the following env:
 # An env file for usage by the proxy service in the devcontainer.
 KBASE_UI_HOST="kbase-ui"
 EUROPA_UI_HOST="europa-ui"
-BASE_PATH=""
+KBASE_UI_BASE_PATH=""
 UI_DOMAIN="ci.kbase.us"
-KBASE_UI_DOMAIN="legacy.ci.kbase.us"
+KBASE_UI_HOSTNAME="legacy"
 SERVICES_HOSTNAME="ci.kbase.us"
 LOCAL_NARRATIVE=""
 SERVICE_PROXIES=""
@@ -91,9 +91,9 @@ which produces the following env:
 # An env file for usage by the proxy service in the devcontainer.
 KBASE_UI_HOST="kbase-ui"
 EUROPA_UI_HOST="europa-ui"
-BASE_PATH=""
+KBASE_UI_BASE_PATH=""
 UI_DOMAIN="ci.kbase.us"
-KBASE_UI_DOMAIN="legacy.ci.kbase.us"
+KBASE_UI_HOSTNAME="legacy"
 SERVICES_HOSTNAME="ci.kbase.us"
 LOCAL_NARRATIVE="t"
 SERVICE_PROXIES="orcidlink"
@@ -132,11 +132,11 @@ this env file.
 The env file is located in `.devcontainer/runtime.env` and looks like this:
 
 ```shell
-BASE_PATH=""
+KBASE_UI_BASE_PATH=""
 DEFAULT_PATH="narratives"
 DEFAULT_PATH_TYPE="europaui"
 UI_DOMAIN="ci.kbase.us"
-KBASE_UI_DOMAIN="legacy.ci.kbase.us"
+KBASE_UI_HOSTNAME="legacy"
 FEATURE_SWITCHES_ENABLED="search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term"
 FEATURE_SWITCHES_DISABLED=""
 AUTH2_PROVIDERS="Google,Globus,OrcID"

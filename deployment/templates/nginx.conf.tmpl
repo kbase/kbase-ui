@@ -6,8 +6,8 @@ user kbmodule;
 
 # Build Environment Variables:
 # KBASE_DOMAIN = {{ .Env.KBASE_DOMAIN }}
-# KBASE_UI_DOMAIN = {{ .Env.KBASE_UI_DOMAIN }}
-# BASE_PATH = {{ .Env.BASE_PATH }}
+# KBASE_UI_HOSTNAME = {{ .Env.KBASE_UI_HOSTNAME }}
+# KBASE_UI_BASE_PATH = {{ .Env.KBASE_UI_BASE_PATH }}
 # NGINX_LOG_SYSLOG = {{ .Env.NGINX_LOG_SYSLOG }}
 # NGINX_LOG_STDOUT = {{ .Env.NGINX_LOG_STDOUT }}
 # NGINX_LOG_STDERR = {{ .Env.NGINX_LOG_STDERR }}
@@ -15,12 +15,11 @@ user kbmodule;
 # NGINX_LISTEN = {{ .Env.NGINX_LISTEN }}
 # NGINX_SERVER_NAME = {{ .Env.NGINX_SERVER_NAME }}
 
-{{ $subhost := not (eq .Env.KBASE_DOMAIN .Env.KBASE_UI_DOMAIN) }}
-
-{{ if $subhost }}
-# Configured for SUBHOST {{ .Env.KBASE_UI_DOMAIN }}
-{{ else }}
-# Configured for SAME HOST
+{{ $subhost := false }}
+{{ $kbase_ui_domain := .Env.KBASE_DOMAIN }}
+{{ if .Env.KBASE_UI_HOSTNAME }}
+    {{ $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN }}
+    {{ $subhost = true }}
 {{ end }}
 
 events {
@@ -76,14 +75,13 @@ http {
 
         # Matches the root - the index page.
         # TODO: this won't work if the base path is empty - fix that.
-        location = /{{ if .Env.BASE_PATH }}{{ .Env.BASE_PATH }}/{{ end }} {
+        location = /{{ if .Env.KBASE_UI_BASE_PATH }}{{ .Env.KBASE_UI_BASE_PATH }}/{{ end }} {
             allow all;
             # this ensures that a downstream cache service will revalidate.
             add_header Cache-Control 'no-store';
 
-
             {{ if $subhost }}
-            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ $kbase_ui_domain }} ;" always; 
             {{ else }}
             add_header Content-Security-Policy "frame-ancestors 'self';" always; 
             add_header X-Frame-Options "SAMEORIGIN" always;
@@ -94,7 +92,7 @@ http {
         }
   
         # Matches all other resources
-        location ~ /{{ default "" .Env.BASE_PATH }} {
+        location ~ /{{ default "" .Env.KBASE_UI_BASE_PATH }} {
             ssi_silent_errors off;
             allow all;
             # this ensures that a downstream cache service will revalidate.
@@ -103,19 +101,19 @@ http {
             # expires 0;
 
             {{ if $subhost }}
-            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ .Env.KBASE_UI_DOMAIN }} ;" always; 
+            add_header Content-Security-Policy "frame-ancestors https://{{ .Env.KBASE_DOMAIN }}  https://{{ $kbase_ui_domain }} ;" always; 
             {{ else }}
             add_header Content-Security-Policy "frame-ancestors 'self';" always; 
             add_header X-Frame-Options "SAMEORIGIN" always;
             {{ end }}
 
             root /kb/deployment/app;
-            rewrite ^/{{ default "" .Env.BASE_PATH }}(/.*)$ $1 break;  
+            rewrite ^/{{ default "" .Env.KBASE_UI_BASE_PATH }}(/.*)$ $1 break;  
         }
         
         # Used as a simple endpoint to determine the health of the connection
         # to kbase.
-        location {{ default "" .Env.BASE_PATH }}/__ping__ {
+        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/__ping__ {
             default_type text/html;
             return 204;
         }
@@ -124,7 +122,7 @@ http {
         # Inside the __perf__ directory are files of specific sizes 
         # which can be fetched, and their download time measured as a
         # rough estimate of network performance.
-        location {{ default "" .Env.BASE_PATH }}/data/__perf__ {
+        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/data/__perf__ {
             gzip off;
             add_header Cache-Control 'no-cache';
             root /kb/deployment/app;
@@ -133,7 +131,7 @@ http {
         # Catches references to old "modules/plugins" path; used by
         # some plugins to fetch resources from within themselves.
         # We just map it to the new canonical location for plugins.
-        location {{ default "" .Env.BASE_PATH }}/modules/plugins/ {
+        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/modules/plugins/ {
             ssi_silent_errors off;
             allow all;
             add_header Cache-Control 'no-cache';

@@ -54,7 +54,7 @@ function create-deploy {
 }
 
 function build {
-    env DIR="${PWD}/vite-app" BASE_PATH="${BASE_PATH}" bash scripts/host/build.sh
+    env DIR="${PWD}/vite-app" KBASE_UI_BASE_PATH="${KBASE_UI_BASE_PATH}" bash scripts/host/build.sh
 }
 
 function shell {
@@ -122,8 +122,9 @@ function generate-proxy-env {
         -p kbase-dev \
     run \
         -e DIR="${PWD}" \
+        -e USE_DEFAULTS \
         -e DEPLOY_ENV \
-        -e BASE_PATH \
+        -e KBASE_UI_BASE_PATH \
         -e KBASE_UI_HOSTNAME \
         -e SERVICE_PROXIES \
         -e DYNAMIC_SERVICE_PROXIES \
@@ -146,7 +147,7 @@ function generate-runtime-env {
     run \
         -e USE_DEFAULTS \
         -e DEPLOY_ENV \
-        -e BASE_PATH \
+        -e KBASE_UI_BASE_PATH \
         -e KBASE_DOMAIN \
         -e KBASE_UI_HOSTNAME \
         -e FEATURE_SWITCHES_ENABLED \

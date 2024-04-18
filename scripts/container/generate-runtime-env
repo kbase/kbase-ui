@@ -31,7 +31,7 @@ fi
 # Defaults for all that support defaults.
 #
 DEFAULT_AUTH2_PROVIDERS='Google,Globus,OrcID'
-DEFAULT_BASE_PATH=''
+DEFAULT_KBASE_UI_BASE_PATH=''
 DEFAULT_DEFAULT_PATH_TYPE='europaui'
 DEFAULT_DEFAULT_PATH='narratives'
 DEFAULT_FEATURE_SWITCHES_DISABLED=''
@@ -46,7 +46,7 @@ DEFAULT_NGINX_SERVER_NAME='localhost'
 # 
 # These are generated - just documenting that fact here.
 #
-# DEFAULT_KBASE_UI_DOMAIN
+# DEFAULT_KBASE_UI_HOSTNAME
 # DEFAULT_KBASE_DOMAIN
 
 
@@ -59,12 +59,12 @@ KBASE_DOMAIN="${DEPLOY_ENV}.kbase.us"
 
 # Domain for kbase-ui
 # TODO: is this used? if it is, we need the subdomain hostname; if not, remove.
-if [ -z "${KBASE_UI_HOSTNAME}" ]
-then
-    KBASE_UI_DOMAIN=$KBASE_DOMAIN
-else
-    KBASE_UI_DOMAIN="${KBASE_UI_HOSTNAME}.${KBASE_DOMAIN}"
-fi
+# if [ -z "${KBASE_UI_HOSTNAME}" ]
+# then
+#     KBASE_UI_DOMAIN=$KBASE_DOMAIN
+# else
+#     KBASE_UI_DOMAIN="${KBASE_UI_HOSTNAME}.${KBASE_DOMAIN}"
+# fi
 
 # Base URL for services
 # KBASE_ENDPOINT="https://${DEPLOY_ENV}.kbase.us/services/"
@@ -95,12 +95,8 @@ fi
 # Returns the environment variable setting line only if the variable has been
 # defined and is non-blank.
 #
-# If USE_DEFAULTS is defined, the default values defined above will be used
-# for any empty or undefined variable.
-#
 function env_var() {
     local var_name="${1}"
-    # echo "UMM... ${var_name}, ${!var_name}"
     if [[ -z "${!var_name}" ]] 
     then
       if [[ -z "${USE_DEFAULTS}" ]]
@@ -111,7 +107,6 @@ function env_var() {
         IFS= printf "\n%s='%s'" ${var_name} ${!default_var_name}
       fi
     else
-    #   echo -e "${var_name}=${!var_name}\n\n"
       IFS= printf "\n%s='%s'" ${var_name} ${!var_name}
     fi
 }
@@ -124,12 +119,12 @@ cat << EOF > ./.devcontainer/runtime.env
 # An env file to be used by to generate the deploy config for development, 
 # and to serve as an env file when running a local image.
 $(env_var AUTH2_PROVIDERS)\
-$(env_var BASE_PATH)\
+$(env_var KBASE_UI_BASE_PATH)\
+$(env_var KBASE_UI_HOSTNAME)\
 $(env_var DEFAULT_PATH_TYPE)\
 $(env_var DEFAULT_PATH)\
 $(env_var FEATURE_SWITCHES_DISABLED)\
 $(env_var FEATURE_SWITCHES_ENABLED)\
-$(env_var KBASE_UI_DOMAIN)\
 $(env_var NGINX_LISTEN)\
 $(env_var NGINX_LOG_LEVEL)\
 $(env_var NGINX_LOG_STDERR)\

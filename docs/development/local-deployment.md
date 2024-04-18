@@ -35,10 +35,10 @@ generate build and git info files, download and setup plugins, build the web app
 assemble all of this into a docker image.
 
 ```shell
-BASE_PATH="" GH_TOKEN="PAT_HERE" ./Taskfile build-kbase-ui
+KBASE_UI_BASE_PATH="" GH_TOKEN="PAT_HERE" ./Taskfile build-kbase-ui
 ```
 
-The `BASE_PATH` is optional. It is only required if there is a base path. It is utilized
+The `KBASE_UI_BASE_PATH` is optional. It is only required if there is a base path. It is utilized
 in the `vite` build to construct the root `index.html` file. `kbase-ui` itself doesn't
 use this value, rather it will use the value provided in the configuration. So, yes,
 this must match the configuration.

@@ -25,18 +25,18 @@ Generate an env file
 
 #### Optional
 
-- `BASE_PATH`
+- `KBASE_UI_BASE_PATH`
 - `KBASE_UI_HOSTNAME`
 
 #### Output
 
 Created env vars for config.json.tmpl:
 
-- `BASE_PATH`
+- `KBASE_UI_BASE_PATH`
+- `KBASE_UI_HOSTNAME`
 - `DEFAULT_PATH`
 - `DEFAULT_PATH_TYPE`
 - `KBASE_DOMAIN`
-- `KBASE_UI_DOMAIN`
 - `FEATURE_SWITCHES_ENABLED`
 - `FEATURE_SWITCHES_DISABLED`
 - `AUTH2_PROVIDERS`
