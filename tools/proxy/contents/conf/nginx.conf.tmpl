@@ -6,26 +6,25 @@
 # deploy environment, taken from DEPLOY_ENV.
 
 # Environment Variables:
-# BASE_PATH = {{ .Env.BASE_PATH }}
+# BASE_PATH = {{ or .Env.BASE_PATH "defaulting to ''" }}
 # UI_DOMAIN = {{ .Env.KBASE_DOMAIN }}
 # KBASE_UI_HOSTNAME = {{ .Env.KBASE_UI_HOSTNAME }}
-# KBASE_UI_HOST = {{ .Env.KBASE_UI_HOST }} 
-# KBASE_UI_PORT = {{ .Env.KBASE_UI_PORT }}
-# EUROPA_UI_HOST = {{ .Env.EUROPA_UI_HOST }}
-# EUROPA_UI_PORT = {{ .Env.EUROPA_UI_PORT }}
-# NARRATIVE_HOST = {{ .Env.NARRATIVE_HOST }}
-# NARRATIVE_PORT = {{ .Env.NARRATIVE_PORT }}
-# SERVICE_PROXIES = {{ .Env.SERVICE_PROXIES }}
-# DYNAMIC_SERVICE_PROXIES = {{ .Env.DYNAMIC_SERVICE_PROXIES }}
+# KBASE_UI_HOST = {{ or .Env.KBASE_UI_HOST "defaulting to ''" }} 
+# KBASE_UI_PORT = {{ or .Env.KBASE_UI_PORT "defaulting to ''" }}
+# EUROPA_UI_HOST = {{ or .Env.EUROPA_UI_HOST "defaulting to ''" }}
+# EUROPA_UI_PORT = {{ or .Env.EUROPA_UI_PORT "defaulting to ''" }}
+# NARRATIVE_HOST = {{ or .Env.NARRATIVE_HOST "defaulting to ''" }}
+# NARRATIVE_PORT = {{ or .Env.NARRATIVE_PORT "defaulting to ''" }}
+# SERVICE_PROXIES = {{ or .Env.SERVICE_PROXIES "defaulting to ''" }}
+# DYNAMIC_SERVICE_PROXIES = {{ or .Env.DYNAMIC_SERVICE_PROXIES "defaulting to ''" }}
 # SERVICES_DOMAIN = {{ .Env.SERVICES_DOMAIN }}
 
 {{ $subhost := false }}
-{{ $kbase_ui_domain := .Env.KBASE_DOMAIN }}
-{{ if .Env.KBASE_UI_HOSTNAME }}
-    {{ $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN }}
-    {{ $subhost = true }}
-{{ end }}
-
+{{- $kbase_ui_domain := .Env.KBASE_DOMAIN -}}
+{{- if .Env.KBASE_UI_HOSTNAME -}}
+    {{- $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN -}}
+    {{- $subhost = true -}}
+{{- end -}}
 
 {{ if $subhost }}
 # Configured for SUBHOST {{ $kbase_ui_domain }}
@@ -345,7 +344,7 @@ http {
         ssl_certificate_key /kb/deployment/ssl/test.key;
         ssl_protocols TLSv1.2 TLSv1.1 TLSv1;
 
-        location {{ .Env.KBASE_UI_BASE_PATH }}/ {
+        location {{ or .Env.KBASE_UI_BASE_PATH ""}}/ {
 
             {{ if .Env.KBASE_UI_HOST }}
                 proxy_pass http://{{ .Env.KBASE_UI_HOST }}:{{ or .Env.KBASE_UI_PORT "3000" }};

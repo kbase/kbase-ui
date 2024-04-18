@@ -5,22 +5,22 @@ pid /var/run/nginx.pid;
 user kbmodule;
 
 # Build Environment Variables:
-# KBASE_DOMAIN = {{ .Env.KBASE_DOMAIN }}
-# KBASE_UI_HOSTNAME = {{ .Env.KBASE_UI_HOSTNAME }}
-# KBASE_UI_BASE_PATH = {{ .Env.KBASE_UI_BASE_PATH }}
-# NGINX_LOG_SYSLOG = {{ .Env.NGINX_LOG_SYSLOG }}
-# NGINX_LOG_STDOUT = {{ .Env.NGINX_LOG_STDOUT }}
-# NGINX_LOG_STDERR = {{ .Env.NGINX_LOG_STDERR }}
-# NGINX_LOG_LEVEL = {{ .Env.NGINX_LOG_LEVEL }}
-# NGINX_LISTEN = {{ .Env.NGINX_LISTEN }}
-# NGINX_SERVER_NAME = {{ .Env.NGINX_SERVER_NAME }}
+# KBASE_DOMAIN = {{ or .Env.KBASE_DOMAIN "NO DEFAULT" }}
+# KBASE_UI_HOSTNAME = {{ or .Env.KBASE_UI_HOSTNAME "defaulting to 'legacy'" }}
+# KBASE_UI_BASE_PATH = {{ or .Env.KBASE_UI_BASE_PATH "defaulting to ''" }}
+# NGINX_LOG_SYSLOG = {{ or .Env.NGINX_LOG_SYSLOG "defaulting to ''" }}
+# NGINX_LOG_STDOUT = {{ or .Env.NGINX_LOG_STDOUT "defaulting to 'true'" }}
+# NGINX_LOG_STDERR = {{ or .Env.NGINX_LOG_STDERR "defaulting to 'true'" }}
+# NGINX_LOG_LEVEL = {{ or .Env.NGINX_LOG_LEVEL "defaulting to 'error'" }}
+# NGINX_LISTEN = {{ or .Env.NGINX_LISTEN "defaulting to '80'"}}
+# NGINX_SERVER_NAME = {{ or .Env.NGINX_SERVER_NAME "defaulting to 'localhost'" }} 
 
-{{ $subhost := false }}
-{{ $kbase_ui_domain := .Env.KBASE_DOMAIN }}
-{{ if .Env.KBASE_UI_HOSTNAME }}
-    {{ $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN }}
-    {{ $subhost = true }}
-{{ end }}
+{{ $subhost := false -}}
+{{- $kbase_ui_domain := .Env.KBASE_DOMAIN -}}
+{{- if .Env.KBASE_UI_HOSTNAME -}}
+    {{- $kbase_ui_domain = print .Env.KBASE_UI_HOSTNAME "." .Env.KBASE_DOMAIN -}}
+    {{- $subhost = true -}}
+{{- end -}}
 
 events {
     worker_connections 256;
