@@ -57,11 +57,17 @@ have been added.
 As mentioned above, runtime parameterization is by means of environment
 variables.
 
-The only required environment variables are:
+The only required environment variables is:
 
 - KBASE_DOMAIN
-- KBASE_UI_HOSTNAME
+
+Although it is recommended to also set
+
 - NGINX_SYSLOG
+
+because, although not required for kbase-ui to operate, it has traditionally
+been set, and does vary between deployments enough that it cannot have a
+default value.
 
 There are many more environment variables to control kbase-ui, but they have
 sensible defaults that normally do not vary between deployments and, some cases,
@@ -73,7 +79,7 @@ of all environment variables.
 See [docs/deployment/configuration.md](../deployment/configuration.md) for
 details.
 
-Here are the variables required per environment at the time of writing:
+Here are the variables that should be used per environment at the time of writing:
 
 ### ci
 
