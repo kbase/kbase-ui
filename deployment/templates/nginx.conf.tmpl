@@ -90,6 +90,33 @@ http {
             root /kb/deployment/app;
             try_files /index.html =404;
         }
+
+        # Catches references to old "modules/plugins" path; used by
+        # some plugins to fetch resources from within themselves.
+        # We just map it to the new canonical location for plugins.
+        location ^~ {{ default "" .Env.KBASE_UI_BASE_PATH }}/modules/plugins/ {
+            ssi_silent_errors off;
+            allow all;
+            add_header Cache-Control 'no-cache';
+            alias /kb/deployment/app/plugins/;
+        }
+
+        # Used as a simple endpoint to determine the health of the connection
+        # to kbase without touching the filesystem.
+        location = {{ default "" .Env.KBASE_UI_BASE_PATH }}/__ping__ {
+            default_type text/html;
+            return 204;
+        }
+
+        # Used by a performance measuring tool, about/connection
+        # Inside the __perf__ directory are files of specific sizes 
+        # which can be fetched, and their download time measured as a
+        # rough estimate of network performance.
+        location = {{ default "" .Env.KBASE_UI_BASE_PATH }}/data/__perf__ {
+            gzip off;
+            add_header Cache-Control 'no-cache';
+            root /kb/deployment/app;
+        }
   
         # Matches all other resources
         location ~ /{{ default "" .Env.KBASE_UI_BASE_PATH }} {
@@ -109,33 +136,6 @@ http {
 
             root /kb/deployment/app;
             rewrite ^/{{ default "" .Env.KBASE_UI_BASE_PATH }}(/.*)$ $1 break;  
-        }
-        
-        # Used as a simple endpoint to determine the health of the connection
-        # to kbase.
-        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/__ping__ {
-            default_type text/html;
-            return 204;
-        }
-
-        # Used by a performance measuring tool, about/connection
-        # Inside the __perf__ directory are files of specific sizes 
-        # which can be fetched, and their download time measured as a
-        # rough estimate of network performance.
-        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/data/__perf__ {
-            gzip off;
-            add_header Cache-Control 'no-cache';
-            root /kb/deployment/app;
-        }
-
-        # Catches references to old "modules/plugins" path; used by
-        # some plugins to fetch resources from within themselves.
-        # We just map it to the new canonical location for plugins.
-        location {{ default "" .Env.KBASE_UI_BASE_PATH }}/modules/plugins/ {
-            ssi_silent_errors off;
-            allow all;
-            add_header Cache-Control 'no-cache';
-            alias /kb/deployment/app/plugins/;
         }
     }
 }
