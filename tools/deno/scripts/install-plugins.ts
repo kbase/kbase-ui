@@ -2,14 +2,26 @@ import * as fflate from 'https://cdn.skypack.dev/fflate?min';
 import { Untar } from 'https://deno.land/std@0.192.0/archive/untar.ts';
 import { parse } from 'https://esm.sh/yaml@2.3.1';
 
-import { ensureDir, ensureDirSync, ensureFile } from 'https://deno.land/std@0.192.0/fs/mod.ts';
+import {
+    ensureDir,
+    ensureDirSync,
+    ensureFile,
+} from 'https://deno.land/std@0.192.0/fs/mod.ts';
 import { Buffer } from 'https://deno.land/std@0.192.0/io/buffer.ts';
 import { copyN } from 'https://deno.land/std@0.192.0/io/copy_n.ts';
 
 import { copy } from 'https://deno.land/std@0.192.0/fs/copy.ts';
 import { readerFromStreamReader } from 'https://deno.land/std@0.192.0/streams/mod.ts';
 import { Git, log } from './common.ts';
-import { PluginConfig, PluginInfoRelease, PluginInfoRepo, PluginInfoType, PluginUIConfig, PluginsInfo, UIPluginsConfig } from './info.ts';
+import {
+    PluginConfig,
+    PluginInfoRelease,
+    PluginInfoRepo,
+    PluginInfoType,
+    PluginUIConfig,
+    PluginsInfo,
+    UIPluginsConfig,
+} from './info.ts';
 
 const BUF_SIZE = 1000000; // 1MB buffer
 
@@ -18,11 +30,16 @@ interface PluginsConfig {
 }
 
 // TODO: clone with depth 1
-function fetchRepo(account: string, name: string, version: string, dest: string) {
+function fetchRepo(
+    account: string,
+    name: string,
+    version: string,
+    dest: string,
+) {
     return new Git(`${dest}`).clone(
         `https://github.com/${account}/kbase-ui-plugin-${name}`,
         name,
-        version
+        version,
     );
 }
 
@@ -42,8 +59,12 @@ const exists = async (filename: string): Promise<boolean> => {
     }
 };
 
-
-async function fetchPlugins(config: string, downloadDest: string, installDest: string, cacheDir: string) {
+async function fetchPlugins(
+    config: string,
+    downloadDest: string,
+    installDest: string,
+    cacheDir: string,
+) {
     log('Fetching legacy plugins...', 'fetchPlugins');
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
@@ -53,22 +74,21 @@ async function fetchPlugins(config: string, downloadDest: string, installDest: s
         }
         log(
             `Considering plugin "${pluginConfig.source.github.account}/${pluginConfig.name}" ...`,
-            'fetchPluginsReleaseDist'
+            'fetchPluginsReleaseDist',
         );
 
-        const cacheSource = `${cacheDir}/${pluginConfig.name}`
+        const cacheSource = `${cacheDir}/${pluginConfig.name}/${pluginConfig.version}`;
         if (await exists(cacheSource)) {
             log('Found in cache, copying...', 'fetchPlugins');
-            await copy(cacheSource, `${installDest}/${pluginConfig.name}`)
-            continue
+            await copy(cacheSource, `${downloadDest}/${pluginConfig.name}`);
+            continue;
         } else {
             log('Not found in cache', 'fetchPlugins');
         }
 
-
         log(
             `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name}...`,
-            'fetchPlugins'
+            'fetchPlugins',
         );
         const branch = `v${pluginConfig.version}`;
         try {
@@ -76,17 +96,28 @@ async function fetchPlugins(config: string, downloadDest: string, installDest: s
                 pluginConfig.source.github.account,
                 pluginConfig.name,
                 branch,
-                downloadDest
+                downloadDest,
             );
+            log('Copying to cache...', 'fetchPlugins');
+            await copy(`${downloadDest}/${pluginConfig.name}`, cacheSource);
+            log('Copied', 'fetchPlugins');
         } catch (ex) {
             console.error('error fetching repo', ex.message, ex);
-            throw new Error(`Error fetching repo ${pluginConfig.name}: ${ex.message}`);
+            throw new Error(
+                `Error fetching repo ${pluginConfig.name}: ${ex.message}`,
+            );
         }
         log('...done');
     }
 }
 
-async function fetchPluginsReleaseDist(config: string, downloadDest: string, installDest: string, cacheDir: string, ghToken: string) {
+async function fetchPluginsReleaseDist(
+    config: string,
+    downloadDest: string,
+    installDest: string,
+    cacheDir: string,
+    ghToken: string,
+) {
     log('Fetching release dist plugins...', 'fetchPluginsReleaseDist');
     const pluginsRaw = await Deno.readTextFile(config);
     const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
@@ -97,13 +128,13 @@ async function fetchPluginsReleaseDist(config: string, downloadDest: string, ins
 
         log(
             `Considering plugin "${pluginConfig.source.github.account}/${pluginConfig.name}" ...`,
-            'fetchPluginsReleaseDist'
+            'fetchPluginsReleaseDist',
         );
 
-        const cacheSource = `${cacheDir}/${pluginConfig.name}`
+        const cacheSource = `${cacheDir}/${pluginConfig.name}`;
         if (await exists(cacheSource)) {
             log('Found in cache, copying...', 'fetchPlugins');
-            await copy(cacheSource, `${installDest}/${pluginConfig.name}`)
+            await copy(cacheSource, `${downloadDest}/${pluginConfig.name}`);
             continue;
         } else {
             log('Not found in cache', 'fetchPlugins');
@@ -111,7 +142,7 @@ async function fetchPluginsReleaseDist(config: string, downloadDest: string, ins
 
         log(
             `Fetching ${pluginConfig.source.github.account}/${pluginConfig.name} ...`,
-            'fetchPluginsReleaseDist'
+            'fetchPluginsReleaseDist',
         );
         const tag = `v${pluginConfig.version}`;
         try {
@@ -120,72 +151,91 @@ async function fetchPluginsReleaseDist(config: string, downloadDest: string, ins
                 pluginConfig.name,
                 downloadDest,
                 tag,
-                ghToken
+                ghToken,
             );
+            log('Copying to cache...', 'fetchPlugins');
+            await copy(`${downloadDest}/${pluginConfig.name}`, cacheSource);
+            log('Copied', 'fetchPlugins');
         } catch (ex) {
             console.log('error', ex);
-            throw new Error(`Error fetching plugin ${pluginConfig.name}: ${ex.message}`);
+            throw new Error(
+                `Error fetching plugin ${pluginConfig.name}: ${ex.message}`,
+            );
         }
         log('...done');
     }
 }
 
-async function fetchReleaseDist(gitAccount: string, pluginName: string, dest: string, tag: string, ghToken: string) {
-    const releaseURL = `https://api.github.com/repos/${gitAccount}/kbase-ui-plugin-${pluginName}/releases/tags/${tag}`
+async function fetchReleaseDist(
+    gitAccount: string,
+    pluginName: string,
+    dest: string,
+    tag: string,
+    ghToken: string,
+) {
+    const releaseURL = `https://api.github.com/repos/${gitAccount}/kbase-ui-plugin-${pluginName}/releases/tags/${tag}`;
     // TODO: github token
     const headers = {
         Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${ghToken}`
-    }
+        Authorization: `Bearer ${ghToken}`,
+    };
     console.log('AUTH', ghToken);
     const response = await fetch(releaseURL, { headers });
 
     if (response.status !== 200) {
-        throw new Error(`[fetchReleaseDist] error response ${response.status}: ${response.statusText}`);
+        throw new Error(
+            `[fetchReleaseDist] error response ${response.status}: ${response.statusText}`,
+        );
     }
 
-    const release = (await response.json()) as { assets: Array<{ name: string, url: string }> }
+    const release = (await response.json()) as {
+        assets: Array<{ name: string; url: string }>;
+    };
 
     if (!release) {
-        throw new Error(`[fetchReleaseDist] release returned is empty: ${response.status}, ${response.statusText}`)
+        throw new Error(
+            `[fetchReleaseDist] release returned is empty: ${response.status}, ${response.statusText}`,
+        );
     }
 
     if (!release.assets) {
-        throw new Error(`[fetchReleaseDist] assets returned is empty: ${response.status}, ${response.statusText}`)
+        throw new Error(
+            `[fetchReleaseDist] assets returned is empty: ${response.status}, ${response.statusText}`,
+        );
     }
 
     const { url } = release.assets.filter(({ name }) => {
         return name === 'dist.tgz';
     })[0];
 
-    log(
-        `fetch release dist url: ${url}`,
-        'fetchReleaseDist'
-    );
+    log(`fetch release dist url: ${url}`, 'fetchReleaseDist');
 
     const response2 = await fetch(url, {
         headers: {
-            Accept: 'application/octet-stream'
-        }
+            Accept: 'application/octet-stream',
+        },
     });
 
     log(
         `fetch release dist response: ${response2.status}, ${response2.statusText}`,
-        'fetchReleaseDist'
+        'fetchReleaseDist',
     );
 
     const rdr = response2.body?.getReader();
     if (rdr) {
-        await Deno.mkdir(`${dest}/${pluginName}`, { recursive: true })
+        await Deno.mkdir(`${dest}/${pluginName}`, { recursive: true });
         const r = readerFromStreamReader(rdr);
         log('Opening...', 'fetchReleaseDist');
-        const f = await Deno.open(`${dest}/${pluginName}/dist.tgz`, { create: true, write: true });
+        const f = await Deno.open(`${dest}/${pluginName}/dist.tgz`, {
+            create: true,
+            write: true,
+        });
         log('Copying...', 'fetchReleaseDist');
 
         let nread = null;
         do {
             nread = await copyN(r, f, BUF_SIZE);
-        } while (nread === BUF_SIZE)
+        } while (nread === BUF_SIZE);
         log('Done...', 'fetchReleaseDist');
         f.close();
     }
@@ -212,13 +262,18 @@ async function unpackPlugins(source: string, dest: string) {
         const uncompressed = fflate.gunzipSync(archive);
         const reader = new Buffer(uncompressed);
         const untar = new Untar(reader);
-        log(`  tar package: ${installationPackage}, size: ${archive.byteLength}`, 'unpackPlugins');
+        log(
+            `  tar package: ${installationPackage}, size: ${archive.byteLength}`,
+            'unpackPlugins',
+        );
         for await (const entry of untar) {
             // Handle directory entry
             if (!entry.fileName.startsWith(pluginPathPrefix)) {
                 continue;
             }
-            const adjustedName = entry.fileName.substring(pluginPathPrefix.length);
+            const adjustedName = entry.fileName.substring(
+                pluginPathPrefix.length,
+            );
             const destFileOrDir = `${dest}/${dirEntry.name}/${adjustedName}`;
             if (entry.type === 'directory') {
                 await ensureDir(destFileOrDir);
@@ -232,8 +287,7 @@ async function unpackPlugins(source: string, dest: string) {
             let nread = null;
             do {
                 nread = await copyN(entry, outputFile, BUF_SIZE);
-            } while (nread === BUF_SIZE)
-
+            } while (nread === BUF_SIZE);
         }
     }
 }
@@ -244,18 +298,27 @@ async function getYAML(path: string) {
 }
 
 export enum PluginType {
-    GIT_REPO
+    GIT_REPO,
 }
 
-async function generatePluginsManifest(uiConfig: string, source: string, dest: string) {
+async function generatePluginsManifest(
+    uiConfig: string,
+    source: string,
+    dest: string,
+) {
     const manifestFileName = `${dest}/plugin-manifest.json`;
 
-    const pluginsConfig = (await getYAML(uiConfig)) as unknown as UIPluginsConfig;
+    const pluginsConfig = (await getYAML(
+        uiConfig,
+    )) as unknown as UIPluginsConfig;
 
     // const pluginsRaw = await Deno.readTextFile(uiConfig);
     // const pluginsConfig = parse(pluginsRaw) as unknown as PluginsConfig;
 
-    log(`writing to manifest file ${manifestFileName}...`, 'generatePluginsManifest');
+    log(
+        `writing to manifest file ${manifestFileName}...`,
+        'generatePluginsManifest',
+    );
     const manifest: PluginsInfo = [];
     for await (const uiPluginConfig of pluginsConfig.plugins) {
         // Config is in the dest (also the source)
@@ -284,7 +347,10 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
             } as PluginInfoRelease);
         } else {
             // Need to get git info from the source.
-            log(`Getting git info from ${pluginSourceDir}`, 'generatePluginsManifest');
+            log(
+                `Getting git info from ${pluginSourceDir}`,
+                'generatePluginsManifest',
+            );
             const gitInfo = await new Git(pluginSourceDir).getInfo();
             manifest.push({
                 type: PluginInfoType.GIT_REPO,
@@ -301,14 +367,14 @@ async function generatePluginsManifest(uiConfig: string, source: string, dest: s
     }
     await Deno.writeFile(
         manifestFileName,
-        new TextEncoder().encode(JSON.stringify(manifest, null, 4))
+        new TextEncoder().encode(JSON.stringify(manifest, null, 4)),
     );
     log('done!', 'generatePluginsManifest');
 }
 
 async function main() {
     if (Deno.args.length < 3) {
-        log(`Incorrect number of args ${Deno.args.length}`)
+        log(`Incorrect number of args ${Deno.args.length}`);
         log('Usage: install-plugins.ts <config> <dest> <ghtoken>');
         Deno.exit(1);
     }
@@ -329,9 +395,14 @@ async function main() {
     ensureDirSync(downloadDest);
     ensureDirSync(installDest);
 
-
     await fetchPlugins(config, downloadDest, installDest, cacheDir);
-    await fetchPluginsReleaseDist(config, downloadDest, installDest, cacheDir, ghToken);
+    await fetchPluginsReleaseDist(
+        config,
+        downloadDest,
+        installDest,
+        cacheDir,
+        ghToken,
+    );
 
     await unpackPlugins(downloadDest, installDest);
     await generatePluginsManifest(config, downloadDest, installDest);
