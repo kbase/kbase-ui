@@ -1,0 +1,9 @@
+services:
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/app
+    command:
+      - bash

@@ -30,19 +30,15 @@ function alias-me {
 }
 
 function install-plugins {
-	bash tools/deno/scripts/install-plugins.sh "${1}" 
-}
-
-function install-plugin {
-	bash tools/deno/scripts/install-plugin.sh "${1}" 
+    bash scripts/host/install-plugins.sh
 }
 
 function git-info {
-    bash tools/deno/scripts/git-info.sh
+    bash scripts/host/git-info.sh
 }
 
 function build-info {
-	bash tools/deno/scripts/build-info.sh
+	bash scripts/host/build-info.sh
 }
 
 function prepare-build {
