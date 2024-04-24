@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out GitHub Repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             # Run tests
             - name: Run all tests
