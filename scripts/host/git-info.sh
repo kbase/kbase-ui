@@ -14,10 +14,10 @@ export INSTALL_DEST="/app/build/build/git-info.json"
 cd tools/python
 
 echo
-echo "Creating git info"
+echo "Creating git info in ${INSTALL_DEST}"
 echo
 
-docker compose run runner \
+docker compose run --rm runner \
     python ${SCRIPT} ${INSTALL_DEST} 
 
 cd ../..

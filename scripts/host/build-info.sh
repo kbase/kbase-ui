@@ -17,7 +17,7 @@ echo
 echo "Creating build info"
 echo
 
-docker compose run runner \
+docker compose run --rm runner \
     python ${SCRIPT} ${INSTALL_DEST} 
 
 cd ../..

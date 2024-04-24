@@ -36,6 +36,10 @@ def utc_in_iso8601(timestamp):
 
 
 def git_info():
+    config1, config2 = run_command(
+        ["git", "config", "--global", "--add", "safe.directory", "/app"]
+    )
+
     output, _ = run_command(
         ["git", "show", "--format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d", "--name-status"]
     )
