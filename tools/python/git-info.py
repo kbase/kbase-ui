@@ -40,6 +40,8 @@ def git_info():
         ["git", "config", "--global", "--add", "safe.directory", "/app"]
     )
 
+    print("safe now?", config1, config2)
+
     output, _ = run_command(
         ["git", "show", "--format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d", "--name-status"]
     )
