@@ -1,63 +1,64 @@
 name: kbase-dev
 networks:
-  kbase-dev:
-    name: kbase-dev
+    kbase-dev:
+        name: kbase-dev
 services:
-  kbase-ui:
-    build:
-      context: .
-      dockerfile: Dockerfile-devcontainer
-    image: kbase/kbase-ui:dev
-    container_name: kbase-ui
-    dns: 8.8.8.8
-    volumes:
-      # Update this to wherever you want VS Code to mount the folder of your project
-      - ..:/workspace:cached
-    networks:
-      - kbase-dev
-    env_file: 
-      - runtime.env
-    # Required for a devcontainer -- keeps the container running.
-    # Don't worry, our main interaction with the container is through the 
-    # VSC terminal, which for a devcontainer opens a shell within the
-    # container.
-    command: /bin/sh -c "while sleep 1000; do :; done"
-  kbase-ui-deploy:
-    image: nginx:1.25.4-alpine3.18
-    container_name: kbase-ui-deploy
-    volumes:
-      - ../build:/usr/share/nginx/html
-      # Example of volume mounts for local plugins
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-catalog/dist/plugin:/usr/share/nginx/html/plugins/catalog
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-typeview/dist/plugin:/usr/share/nginx/html/plugins/typeview
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-data-search/dist/plugin:/usr/share/nginx/html/plugins/data-search
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-organizations/dist/plugin:/usr/share/nginx/html/plugins/organizations
-      # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-samples/dist/plugin:/usr/share/nginx/html/plugins/samples
-    networks:
-      - kbase-dev
-    ports:
-      - "8081:80"
-  kbase-ui-proxy:
-    build:
-      context: ../tools/proxy
-    # there is only one proxy image, for local development, so just call it :dev
-    image: kbase/kbase-ui-proxy:dev
-    depends_on:
-      - kbase-ui
-      - kbase-ui-deploy
-    networks:
-      - kbase-dev
-    container_name: kbase-ui-proxy
-    ports:
-      - '80:80'
-      - '443:443'
-    dns: 
-      # TODO: sort this out!
-      - 8.8.8.8
-      - 9.9.9.9
-      - 1.1.1.1
-      - 208.67.222.222
-    env_file: 
-      - proxy.env
+    kbase-ui:
+        build:
+            context: .
+            dockerfile: Dockerfile-devcontainer
+        image: kbase/kbase-ui:dev
+        container_name: kbase-ui
+        dns: 8.8.8.8
+        volumes:
+            # Update this to wherever you want VS Code to mount the folder of your project
+            - ..:/workspace:cached
+        networks:
+            - kbase-dev
+        env_file:
+            - runtime.env
+        # Required for a devcontainer -- keeps the container running.
+        # Don't worry, our main interaction with the container is through the
+        # VSC terminal, which for a devcontainer opens a shell within the
+        # container.
+        command: /bin/sh -c "while sleep 1000; do :; done"
+    kbase-ui-deploy:
+        image: nginx:1.25.4-alpine3.18
+        container_name: kbase-ui-deploy
+        volumes:
+            - ../build:/usr/share/nginx/html
+            # Example of volume mounts for local plugins
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-auth2-client/dist/plugin:/usr/share/nginx/html/plugins/auth2-client
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-catalog/dist/plugin:/usr/share/nginx/html/plugins/catalog
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-dataview/dist/plugin:/usr/share/nginx/html/plugins/dataview
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-typeview/dist/plugin:/usr/share/nginx/html/plugins/typeview
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-data-search/dist/plugin:/usr/share/nginx/html/plugins/data-search
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-jgi-search/dist/plugin:/usr/share/nginx/html/plugins/jgi-search
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-organizations/dist/plugin:/usr/share/nginx/html/plugins/organizations
+            # - /Users/erikpearson/Work/KBase/2023/europa-integration/kbase-ui-plugin-samples/dist/plugin:/usr/share/nginx/html/plugins/samples
+        networks:
+            - kbase-dev
+        ports:
+            - '8081:80'
+    kbase-ui-proxy:
+        build:
+            context: ../tools/proxy
+        # there is only one proxy image, for local development, so just call it :dev
+        image: kbase/kbase-ui-proxy:dev
+        depends_on:
+            - kbase-ui
+            - kbase-ui-deploy
+        networks:
+            - kbase-dev
+        container_name: kbase-ui-proxy
+        ports:
+            - '80:80'
+            - '443:443'
+        dns:
+            # TODO: sort this out!
+            - 8.8.8.8
+            - 9.9.9.9
+            - 1.1.1.1
+            - 208.67.222.222
+        env_file:
+            - proxy.env
