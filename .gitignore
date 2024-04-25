@@ -17,6 +17,7 @@ _attic/
 # Build artifacts
 /build/
 !/build/README.md
+*.pyc
 
 report.*.json
 

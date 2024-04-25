@@ -14,6 +14,8 @@ from typing import List
 import requests
 import yaml
 
+from .common import git_info
+
 
 def print_lines(prefix: str, lines: List[str]):
     for index, line in enumerate(lines):
@@ -161,6 +163,48 @@ def unpack_plugins(source, dest):
                 shutil.rmtree(f"{plugin_path}.temp")
 
 
+def create_plugin_manifest(plugin_ui_config, plugin_source_dir, plugin_install_dir):
+    plugin_name = plugin_ui_config["name"]
+
+    with open(f"{plugin_install_dir}/config.yml", "r", encoding="utf-8") as config_in:
+        plugin_config = yaml.safe_load(config_in)
+
+    if dig(plugin_ui_config, "source.github.release"):
+        return {
+            "type": "GITHUB_RELEASE",
+            "install": {"directory": plugin_source_dir},
+            "configs": {"plugin": plugin_config, "ui": plugin_ui_config},
+        }
+    else:
+        git = git_info(plugin_source_dir)
+        return {
+            "type": "GIT_REPO",
+            "install": {"directory": plugin_source_dir},
+            "configs": {"plugin": plugin_config, "ui": plugin_ui_config},
+            "git": git,
+        }
+
+
+def generate_plugins_manifest(ui_config, source_dir, dest_dir):
+    plugins_manifest = []
+
+    for ui_plugin_config in ui_config["plugins"]:
+        plugin_name = ui_plugin_config["name"]
+        plugin_install_dir = f"{dest_dir}/{plugin_name}"
+        plugin_source_dir = f"{source_dir}/{plugin_name}"
+
+        plugins_manifest.append(
+            create_plugin_manifest(
+                ui_plugin_config, plugin_source_dir, plugin_install_dir
+            )
+        )
+
+    manifest_file_name = f"{dest_dir}/plugin-manifest.json"
+    manifest_file_path = pathlib.Path(manifest_file_name)
+    with open(manifest_file_path, "w", encoding="utf-8") as manifest_out:
+        json.dump(plugins_manifest, manifest_out)
+
+
 def main():
     print("Installing plugins...")
 
@@ -182,9 +226,12 @@ def main():
 
         unpack_plugins(temp_dir_name, dest)
 
+        generate_plugins_manifest(config, temp_dir_name, dest)
+
         sys.exit(0)
 
     print("Done installing plugins!")
 
 
+main()
 main()

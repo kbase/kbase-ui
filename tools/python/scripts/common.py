@@ -1,4 +1,4 @@
-import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -35,12 +35,14 @@ def utc_in_iso8601(timestamp):
     )
 
 
-def git_info():
+def git_info(git_repo_directory):
+    current_directory = os.getcwd()
+    if git_repo_directory:
+        os.chdir(git_repo_directory)
+
     config1, config2 = run_command(
         ["git", "config", "--global", "--add", "safe.directory", "/app"]
     )
-
-    print("safe now?", config1, config2)
 
     output, _ = run_command(
         ["git", "show", "--format=%H%n%h%n%an%n%at%n%cn%n%ct%n%d", "--name-status"]
@@ -66,6 +68,9 @@ def git_info():
 
     branch, _ = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 
+    if git_repo_directory:
+        os.chdir(current_directory)
+
     return {
         "hash": {
             "full": commit_hash,
@@ -86,18 +91,3 @@ def git_info():
         "repoName": repo_name,
         "branch": branch.strip(),
     }
-
-
-def save_info(info, dest):
-    with open(dest, "w", encoding="utf-8") as fout:
-        json.dump(info, fout, indent=4)
-
-
-def main():
-    dest = sys.argv[1]
-    info = git_info()
-    save_info(info, dest)
-    sys.exit(0)
-
-
-main()

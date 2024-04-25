@@ -7,7 +7,7 @@ echo "------------------"
 export HOST_APP_DIR=${PWD}
 
 # The script we are running
-export SCRIPT="/app/tools/python/install-plugins.py"
+export SCRIPT_MODULE="scripts.install-plugins"
 
 # Arguments for the script
 export PLUGINS_CONFIG_PATH="/app/config/plugins.yml"
@@ -25,7 +25,7 @@ echo "Installing plugins"
 echo "HOST_APP_DIR=$HOST_APP_DIR"
 echo
 
-docker compose run runner \
-    python ${SCRIPT} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST} ${GH_TOKEN}
+docker compose run --rm runner \
+    python -m ${SCRIPT_MODULE} ${PLUGINS_CONFIG_PATH} ${PLUGINS_INSTALL_DEST} ${GH_TOKEN}
 
 cd ../..
