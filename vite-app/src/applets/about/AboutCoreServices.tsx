@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { AuthenticationState } from '../../contexts/Auth';
+import { AuthenticationState } from '../../contexts/EuropaContext';
 import { Config } from '../../types/config';
 import AboutService from './AboutService/AboutServiceMain';
 import { SERVICES } from './ServiceDescription';

@@ -1,0 +1,21 @@
+.ContinueHeader {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.25em;
+    /* border-bottom: 1px solid rgba(200, 200, 200, 0.5); */
+}
+
+.ContinueHeader .-col1 {
+    flex: 1 1 0;
+    font-weight: bold;
+    font-size: 120%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.ContinueHeader .-col2 {
+    flex: 0 0 auto;
+}

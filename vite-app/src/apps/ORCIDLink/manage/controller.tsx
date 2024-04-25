@@ -1,11 +1,11 @@
-import ErrorMessage from "components/ErrorMessage";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
-import { Component } from "react";
-import { Config } from "types/config";
-import { Model } from "../lib/Model";
-import ORCIDLinkManageView from "./view";
+import ErrorMessage from 'components/ErrorMessage';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+import { SimpleError } from 'lib/SimpleError';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import { Model } from '../lib/Model';
+import ORCIDLinkManageView from './view';
 
 export interface ORCIDLinkManageControllerProps {
     auth: AuthenticationStateAuthenticated;
@@ -19,33 +19,39 @@ export interface ManageState {
 
 interface ORCIDLinkManageControllerState {
     manageState: AsyncProcess<ManageState, SimpleError>;
-    viewedLinks: Array<string>
+    viewedLinks: Array<string>;
 }
 
-export default class ORCIDLinkManageController extends Component<ORCIDLinkManageControllerProps, ORCIDLinkManageControllerState> {
+export default class ORCIDLinkManageController extends Component<
+    ORCIDLinkManageControllerProps,
+    ORCIDLinkManageControllerState
+> {
     constructor(props: ORCIDLinkManageControllerProps) {
         super(props);
         this.state = {
             manageState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
-            viewedLinks: []
-        }
+            viewedLinks: [],
+        };
     }
     componentDidMount() {
         // First ensure that the user is an admin.
-        this.props.setTitle('KBase ORCID® Link - Manager');
+        this.props.setTitle('KBase ORCID Link - Manager');
         this.initialize();
     }
 
     async initialize() {
         this.setState({
             manageState: {
-                status: AsyncProcessStatus.NONE
-            }
+                status: AsyncProcessStatus.NONE,
+            },
         });
 
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
 
         try {
             const isManager = await model.isManager();
@@ -54,18 +60,19 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
                     manageState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Management tools only available to KBase ORCID® managers'
-                        }
-                    }
+                            message:
+                                'Management tools only available to KBase ORCID® managers',
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     manageState: {
                         status: AsyncProcessStatus.SUCCESS,
                         value: {
-                            isManager: true
-                        }
-                    }
+                            isManager: true,
+                        },
+                    },
                 });
             }
         } catch (ex) {
@@ -74,18 +81,18 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
                     manageState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     manageState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'Unknown error'
-                        }
-                    }
+                            message: 'Unknown error',
+                        },
+                    },
                 });
             }
         }
@@ -93,14 +100,16 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
 
     addViewedLink(username: string) {
         this.setState({
-            viewedLinks: [...this.state.viewedLinks, username]
-        })
+            viewedLinks: [...this.state.viewedLinks, username],
+        });
     }
 
     removeViewedLink(usernameToRemove: string) {
         this.setState({
-            viewedLinks: this.state.viewedLinks.filter(username => username !== usernameToRemove)
-        })
+            viewedLinks: this.state.viewedLinks.filter(
+                (username) => username !== usernameToRemove,
+            ),
+        });
     }
 
     render() {
@@ -109,13 +118,19 @@ export default class ORCIDLinkManageController extends Component<ORCIDLinkManage
             case AsyncProcessStatus.PENDING:
                 return;
             case AsyncProcessStatus.ERROR:
-                return <ErrorMessage message={this.state.manageState.error.message} />
+                return (
+                    <ErrorMessage
+                        message={this.state.manageState.error.message}
+                    />
+                );
             case AsyncProcessStatus.SUCCESS:
-                return <ORCIDLinkManageView
-                    viewedLinks={this.state.viewedLinks}
-                    addViewedLink={this.addViewedLink.bind(this)}
-                    removeViewedLink={this.removeViewedLink.bind(this)}
-                />
+                return (
+                    <ORCIDLinkManageView
+                        viewedLinks={this.state.viewedLinks}
+                        addViewedLink={this.addViewedLink.bind(this)}
+                        removeViewedLink={this.removeViewedLink.bind(this)}
+                    />
+                );
         }
     }
 }

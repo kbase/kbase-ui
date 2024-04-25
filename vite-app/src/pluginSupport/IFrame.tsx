@@ -1,8 +1,7 @@
 import { Component } from 'react';
 import * as uuid from 'uuid';
 import { Config, GitInfo } from '../types/config';
-import './IFrame.css';
-
+import styles from './IFrame.module.css';
 
 export interface PluginGitInfo {
     commitHash: string;
@@ -32,7 +31,7 @@ export interface IFrameProps {
     whenMounted: (el: Window | null) => Promise<void>;
 }
 
-interface IFrameState { }
+interface IFrameState {}
 
 export default class IFrame extends Component<IFrameProps, IFrameState> {
     id: string;
@@ -49,11 +48,13 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             .filter((pathElement) => {
                 return pathElement.length > 0;
             })
-            .join('/')
+            .join('/');
 
-        const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`
+        const indexPath = `${this.props.pathRoot}/iframe_root/index.html${this.cacheBuster()}#${hashPath}`;
 
         // Make an absolute url to this.
+        // The plugin is always on the same host as kbase-ui
+
         const url = `${document.location.origin}/${indexPath}`;
         this.url = url;
         this.hashListener = null;
@@ -78,7 +79,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         if (developMode) {
             return String(new Date().getTime());
         } else {
-            return gitInfo.hash.abbreviated
+            return gitInfo.hash.abbreviated;
         }
     }
 
@@ -91,18 +92,24 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         // This will update the hash for the iframe url to match
         // that of the parent kbase-ui window, which may trigger
         // navigation if the plugin handles that by itself.
+        // If not, it is harmless.
+        // Supports navigation via kbase-ui into plugins.
+        // A plugin which plays nice will set the url fragment for kbase-ui, which will
+        // flow back to the plugin, but allow the kbase-ui location to reflect that of
+        // the plugin.
+        // Some older plugins may not place nice like this, and will have their internal
+        // navigation obscured since it is only on the iframe. Some plugins don't use
+        // any browser navigation, just using state and components.
         if (this.props.syncHash) {
             const hashListener = () => {
-                if (
-                    element.contentWindow === null
-                ) {
+                if (element.contentWindow === null) {
                     return;
                 }
                 const path = document.location.hash
                     .substring(1)
                     .replace(/^\/+/, '');
                 element.contentWindow.location.hash = path;
-            }
+            };
             window.addEventListener('hashchange', hashListener);
         }
         this.props.whenMounted(element.contentWindow);
@@ -123,20 +130,20 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
             branch: gitInfo.branch, // unused?
             commitAbbreviatedHash: gitInfo.hash.abbreviated,
             commitHash: gitInfo.hash.full,
-            commitNotes: "",
+            commitNotes: '',
             originUrl: gitInfo.originURL,
-            reflogSelector: "",
-            subject: "",
-            tag: gitInfo.tag || "n/a",
-            version: gitInfo.version || "n/a"
-        }
+            reflogSelector: '',
+            subject: '',
+            tag: gitInfo.tag || 'n/a',
+            version: gitInfo.version || 'n/a',
+        };
     }
 
     render() {
         const buildInfo = {
             git: this.gitInfoToPluginGitInfo(this.props.config.gitInfo),
             builtAt: this.props.config.buildInfo.builtAt,
-        }
+        };
 
         const params = {
             frameId: this.id,
@@ -150,6 +157,7 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
         };
 
         const paramString = window.encodeURIComponent(JSON.stringify(params));
+
         return (
             <iframe
                 title="Plugin IFrame"
@@ -160,9 +168,10 @@ export default class IFrame extends Component<IFrameProps, IFrameState> {
                 data-channel-id={this.props.hostChannelId}
                 data-host-channel-id={this.props.hostChannelId}
                 data-plugin-channel-id={this.props.pluginChannelId}
-                className="IFrame -iframe"
-                frameBorder="0"
+                className={styles.main}
                 scrolling="no"
+                allow="clipboard-read; clipboard-write;"
+                // sandbox="allow-same-origin allow-downloads allow-forms allow-modals allow-popups allow-scripts"
                 src={this.url}
             ></iframe>
         );

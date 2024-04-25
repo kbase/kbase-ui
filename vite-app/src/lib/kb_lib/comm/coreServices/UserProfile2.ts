@@ -15,7 +15,10 @@ export interface UserProfilePreferenceSetting extends JSONObject {
     updatedAt: number;
 }
 
-export type UserProfilePreferences = Record<string, UserProfilePreferenceSetting>
+export type UserProfilePreferences = Record<
+    string,
+    UserProfilePreferenceSetting
+>;
 
 export interface UserProfileAffiliation extends JSONLikeObject {
     title: string;
@@ -24,7 +27,7 @@ export interface UserProfileAffiliation extends JSONLikeObject {
     ended?: number | null;
 }
 
-export type UserProfileAffiliations = Array<UserProfileAffiliation>
+export type UserProfileAffiliations = Array<UserProfileAffiliation>;
 
 // TODO: not sure about whether nullable fields should be allowed or preferred, or if they should just be optional.
 export interface UserProfileUserdata extends JSONLikeObject {
@@ -35,7 +38,7 @@ export interface UserProfileUserdata extends JSONLikeObject {
     organization?: string | null;
     department?: string;
     gravatarDefault?: string; // not required unless avatarOptions === 'gravatar'
-    affiliations?: UserProfileAffiliations
+    affiliations?: UserProfileAffiliations;
     city?: string;
     state?: string;
     postalCode?: string;
@@ -45,14 +48,15 @@ export interface UserProfileUserdata extends JSONLikeObject {
     researchInterestsOther?: string | null;
     jobTitle?: string;
     jobTitleOther?: string;
-    fundingSource?: string
+    fundingSource?: string;
 }
 
 export interface UserProfileSynced extends JSONObject {
     gravatarHash: string;
 }
 
-export interface UserProfilePluginSetting<T extends JSONValue> extends JSONLikeObject {
+export interface UserProfilePluginSetting<T extends JSONValue>
+    extends JSONLikeObject {
     setting: T;
 }
 
@@ -61,10 +65,10 @@ export interface UserProfilePluginSettingsDataSearch extends JSONObject {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    }
+                $numberLong: string;
+            };
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsJGISearch extends JSONObject {
@@ -72,16 +76,16 @@ export interface UserProfilePluginSettingsJGISearch extends JSONObject {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    },
+                $numberLong: string;
+            };
+        };
+    };
     jgiDataTerms: {
-        agreed: boolean,
+        agreed: boolean;
         time: {
-            $numberLong: string
-        }
-    }
+            $numberLong: string;
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsPublicSearch extends JSONObject {
@@ -89,10 +93,10 @@ export interface UserProfilePluginSettingsPublicSearch extends JSONObject {
         search: {
             history: Array<string>;
             time: {
-                $numberLong: string
-            }
-        }
-    }
+                $numberLong: string;
+            };
+        };
+    };
 }
 
 export interface UserProfilePluginSettingsUserProfile extends JSONObject {
@@ -100,17 +104,17 @@ export interface UserProfilePluginSettingsUserProfile extends JSONObject {
 }
 
 export interface UserProfilePlugins extends JSONLikeObject {
-    "data-search"?: UserProfilePluginSetting<UserProfilePluginSettingsDataSearch>
-    "jgi-search"?: UserProfilePluginSetting<UserProfilePluginSettingsJGISearch>
-    "public-search"?: UserProfilePluginSetting<UserProfilePluginSettingsPublicSearch>
-    "user-profile"?: UserProfilePluginSetting<UserProfilePluginSettingsUserProfile>
+    'data-search'?: UserProfilePluginSetting<UserProfilePluginSettingsDataSearch>;
+    'jgi-search'?: UserProfilePluginSetting<UserProfilePluginSettingsJGISearch>;
+    'public-search'?: UserProfilePluginSetting<UserProfilePluginSettingsPublicSearch>;
+    'user-profile'?: UserProfilePluginSetting<UserProfilePluginSettingsUserProfile>;
 }
 
 export interface UserProfileSurveyData extends JSONObject {
     referralSources: {
         question: string;
-        response: Record<string, string>
-    }
+        response: Record<string, string>;
+    };
 }
 
 export interface UserProfileUser extends JSONObject {
@@ -124,12 +128,12 @@ export interface UserProfileProfile extends JSONLikeObject {
     synced: UserProfileSynced;
     preferences?: UserProfilePreferences;
     plugins?: UserProfilePlugins;
-    surveydata?: UserProfileSurveyData
+    surveydata?: UserProfileSurveyData;
 }
 
 export interface UserProfile extends JSONLikeObject {
-    user: UserProfileUser,
-    profile: UserProfileProfile,
+    user: UserProfileUser;
+    profile: UserProfileProfile;
 }
 
 export interface UserProfileUpdate extends JSONLikeObject {
@@ -137,12 +141,14 @@ export interface UserProfileUpdate extends JSONLikeObject {
     profile: {
         userdata?: UserProfileUserdata;
         preferences?: UserProfilePreferences;
-    }
+    };
 }
 
 function coerceToInt(value: unknown, acceptableTypes: Array<string>): number {
     if (!acceptableTypes.includes(typeof value)) {
-        throw new Error(`Expected type in (${acceptableTypes.join(', ')}), got "${typeof value}"`)
+        throw new Error(
+            `Expected type in (${acceptableTypes.join(', ')}), got "${typeof value}"`,
+        );
     }
 
     switch (typeof value) {
@@ -151,9 +157,8 @@ function coerceToInt(value: unknown, acceptableTypes: Array<string>): number {
         case 'number':
             return value;
         default:
-            throw new Error(`Unsupported coercion from ${typeof value}`)
+            throw new Error(`Unsupported coercion from ${typeof value}`);
     }
-
 }
 
 interface AssertTypeOfOptions {
@@ -161,14 +166,21 @@ interface AssertTypeOfOptions {
     nullable?: boolean;
 }
 
-function assertTypeOf(object: JSONObject, name: string, types: Array<string>, options: AssertTypeOfOptions = {}) {
+function assertTypeOf(
+    object: JSONObject,
+    name: string,
+    types: Array<string>,
+    options: AssertTypeOfOptions = {},
+) {
     if (options.optional) {
         types.push('undefined');
     }
     const value = object[name];
     if (!types.includes(typeof value)) {
         if (!options.nullable || value !== null) {
-            throw new Error(`Property "${name}" is not of the expected types "${types.join(', ')}"`);
+            throw new Error(
+                `Property "${name}" is not of the expected types "${types.join(', ')}"`,
+            );
         }
     }
 }
@@ -190,11 +202,10 @@ function jsonLikeToJSON(jsonLike: JSONLikeObject): JSONObject {
     return jsonLike as unknown as JSONObject;
 }
 
-
 // TODO: incomplete
 function validateProfile(possibleProfile: unknown): UserProfile {
     if (!isJSONObject(possibleProfile)) {
-        throw new Error("User profile is not an object");
+        throw new Error('User profile is not an object');
     }
 
     // The top level "user" property
@@ -218,7 +229,7 @@ function validateProfile(possibleProfile: unknown): UserProfile {
     // in the UserProfile service, so the only thing that assures it's correct structure
     // is the code that creates it, that edits it, and here.
 
-    if (!hasOwnProperty(possibleProfile, "profile")) {
+    if (!hasOwnProperty(possibleProfile, 'profile')) {
         throw new Error('User profile missing "profile" property');
     }
 
@@ -230,7 +241,7 @@ function validateProfile(possibleProfile: unknown): UserProfile {
 
     // Userdata is where what we think of as the user profile resides.
 
-    if (!hasOwnProperty(profile, "userdata")) {
+    if (!hasOwnProperty(profile, 'userdata')) {
         throw new Error('User profile missing "userdata" property');
     }
     const userdata = profile.userdata;
@@ -238,8 +249,8 @@ function validateProfile(possibleProfile: unknown): UserProfile {
         throw new Error('User profile "userdata" is not an object');
     }
 
-    if (hasOwnProperty(userdata, "affiliations")) {
-        const affiliations = userdata["affiliations"];
+    if (hasOwnProperty(userdata, 'affiliations')) {
+        const affiliations = userdata['affiliations'];
         if (!isJSONArray(affiliations)) {
             throw new Error('User profile "affiliations" is not an array');
         }
@@ -247,22 +258,34 @@ function validateProfile(possibleProfile: unknown): UserProfile {
         const fixedAffiliations = affiliations
             .map((affiliation) => {
                 if (!isJSONObject(affiliation)) {
-                    throw new Error('User profile "affiliation" is not an object');
+                    throw new Error(
+                        'User profile "affiliation" is not an object',
+                    );
                 }
                 // Check fields.
 
-                assertTypeOf(affiliation, "title", ["string"]);
-                assertTypeOf(affiliation, "organization", ["string"]);
+                assertTypeOf(affiliation, 'title', ['string']);
+                assertTypeOf(affiliation, 'organization', ['string']);
 
-                assertTypeOf(affiliation, "started", ["string", "number"]);
-                affiliation.started = coerceToInt(affiliation.started, ['string', 'number']);
+                assertTypeOf(affiliation, 'started', ['string', 'number']);
+                affiliation.started = coerceToInt(affiliation.started, [
+                    'string',
+                    'number',
+                ]);
 
-
-                assertTypeOf(affiliation, "started", ["string", "number"], { optional: true, nullable: true });
-                if (typeof affiliation.ended !== 'undefined' && affiliation.ended !== null) {
-                    affiliation.ended = coerceToInt(affiliation.ended, ['string', 'number']);
+                assertTypeOf(affiliation, 'started', ['string', 'number'], {
+                    optional: true,
+                    nullable: true,
+                });
+                if (
+                    typeof affiliation.ended !== 'undefined' &&
+                    affiliation.ended !== null
+                ) {
+                    affiliation.ended = coerceToInt(affiliation.ended, [
+                        'string',
+                        'number',
+                    ]);
                 }
-
 
                 // if (!isTypeOf(affiliation, "started", "number")) {
                 //     const possibleStarted = affiliation["started"];
@@ -313,7 +336,8 @@ function validateProfile(possibleProfile: unknown): UserProfile {
                 //     }
                 // }
                 return affiliation;
-            }).filter((affiliation) => {
+            })
+            .filter((affiliation) => {
                 return affiliation === null ? false : true;
             });
         userdata.affiliations = fixedAffiliations;
@@ -332,23 +356,21 @@ function validateProfile(possibleProfile: unknown): UserProfile {
 
 // Client implementation
 
-
 export type GetUserProfileParams = Array<string>;
 
 export type GetUserProfileResult = Array<UserProfile>;
 
-
-export interface UpdateUserProfileParams extends JSONLikeObject { profile: UserProfileUpdate };
+export interface UpdateUserProfileParams extends JSONLikeObject {
+    profile: UserProfileUpdate;
+}
 
 // no result
-
-
 
 export default class UserProfileClient extends ServiceClient {
     module: string = 'UserProfile';
 
     async get_user_profile(
-        params: GetUserProfileParams
+        params: GetUserProfileParams,
     ): Promise<GetUserProfileResult> {
         const [result] = await this.callFunc<
             JSONArrayOf<GetUserProfileParams>,
@@ -357,15 +379,14 @@ export default class UserProfileClient extends ServiceClient {
 
         return result.map((possibleUserProfile) => {
             return validateProfile(possibleUserProfile);
-        })
+        });
     }
 
-    async update_user_profile(
-        params: UpdateUserProfileParams
-    ): Promise<void> {
+    async update_user_profile(params: UpdateUserProfileParams): Promise<void> {
         const methodParams = jsonLikeToJSON(params);
-        await this.callFuncEmptyResult<
-            JSONArrayOf<JSONObject>
-        >('update_user_profile', [methodParams]);
+        await this.callFuncEmptyResult<JSONArrayOf<JSONObject>>(
+            'update_user_profile',
+            [methodParams],
+        );
     }
 }

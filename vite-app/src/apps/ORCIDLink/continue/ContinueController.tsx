@@ -1,18 +1,22 @@
-import Loading from "components/Loading";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { AsyncProcess, AsyncProcessStatus } from "lib/AsyncProcess";
-import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
-import { InfoResult, LinkingSessionPublicComplete } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
-import { UserProfile } from "lib/kb_lib/comm/coreServices/UserProfile";
-import { LinkRecordPublic } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
-import { changeHash2 } from "lib/navigation";
-import { Component } from "react";
-import { Config } from "types/config";
-import { Model } from "../lib/Model";
-import { ErrorCode, ReturnInstruction } from "../lib/ORCIDLinkClient";
-import { ClientError } from "../lib/ServiceClient";
-import Continue from "./Continue";
-import ErrorView from "./Error";
+import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcess, AsyncProcessStatus } from 'lib/AsyncProcess';
+// import { JSONRPC20Exception } from "lib/kb_lib/comm/JSONRPC20/JSONRPC20";
+import { JSONRPC20Exception } from 'lib/kb_lib/comm/JSONRPC20/JSONRPC20';
+import {
+    InfoResult,
+    LinkingSessionPublicComplete,
+} from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
+import { UserProfile } from 'lib/kb_lib/comm/coreServices/UserProfile';
+import { LinkRecordPublic } from 'lib/kb_lib/comm/coreServices/orcidLinkCommon';
+import { navigate, navigate2 } from 'lib/navigation';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import { Model } from '../lib/Model';
+import { ErrorCode, ReturnInstruction } from '../lib/ORCIDLinkClient';
+import { ClientError } from '../lib/ServiceClient';
+import Continue from './Continue';
+import ErrorView from './Error';
 
 export interface ContinueControllerProps {
     linkingSessionId: string;
@@ -30,32 +34,32 @@ export interface ContinueControllerProps {
 
 export interface ErrorBase {
     message: string;
-    type: ErrorType
+    type: ErrorType;
 }
 
 export enum ErrorType {
-    ALREADY_LINKED = "ALREADY LINKED",
+    ALREADY_LINKED = 'ALREADY LINKED',
     // ORCID_ALREADY_LINKED = "ORCID ALREADY LINKED",
-    FETCH_LINK_SESSION_ERROR = "FETCH LINK SESSION ERROR",
-    SESSION_EXPIRED = "SESSION_EXPIRED"
+    FETCH_LINK_SESSION_ERROR = 'FETCH LINK SESSION ERROR',
+    SESSION_EXPIRED = 'SESSION_EXPIRED',
 }
 
 export interface AlreadyLinkedError extends ErrorBase {
-    type: ErrorType.ALREADY_LINKED,
-    serviceInfo: InfoResult,
-    link: LinkRecordPublic
+    type: ErrorType.ALREADY_LINKED;
+    serviceInfo: InfoResult;
+    link: LinkRecordPublic;
 }
 
-// Note that the prop names are the same as for orcid auth so we can 
+// Note that the prop names are the same as for orcid auth so we can
 // use then duck-type style...
 export interface MinimalORCIDAccountInfo {
     orcid: {
-        orcid: string,
-        name: string
-    },
+        orcid: string;
+        name: string;
+    };
     kbase: {
-        userProfile: UserProfile
-    }
+        userProfile: UserProfile;
+    };
 }
 
 // export interface ORCIDAlreadyLinkedError extends ErrorBase {
@@ -63,52 +67,57 @@ export interface MinimalORCIDAccountInfo {
 //     info: MinimalORCIDAccountInfo
 // }
 
-
 export interface FetchLinkSessionError extends ErrorBase {
-    type: ErrorType.FETCH_LINK_SESSION_ERROR
+    type: ErrorType.FETCH_LINK_SESSION_ERROR;
 }
 
 export interface SessionExpiredError extends ErrorBase {
-    type: ErrorType.SESSION_EXPIRED
+    type: ErrorType.SESSION_EXPIRED;
 }
 
 export type ContinueLinkingError =
-    AlreadyLinkedError |
+    | AlreadyLinkedError
     // ORCIDAlreadyLinkedError |
-    FetchLinkSessionError |
-    SessionExpiredError;
+    | FetchLinkSessionError
+    | SessionExpiredError;
 
 export interface ContinueLinkingState {
     linkingSession: LinkingSessionPublicComplete;
-    serviceInfo: InfoResult
+    serviceInfo: InfoResult;
 }
 
-export type ContinueLinkingStateProcess = AsyncProcess<ContinueLinkingState, ContinueLinkingError>;
+export type ContinueLinkingStateProcess = AsyncProcess<
+    ContinueLinkingState,
+    ContinueLinkingError
+>;
 
 export type CreateLinkState = AsyncProcess<true, { message: string }>;
 
 interface ContinueControllerState {
-    continueState: ContinueLinkingStateProcess
-    createLinkState: CreateLinkState
+    continueState: ContinueLinkingStateProcess;
+    createLinkState: CreateLinkState;
     showInProfile: boolean;
 }
 
-export default class ContinueController extends Component<ContinueControllerProps, ContinueControllerState> {
+export default class ContinueController extends Component<
+    ContinueControllerProps,
+    ContinueControllerState
+> {
     constructor(props: ContinueControllerProps) {
         super(props);
         this.state = {
             continueState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
             createLinkState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
-            showInProfile: true
+            showInProfile: true,
         };
     }
 
     componentDidMount() {
-        this.props.setTitle('KBase ORCID® Link - Confirm Link');
+        this.props.setTitle('KBase ORCID Link - Confirm Link');
         if (this.props.skipPrompt) {
             this.confirmLink();
         } else {
@@ -117,15 +126,21 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     async fetchData() {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
         await new Promise((resolve) => {
-            this.setState({
-                continueState: {
-                    status: AsyncProcessStatus.PENDING
-                }
-            }, () => {
-                resolve(null);
-            });
+            this.setState(
+                {
+                    continueState: {
+                        status: AsyncProcessStatus.PENDING,
+                    },
+                },
+                () => {
+                    resolve(null);
+                },
+            );
         });
 
         try {
@@ -137,11 +152,12 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.ALREADY_LINKED,
-                            message: 'Already linked; each user may have a single KBase ORCID® Link',
+                            message:
+                                'Already linked; each user may have a single KBase ORCID® Link',
                             link,
-                            serviceInfo
-                        }
-                    }
+                            serviceInfo,
+                        },
+                    },
                 });
                 return;
             }
@@ -155,9 +171,9 @@ export default class ContinueController extends Component<ContinueControllerProp
                             status: AsyncProcessStatus.ERROR,
                             error: {
                                 type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                                message: ex.message
-                            }
-                        }
+                                message: ex.message,
+                            },
+                        },
                     });
                     return;
                 }
@@ -167,34 +183,36 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
-                return
+                return;
             } else {
                 this.setState({
                     continueState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
+                            message: `Unknown error: ${String(ex)}`,
+                        },
+                    },
                 });
                 return;
             }
         }
 
         try {
-            const linkingSession = await model.fetchLinkingSession(this.props.linkingSessionId);
+            const linkingSession = await model.fetchLinkingSession(
+                this.props.linkingSessionId,
+            );
             const serviceInfo = await model.getInfo();
 
             this.setState({
                 continueState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: { linkingSession, serviceInfo }
-                }
+                    value: { linkingSession, serviceInfo },
+                },
             });
         } catch (ex) {
             console.error('ERROR', ex);
@@ -205,9 +223,9 @@ export default class ContinueController extends Component<ContinueControllerProp
                             status: AsyncProcessStatus.ERROR,
                             error: {
                                 type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                                message: "There is no current linking session."
-                            }
-                        }
+                                message: 'There is no current linking session.',
+                            },
+                        },
                     });
                     return;
                 } else {
@@ -216,9 +234,9 @@ export default class ContinueController extends Component<ContinueControllerProp
                             status: AsyncProcessStatus.ERROR,
                             error: {
                                 type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                                message: ex.message
-                            }
-                        }
+                                message: ex.message,
+                            },
+                        },
                     });
                     return;
                 }
@@ -228,9 +246,9 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
@@ -238,9 +256,9 @@ export default class ContinueController extends Component<ContinueControllerProp
                         status: AsyncProcessStatus.ERROR,
                         error: {
                             type: ErrorType.FETCH_LINK_SESSION_ERROR,
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
+                            message: `Unknown error: ${String(ex)}`,
+                        },
+                    },
                 });
             }
         }
@@ -251,11 +269,13 @@ export default class ContinueController extends Component<ContinueControllerProp
     }
 
     renderError(error: ContinueLinkingError) {
-        return <ErrorView
-            error={error}
-            returnInstruction={this.props.returnInstruction}
-            cancelLink={this.cancelLink.bind(this)}
-        />;
+        return (
+            <ErrorView
+                error={error}
+                returnInstruction={this.props.returnInstruction}
+                cancelLink={this.cancelLink.bind(this)}
+            />
+        );
     }
 
     onExpired() {
@@ -264,26 +284,29 @@ export default class ContinueController extends Component<ContinueControllerProp
                 status: AsyncProcessStatus.ERROR,
                 error: {
                     type: ErrorType.SESSION_EXPIRED,
-                    message: 'The linking session has expired'
-                }
-            }
+                    message: 'The linking session has expired',
+                },
+            },
         });
     }
 
     setShowInProfile(show: boolean) {
         this.setState({
-            showInProfile: show
+            showInProfile: show,
         });
     }
 
     async confirmLink() {
         this.setState({
             createLinkState: {
-                status: AsyncProcessStatus.PENDING
-            }
-        })
+                status: AsyncProcessStatus.PENDING,
+            },
+        });
         try {
-            const model = new Model({ config: this.props.config, auth: this.props.auth });
+            const model = new Model({
+                config: this.props.config,
+                auth: this.props.auth,
+            });
 
             await model.confirmLink(this.props.linkingSessionId);
             await model.setShowORCIDIdPreference(this.state.showInProfile);
@@ -303,41 +326,64 @@ export default class ContinueController extends Component<ContinueControllerProp
             const returnInstruction = this.props.returnInstruction;
 
             if (typeof returnInstruction !== 'undefined') {
-                switch (returnInstruction.type) {
-                    case 'link': {
-                        // If the url is local, we make a navigation-friendly
-                        // hash.
-                        // TODO: catch error in URL construction.
-                        let url;
-                        try {
-                            url = new URL(returnInstruction.url);
-                        } catch (ex) {
-                            this.setState({
-                                createLinkState: {
-                                    status: AsyncProcessStatus.ERROR,
-                                    error: {
-                                        message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
-                                    }
-                                }
-                            });
-                            return;
-                        }
-                        if (url.origin === document.location.origin) {
-                            const hashPath = `${url.hash}${url.search}`;
-                            changeHash2(hashPath);
-                        } else {
-                            window.open(url.toString(), '_parent');
-                        }
-                        break;
-                    }
-                    case 'window': {
-                        const { id, origin } = returnInstruction;
-                        window.opener.postMessage({ id }, origin);
-                    }
+                // If the url is local, we make a navigation-friendly
+                // hash.
+                // TODO: catch error in URL construction.
+                let url;
+                try {
+                    url = new URL(returnInstruction.url);
+                } catch (ex) {
+                    this.setState({
+                        createLinkState: {
+                            status: AsyncProcessStatus.ERROR,
+                            error: {
+                                message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`,
+                            },
+                        },
+                    });
+                    return;
                 }
+                if (url.origin === document.location.origin) {
+                    const hashPath = `${url.hash}${url.search}`;
+                    navigate(hashPath);
+                } else {
+                    window.open(url.toString(), '_parent');
+                }
+                // switch (returnInstruction.type) {
+                //     case 'link': {
+                //         // If the url is local, we make a navigation-friendly
+                //         // hash.
+                //         // TODO: catch error in URL construction.
+                //         let url;
+                //         try {
+                //             url = new URL(returnInstruction.url);
+                //         } catch (ex) {
+                //             this.setState({
+                //                 createLinkState: {
+                //                     status: AsyncProcessStatus.ERROR,
+                //                     error: {
+                //                         message: `Your link has been created, but there is an error with the return url. You will need to navigate back there yourself.`
+                //                     }
+                //                 }
+                //             });
+                //             return;
+                //         }
+                //         if (url.origin === document.location.origin) {
+                //             const hashPath = `${url.hash}${url.search}`;
+                //             navigate(hashPath);
+                //         } else {
+                //             window.open(url.toString(), '_parent');
+                //         }
+                //         break;
+                //     }
+                //     case 'window': {
+                //         const { id, origin } = returnInstruction;
+                //         window.opener.postMessage({ id }, origin);
+                //     }
+                // }
             } else {
                 // This is the case of linking from the tool itself.
-                changeHash2('#orcidlink')
+                navigate('#orcidlink');
             }
             // this.setState({
             //     createLinkState: {
@@ -351,73 +397,70 @@ export default class ContinueController extends Component<ContinueControllerProp
                     createLinkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: ex.message
-                        }
-                    }
+                            message: ex.message,
+                        },
+                    },
                 });
             } else {
                 this.setState({
                     createLinkState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: `Unknown error: ${String(ex)}`
-                        }
-                    }
+                            message: `Unknown error: ${String(ex)}`,
+                        },
+                    },
                 });
             }
         }
     }
 
+    // TODO: is this really a thing still?
     handleReturnLink() {
         const returnInstruction = this.props.returnInstruction;
         if (typeof returnInstruction !== 'undefined') {
-            switch (returnInstruction.type) {
-                case 'link':
-                    window.open(returnInstruction.url, '_parent');
-                    return;
-                case 'window': {
-                    const { id, origin } = returnInstruction;
-                    window.opener.postMessage({ id }, origin);
-                }
-            }
+            window.open(returnInstruction.url, '_parent');
         } else {
-            // TODO: what is this use case? Is it real?
-            // TODO: get from config, this is for rapid dev.
-            window.open(`${this.props.config.deploy.ui.origin}#orcidlink`, '_parent');
+            // without a return instruction, we simply return to the orcidlink main page
+            navigate2({ type: 'kbaseui', path: 'orcidlink' });
         }
     }
 
     async cancelLink() {
-        const model = new Model({ config: this.props.config, auth: this.props.auth });
+        const model = new Model({
+            config: this.props.config,
+            auth: this.props.auth,
+        });
         try {
             await model.cancelLink(this.props.linkingSessionId);
         } catch (ex) {
             // Ignore the error, it probably means that we are on this page inadvertently
             // or after some harmless error that prevented redirect.
-            const message = (() => {
+            const message = () => {
                 if (ex instanceof Error) {
                     return ex.message;
                 }
-                return "Unknown error";
-            })
-            console.warn(`Linking session could not be canceled: ${message}`)
+                return 'Unknown error';
+            };
+            console.warn(`Linking session could not be canceled: ${message}`);
         }
 
         this.handleReturnLink();
     }
 
     renderSuccess({ linkingSession, serviceInfo }: ContinueLinkingState) {
-        return <Continue
-            linkingSession={linkingSession}
-            returnInstruction={this.props.returnInstruction}
-            createLinkState={this.state.createLinkState}
-            confirmLink={this.confirmLink.bind(this)}
-            cancelLink={this.cancelLink.bind(this)}
-            showInProfile={this.state.showInProfile}
-            setShowInProfile={this.setShowInProfile.bind(this)}
-            onExpired={this.onExpired.bind(this)}
-            orcidSiteURL={serviceInfo.runtime_info.orcid_site_url}
-        />;
+        return (
+            <Continue
+                linkingSession={linkingSession}
+                returnInstruction={this.props.returnInstruction}
+                createLinkState={this.state.createLinkState}
+                confirmLink={this.confirmLink.bind(this)}
+                cancelLink={this.cancelLink.bind(this)}
+                showInProfile={this.state.showInProfile}
+                setShowInProfile={this.setShowInProfile.bind(this)}
+                onExpired={this.onExpired.bind(this)}
+                orcidSiteURL={serviceInfo.runtime_info.orcid_site_url}
+            />
+        );
     }
 
     render() {
@@ -426,7 +469,7 @@ export default class ContinueController extends Component<ContinueControllerProp
             case AsyncProcessStatus.PENDING:
                 return this.renderLoading();
             case AsyncProcessStatus.ERROR:
-                return this.renderError(this.state.continueState.error)
+                return this.renderError(this.state.continueState.error);
             case AsyncProcessStatus.SUCCESS:
                 return this.renderSuccess(this.state.continueState.value);
         }

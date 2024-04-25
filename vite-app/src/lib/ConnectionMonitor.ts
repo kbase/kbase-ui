@@ -1,7 +1,7 @@
 export type StatusCall = () => Promise<void>;
 
 interface ConnectionMonitorParams {
-    callback: StatusCall
+    callback: StatusCall;
     interval: number;
 }
 
@@ -25,35 +25,42 @@ export default class ConnectionMonitor {
         if (this.monitorRunning) {
             return;
         }
-        await this.runCallback();
         this.monitorRunning = true;
-        this.monitoringLoop();
+        return this.runCallback();
     }
 
-    monitoringLoop() {
-        if (this.monitoringTimer) {
-            return;
-        }
+    //   monitoringLoop() {
+    //     if (this.monitoringTimer) {
+    //       return;
+    //     }
 
-        const loop = () => {
-            if (!this.monitorRunning) {
-                return;
-            }
-            this.monitoringTimer = window.setTimeout(async () => {
-                await this.runCallback();
-                loop();
-            }, this.params.interval);
-        };
-        loop();
+    //     const loop = () => {
+    //       if (!this.monitorRunning) {
+    //         return;
+    //       }
+    //       this.monitoringTimer = window.setTimeout(async () => {
+    //         await this.runCallback();
+    //         loop();
+    //       }, this.params.interval);
+    //     };
+    //     loop();
+    //   }
+
+    nextIteration() {
+        this.monitoringTimer = window.setTimeout(async () => {
+            this.runCallback();
+        }, this.params.interval);
     }
 
     async runCallback() {
-        try { 
+        try {
             this.monitoringRunCount += 1;
-            return this.params.callback();
+            await this.params.callback();
         } catch (ex) {
             console.error('[Monitor] error running callback', ex);
             this.monitoringErrorCount += 1;
+        } finally {
+            this.nextIteration();
         }
     }
 

@@ -1,13 +1,13 @@
+import { AuthInfo } from 'contexts/EuropaContext';
+import { navigationPathToURL } from 'contexts/RouterContext';
 import { DataObjectCell } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
 import { Accordion, Button, Tab, Table, Tabs } from 'react-bootstrap';
 import ErrorMessage from '../../../../../components/ErrorMessage';
-import { AuthInfo } from '../../../../../contexts/Auth';
+import { niceRelativeTime } from '../../../../../lib/time';
 import { Config } from '../../../../../types/config';
 import EZTooltip from '../../EZTooltip';
 import { TypeIcon } from '../../Icon';
-
-import { niceRelativeTime } from '../../../../../lib/time';
 import styles from './DataObjectCell.module.css';
 import cellStyles from './cell.module.css';
 
@@ -23,7 +23,10 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
         return (
             <div className={styles.ObjectInfo}>
                 <Button
-                    href={`/#dataview/${info.ref}`}
+                    href={navigationPathToURL(
+                        { path: `dataview/${info.ref}`, type: 'kbaseui' },
+                        true,
+                    ).toString()}
                     target="_blank"
                     variant="outline-info"
                 >
@@ -49,7 +52,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                             <th>Type</th>
                             <td>
                                 <a
-                                    href={`/#spec/type/${info.type}`}
+                                    href={`#spec/type/${info.type}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
@@ -75,12 +78,12 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                                 <EZTooltip
                                     id="saved-at-tooltip"
                                     tooltip={Intl.DateTimeFormat(
-                                        'en-US'
+                                        'en-US',
                                     ).format(new Date(info.saveDate))}
                                 >
                                     <span>
                                         {niceRelativeTime(
-                                            new Date(info.saveDate)
+                                            new Date(info.saveDate),
                                         )}
                                     </span>
                                 </EZTooltip>
@@ -90,7 +93,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                             <th>By</th>
                             <td>
                                 <a
-                                    href={`/#user/${info.saved_by}`}
+                                    href={`#user/${info.saved_by}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
@@ -126,7 +129,7 @@ export default class DataObjectCellView extends Component<DataObjectCellProps> {
                     <div>
                         <TypeIcon
                             objectType={type}
-                            authInfo={this.props.authInfo}
+                            // authInfo={this.props.authInfo}
                             config={this.props.config}
                         />
                     </div>

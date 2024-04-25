@@ -1,6 +1,7 @@
 import Empty from 'components/Empty';
 import TypeIcon from 'components/TypeIcon/TypeIcon';
-import { AuthInfo } from 'contexts/Auth';
+import UILink from 'components/UILink2';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { DataObject } from 'lib/clients/NarrativeModel';
 import React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -15,7 +16,7 @@ interface Props {
     authInfo: AuthInfo;
 }
 
-export default class DataView extends React.Component<Props, {}> {
+export default class DataView extends React.Component<Props> {
     // View for each row in the data listing for the narrative
     renderRow(workspaceId: number, obj: DataObject) {
         const key = obj.name;
@@ -24,34 +25,30 @@ export default class DataView extends React.Component<Props, {}> {
         return (
             <div key={key} className="row my-3">
                 <div className="col-auto">
-                    <TypeIcon
-                        typeName={typeName}
-                    />
+                    <TypeIcon typeName={typeName} />
                 </div>
                 <div
                     className="col overflow-hidden"
                     style={{ textOverflow: 'ellipsis' }}
                 >
                     <div className="-name">
-                        <a
-                            href={`#dataview/${workspaceId}/${obj.name}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <UILink
+                            path={`dataview/${workspaceId}/${obj.name}`}
+                            type="kbaseui"
+                            newWindow={true}
                         >
                             {obj.name}
-                        </a>
+                        </UILink>
                     </div>
-                    {/*<div className="">{obj.readableType}</div>*/}
                     <div className="-type">
-                        <a
-                            href={`#spec/type/${obj.obj_type}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <UILink
+                            path={`spec/type/${obj.obj_type}`}
+                            type="kbaseui"
+                            newWindow={true}
                         >
                             {typeName} ({typeModule}-{versionMajor}.
                             {versionMinor})
-                        </a>
-                        {/*{obj.readableType}*/}
+                        </UILink>
                     </div>
                 </div>
             </div>
@@ -84,7 +81,7 @@ export default class DataView extends React.Component<Props, {}> {
             })
             .sort((a, b) => a.readableType.localeCompare(b.readableType))
             .map((obj) => this.renderRow(accessGroup, obj));
-        return <div className="container-fluid p-0">{rows}</div>;
+        return <div className="container-fluid">{rows}</div>;
     }
 
     renderState() {

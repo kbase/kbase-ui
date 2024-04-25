@@ -1,4 +1,4 @@
-.IFrameController {
+.main {
     flex: 1 1 0px;
     display: flex;
     flex-direction: column;
@@ -6,7 +6,7 @@
     position: relative;
 }
 
-.IFrameController > .-cover {
+.main > .cover {
     position: absolute;
     left: 0;
     top: 0;
@@ -18,7 +18,7 @@
     justify-content: center;
 }
 
-.IFrameController > .-cover > .PluginLoading {
+.main > .cover > .loading {
     margin-top: 20px;
     min-height: 4em;
     min-width: 30em;

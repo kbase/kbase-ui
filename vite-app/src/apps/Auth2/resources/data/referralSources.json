@@ -1,0 +1,47 @@
+[
+    {
+        "label": "Journal Publication",
+        "value": "journal-publication"
+    },
+    {
+        "label": "Conference Presentation",
+        "value": "conference-presentation"
+    },
+    {
+        "label": "Workshop/Webinar",
+        "value": "workshop-webinar"
+    },
+    {
+        "label": "Colleague",
+        "value": "colleague"
+    },
+    {
+        "label": "Course/Instructor",
+        "value": "course"
+    },
+    {
+        "label": "Newsletter/Email",
+        "value": "newsletter-email"
+    },
+    {
+        "label": "YouTube",
+        "value": "youtube"
+    },
+    {
+        "label": "Twitter (X)",
+        "value": "twitter"
+    },
+    {
+        "label": "Search Engine",
+        "value": "search-engine"
+    },
+    {
+        "label": "Online Advertisement",
+        "value": "online-ad"
+    },
+    {
+        "label": "Other...",
+        "value": "other",
+        "customText": true
+    }
+]

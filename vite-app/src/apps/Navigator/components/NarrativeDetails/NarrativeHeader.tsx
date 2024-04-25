@@ -1,9 +1,11 @@
 import PropTable from 'components/PropTable';
+import UILink from 'components/UILink2';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import React from 'react';
+import { Globe, Lock } from 'react-bootstrap-icons';
 import ErrorMessage from '../../../../components/ErrorMessage';
 import Loading from '../../../../components/Loading';
-import { AuthInfo } from '../../../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import { Config } from '../../../../types/config';
 import UserModel, { UserProfile } from '../../utils/UserModel';
@@ -15,7 +17,8 @@ export type CellType =
     | 'code_cell'
     | 'data'
     | 'kbase_app'
-    | 'widget';
+    | 'widget'
+    | 'serviceWidget';
 
 export interface CellTypeInfo {
     label: string;
@@ -47,6 +50,10 @@ function countCellTypes(narrative: NarrativeSearchDoc): CellTypesInfo {
             label: 'Output',
             count: 0,
         },
+        serviceWidget: {
+            label: 'Service Widget',
+            count: 0,
+        },
     };
     return cells.reduce<CellTypesInfo>((acc, cell) => {
         const key = cell.cell_type as CellType;
@@ -54,12 +61,6 @@ function countCellTypes(narrative: NarrativeSearchDoc): CellTypesInfo {
         return acc;
     }, cellTypes);
 }
-
-const profileLink = (username: string, realname: string) => (
-    <a key={username} href={`/#user/${username}`} title={username}>
-        {realname}
-    </a>
-);
 
 // const detailsSharedWith = (users: string[], profiles: any) => {
 //     /*
@@ -158,10 +159,10 @@ export default class NarrativeHeader extends React.Component<
         try {
             const userModel = new UserModel(
                 this.props.config.services.UserProfile.url,
-                this.props.authInfo.token
+                this.props.authInfo.token,
             );
             const authorProfile = await userModel.fetchProfile(
-                this.props.narrativeDoc.creator
+                this.props.narrativeDoc.creator,
             );
             const sharedWith = this.props.narrativeDoc.shared_users.filter(
                 // We handle the "*" public user because it has been known to appear
@@ -171,11 +172,10 @@ export default class NarrativeHeader extends React.Component<
                         user !== this.props.authInfo.tokenInfo.user &&
                         user === '*'
                     );
-                }
+                },
             );
-            const sharedWithProfiles = await userModel.fetchProfiles(
-                sharedWith
-            );
+            const sharedWithProfiles =
+                await userModel.fetchProfiles(sharedWith);
 
             this.setState({
                 data: {
@@ -248,14 +248,14 @@ export default class NarrativeHeader extends React.Component<
                 if (dataTypeCounts.has(typeName)) {
                     dataTypeCounts.set(
                         typeName,
-                        dataTypeCounts.get(typeName)! + 1
+                        dataTypeCounts.get(typeName)! + 1,
                     );
                 } else {
                     dataTypeCounts.set(typeName, 1);
                 }
                 return dataTypeCounts;
             },
-            new Map()
+            new Map(),
         );
 
         return Array.from(typeCounts.entries()).sort((a, b) => {
@@ -294,34 +294,49 @@ export default class NarrativeHeader extends React.Component<
                     <PropTable
                         // title="Data Objects"
                         noRowsMessage="No data objects in this narrative"
-                        rows={
+                        bordered={true}
+                        rows={[
                             [
-                                ['Author', () => {
-                                    return profileLink(
-                                        narrativeDoc.creator,
-                                        authorName
-                                    )
-                                }],
-                                [
-                                    'Created on',
-                                    readableDate(narrativeDoc.creation_date)
-                                ],
-                                [
-                                    'Last saved',
-                                    readableDate(narrativeDoc.timestamp)
-                                ],
-                                [
-                                    'Version',
-                                    String(narrativeDoc.version)
-                                ],
-                                [
-                                    'Visibility',
-                                    narrativeDoc.is_public
-                                        ? 'Public'
-                                        : 'Private'
-                                ]
-                            ]
-                        }
+                                'Author',
+                                () => {
+                                    return (
+                                        <UILink
+                                            path={`people/${narrativeDoc.creator}`}
+                                            type="kbaseui"
+                                        >
+                                            {authorName}
+                                        </UILink>
+                                    );
+                                },
+                            ],
+                            [
+                                'Created on',
+                                readableDate(narrativeDoc.creation_date),
+                            ],
+                            [
+                                'Last saved',
+                                readableDate(narrativeDoc.timestamp),
+                            ],
+                            ['Version', String(narrativeDoc.version)],
+                            [
+                                'Visibility',
+                                narrativeDoc.is_public ? (
+                                    <>
+                                        <Globe
+                                            style={{ marginRight: '0.25rem' }}
+                                        />
+                                        Public
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock
+                                            style={{ marginRight: '0.25rem' }}
+                                        />
+                                        Private
+                                    </>
+                                ),
+                            ],
+                        ]}
                         styles={{
                             col1: {
                                 flex: '0 0 7em',
@@ -329,23 +344,23 @@ export default class NarrativeHeader extends React.Component<
                                 // fontFamily: 'monospace',
                             },
                             col2: {
-                                justifyContent: 'flex-start'
+                                justifyContent: 'flex-start',
                             },
                             body: {
                                 // maxHeight: '7em',
                             },
                         }}
                     />
-
                 </div>
                 <div className="col-4">
                     <PropTable
                         // title="Data Objects"
+                        bordered={true}
                         noRowsMessage="No data objects in this narrative"
                         rows={this.countDataTypes(narrativeDoc).map(
                             ([key, value]) => {
                                 return [key, value.toString()];
-                            }
+                            },
                         )}
                         header={[
                             'Data Objects',
@@ -358,7 +373,8 @@ export default class NarrativeHeader extends React.Component<
                                 fontFamily: 'monospace',
                             },
                             body: {
-                                maxHeight: '7em',
+                                maxHeight: '10rem',
+                                overflowY: 'auto',
                             },
                         }}
                     />
@@ -366,6 +382,7 @@ export default class NarrativeHeader extends React.Component<
                 <div className="col-3">
                     <div className="-prop-table">
                         <PropTable
+                            bordered={true}
                             // title="Cells"
                             rows={[
                                 [
@@ -387,6 +404,10 @@ export default class NarrativeHeader extends React.Component<
                                 [
                                     cellTypesInfo.widget.label,
                                     cellTypesInfo.widget.count.toString(),
+                                ],
+                                [
+                                    cellTypesInfo.serviceWidget.label,
+                                    cellTypesInfo.serviceWidget.count.toString(),
                                 ],
                             ]}
                             header={[

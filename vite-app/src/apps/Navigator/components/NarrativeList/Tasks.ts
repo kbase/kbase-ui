@@ -1,7 +1,7 @@
 interface QueueItem {
     id: number;
     callback: () => Promise<void>;
-    errorCallback?: (error: any) => void;
+    errorCallback?: (error: Error) => void;
 }
 
 export default class Tasks {
@@ -24,7 +24,9 @@ export default class Tasks {
                 await queueItem.callback();
             } catch (ex) {
                 if (queueItem.errorCallback) {
-                    queueItem.errorCallback(ex);
+                    queueItem.errorCallback(
+                        ex instanceof Error ? ex : new Error('Unknown Error'),
+                    );
                 }
             }
         }
@@ -50,7 +52,7 @@ export default class Tasks {
 
     add(
         callback: () => Promise<void>,
-        errorCallback?: (error: Error) => void
+        errorCallback?: (error: Error) => void,
     ): void {
         const item: QueueItem = {
             id: this.nextItemId(),

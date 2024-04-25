@@ -1,4 +1,10 @@
-export type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
+export type JSONValue =
+    | string
+    | number
+    | boolean
+    | null
+    | JSONObject
+    | JSONArray;
 
 // export interface JSONArray extends Array<JSONValue> { };
 export type JSONArray = Array<JSONValue>;
@@ -7,14 +13,12 @@ export interface JSONObject {
     [x: string]: JSONValue;
 }
 
-
-
 export enum ValidationStatus {
     NONE,
     SUCCESS,
     ERROR,
     WARNING,
-    VALIDATING
+    VALIDATING,
 }
 
 export interface ValidationStateBase {
@@ -22,12 +26,12 @@ export interface ValidationStateBase {
 }
 
 export interface ValidationStateSuccess<T> extends ValidationStateBase {
-    status: ValidationStatus.SUCCESS,
+    status: ValidationStatus.SUCCESS;
     value: T;
 }
 
 export interface ValidationStateError extends ValidationStateBase {
-    status: ValidationStatus.ERROR,
+    status: ValidationStatus.ERROR;
     message: string;
 }
 
@@ -44,11 +48,16 @@ export interface ValidationStateNone extends ValidationStateBase {
 }
 
 export type ValidationState<T> =
-    ValidationStateSuccess<T> |
-    ValidationStateError |
-    ValidationStateWarning |
-    ValidationStateValidating |
-    ValidationStateNone;
+    | ValidationStateSuccess<T>
+    | ValidationStateError
+    | ValidationStateWarning
+    | ValidationStateValidating
+    | ValidationStateNone;
 
-
-export type AntDesignValidationStatus = "" | "error" | "success" | "warning" | "validating" | undefined;
+export type AntDesignValidationStatus =
+    | ''
+    | 'error'
+    | 'success'
+    | 'warning'
+    | 'validating'
+    | undefined;

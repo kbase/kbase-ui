@@ -3,9 +3,8 @@ export enum AsyncFetchStatus {
     FETCHING = 'AsyncFetchStatus$FETCHING',
     REFETCHING = 'AsyncFetchStatus$REFETCHING',
     SUCCESS = 'AsyncFetchStatus$SUCCESS',
-    ERROR = 'AsyncFetchStatus$ERROR'
+    ERROR = 'AsyncFetchStatus$ERROR',
 }
-
 
 export interface AsyncFetchStateNone {
     status: AsyncFetchStatus.NONE;
@@ -17,22 +16,22 @@ export interface AsyncFetchStateFetching {
 
 export interface AsyncFetchStateRefetching<T> {
     status: AsyncFetchStatus.REFETCHING;
-    value: T
+    value: T;
 }
 
 export interface AsyncFetchStateSuccess<T> {
     status: AsyncFetchStatus.SUCCESS;
-    value: T
+    value: T;
 }
 
 export interface AsyncFetchStateError<E> {
     status: AsyncFetchStatus.ERROR;
-    error: E
+    error: E;
 }
 
 export type AsyncFetchState<T, E> =
-    AsyncFetchStateNone |
-    AsyncFetchStateFetching |
-    AsyncFetchStateSuccess<T> |
-    AsyncFetchStateRefetching<T> |
-    AsyncFetchStateError<E>;
+    | AsyncFetchStateNone
+    | AsyncFetchStateFetching
+    | AsyncFetchStateSuccess<T>
+    | AsyncFetchStateRefetching<T>
+    | AsyncFetchStateError<E>;

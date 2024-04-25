@@ -1,0 +1,478 @@
+import { ChannelMessage } from './SendChannel';
+
+const DEFAULT_WAITING_LISTENER_TIMEOUT = 5000;
+const DEFAULT_WAITING_LISTENER_WAKEUP_INTERVAL = 100;
+
+/**
+ * This class defines a thing which can be used to register itself to be called when
+ * an event matching the name provided is received.
+ *
+ * @callback ListenerCallback
+ * @param {object} payload The message payload
+ *
+ * @callback ErrorCallback
+ * @param {Error} error The error/exception thrown by by the listener callback
+ *
+ * @typedef {Object} ChannelListenerParams
+ * @property {string}           name The message name, or id.
+ * @property {ListenerCallback} callback The function to be called when a message matching
+ * the name is received
+ * @property {ErrorCallback}    onError An optional function to call in case an exception is
+ * caught executing the callback
+ *
+ *
+ */
+
+/**
+ * A listener callback is simply a functino which takes a single `payload`
+ * argument, and returns nothing.
+ *
+ * The `payload` argument is arbitrary, JSON-compatible data. It is advisable that it be
+ * an object, in order to be somewhat self documenting through properties.
+ */
+export type ListenerCallback = (payload: unknown) => void;
+
+/**
+ * A listener callback to handle the case of an error occuring during executing of the
+ * listener callback.
+ *
+ * Supplying an error callback allows the listener to handle errors.
+ */
+export type ErrorCallback = (error: Error) => void;
+
+/**
+ * Defines the parameters for the ChannelListener class constructor.
+ */
+interface ChannelListenerParams {
+  /** The message name */
+  name: string;
+
+  /** A function to be called when a message with the given name is received */
+  callback: ListenerCallback;
+
+  /** An optional function to be called when the callback above throws an exception. */
+  onError: ErrorCallback;
+}
+
+class ChannelListener {
+  /** The message name */
+  name: string;
+
+  /** A function to be called when a message with the given name is received */
+  callback: ListenerCallback;
+
+  /** An optional function to be called when the callback above throws an exception. */
+  onError: ErrorCallback;
+
+  constructor(params: ChannelListenerParams) {
+    const { name, callback, onError } = params;
+    this.name = name;
+    this.callback = callback;
+    this.onError = onError;
+  }
+}
+
+/**
+ * This class defines a thing which, in addition to a basic listener, will be used
+ * in situations in which which a listener is only enabled for a certain amount of time.
+ *
+ */
+
+interface ChannelWaitingListenerParams extends ChannelListenerParams {
+  /** The duration for which the listener is valid; after the timeout expires
+   * the onError, if defined, will be called */
+  timeout: number;
+}
+
+class ChannelWaitingListener extends ChannelListener {
+  started: Date;
+  timeout: number;
+  constructor(params: ChannelWaitingListenerParams) {
+    super(params);
+    const { timeout } = params;
+    this.started = new Date();
+    this.timeout = timeout || DEFAULT_WAITING_LISTENER_TIMEOUT;
+  }
+}
+
+export interface ReceiveChannelConstructorParameters {
+  /** The window upon which to receive messages */
+  window: Window;
+
+  /** The origin for which we wish to receive messages. */
+  expectedOrigin: string;
+
+  /** The identifier to use for this "channel"; only messages whose envelope
+   * contains this id will be recognized. */
+  channel: string;
+}
+
+/**
+ * An implementation of a "receive channel", or constrained window message listener.
+ *
+ * This "channel" will only process messages which have the general shape of a
+ * `ChannelMessage`, and whose channel matches the channel of this receiver.
+ *
+ */
+
+export default class ReceiveChannel {
+  /** The window upon which to receive messages */
+  window: Window;
+
+   /** The origin for which we wish to receive messages. */
+  expectedOrigin: string;
+
+
+  /** The identifier to use for this "channel"; only messages whose envelope
+   * contains this id will be recognized. */
+  channel: string;
+
+  /** A map from message name to an array of "waiting listeners".  */
+  waitingListeners: Map<string, Array<ChannelWaitingListener>>;
+
+  /** A map from message name to an array of listeners */
+  listeners: Map<string, Array<ChannelListener>>;
+
+  /** Set to the current function assigned as the listener for "message" events to the
+   * given window. */
+  currentListener: null | ((event: MessageEvent<unknown>) => void);
+
+  monitorRunning: boolean;
+
+  constructor({ window, expectedOrigin, channel }: ReceiveChannelConstructorParameters) {
+    this.window = window;
+    this.expectedOrigin = expectedOrigin;
+    this.channel = channel;
+    this.waitingListeners = new Map();
+    this.listeners = new Map();
+    this.currentListener = null;
+    this.monitorRunning = false;
+  }
+
+  /**
+   * Receives all messages sent via postMessage to the associated window.
+   *
+   * This method's primary task is to filter out any messages not intended for this
+   * channel, and then to process the message if it is one we should handle.
+   *
+   * @private
+   *
+   * @param messageEvent - a postMessage event
+   */
+  receiveMessage(messageEvent: MessageEvent<unknown>) {
+    if (this.expectedOrigin !== messageEvent.origin) {
+        return;
+    }
+
+    const message = messageEvent.data;
+
+    // Here we have a series of filters to determine whether this message should be
+    // handled by this post message bus.
+    // In all cases we simply return.
+    if (typeof message !== 'object' || message === null) {
+      return;
+    }
+
+    if (!('name' in message) || typeof message.name !== 'string') {
+      return;
+    }
+
+    if (!('envelope' in message)) {
+      return;
+    }
+
+    if (typeof message.envelope !== 'object' || message.envelope === null) {
+      return;
+    }
+
+    // Ignore messages intended for another channels.
+    if (!('channel' in message.envelope)) {
+      return;
+    }
+
+    if (message.envelope.channel !== this.channel) {
+      return;
+    }
+
+    
+    this.processMessage(message as unknown as ChannelMessage);
+  }
+
+  /**
+   * Attempts to handle the given message.
+   *
+   * @private
+   *
+   * @param {import('./SendChannel.js').ChannelMessage} message
+   * @returns {void} nothing 
+   */
+  processMessage(message: ChannelMessage) {
+    //
+    // "waiting listeners" will exist for a limited amount of time, during which
+    // they are "waiting" for the given message to be received.
+    // Here we process any waiting listeners that match the incoming message.
+    //
+    const awaiting = this.waitingListeners.get(message.name);
+    if (awaiting) {
+      // Waiting listeners are always removed when processed, even if they fail.
+      this.waitingListeners.delete(message.name);
+
+      // Now we process each awaiting message.
+      awaiting.forEach((listener) => {
+        try {
+          listener.callback(message.payload);
+        } catch (ex) {
+          try {
+            listener.onError(
+              ex instanceof Error ? ex : new Error('Unknown error')
+            );
+          } catch (ex) {
+            const message = ex instanceof Error ? ex.message : 'Unknown error';
+            // eslint-disable-next-line no-console
+            console.error(`Error in error handler: ${message}`, ex);
+          }
+        }
+      });
+    }
+
+    // Permanently registered handlers are found in the listeners for the
+    // message name.
+    const listeners = this.listeners.get(message.name);
+    if (listeners) {
+      for (const listener of listeners) {
+        try {
+          return listener.callback(message.payload);
+        } catch (ex) {
+          try {
+            listener.onError(
+              ex instanceof Error ? ex : new Error('Unknown error')
+            );
+          } catch (ex) {
+            const message = ex instanceof Error ? ex.message : 'Unknown error';
+            // eslint-disable-next-line no-console
+            console.error(`Error in error handler: ${message}`, ex);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Registers a listener object to be available thenceforth from now.
+   *
+   * Meant to be used internally, as it uses the more complex listener object, rather
+   * than explicity parameters, as in `on`.
+   *
+   * @private
+   *
+   * @param listener A listener object to be registered
+   */
+  listen(listener: ChannelListener) {
+    let listeners = this.listeners.get(listener.name);
+    if (!listeners) {
+      listeners = [];
+      this.listeners.set(listener.name, listeners);
+    }
+    listeners.push(listener);
+  }
+
+  /**
+   * Registers a handler for the given message name.
+   *
+   * This is the preferred API for listening for a given message.
+   *
+   * @public
+   *
+   * @param name The message name
+   * @param callback The message listener callback function
+   * @param onError An optional error callback function; called if the callback fails
+   */
+  on(name: string, callback: ListenerCallback, onError?: ErrorCallback) {
+    this.listen(
+      new ChannelListener({
+        name,
+        callback,
+        onError: (error) => {
+          if (onError) {
+            onError(error);
+          }
+        },
+      })
+    );
+  }
+
+  processWaitingListeners() {
+    const now = new Date().getTime();
+
+    // first take care of listeners awaiting a message.
+    for (const [messageName, listeners] of Array.from(
+      this.waitingListeners.entries()
+    )) {
+      // Remove any expired listeners.
+      const newListeners = listeners.filter((listener) => {
+        const elapsed = now - listener.started.getTime();
+        // Havne't timed out yet, keep it.
+        if (elapsed <= listener.timeout) {
+          return true;
+        }
+
+        // Timed out - call onError if defined, and omit it
+        try {
+          listener.onError(new Error('timout after ' + elapsed));
+        } catch (ex) {
+          // eslint-disable-next-line no-console
+          const message = ex instanceof Error ? ex.message : 'Unknown error';
+          // eslint-disable-next-line no-console
+          console.error(
+            `Error calling error handler: ${message}`,
+            messageName,
+            ex
+          );
+        }
+        return false;
+      });
+
+      // Waiting listeners are organized in a map by message name;
+      if (newListeners.length === 0) {
+        this.waitingListeners.delete(messageName);
+      } else {
+        this.waitingListeners.set(messageName, newListeners);
+      }
+    }
+  }
+
+  /**
+   * Starts a timeout-based monitoring loop to handle any waiting listeners.
+   *
+   * If there are no waiting listeners, the loop will terminate.
+   *
+   * @private
+   *
+   */
+  startMonitor() {
+    if (this.monitorRunning) {
+      return;
+    }
+    const loop = () => {
+      if (this.waitingListeners.size === 0) {
+        this.monitorRunning = false;
+        return;
+      }
+      this.processWaitingListeners();
+      window.setTimeout(() => {
+        loop();
+      }, DEFAULT_WAITING_LISTENER_WAKEUP_INTERVAL);
+    };
+    this.monitorRunning = true;
+    loop();
+  }
+
+  /**
+   * Internal implementation of the public method `once`.
+   *
+   * Adds the provided listener to the set of waiting listeners for the given message name.
+   *
+   * @private
+   *
+   * @param listener A "waiting listener" to be invoked when and if the associated
+   * message is received
+   *
+   * @returns nothing
+   */
+  listenOnce(listener: ChannelWaitingListener) {
+    let waitingListener = this.waitingListeners.get(listener.name);
+    if (!waitingListener) {
+      waitingListener = [];
+      this.waitingListeners.set(listener.name, waitingListener);
+    }
+    waitingListener.push(listener);
+    if (listener.timeout) {
+      this.startMonitor();
+    }
+  }
+
+  /**
+   *
+   * @public
+   *
+   * @param name The message name
+   * @param timeout How long to wait for the message to be received
+   * @param callback A function to call, accepting the message payload, when and if the
+   * message indicated by `name` is received.
+   * @param onError Optional callback which will be called if an error occurs calling
+   * the callback
+   *
+   * @returns nothing
+   */
+  once(
+    name: string,
+    timeout: number,
+    callback: ListenerCallback,
+    onError?: ErrorCallback
+  ) {
+    this.listenOnce(
+      new ChannelWaitingListener({
+        name,
+        callback,
+        timeout,
+        onError: (error) => {
+          if (onError) {
+            onError(error);
+          }
+        },
+      })
+    );
+  }
+
+  /**
+   * A Promise-based version of "once" - resolves when the message is received,
+   * rejects if the timeout is exceeded before the message is received.
+   *
+   * @public
+   *
+   * @param name The message name
+   * @param timeout How long to wait for the message to be received
+   *
+   * @returns A promise which resolves when the message is received, with the message
+   * data as the value
+   */
+  when(name: string, timeout: number): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      return this.listenOnce(
+        new ChannelWaitingListener({
+          name,
+          timeout,
+          callback: (payload) => {
+            resolve(payload);
+          },
+          onError: (error) => {
+            reject(error);
+          },
+        })
+      );
+    });
+  }
+
+  /**
+   * Starts the channel listening for window messages.
+   *
+   * @return nothing
+   */
+  start() {
+    this.currentListener = (message: MessageEvent<unknown>) => {
+      this.receiveMessage(message);
+    };
+    this.window.addEventListener('message', this.currentListener, false);
+  }
+
+  /**
+   * Stops listening for window messages.
+   *
+   * @returns nothing
+   */
+  stop() {
+    if (this.currentListener) {
+      this.window.removeEventListener('message', this.currentListener, false);
+    }
+  }
+}

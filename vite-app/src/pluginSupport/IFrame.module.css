@@ -1,0 +1,8 @@
+.main {
+    flex: 1 1 0px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 0;
+}

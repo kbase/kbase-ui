@@ -1,19 +1,13 @@
+import Well from 'components/Well';
 import { Component } from 'react';
-import DataBrowser, {
-    ColumnDef
-} from '../../../components/DataBrowser';
-import { PluginsInfo, PluginInfo } from '../../../types/info';
+import DataBrowser, { ColumnDef } from '../../../components/DataBrowser';
+import { PluginInfo, PluginsInfo } from '../../../types/info';
 
 export interface AboutPluginsProps {
     pluginsInfo: PluginsInfo;
 }
 
-interface AboutPluginsState { }
-
-export default class AboutPlugins extends Component<
-    AboutPluginsProps,
-    AboutPluginsState
-> {
+export default class AboutPlugins extends Component<AboutPluginsProps> {
     renderPlugins() {
         const columns: Array<ColumnDef<PluginInfo>> = [
             {
@@ -35,7 +29,9 @@ export default class AboutPlugins extends Component<
                     return <span>{plugin.configs.ui.version}</span>;
                 },
                 sorter: (a: PluginInfo, b: PluginInfo) => {
-                    return a.configs.ui.version.localeCompare(b.configs.ui.version);
+                    return a.configs.ui.version.localeCompare(
+                        b.configs.ui.version,
+                    );
                 },
             },
             // {
@@ -63,10 +59,14 @@ export default class AboutPlugins extends Component<
                 label: 'GitHub Account',
                 style: {},
                 render: (plugin: PluginInfo) => {
-                    return <span>{plugin.configs.ui.source.github.account}</span>;
+                    return (
+                        <span>{plugin.configs.ui.source.github.account}</span>
+                    );
                 },
                 sorter: (a: PluginInfo, b: PluginInfo) => {
-                    return a.configs.ui.source.github.account.localeCompare(b.configs.ui.source.github.account);
+                    return a.configs.ui.source.github.account.localeCompare(
+                        b.configs.ui.source.github.account,
+                    );
                 },
             },
             {
@@ -75,22 +75,27 @@ export default class AboutPlugins extends Component<
                 style: {},
                 render: (plugin: PluginInfo) => {
                     return (
-                        <a href={`https://github.com/${plugin.configs.ui.source.github.account}/${plugin.configs.ui.globalName}`} target="_blank" rel="noreferrer" title="URL to the plugin's github repo">
+                        <a
+                            href={`https://github.com/${plugin.configs.ui.source.github.account}/${plugin.configs.ui.globalName}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            title="URL to the plugin's github repo"
+                        >
                             {plugin.configs.ui.globalName}
                         </a>
                     );
                 },
                 sorter: (a: PluginInfo, b: PluginInfo) => {
-                    return a.configs.ui.globalName.localeCompare(b.configs.ui.globalName);
+                    return a.configs.ui.globalName.localeCompare(
+                        b.configs.ui.globalName,
+                    );
                 },
             },
         ];
 
-        const data: Array<PluginInfo> = this.props.pluginsInfo.map(
-            (value) => {
-                return value;
-            }
-        );
+        const data: Array<PluginInfo> = this.props.pluginsInfo.map((value) => {
+            return value;
+        });
 
         return (
             <DataBrowser
@@ -102,10 +107,10 @@ export default class AboutPlugins extends Component<
     }
 
     render() {
-        return <div className="well main">
-            <div className="well-body">
-                {this.renderPlugins()}
-            </div>
-        </div>;
+        return (
+            <Well variant="secondary" stretch>
+                <Well.Body>{this.renderPlugins()}</Well.Body>
+            </Well>
+        );
     }
 }

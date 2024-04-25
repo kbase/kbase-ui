@@ -20,7 +20,7 @@ export type Listener<T> = (state: T) => void;
 export type Updater<T> = (currentState: T) => T;
 
 export interface StateMachineParams<T> {
-    initialState: T,
+    initialState: T;
     interval: number;
 }
 
@@ -54,7 +54,7 @@ export class StateMachine<T> {
 
     getState(): T {
         // TODO: wish we could copy the state --
-        // we possibly can, but is it worth it? 
+        // we possibly can, but is it worth it?
         return this.state;
     }
 

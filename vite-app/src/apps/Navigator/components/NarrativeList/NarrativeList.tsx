@@ -1,7 +1,7 @@
 import { Component } from 'react';
 
 // Components
-import { updateHistory } from 'lib/navigation';
+import { navigate2, updateHistory } from 'lib/navigation';
 import IconSpinner from '../IconSpinner';
 import NarrativeDetailsWrapper from '../NarrativeDetails/NarrativeDetailsWrapper';
 import { SearchInput } from '../SearchInput';
@@ -13,21 +13,21 @@ import ErrorMessage from '../../../../components/ErrorMessage';
 import {
     SearchState,
     SearchStateError,
-    SearchStatus
+    SearchStatus,
 } from '../../context/DataModel';
 import { NavigatorContext } from '../../context/NavigatorContext';
 import NarrativeListing from '../NarrativeListing/NarrativeListing';
 
 interface NarrativeListProps {
     searchState: SearchState;
-    emptyMessage: string
+    emptyMessage: string;
     queryChange: (query: string) => void;
     sortChange: (query: string) => void;
     categoryChange: (category: string) => void;
     refresh: () => void;
 }
 
-interface NarrativeListState { }
+interface NarrativeListState {}
 
 // Like SearchOptions but all optional
 // TODO: may be able to use a TS helper for this...
@@ -112,11 +112,14 @@ export default class NarrativeList extends Component<
         return (
             <NavigatorContext.Consumer>
                 {(value) => {
+                    if (value === null) {
+                        return;
+                    }
                     return (
                         <NarrativeListing
                             emptyMessage={this.props.emptyMessage}
-                            onRowRange={value?.setRange!}
-                            searchState={value?.searchState!}
+                            onRowRange={value.setRange}
+                            searchState={value.searchState}
                         />
                     );
                 }}
@@ -145,7 +148,13 @@ export default class NarrativeList extends Component<
     }
 
     newNarrative() {
-        window.open("/#narrativemanager/new", "_blank")
+        navigate2({
+            path: 'narrativemanager/new',
+            type: 'kbaseui',
+            newWindow: true,
+        });
+
+        // window.open("#narrativemanager/new", "_blank")
     }
 
     render() {
@@ -196,7 +205,7 @@ export default class NarrativeList extends Component<
                                     loading={isSearching}
                                     value={searchParamThing.query}
                                     onSetVal={this.handleFilterQueryChange.bind(
-                                        this
+                                        this,
                                     )}
                                     onRefresh={this.handleRefresh.bind(this)}
                                     placeholder="Search Narratives"
@@ -211,7 +220,7 @@ export default class NarrativeList extends Component<
                                             searching={isSearching}
                                             sort={searchParamThing.sort}
                                             onSortChange={this.handleFilterSortChange.bind(
-                                                this
+                                                this,
                                             )}
                                         />
                                     </div>

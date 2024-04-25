@@ -1,19 +1,30 @@
-import { AuthenticationStatus } from "contexts/Auth";
-import { RuntimeContext } from "contexts/RuntimeContext";
-import { Component } from "react";
-import QueryLinksController from "./controller";
-
+import { AuthenticationStatus, EuropaContext } from 'contexts/EuropaContext';
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
+import { Component } from 'react';
+import QueryLinksController from './controller';
 
 export default class QueryLinkingSessionsContext extends Component {
     render() {
-        return <RuntimeContext.Consumer>
-            {(value) => {
-                if (value) {
-                    if (value.authState.status === AuthenticationStatus.AUTHENTICATED) {
-                        return <QueryLinksController config={value.config} auth={value.authState} notify={value.addNotification} />
+        return (
+            <EuropaContext.Consumer>
+                {(value) => {
+                    if (value && value.status === AsyncProcessStatus.SUCCESS) {
+                        const { authState, config, notify } = value.value;
+                        if (
+                            authState.status ===
+                            AuthenticationStatus.AUTHENTICATED
+                        ) {
+                            return (
+                                <QueryLinksController
+                                    config={config}
+                                    auth={authState}
+                                    notify={notify}
+                                />
+                            );
+                        }
                     }
-                }
-            }}
-        </RuntimeContext.Consumer>
+                }}
+            </EuropaContext.Consumer>
+        );
     }
 }

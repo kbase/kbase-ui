@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Check out GitHub Repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Build the app
               env:
@@ -15,10 +15,10 @@ jobs:
               run: ./Taskfile build-kbase-ui
 
             - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v2
+              uses: docker/setup-buildx-action@v3
 
             - name: Build without push
-              uses: docker/build-push-action@v3
+              uses: docker/build-push-action@v5
               with:
                   context: .
                   file: ./Dockerfile

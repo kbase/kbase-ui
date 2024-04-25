@@ -1,13 +1,13 @@
-import { Role } from "@kbase/ui-lib/lib/Auth";
-import { ReactNode } from "react";
-import { RouteProps } from "../components/Router2";
-import { HashPath } from "../contexts/RouterContext";
+import { Role } from '@kbase/ui-lib/lib/Auth';
+import { ReactNode } from 'react';
+import { RouteProps } from '../components/Router2';
+import { HashPath } from '../contexts/RouterContext';
 
 export enum RouteSpecElementType {
-    REGEXP = "REGEXP",
-    PARAM = "PARAM",
-    SOME_OR_NONE = "SOME_OR_NONE",
-    SOME = "SOME"
+    REGEXP = 'REGEXP',
+    PARAM = 'PARAM',
+    SOME_OR_NONE = 'SOME_OR_NONE',
+    SOME = 'SOME',
 }
 
 export interface RouteSpecElementBase {
@@ -48,39 +48,50 @@ export type Params = Map<string, string>;
 export interface RouteOptions {
     authenticationRequired?: boolean;
     rolesRequired?: Array<Role>;
+    label?: string;
 }
 
 export interface SimpleRouteSpec {
-    path: string,
-    auth: boolean,
+    path: string;
+    auth: boolean;
 }
 
 export interface SimplePluginRouteSpec extends SimpleRouteSpec {
-    view: string
+    view: string;
+}
+
+export interface MatchedHashPath {
+    hashPath: string; // The hash path with any matched params removed, and attached search removed
+    params: Params; // The combined params - hash path matched params, hash search, url search
 }
 
 export class Route {
     rawRouteSpec: string;
+    label?: string;
     routeSpec: RouteSpec;
     render: RouteRenderer;
     routeOptions: RouteOptions;
-    constructor(rawRouteSpec: string, routeOptions: RouteOptions, render: RouteRenderer) {
+    constructor(
+        rawRouteSpec: string,
+        routeOptions: RouteOptions,
+        render: RouteRenderer,
+    ) {
         this.rawRouteSpec = rawRouteSpec;
+        this.label = routeOptions.label;
         this.render = render;
         this.routeOptions = routeOptions;
         this.routeSpec = this.parseRouteSpec();
     }
 
     parseRouteSpec(): RouteSpec {
-        const normalized = this.rawRouteSpec.split("/")
-            .filter((element) => {
-                return element.length > 0;
-            });
+        const normalized = this.rawRouteSpec.split('/').filter((element) => {
+            return element.length > 0;
+        });
 
         const routeSpec: RouteSpec = [];
 
         for (const element of normalized) {
-            if (element === "*") {
+            if (element === '*') {
                 // The wildcard can only be used as the last element --
                 // it means we match any # of path elements, including none.
                 // The handler is expected to utilize the variable number of
@@ -91,7 +102,7 @@ export class Route {
                 // TODO: could set up to throw if there are more
                 // elements;
                 break;
-            } else if (element === "+") {
+            } else if (element === '+') {
                 // The wildcard can only be used as the last element --
                 // it means we match any # of path elements, including none.
                 // The handler is expected to utilize the variable number of
@@ -103,8 +114,8 @@ export class Route {
                 // elements;
                 break;
             }
-            if (element.charAt(0) === ":") {
-                if (element.charAt(element.length - 1) === "?") {
+            if (element.charAt(0) === ':') {
+                if (element.charAt(element.length - 1) === '?') {
                     routeSpec.push({
                         type: RouteSpecElementType.PARAM,
                         name: element.slice(1, -1),
@@ -121,13 +132,12 @@ export class Route {
                 // just alphas and numbers, treat as literal.
                 routeSpec.push({
                     type: RouteSpecElementType.REGEXP,
-                    regexp: new RegExp(`^${element}$`, "i"),
+                    regexp: new RegExp(`^${element}$`, 'i'),
                 });
-
             } else {
                 routeSpec.push({
                     type: RouteSpecElementType.REGEXP,
-                    regexp: new RegExp(element, "i"),
+                    regexp: new RegExp(element, 'i'),
                 });
             }
         }
@@ -135,8 +145,7 @@ export class Route {
         return routeSpec;
     }
 
-    pathToParams(hashPath: HashPath): null | Params {
-
+    matchHashPath({ hash, params }: HashPath): MatchedHashPath | null {
         // First match the param literals.
 
         // TODO: optional
@@ -149,14 +158,22 @@ export class Route {
                 If all goes well,
             */
         const literalPathElements: Array<string> = [];
-        const params: Params = new Map();
+        const hashParams: Map<string, string> = new Map();
+
+        const hashAsPath = hash
+            .split('/')
+            // special handling here - only real use case is an empty string, as other
+            // code ensures that there are no empty elements.
+            .filter((element: string) => {
+                return element.length > 0;
+            });
 
         for (const [index, routeElement] of this.routeSpec.entries()) {
-            const pathElement = hashPath.path[index];
+            const pathElement = hashAsPath[index];
             switch (routeElement.type) {
                 case RouteSpecElementType.REGEXP:
                     // Early exit if there are no more elements but more route.
-                    if (typeof pathElement === "undefined") {
+                    if (typeof pathElement === 'undefined') {
                         return null;
                     }
                     if (!routeElement.regexp.test(pathElement)) {
@@ -165,37 +182,34 @@ export class Route {
                     literalPathElements.push(pathElement);
                     break;
                 case RouteSpecElementType.PARAM:
-                    if (typeof pathElement === "undefined") {
+                    if (typeof pathElement === 'undefined') {
                         if (routeElement.required) {
                             return null;
                         } else {
                             continue;
                         }
                     } else {
-                        params.set(routeElement.name, pathElement);
+                        hashParams.set(routeElement.name, pathElement);
                     }
                     break;
                 case RouteSpecElementType.SOME:
-
                     if (typeof pathElement === 'undefined') {
                         return null;
                     }
-                    for (const pathElement of hashPath.path.slice(index)) {
+                    for (const pathElement of hashAsPath.slice(index)) {
                         literalPathElements.push(pathElement);
                     }
                     break;
                 case RouteSpecElementType.SOME_OR_NONE:
-                    // To honor the "none", we consider it a match if 
+                    // To honor the "none", we consider it a match if
                     // there are no more actual path elements.
 
                     // We have run out of path without a match, so we
                     // can say this is not a match!
 
-
-                    for (const pathElement of hashPath.path.slice(index)) {
+                    for (const pathElement of hashAsPath.slice(index)) {
                         literalPathElements.push(pathElement);
                     }
-
             }
         }
 
@@ -203,15 +217,33 @@ export class Route {
             If we get to the end, and there are more hash path elements not covered by the
             route, consider this a failure to match.
         */
-        if (literalPathElements.length + params.size !== hashPath.path.length) {
+
+        if (
+            literalPathElements.length + hashParams.size !==
+            hashAsPath.length
+        ) {
             return null;
         }
 
-        // Finally, since we have a match, extract params from the search part of the url.
-        hashPath.query.forEach((value, key) => {
-            params.set(key, value);
-        });
+        // NOTE: for now we ignore the search params; we used to enforce hash params
+        // (basically whitelisting them), but this seemed more trouble than worth.
+        // And filtering on search params also seems like an invitation to confusion.
 
-        return params;
+        // Finally, since we have a match, copy the params from the query, which
+        // includes both the real url search and the fake hash search.
+        // hashPath.query.forEach((value, key) => {
+        //     params.set(key, value);
+        // });
+        if (params) {
+            for (const [key, value] of Object.entries(params)) {
+                hashParams.set(key, value);
+            }
+        }
+
+        // return params;
+        return {
+            hashPath: literalPathElements.join('/'),
+            params: hashParams,
+        };
     }
 }

@@ -1,8 +1,9 @@
+import UILink from 'components/UILink2';
+import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { updateHistory } from 'lib/navigation';
 import { Component } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
-import { AuthInfo } from '../../../../contexts/Auth';
 import { Config } from '../../../../types/config';
 import DataView from './DataView';
 import './NarrativeDetails.css';
@@ -63,7 +64,6 @@ export default class NarrativeDetails extends Component<Props, State> {
     }
 
     renderTitle(narrativeDoc: NarrativeSearchDoc) {
-        const narrativeHref = `/narrative/${narrativeDoc.access_group}`;
         const title = (() => {
             if (narrativeDoc.narrative_title.match(/^\s*$/)) {
                 return '** EMPTY TITLE **';
@@ -71,14 +71,13 @@ export default class NarrativeDetails extends Component<Props, State> {
             return narrativeDoc.narrative_title;
         })();
         return (
-            <a
-                className=""
-                href={narrativeHref}
-                rel="noopener noreferrer"
-                target="_blank"
+            <UILink
+                path={`narrative/${narrativeDoc.access_group}`}
+                type="europaui"
+                newWindow={true}
             >
                 <span className="-title">{title}</span>
-            </a>
+            </UILink>
         );
     }
 

@@ -7,7 +7,7 @@ export interface CacheParams {
 
 export enum CacheItemState {
     RESERVED,
-    PRESENT
+    PRESENT,
 }
 
 export interface CacheItemBase<T> {
@@ -38,7 +38,6 @@ export type CacheItem<T> = CacheItemReserved<T> | CacheItemPresent<T>;
 //     reserved: boolean;
 // }
 
-
 export type Fetcher<T> = () => Promise<T>;
 
 export default class Cache<T> {
@@ -49,7 +48,12 @@ export default class Cache<T> {
     waiterFrequency: number;
     isMonitoring: boolean;
 
-    constructor({ itemLifetime, monitoringFrequency, waiterTimeout, waiterFrequency }: CacheParams) {
+    constructor({
+        itemLifetime,
+        monitoringFrequency,
+        waiterTimeout,
+        waiterFrequency,
+    }: CacheParams) {
         this.cache = new Map<string, CacheItem<T>>();
 
         // 10 minute cache lifetime
@@ -75,11 +79,15 @@ export default class Cache<T> {
         }
         this.isMonitoring = true;
         setTimeout(() => {
-            const newCache = new Map<string, any>();
+            const newCache = new Map<string, CacheItem<T>>();
             let cacheRenewed = false;
             Object.keys(this.cache).forEach((id) => {
                 const item = this.cache.get(id);
-                if (!this.isExpired(item)) {
+                if (
+                    item &&
+                    item.state === CacheItemState.PRESENT &&
+                    !this.isExpired(item)
+                ) {
                     newCache.set(id, item);
                     cacheRenewed = true;
                 }
@@ -92,7 +100,7 @@ export default class Cache<T> {
         }, this.monitoringFrequency);
     }
 
-    private isExpired(cacheItem: any) {
+    private isExpired(cacheItem: CacheItemPresent<T>) {
         const now = new Date().getTime();
         const elapsed = now - cacheItem.createdAt;
         return elapsed > this.cacheLifetime;
@@ -111,17 +119,20 @@ export default class Cache<T> {
     // }
 
     /**
-     * Wait for a reserved item associated with id to become available, and then 
+     * Wait for a reserved item associated with id to become available, and then
      * return it.
      * Implements this by polling for a given amount of time, with a given pause time between
-     * poll attempts. 
+     * poll attempts.
      * Handles the case of a reserve item disappearing between polls, in which case the item
      * will be reserved and fetched.
-     * 
+     *
      * @param id - an identifier which uniquely identifies an item of type T
      * @param fetcher - a function returning a promise of an item of type T
      */
-    private async reserveWaiter(id: string, fetcher: Fetcher<T>): Promise<CacheItemPresent<T>> {
+    private async reserveWaiter(
+        id: string,
+        fetcher: Fetcher<T>,
+    ): Promise<CacheItemPresent<T>> {
         return new Promise<CacheItemPresent<T>>((resolve, reject) => {
             const started = new Date().getTime();
             const resolveItem = async () => {
@@ -141,16 +152,21 @@ export default class Cache<T> {
                 }
 
                 switch (item.state) {
-                    case CacheItemState.RESERVED:
+                    case CacheItemState.RESERVED: {
                         const elapsed = new Date().getTime() - started;
                         if (elapsed < this.waiterTimeout) {
                             // Our time spent waiting is still within the timeout window, so keep going.
                             waiter();
                         } else {
                             // Otherwise we have waited too long, and we just give up.
-                            reject(new Error(`Timed-out waiting for cache item to become available; timeout ${this.waiterTimeout}, waited ${elapsed}`));
+                            reject(
+                                new Error(
+                                    `Timed-out waiting for cache item to become available; timeout ${this.waiterTimeout}, waited ${elapsed}`,
+                                ),
+                            );
                         }
                         break;
+                    }
                     case CacheItemState.PRESENT:
                         resolve(item);
                 }
@@ -164,10 +180,10 @@ export default class Cache<T> {
     }
 
     /**
-     * Reserve an item of type T, uniquely identified by id, and the proceed to fetch it 
+     * Reserve an item of type T, uniquely identified by id, and the proceed to fetch it
      * and add it to the cache (under that id).
-     * 
-     * @param id - 
+     *
+     * @param id -
      * @param fetcher - a function which returns promise of a thing T
      */
     private async reserveAndFetch(id: string, fetcher: Fetcher<T>): Promise<T> {
@@ -176,10 +192,11 @@ export default class Cache<T> {
 
         const newItem = await fetcher();
         const newCacheItem: CacheItemPresent<T> = {
-            id, fetcher,
+            id,
+            fetcher,
             createdAt: new Date().getTime(),
             value: newItem,
-            state: CacheItemState.PRESENT
+            state: CacheItemState.PRESENT,
         };
         this.cache.set(id, newCacheItem);
         this.runMonitor();
@@ -208,11 +225,17 @@ export default class Cache<T> {
      * Given an id which uniquely identifies an item of type T,
      * and a fetcher with which to retrieve such an item,
      * return a promise for such an item.
-     * 
+     *
      * @param id - unique identifier for an object of type T
      * @param fetcher - a function returning a promise of an item of type T
      */
-    async getItemWithWait({ id, fetcher }: { id: string; fetcher: Fetcher<T>; }): Promise<T> {
+    async getItemWithWait({
+        id,
+        fetcher,
+    }: {
+        id: string;
+        fetcher: Fetcher<T>;
+    }): Promise<T> {
         const cached = this.cache.get(id);
 
         // If there is no item cached yet, we reserve it and then fetch it. We don't
@@ -223,32 +246,36 @@ export default class Cache<T> {
         }
 
         // If an item is expired, we immediately remove it and then re-reserve-and-fetch-it
-        if (this.isExpired(cached)) {
-            this.cache.delete(id);
-            return this.reserveAndFetch(id, fetcher);
-        }
 
         switch (cached.state) {
             case CacheItemState.RESERVED:
                 return (await this.reserveWaiter(id, fetcher)).value;
             case CacheItemState.PRESENT:
+                if (this.isExpired(cached)) {
+                    this.cache.delete(id);
+                    return this.reserveAndFetch(id, fetcher);
+                }
                 return cached.value;
         }
     }
 
     /**
-     * Adds an item to the cache in a "reserved" state. 
-     * This state implies that item is or is going to soon be 
+     * Adds an item to the cache in a "reserved" state.
+     * This state implies that item is or is going to soon be
      * fetched.
-     * 
+     *
      * @param id - some opaque string identifier uniquely associated with the thing T
-     * @param fetcher 
+     * @param fetcher
      */
-    private reserveItem(id: string, fetcher: () => Promise<T>): CacheItemReserved<T> {
+    private reserveItem(
+        id: string,
+        fetcher: () => Promise<T>,
+    ): CacheItemReserved<T> {
         const reservedItem: CacheItemReserved<T> = {
-            id, fetcher,
+            id,
+            fetcher,
             reservedAt: new Date().getTime(),
-            state: CacheItemState.RESERVED
+            state: CacheItemState.RESERVED,
         };
         this.cache.set(id, reservedItem);
         return reservedItem;

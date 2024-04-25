@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+# Proxy Container
+#
+# See tools/proxy/contents/conf/nginx.conf.tmpl for usage
+#
+# Input environment variables:
+#
+# required:
+# 
+# DEPLOY_ENV
+# BASE_PATH
+# KBASE_UI_HOSTNAME
+#
+# (either BASE_PATH, KBASE_UI_HOSTNAME or both must be provided)
+#
+# optional:
+#
+# KBASE_UI_HOST
+# KBASE_UI_PORT
+# EUROPA_UI_HOST
+# EUROPA_UI_PORT
+# NARRATIVE_HOST
+# NARRATIVE_PORT
+# SERVICE_PROXIES
+# DYNAMIC_SERVICE_PROXIES
+#
+# Created environment variables:
+#
+# KBASE_UI_BASE_PATH
+# KBASE_DOMAIN
+# KBASE_UI_HOSTNAME
+# SERVICES_DOMAIN
+# KBASE_ENDPOINT
+# KBASE_UI_HOST
+# KBASE_UI_PORT
+# EUROPA_UI_HOST
+# EUROPA_UI_PORT
+# NARRATIVE_HOST
+# NARRATIVE_PORT
+# SERVICE_PROXIES
+# DYNAMIC_SERVICE_PROXIES
+
+
+#
+# Defaults
+#
+DEFAULT_KBASE_UI_BASE_PATH=''
+DEFAULT_KBASE_UI_HOSTNAME='legacy'
+DEFAULT_SERVICE_PROXIES=''
+DEFAULT_DYNAMIC_SERVICE_PROXIES=''
+
+#
+# Returns the environment variable setting line only if the variable has been
+# defined and is non-blank.
+#
+# If USE_DEFAULTS is defined, the default values defined above will be used
+# for any empty or undefined variable.
+#
+function env_var() {
+    local var_name="${1}"
+    if [[ -z "${!var_name}" ]] 
+    then
+      if [[ -z "${USE_DEFAULTS}" ]]
+      then
+        echo ''
+      else 
+        local default_var_name="DEFAULT_${var_name}"
+        
+        IFS= printf "\n%s='%s'" ${var_name} ${!default_var_name}
+      fi
+    else
+      IFS= printf "\n%s='%s'" ${var_name} ${!var_name}
+    fi
+}
+
+echo
+echo 'Creating proxy env vars...'
+
+if [ -z "${DEPLOY_ENV}" ]
+then
+    echo 'The "DEPLOY_ENV" environment variable is required to generate config env'
+    exit 1
+fi
+
+echo
+echo "DEPLOY_ENV is '${DEPLOY_ENV}'"
+
+# if [ -z "${KBASE_UI_BASE_PATH}" ] && [ -z "${KBASE_UI_HOSTNAME}" ]  
+# then
+#     echo 'Either the "KBASE_UI_BASE_PATH" or "KBASE_UI_HOSTNAME" environment variable is required to generate config env'
+#     exit 1
+# fi
+
+echo "KBASE_UI_BASE_PATH is '${KBASE_UI_BASE_PATH}'"
+echo "KBASE_UI_HOSTNAME is '${KBASE_UI_HOSTNAME}'"
+echo "LOCAL_KBASE_UI is '${LOCAL_KBASE_UI}'"
+echo
+
+# 
+# These rarely, if ever, change
+#
+
+# The proxy target for kbase-ui; the ip or host of the kbase-ui container. 
+# KBASE_UI_HOST="${KBASE_UI_HOST}" # kbase-ui
+# EUROPA_UI_HOST="${EUROPA_UI_HOST}" # europa-ui
+# NARRATIVE_HOST="${NARRATIVE_HOST}" # narrative
+
+KBASE_DOMAIN="${DEPLOY_ENV}.kbase.us"
+SERVICES_DOMAIN="${KBASE_DOMAIN}"
+
+#
+# These are controlled directly by the developer
+#
+# SERVICE_PROXIES="${SERVICE_PROXIES}"
+# DYNAMIC_SERVICE_PROXIES="${DYNAMIC_SERVICE_PROXIES}"
+# KBASE_UI_HOST="${KBASE_UI_HOST}"
+# KBASE_UI_PORT="${KBASE_UI_PORT}"
+# NARRATIVE_HOST="${NARRATIVE_HOST}"
+# NARRATIVE_PORT="${NARRATIVE_PORT}"
+# EUROPA_UI_HOST="${EUROPA_UI_HOST}"
+# EUROPA_UI_PORT="${EUROPA_UI_PORT}"
+
+# Generates an env file for usage by the proxy service in the devcontainer.
+
+cat << EOF > ./.devcontainer/proxy.env
+# An env file for usage by the proxy service in the devcontainer.
+$(env_var KBASE_UI_BASE_PATH)\
+$(env_var KBASE_UI_HOSTNAME)\
+$(env_var KBASE_DOMAIN)\
+$(env_var SERVICES_DOMAIN)\
+$(env_var SERVICE_PROXIES)\
+$(env_var DYNAMIC_SERVICE_PROXIES)\
+$(env_var KBASE_UI_HOST)\
+$(env_var KBASE_UI_PORT)\
+$(env_var NARRATIVE_HOST)\
+$(env_var NARRATIVE_PORT)\
+$(env_var EUROPA_UI_HOST)\
+$(env_var EUROPA_UI_PORT)
+EOF

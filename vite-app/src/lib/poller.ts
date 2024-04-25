@@ -19,13 +19,13 @@ export class Job {
 }
 
 export interface SimpleJobConfig extends JobConfig {
-    runner: () => void
+    runner: () => void;
 }
 
 export class SimpleJob extends Job {
     runner: () => void;
     constructor(config: SimpleJobConfig) {
-        super(config)
+        super(config);
         this.runner = config.runner;
     }
 
@@ -95,10 +95,10 @@ export class Task {
                         return 'Unknown error';
                     })();
                     throw new Error(
-                        `Error running poller task job: ${message}`
+                        `Error running poller task job: ${message}`,
                     );
                 }
-            })
+            }),
         );
     }
 }
@@ -166,14 +166,9 @@ export default class Poller {
         if (this.task === null) {
             return;
         }
-        return this.task
-            .run()
-            .catch((err) => {
-                console.error(
-                    this.timestamp() + ': Error while running task',
-                    err
-                );
-            });
+        return this.task.run().catch((err) => {
+            console.error(this.timestamp() + ': Error while running task', err);
+        });
     }
 
     poll() {
@@ -297,7 +292,7 @@ export function makePoller({
     });
     task.addJob(job);
     const poller = new Poller({
-        task
+        task,
     });
     return poller;
 }

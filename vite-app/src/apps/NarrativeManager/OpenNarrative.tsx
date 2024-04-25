@@ -1,39 +1,46 @@
-import Well from "components/Well";
-import { Component } from "react";
+import Well from 'components/Well';
+import { $GlobalMessenger } from 'contexts/EuropaContext';
+import { europaBaseURL, navigationPathToURL } from 'contexts/RouterContext';
+import { Component } from 'react';
 
 export interface OpenNarrativeProps {
     workspaceID: number;
 }
 
-export default class OpenNarrative extends Component<OpenNarrativeProps, {}> {
-    url: string;
-    constructor(props: OpenNarrativeProps) {
-        super(props);
-        this.url = this.makeNarrativePath();
+export default class OpenNarrative extends Component<OpenNarrativeProps> {
+    makeNarrativeURL() {
+        return navigationPathToURL(
+            {
+                path: `narrative/${this.props.workspaceID}`,
+                type: 'europaui',
+            },
+            false,
+        ).toString();
     }
+
     componentDidMount() {
-        window.location.href = this.makeNarrativePath();
-    }
-    makeNarrativePath() {
-        return `${window.location.origin}/narrative/${this.props.workspaceID}`;
+        const url = europaBaseURL();
+        url.pathname = `narrative/${this.props.workspaceID}`;
+        $GlobalMessenger.send('europa', 'redirect', { url: url.toString() });
     }
 
     render() {
-        const url = this.makeNarrativePath();
-        return <Well variant="info">
-            <Well.Header>
-                Opening your Narrative...
-            </Well.Header>
-            <Well.Body>
-                <p>
-                    If the Narrative does not open within a few seconds, use the following link to open it directly:
-                </p>
-                <p>
-                    <a href={url} target="_blank" rel="noreferrer">
-                        Open your Narrative: {url}
-                    </a>
-                </p>
-            </Well.Body>
-        </Well>
+        const url = this.makeNarrativeURL();
+        return (
+            <Well variant="info">
+                <Well.Header>Opening your Narrative...</Well.Header>
+                <Well.Body>
+                    <p>
+                        If the Narrative does not open within a few seconds, use
+                        the following link to open it directly:
+                    </p>
+                    <p>
+                        <a href={url} target="_top" rel="noreferrer">
+                            Open your Narrative: {url}
+                        </a>
+                    </p>
+                </Well.Body>
+            </Well>
+        );
     }
 }

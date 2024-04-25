@@ -2,17 +2,9 @@
     "deploy": {
         "id": "kbase-ui",
         "target": "/kb/deployment/app",
-        "basePath":  "{{ default "" .Env.deploy_basepath }}",
-        "environment": "{{ .Env.deploy_environment }}",
-        "displayEnvironment": {{ eq .Env.deploy_environment "prod" | ternary true false }},
-        "hostname": "{{ .Env.deploy_hostname }}",
-        "icon": "{{ .Env.deploy_icon }}",
-        "name": "{{ .Env.deploy_name }}",
+        "hostname": "{{ .Env.KBASE_DOMAIN }}",
         "ui": {
-            "origin": "https://{{ default .Env.deploy_hostname .Env.deploy_ui_hostname }}"
-        },
-        "services": {
-            "urlBase": "{{ .Env.deploy_hostname }}"
+            "origin": "https://{{ .Env.KBASE_DOMAIN }}"
         }
     },
     "ui": {
@@ -41,12 +33,7 @@
                 "name": "Session",
                 "cookie": {
                     "maxAge": 5184000,
-                    "name": "kbase_session",
-                    "backup": {
-                        "name": "kbase_session_backup",
-                        "domain": {{ if .Env.ui_backupCookie_domain }}"{{.Env.ui_backupCookie_domain}}"{{else}}null{{end}},
-                        "enabled": {{ default "false" .Env.ui_backupCookie_enabled }}
-                    }
+                    "name": "kbase_session"
                 },
                 "loginWidget": "kb_login_signin",
                 "cookieChangeDetectionInterval": 1000,
@@ -62,15 +49,15 @@
         },
         "urls": {
             "marketing": {
-                "url": "www.kbase.us",
+                "url": "https://www.kbase.us",
                 "title": "Marketing Site"
             },
             "documentation": {
-                "url": "docs.kbase.us",
+                "url": "https://docs.kbase.us",
                 "title": "Documentation Site"
             },
             "statusPage": {
-                "url": "http://kbase.us/internal/status",
+                "url": "https://kbase.us/internal/status",
                 "title": "KBase Status Page"
             },
             "submitJiraTicket": {
@@ -78,7 +65,7 @@
                 "title": "Submit a Jira Ticket"
             },
             "narrative": {
-                "url": "https://{{ .Env.deploy_hostname }}.kbase.us/narrative",
+                "url": "https://{{ .Env.KBASE_DOMAIN }}/narrative",
                 "title": "Narrative User Interface"
             },
             "loginHelp": {
@@ -119,48 +106,9 @@
             "beta"
         ],
         "featureSwitches": {
-            "enabled": [{{ range $i, $v := splitList "," (default "" .Env.ui_featureSwitches_enabled) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "disabled": [{{ range $i, $v := splitList "," (default "" .Env.ui_featureSwitches_disabled) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
-            "available": [
-                {
-                    "id": "orcid_auth_provider",
-                    "title": "ORCiD auth provider",
-                    "description": "The ORCiD auth provider is"
-                },
-                {
-                    "id": "system_alert_notification",
-                    "title": "The New System Alert Notification",
-                    "disabled": true
-                },
-                {
-                    "id": "search_features",
-                    "title": "Search over Genome Features"
-                },
-                {
-                    "id": "similar_genomes",
-                    "title": "Similar Genomes Landing Page Widget"
-                },
-                {
-                    "id": "new_provenance_widget",
-                    "title": "New Provenance Widget"
-                },
-                {
-                    "id": "re-lineage",
-                    "title": "Lineage driven by Relation Engine"
-                },
-                {
-                    "id": "object-link-to-term",
-                    "title": "Data objects linked to ontology terms"
-                },
-                {
-                    "id": "redirect-to-www",
-                    "title": "Redirect to www.kbase.us if not physical path, ui hash path, or token"
-                },
-                {
-                    "id": "sampleset-data-links",
-                    "title": "Enable data links for sample sets"
-                }
-            ]
+            "enabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_ENABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "disabled": [{{ range $i, $v := splitList "," (default "" .Env.FEATURE_SWITCHES_DISABLED) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}],
+            "available": []
         },
         "constants": {
             "clientTimeout": 900000,
@@ -173,15 +121,12 @@
         },
         "defaults": {
             "path": {
-                "type": "path",
-                "value": "{{ default "/narratives" .Env.DEFAULT_PATH }}"
-            },
-            "hideHeader": {{ default "false" .Env.HIDE_HEADER }},
-            "hideNavigation": {{ default "false" .Env.HIDE_NAVIGATION }},
-            "integratedHamburgerAndLogo": {{ default "false"
-            .Env.INTEGRATED_HAMBURGER_AND_LOGO }}
+                "path": "{{ default "narratives" .Env.DEFAULT_PATH }}",
+                "type": "{{ default "europaui" .Env.DEFAULT_PATH_TYPE }}"
+            }
         }
     },
+    {{ $services_endpoint := (printf "https://%s/services/" .Env.KBASE_DOMAIN) }}
     "services": {
         "Auth2": {
             "module": "Auth2",
@@ -190,7 +135,7 @@
                 "auth",
                 "Auth"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/{{ default "services/auth" .Env.deploy_services_auth2_path }}",
+            "url": "{{ $services_endpoint }}auth",
             "cookieName": "kbase_session",
             "extraCookieNames": [],
             "name": "Authorization Version 2",
@@ -199,18 +144,40 @@
                 "path": "/",
                 "propertyPath": "version"
             },
-            "providers": [
-                "Google",
-                "Globus",
-                "OrcID"
-            ]
+            "supportedProviders": [
+                {
+                    "id": "Google",
+                    "label": "Google",
+                    "logoutUrl": "https://accounts.google.com/Logout",
+                    "priority": 1,
+                    "confirmSignin": false,
+                    "description": "Any Google account may be used to access KBase.\n"
+                },
+                {
+                    "id": "OrcID",
+                    "label": "ORCID",
+                    "logoutUrl": "https://www.orcid.org/signout",
+                    "priority": 1,
+                    "confirmSignin": true,
+                    "description": "Use your ORCiD account to access KBase.\n"
+                },
+                {
+                    "id": "Globus",
+                    "label": "Globus",
+                    "logoutUrl": "https://app.globus.org/logout",
+                    "priority": 2,
+                    "confirmSignin": true,
+                    "description": "Use your Globus ID to access KBase.\n"
+                }
+            ],
+            "providers": [{{ range $i, $v := splitList "," (default "Google,Globus,OrcID" .Env.AUTH2_PROVIDERS) }}{{if $v }}{{ if $i }}, {{end}}"{{ $v }}"{{ end }}{{ end }}]
         },
         "Catalog": {
             "module": "Catalog",
             "aliases": [
                 "catalog"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/catalog",
+            "url": "{{ $services_endpoint }}catalog",
             "name": "Catalog",
             "type": "jsonrpc",
             "version": {
@@ -223,7 +190,7 @@
                 "ee2",
                 "ExecutionEngine2"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/ee2",
+            "url": "{{ $services_endpoint }}ee2",
             "name": "Execution Engine2",
             "type": "jsonrpc"
         },
@@ -232,7 +199,7 @@
             "aliases": [
                 "feeds"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/feeds",
+            "url": "{{ $services_endpoint }}feeds",
             "name": "Feeds",
             "type": "rest",
             "version": {
@@ -245,7 +212,7 @@
             "aliases": [
                 "groups"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/groups",
+            "url": "{{ $services_endpoint }}groups",
             "name": "Groups",
             "type": "rest",
             "version": {
@@ -259,7 +226,7 @@
                 "narrative_job_service",
                 "njs"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/njs_wrapper",
+            "url": "{{ $services_endpoint }}njs_wrapper",
             "name": "Narrative Job Service",
             "type": "jsonrpc",
             "version": {
@@ -271,8 +238,8 @@
             "aliases": [
                 "narrative_method_store"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/narrative_method_store/rpc",
-            "image_url": "https://{{ .Env.deploy_hostname }}/services/narrative_method_store/",
+            "url": "{{ $services_endpoint }}narrative_method_store/rpc",
+            "image_url": "{{ $services_endpoint }}narrative_method_store/",
             "name": "Narrative Method Store",
             "type": "jsonrpc",
             "version": {
@@ -284,7 +251,7 @@
             "aliases": [
                 "user_profile"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/user_profile/rpc",
+            "url": "{{ $services_endpoint }}user_profile/rpc",
             "name": "User Profile",
             "type": "jsonrpc",
             "version": {
@@ -293,7 +260,7 @@
         },
         "SampleService": {
             "module": "SampleService",
-            "url": "https://{{ .Env.deploy_hostname }}/services/sampleservice",
+            "url": "{{ $services_endpoint }}sampleservice",
             "name": "Sample Service",
             "type": "jsonrpc"
         },
@@ -302,7 +269,7 @@
             "aliases": [
                 "service_wizard"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/service_wizard",
+            "url": "{{ $services_endpoint }}service_wizard",
             "name": "Service Wizard",
             "type": "jsonrpc",
             "version": {
@@ -314,7 +281,7 @@
             "aliases": [
                 "workspace"
             ],
-            "url": "https://{{ .Env.deploy_hostname }}/services/ws",
+            "url": "{{ $services_endpoint }}ws",
             "name": "Workspace",
             "type": "jsonrpc",
             "version": {
@@ -324,7 +291,7 @@
         "RelationEngine": {
             "module": "RelationEngine",
             "aliases": [],
-            "url": "https://{{ .Env.deploy_hostname }}/services/relation_engine_api",
+            "url": "{{ $services_endpoint }}relation_engine_api",
             "name": "Relation Engine",
             "type": "rest",
             "version": {
@@ -335,22 +302,22 @@
         "SearchAPI2": {
             "module": "SearchAPI2",
             "aliases": [],
-            "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/rpc",
-            "legacyUrl": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
+            "url": "{{ $services_endpoint }}searchapi2/rpc",
+            "legacyUrl": "{{ $services_endpoint }}searchapi2/legacy",
             "name": "Search Engine",
             "type": "jsonrpc2"
         },
         "SearchAPI2Legacy": {
             "aliases": [],
             "module": "KBaseSearchEngine",
-            "url": "https://{{ .Env.deploy_hostname }}/services/searchapi2/legacy",
+            "url": "{{ $services_endpoint }}searchapi2/legacy",
             "name": "Search Engine",
             "type": "jsonrpc"
         },
         "ORCIDLink": {
             "aliases": [],
             "module": "ORCIDLink",
-            "url": "https://{{ .Env.deploy_hostname }}/services/orcidlink",
+            "url": "{{ $services_endpoint }}orcidlink",
             "name": "KBase ORCID® Link",
             "type": "rest",
             "version": {

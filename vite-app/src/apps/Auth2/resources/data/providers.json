@@ -1,0 +1,26 @@
+[
+    {
+        "id": "Google",
+        "label": "Google",
+        "logoutUrl": "https://accounts.google.com/Logout",
+        "priority": 1,
+        "confirmSignin": false,
+        "description": "Any Google account may be used to access KBase.\n"
+    },
+    {
+        "id": "OrcID",
+        "label": "ORCID",
+        "logoutUrl": "https://www.orcid.org/signout",
+        "priority": 1,
+        "confirmSignin": true,
+        "description": "Use your ORCiD account to access KBase.\n"
+    },
+    {
+        "id": "Globus",
+        "label": "Globus",
+        "logoutUrl": "https://app.globus.org/logout",
+        "priority": 2,
+        "confirmSignin": true,
+        "description": "Use your Globus ID to access KBase.\n"
+    }
+]

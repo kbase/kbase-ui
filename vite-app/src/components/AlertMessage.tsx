@@ -5,15 +5,21 @@ import { Alert } from 'react-bootstrap';
 // makes Variant useless as a restriction... There is an open ticket, but it has been ope
 // for a couple of years! There may be some reason to have Variant be looser, but c'mon.
 export type Variant =
-    'primary' | 'secondary' | 'success' | 'danger' |
-    'warning' | 'info' | 'dark' | 'light';
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'dark'
+    | 'light';
 
 export type AlertMessageProps = PropsWithChildren<{
     showTitle?: boolean;
     title?: string;
     showIcon?: boolean;
     icon?: string;
-    variant: Variant
+    variant: Variant;
     message?: string;
     style?: React.CSSProperties;
     className?: string;
@@ -22,12 +28,15 @@ export type AlertMessageProps = PropsWithChildren<{
 
 export default class AlertMessage extends Component<AlertMessageProps> {
     iconClass(): string | null {
-        if (typeof this.props.showIcon !== 'undefined' && this.props.showIcon !== false) {
+        if (
+            typeof this.props.showIcon !== 'undefined' &&
+            this.props.showIcon !== false
+        ) {
             switch (this.props.variant) {
                 case 'primary':
                     return null;
                 case 'secondary':
-                    return null
+                    return null;
                 case 'success':
                     return 'check';
                 case 'danger':
@@ -42,10 +51,9 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                     return null;
             }
         }
-
         return this.props.icon || null;
-
     }
+
     defaultTitle() {
         if (!this.props.showTitle) {
             return;
@@ -63,22 +71,31 @@ export default class AlertMessage extends Component<AlertMessageProps> {
                 return;
         }
     }
+
     renderIcon() {
         const iconClass = this.iconClass();
         if (iconClass === null) {
             return;
         }
-        return <span className={`fa fa-${iconClass}`} style={{ marginRight: '0.25em' }} />
+        return (
+            <span
+                className={`fa fa-${iconClass}`}
+                style={{ marginRight: '0.25em' }}
+            />
+        );
     }
+
     renderTitle() {
         const title = this.props.title || this.defaultTitle();
         if (!title) {
             return;
         }
-        return <Alert.Heading>
-            {this.renderIcon()}
-            {title}
-        </Alert.Heading>
+        return (
+            <Alert.Heading>
+                {this.renderIcon()}
+                {title}
+            </Alert.Heading>
+        );
     }
     render() {
         const content = (() => {
@@ -87,9 +104,11 @@ export default class AlertMessage extends Component<AlertMessageProps> {
             }
             return this.props.message || this.props.children;
         })();
-        return <Alert variant={this.props.variant} style={this.props.style}>
-            {this.renderTitle()}
-            {content}
-        </Alert>
+        return (
+            <Alert variant={this.props.variant} style={this.props.style}>
+                {this.renderTitle()}
+                {content}
+            </Alert>
+        );
     }
 }

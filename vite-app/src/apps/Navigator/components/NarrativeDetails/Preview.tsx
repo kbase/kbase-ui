@@ -1,3 +1,5 @@
+import UILink from 'components/UILink2';
+import { AuthInfo } from 'contexts/EuropaContext';
 import NarrativeModel, {
     AppCell,
     Cell,
@@ -7,13 +9,13 @@ import NarrativeModel, {
     NarrativeObject,
     NarrativeSearchDoc,
     OutputObjectCell,
+    ServiceWidgetCell,
 } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import Empty from '../../../../components/Empty';
 import ErrorMessage from '../../../../components/ErrorMessage';
 import Loading from '../../../../components/Loading';
-import { AuthInfo } from '../../../../contexts/Auth';
 import { AsyncProcess, AsyncProcessStatus } from '../../../../lib/AsyncProcess';
 import { Config } from '../../../../types/config';
 import AppCellView from './cells/AppCell';
@@ -21,6 +23,7 @@ import CodeCellView from './cells/CodeCell';
 import DataObjectCellView from './cells/DataObjectCell';
 import MarkdownCellView from './cells/MarkdownCell';
 import OutputObjectCellVew from './cells/OutputObjectCell';
+import ServiceWidgetCellView from './cells/ServiceWidgetCell';
 import UnrecognizedCellView from './cells/UnrecognizedCell';
 
 interface Props {
@@ -46,7 +49,7 @@ export default class Preview extends Component<Props, State> {
     componentDidUpdate(prevProps: Props) {
         if (
             prevProps.narrative.access_group !==
-            this.props.narrative.access_group ||
+                this.props.narrative.access_group ||
             prevProps.narrative.obj_id !== this.props.narrative.obj_id ||
             prevProps.narrative.version !== this.props.narrative.version
         ) {
@@ -71,6 +74,7 @@ export default class Preview extends Component<Props, State> {
             const narrativeModel = new NarrativeModel({
                 workspaceURL: this.props.config.services.Workspace.url,
                 token: this.props.authInfo.token,
+                timeout: this.props.config.ui.constants.clientTimeout,
             });
             const narrative = await narrativeModel.fetchNarrative(upa);
             this.setState({
@@ -93,18 +97,15 @@ export default class Preview extends Component<Props, State> {
     }
 
     renderFullNarrativeLink(wsid: number) {
-        const narrativeHref = `/narrative/${wsid}`;
         return (
-            <p style={{ textAlign: 'center' }}>
-                <a
-                    className="btn btn-outline-secondary"
-                    href={narrativeHref}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    View the full narrative
-                </a>
-            </p>
+            <UILink
+                className="btn btn-outline-secondary"
+                path={`narrative/${wsid}`}
+                type="europaui"
+                newWindow={true}
+            >
+                View the full narrative
+            </UILink>
         );
     }
 
@@ -153,6 +154,12 @@ export default class Preview extends Component<Props, State> {
                                     cell={cell as OutputObjectCell}
                                 />
                             );
+                        case 'serviceWidget':
+                            return (
+                                <ServiceWidgetCellView
+                                    cell={cell as ServiceWidgetCell}
+                                />
+                            );
                     }
                 } else {
                     // TODO: do a better job of showing obsolete cell types.
@@ -197,7 +204,7 @@ export default class Preview extends Component<Props, State> {
                 {rows}
                 <Row className="g-0">
                     {this.renderFullNarrativeLink(
-                        this.props.narrative.access_group
+                        this.props.narrative.access_group,
                     )}
                 </Row>
             </>

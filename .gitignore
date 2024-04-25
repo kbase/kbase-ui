@@ -17,6 +17,7 @@ _attic/
 # Build artifacts
 /build/
 !/build/README.md
+*.pyc
 
 report.*.json
 
@@ -30,6 +31,8 @@ yarn.lock
 # /react-app/public/data
 # !/react-app/public/data/README.md
 _working/
+_todo/
+.devcontainer/*.env
 
 # General purpose temp directory
 /temp/*

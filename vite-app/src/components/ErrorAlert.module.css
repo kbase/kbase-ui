@@ -1,0 +1,12 @@
+.main {
+    margin: 0 auto;
+}
+
+.main :global .alert-title {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.main :global .fa {
+    margin-right: 0.5em;
+}

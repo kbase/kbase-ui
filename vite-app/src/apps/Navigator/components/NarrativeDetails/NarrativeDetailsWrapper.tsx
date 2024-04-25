@@ -1,35 +1,48 @@
 import { AuthenticationStatus } from '@kbase/ui-lib';
+import Empty from 'components/Empty';
+import { EuropaContext } from 'contexts/EuropaContext';
 import { Component } from 'react';
-import NarrativeDetails from './NarrativeDetails';
 import ErrorMessage from '../../../../components/ErrorMessage';
 import Loading from '../../../../components/Loading';
-import { RuntimeContext } from '../../../../contexts/RuntimeContext';
 import { AsyncProcessStatus } from '../../../../lib/AsyncProcess';
-import { NavigatorContext } from '../../context/NavigatorContext';
+import {
+    NarrativeSelectedBy,
+    NavigatorContext,
+} from '../../context/NavigatorContext';
+import NarrativeDetails from './NarrativeDetails';
 
 export default class NarrativeDetailsWrapper extends Component {
     render() {
         return (
-            <RuntimeContext.Consumer>
+            <EuropaContext.Consumer>
                 {(value) => {
-                    if (value === null) {
-                        return null;
-                    }
                     if (
-                        value.authState.status !==
-                        AuthenticationStatus.AUTHENTICATED
+                        value === null ||
+                        value.status !== AsyncProcessStatus.SUCCESS
                     ) {
                         return null;
                     }
-                    const {
-                        authState: { authInfo },
-                        config,
-                    } = value;
+                    const { authState, config } = value.value;
+                    if (
+                        authState.status !== AuthenticationStatus.AUTHENTICATED
+                    ) {
+                        return null;
+                    }
+                    const { authInfo } = authState;
                     return (
                         <NavigatorContext.Consumer>
                             {(navigatorValue) => {
                                 if (navigatorValue === null) {
                                     return null;
+                                }
+                                if (
+                                    navigatorValue.userInteractions
+                                        .narrativeSelectedBy ===
+                                    NarrativeSelectedBy.NONE
+                                ) {
+                                    return (
+                                        <Empty message="No Narrative selected" />
+                                    );
                                 }
                                 switch (
                                     navigatorValue.selectedNarrative.status
@@ -72,7 +85,7 @@ export default class NarrativeDetailsWrapper extends Component {
                         </NavigatorContext.Consumer>
                     );
                 }}
-            </RuntimeContext.Consumer>
+            </EuropaContext.Consumer>
         );
     }
 }

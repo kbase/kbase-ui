@@ -1,5 +1,3 @@
-
-
 // export interface ORCIDAuth {
 //     access_token: string;
 //     expires_in: number;
@@ -10,7 +8,7 @@
 //     scope: string
 //     token_type: string;
 
-import { JSONObject } from "lib/json";
+import { JSONObject } from 'lib/json';
 
 // }
 
@@ -22,20 +20,19 @@ import { JSONObject } from "lib/json";
 //     orcid_auth: ORCIDAuth
 // }
 
-
 export interface ORCIDAuthPublic extends JSONObject {
     expires_in: number;
     name: string;
     orcid: string;
-    scope: string
+    scope: string;
 }
 
 export interface LinkRecordPublic extends JSONObject {
-    created_at: number,
+    created_at: number;
     expires_at: number;
     retires_at: number;
     username: string;
-    orcid_auth: ORCIDAuthPublic
+    orcid_auth: ORCIDAuthPublic;
 }
 
 export interface ORCIDAuthPublicNonOwner extends JSONObject {
@@ -45,7 +42,7 @@ export interface ORCIDAuthPublicNonOwner extends JSONObject {
 
 export interface LinkRecordPublicNonOwner {
     username: string;
-    orcid_auth: ORCIDAuthPublicNonOwner
+    orcid_auth: ORCIDAuthPublicNonOwner;
 }
 
 // ORCID User Profile (our version)
@@ -65,14 +62,15 @@ export interface ORCIDFieldGroupPrivate extends ORCIDFieldGroupBase {
     private: true;
 }
 
-export interface ORCIDFieldGroupAccessible<T extends JSONObject> extends ORCIDFieldGroupBase {
+export interface ORCIDFieldGroupAccessible<T extends JSONObject>
+    extends ORCIDFieldGroupBase {
     private: false;
-    fields: T
+    fields: T;
 }
 
 export type ORCIDFieldGroup<T extends JSONObject> =
-    ORCIDFieldGroupPrivate |
-    ORCIDFieldGroupAccessible<T>;
+    | ORCIDFieldGroupPrivate
+    | ORCIDFieldGroupAccessible<T>;
 
 export interface ORCIDNameFieldGroup extends JSONObject {
     firstName: string;
@@ -91,15 +89,15 @@ export interface ORCIDBiographyFieldGroup extends JSONObject {
 // }
 
 export interface ORCIDEmailFieldGroup extends JSONObject {
-    emailAddresses: Array<string>
+    emailAddresses: Array<string>;
 }
 
 export interface ORCIDProfile extends JSONObject {
     // TODO: split into profile and info? E.g. id in info, profile info in profile...
     orcidId: string;
-    nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>
+    nameGroup: ORCIDFieldGroup<ORCIDNameFieldGroup>;
     biographyGroup: ORCIDFieldGroup<ORCIDBiographyFieldGroup>;
     // activitiesGroup: ORCIDFieldGroup<ORCIDActivitiesFieldGroup>;
     emailGroup: ORCIDFieldGroup<ORCIDEmailFieldGroup>;
-    employments: Array<Affiliation>
+    employments: Array<Affiliation>;
 }

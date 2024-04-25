@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+# KBase UI Config and Nginx Server Environment Variables
+#
+# Used to generate config.json and nginx.conf.
+#
+# Input environment variables:
+#
+# required:
+#
+# DEPLOY_ENV
+#
+# Created env vars for config.json.tmpl:
+#
+# BASE_PATH
+# DEFAULT_PATH
+# DEFAULT_PATH_TYPE
+# KBASE_DOMAIN
+# FEATURE_SWITCHES_ENABLED
+# FEATURE_SWITCHES_DISABLED
+# AUTH2_PROVIDERS
+#
+
+if [ -z "${DEPLOY_ENV}" ]
+then
+    echo 'The "DEPLOY_ENV" environment variable is required to generate config env'
+    exit 1
+fi
+
+#
+# Defaults for all that support defaults.
+#
+DEFAULT_AUTH2_PROVIDERS='Google,Globus,OrcID'
+DEFAULT_KBASE_UI_BASE_PATH=''
+DEFAULT_KBASE_UI_HOSTNAME='legacy'
+DEFAULT_DEFAULT_PATH_TYPE='europaui'
+DEFAULT_DEFAULT_PATH='narratives'
+DEFAULT_FEATURE_SWITCHES_DISABLED=''
+DEFAULT_FEATURE_SWITCHES_ENABLED=''
+DEFAULT_NGINX_LISTEN='80'
+DEFAULT_NGINX_LOG_LEVEL='error'
+DEFAULT_NGINX_LOG_STDERR='true'
+DEFAULT_NGINX_LOG_STDOUT='true'
+DEFAULT_NGINX_LOG_SYSLOG=''
+DEFAULT_NGINX_SERVER_NAME='localhost'
+
+# 
+# These are generated - just documenting that fact here.
+#
+# DEFAULT_KBASE_UI_HOSTNAME
+# DEFAULT_KBASE_DOMAIN
+
+
+#
+# These change per environment, with the special case for prod.
+#
+
+# Domain all other user intefaces
+KBASE_DOMAIN="${DEPLOY_ENV}.kbase.us"
+
+# Domain for kbase-ui
+# TODO: is this used? if it is, we need the subdomain hostname; if not, remove.
+# if [ -z "${KBASE_UI_HOSTNAME}" ]
+# then
+#     KBASE_UI_DOMAIN=$KBASE_DOMAIN
+# else
+#     KBASE_UI_DOMAIN="${KBASE_UI_HOSTNAME}.${KBASE_DOMAIN}"
+# fi
+
+# Base URL for services
+# KBASE_ENDPOINT="https://${DEPLOY_ENV}.kbase.us/services/"
+
+#
+# Auth providers
+#
+if [ "$DEPLOY_ENV" = "appdev" ]
+then
+    AUTH2_PROVIDERS="Google,Globus"
+else
+    AUTH2_PROVIDERS=""
+fi
+
+#
+# Created env vars for nginx.json.tmpl:
+# Note that these may not be used, but we generate them anyway.
+#
+# BASE_PATH
+# NGINX_LOG_SYSLOG
+# NGINX_LOG_STDOUT
+# NGINX_LOG_STDERR
+# NGINX_LOG_LEVEL
+# NGINX_LISTEN
+# NGINX_SERVER_NAME
+
+#
+# Returns the environment variable setting line only if the variable has been
+# defined and is non-blank.
+#
+function env_var() {
+    local var_name="${1}"
+    if [[ -z "${!var_name}" ]] 
+    then
+      if [[ -z "${USE_DEFAULTS}" ]]
+      then
+        echo ''
+      else 
+        local default_var_name="DEFAULT_${var_name}"
+        IFS= printf "\n%s='%s'" ${var_name} ${!default_var_name}
+      fi
+    else
+      IFS= printf "\n%s='%s'" ${var_name} ${!var_name}
+    fi
+}
+
+
+# Generates a temporary env file for usage in generating the runtime template
+# config.json and nginx.conf
+
+cat << EOF > ./.devcontainer/runtime.env
+# An env file to be used by to generate the deploy config for development, 
+# and to serve as an env file when running a local image.
+$(env_var AUTH2_PROVIDERS)\
+$(env_var KBASE_UI_BASE_PATH)\
+$(env_var KBASE_UI_HOSTNAME)\
+$(env_var DEFAULT_PATH_TYPE)\
+$(env_var DEFAULT_PATH)\
+$(env_var FEATURE_SWITCHES_DISABLED)\
+$(env_var FEATURE_SWITCHES_ENABLED)\
+$(env_var NGINX_LISTEN)\
+$(env_var NGINX_LOG_LEVEL)\
+$(env_var NGINX_LOG_STDERR)\
+$(env_var NGINX_LOG_STDOUT)\
+$(env_var NGINX_LOG_SYSLOG)\
+$(env_var NGINX_SERVER_NAME)\
+$(env_var KBASE_DOMAIN)
+EOF

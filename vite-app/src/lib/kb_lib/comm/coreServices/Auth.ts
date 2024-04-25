@@ -50,7 +50,7 @@ const endpoints: AuthEndpoints = {
     tokensRevokeAll: 'tokens/revokeall',
     userSearch: 'api/V2/users/search',
     adminUserSearch: 'api/V2/admin/search',
-    adminUser: 'api/V2/admin/user'
+    adminUser: 'api/V2/admin/user',
 };
 
 export interface TokenInfo {
@@ -85,6 +85,7 @@ export interface Account {
     local: boolean;
     roles: Array<Role>;
     user: string;
+    anonid: string;
 }
 export default class AuthClient {
     url: string;
@@ -104,8 +105,8 @@ export default class AuthClient {
         const response = await fetch(this.makePath([endpoints.root]), {
             method: 'GET',
             headers: {
-                Accept: 'application/json'
-            }
+                Accept: 'application/json',
+            },
         });
         return (await response.json()) as RootInfo;
     }
@@ -115,9 +116,9 @@ export default class AuthClient {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
-                Authorization: token
-            }
-        })
+                Authorization: token,
+            },
+        });
 
         return (await response.json()) as TokenInfo;
     }
@@ -127,8 +128,8 @@ export default class AuthClient {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
-                Authorization: token
-            }
+                Authorization: token,
+            },
         });
         return (await response.json()) as Account;
     }

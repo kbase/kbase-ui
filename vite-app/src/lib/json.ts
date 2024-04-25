@@ -19,15 +19,13 @@ export interface JSONObjectOf<T extends JSONValue> {
     [x: string]: T;
 }
 
-export interface JSONArrayOf<T extends JSONValue> extends Array<T> {
-}
+export interface JSONArrayOf<T extends JSONValue> extends Array<T> {}
 
-
-export function isJSONObject(value: any): value is JSONObject {
+export function isJSONObject(value: unknown): value is JSONObject {
     return isJSONValue(value) && isPlainObject(value);
 }
 
-export function isJSONArray(value: any): value is JSONArray {
+export function isJSONArray(value: unknown): value is JSONArray {
     return isJSONValue(value) && Array.isArray(value);
 }
 
@@ -58,19 +56,23 @@ export function isJSONValue(value: unknown): value is JSONValue {
     return false;
 }
 
-
 export function isPlainObject(value: unknown): boolean {
-    if (typeof value !== "object" || value === null) {
+    if (typeof value !== 'object' || value === null) {
         return false;
     }
     return Object.getPrototypeOf(value) === Object.prototype;
 }
 
-export function assertJSONObject(value: unknown, errorMessage?: string): asserts value is JSONObject {
+export function assertJSONObject(
+    value: unknown,
+    errorMessage?: string,
+): asserts value is JSONObject {
     try {
         assertJSONValue(value);
     } catch (ex) {
-        throw new Error(`${errorMessage ? errorMessage + ':' : ''}${ex instanceof Error ? ex.message : 'Unknown error'}`)
+        throw new Error(
+            `${errorMessage ? errorMessage + ':' : ''}${ex instanceof Error ? ex.message : 'Unknown error'}`,
+        );
     }
     if (!isPlainObject(value)) {
         throw new Error(errorMessage || 'json value is not an object');
@@ -91,30 +93,33 @@ export function assertJSONValue(value: unknown): asserts value is JSONValue {
     }
 
     if (typeof value !== 'object') {
-        throw new Error('not a valid JSON Value (not scalar, not object)')
+        throw new Error('not a valid JSON Value (not scalar, not object)');
     }
     if (value === null) {
         return;
     }
     if (Array.isArray(value)) {
-        if (value.some((subvalue) => {
-            return !isJSONValue(subvalue);
-        })) {
+        if (
+            value.some((subvalue) => {
+                return !isJSONValue(subvalue);
+            })
+        ) {
             throw new Error('array does not contain valid JSON values');
         }
     }
     if (isPlainObject(value)) {
         const value2 = value as unknown as { [key: string]: unknown };
-        if (Object.keys(value).some((key) => {
-            return !isJSONValue(value2[key]);
-        })) {
+        if (
+            Object.keys(value).some((key) => {
+                return !isJSONValue(value2[key]);
+            })
+        ) {
             throw new Error('object dos not contain valid JSON values');
         }
     }
 
     // throw new Error('not a valid JSON value');
 }
-
 
 // export type PropPath = Array<string | number>
 
@@ -148,10 +153,14 @@ export function normalizePropPath(propPath: PropsPath): Array<string> {
     } else if (Array.isArray(propPath)) {
         return propPath;
     }
-    throw new TypeError('Invalid type for key: ' + (typeof propPath));
+    throw new TypeError('Invalid type for key: ' + typeof propPath);
 }
 
-export function traverse(obj: JSONObject, path: PropsPath, defaultValue?: JSONValue): JSONValue {
+export function traverse(
+    obj: JSONObject,
+    path: PropsPath,
+    defaultValue?: JSONValue,
+): JSONValue {
     const propPath = normalizePropPath(path);
     let current = obj;
     const currentPath = [];
@@ -165,11 +174,15 @@ export function traverse(obj: JSONObject, path: PropsPath, defaultValue?: JSONVa
             if (isJSONObject(prop)) {
                 current = prop;
             } else {
-                throw new Error(`Cannot navigate into type "${typeof prop}" on path "${currentPath.join('.')}"`)
+                throw new Error(
+                    `Cannot navigate into type "${typeof prop}" on path "${currentPath.join('.')}"`,
+                );
             }
         } else {
             if (typeof defaultValue === 'undefined') {
-                throw new Error(`Cannot find path ${propPath.join('.')} in object`)
+                throw new Error(
+                    `Cannot find path ${propPath.join('.')} in object`,
+                );
             } else {
                 return defaultValue;
             }
@@ -178,10 +191,10 @@ export function traverse(obj: JSONObject, path: PropsPath, defaultValue?: JSONVa
     return current;
 }
 
-export function objectToJSONObject(obj: {}): JSONObject {
+export function objectToJSONObject(obj: object): JSONObject {
     const x: JSONObject = {};
     for (const [k, v] of Object.entries(obj)) {
-        if (typeof k !== undefined) {
+        if (typeof k !== 'undefined') {
             // TODO: Ensure json value
             x[k] = v as JSONValue;
         }

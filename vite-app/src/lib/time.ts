@@ -11,7 +11,7 @@ export enum TimeUnit {
     SECOND,
     MINUTE,
     HOUR,
-    DAY
+    DAY,
 }
 
 const SECOND_MS = 1000;
@@ -25,36 +25,36 @@ const timeUnits: Array<TimeUnitInfo> = [
         long: 'millisecond',
         short: 'ms',
         single: 'm',
-        size: 1000
+        size: 1000,
     },
     {
         unit: TimeUnit.SECOND,
         long: 'second',
         short: 'sec',
         single: 's',
-        size: 60
+        size: 60,
     },
     {
         unit: TimeUnit.MINUTE,
         long: 'minute',
         short: 'min',
         single: 'm',
-        size: 60
+        size: 60,
     },
     {
         unit: TimeUnit.HOUR,
         long: 'hour',
         short: 'hr',
         single: 'h',
-        size: 24
+        size: 24,
     },
     {
         unit: TimeUnit.DAY,
         long: 'day',
         short: 'day',
         single: 'd',
-        size: 30
-    }
+        size: 30,
+    },
 ];
 
 type Format = 'full' | 'short' | 'compact';
@@ -101,7 +101,10 @@ export interface NiceRelativeTimeOptions {
  * "in 1 second"
  * ```
  */
-export function niceRelativeTime(someDate: Date, options: NiceRelativeTimeOptions = {}) {
+export function niceRelativeTime(
+    someDate: Date,
+    options: NiceRelativeTimeOptions = {},
+) {
     const nowDate = options.now || new Date();
 
     const elapsedRaw = nowDate.getTime() - someDate.getTime();
@@ -138,19 +141,27 @@ export function niceRelativeTime(someDate: Date, options: NiceRelativeTimeOption
         // filtered out above.
         const [prefix, suffix] = measure < 0 ? ['in', null] : [null, 'ago'];
 
-        return (prefix ? prefix + ' ' : '') + measureAbs + unit + (suffix ? ' ' + suffix : '');
+        return (
+            (prefix ? prefix + ' ' : '') +
+            measureAbs +
+            unit +
+            (suffix ? ' ' + suffix : '')
+        );
     } else {
         // otherwise show the actual date, with or without the year.
-        if (options.format === 'compact' && nowDate.getFullYear() === someDate.getFullYear()) {
+        if (
+            options.format === 'compact' &&
+            nowDate.getFullYear() === someDate.getFullYear()
+        ) {
             return Intl.DateTimeFormat('en-US', {
                 month: 'short',
-                day: 'numeric'
+                day: 'numeric',
             }).format(someDate);
         } else {
             return Intl.DateTimeFormat('en-US', {
                 month: 'short',
                 day: 'numeric',
-                year: 'numeric'
+                year: 'numeric',
             }).format(someDate);
         }
     }
@@ -176,12 +187,13 @@ interface NiceDurationOptions {
 
 function makeUnit(unit: TimeUnitInfo, format: Format, value: number) {
     switch (format) {
-        case 'full':
+        case 'full': {
             const label = ' ' + unit.long;
             if (value !== 1) {
                 return label + 's';
             }
             return label;
+        }
         case 'short':
             return ' ' + unit.short;
         case 'compact':
@@ -212,7 +224,7 @@ export function niceDuration(value: number, options: NiceDurationOptions = {}) {
 
             return {
                 label: unitLabel,
-                value: unitValue
+                value: unitValue,
             };
         })
         .reverse();
@@ -241,7 +253,12 @@ export function niceDuration(value: number, options: NiceDurationOptions = {}) {
 
     if (minimized.length === 0) {
         // This means that there is are no time measurements > 1 second.
-        return '<' + (format !== 'compact' ? ' ' : '') + '1' + makeUnit(timeUnits[1], format, 1);
+        return (
+            '<' +
+            (format !== 'compact' ? ' ' : '') +
+            '1' +
+            makeUnit(timeUnits[1], format, 1)
+        );
     } else {
         // Skip seconds if we are into the hours...
         // if (minimized.length > 2) {
@@ -256,25 +273,28 @@ export function niceDuration(value: number, options: NiceDurationOptions = {}) {
 }
 
 export interface NiceElapsedResult {
-    label: string,
+    label: string;
     value: Array<{
-        label: string,
+        label: string;
         value: number;
     }>;
 }
 
-export function niceElapsed(elapsedTime: number, options: NiceDurationOptions = {}): NiceElapsedResult {
-    const minimized: Array<{ value: number, label: string; }> = [];
+export function niceElapsed(
+    elapsedTime: number,
+    options: NiceDurationOptions = {},
+): NiceElapsedResult {
+    const minimized: Array<{ value: number; label: string }> = [];
     const format = options.format || 'compact';
     let timeLeftInUnits = Math.abs(elapsedTime);
     const parts = timeUnits
         .map(function (unit, index) {
             if (index === timeUnits.length - 1) {
-                // In the case of the last unit, we just let it accumulate the 
+                // In the case of the last unit, we just let it accumulate the
                 // rest of the time.
                 return {
                     label: makeUnit(unit, format, timeLeftInUnits),
-                    value: timeLeftInUnits
+                    value: timeLeftInUnits,
                 };
             } else {
                 // Get the remainder of the current time left
@@ -288,7 +308,7 @@ export function niceElapsed(elapsedTime: number, options: NiceDurationOptions = 
 
                 return {
                     label: unitLabel,
-                    value: unitValue
+                    value: unitValue,
                 };
             }
         })
@@ -319,8 +339,12 @@ export function niceElapsed(elapsedTime: number, options: NiceDurationOptions = 
     if (minimized.length === 0) {
         // This means that there is are no time measurements > 1 second.
         return {
-            label: '<' + (format !== 'compact' ? ' ' : '') + '1' + makeUnit(timeUnits[1], format, 1),
-            value: minimized
+            label:
+                '<' +
+                (format !== 'compact' ? ' ' : '') +
+                '1' +
+                makeUnit(timeUnits[1], format, 1),
+            value: minimized,
         };
     } else {
         // Skip seconds if we are into the hours...
@@ -333,7 +357,59 @@ export function niceElapsed(elapsedTime: number, options: NiceDurationOptions = 
                     return String(item.value) + item.label;
                 })
                 .join(' '),
-            value: minimized
+            value: minimized,
         };
     }
+}
+
+export function niceTime(dateObj: Date) {
+    let date, time;
+    if (typeof dateObj === 'string') {
+        date = new Date(dateObj);
+    } else if (typeof dateObj === 'number') {
+        date = new Date(dateObj);
+    } else {
+        date = dateObj;
+    }
+
+    const shortMonths = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+    ];
+    const minutes = (() => {
+        const minutes = date.getMinutes();
+        if (minutes < 10) {
+            return `0${minutes}`;
+        }
+        return `${minutes}`;
+    })();
+
+    if (date.getHours() >= 12) {
+        if (date.getHours() !== 12) {
+            time = date.getHours() - 12 + ':' + minutes + 'pm';
+        } else {
+            time = '12:' + minutes + 'pm';
+        }
+    } else {
+        time = date.getHours() + ':' + minutes + 'am';
+    }
+    return (
+        shortMonths[date.getMonth()] +
+        ' ' +
+        date.getDate() +
+        ', ' +
+        date.getFullYear() +
+        ' at ' +
+        time
+    );
 }

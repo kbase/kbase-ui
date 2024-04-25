@@ -6,12 +6,7 @@ export interface AboutServiceProps {
     average: number;
 }
 
-interface AboutServiceState {}
-
-export default class AboutService extends Component<
-    AboutServiceProps,
-    AboutServiceState
-> {
+export default class AboutService extends Component<AboutServiceProps> {
     render() {
         return (
             <Fragment>

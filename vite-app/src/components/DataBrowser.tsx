@@ -1,4 +1,10 @@
-import { Component, createRef, CSSProperties, ReactNode, RefObject } from 'react';
+import {
+    Component,
+    createRef,
+    CSSProperties,
+    ReactNode,
+    RefObject,
+} from 'react';
 import KBResizeObserver from '../lib/KBResizeObserver';
 import styles from './DataBrowser.module.css';
 
@@ -22,7 +28,7 @@ export interface ColumnDef<T> {
     sorter?: (a: T, b: T) => number;
 }
 
-export type Columns<T> = Array<ColumnDef<T>>
+export type Columns<T> = Array<ColumnDef<T>>;
 
 export enum SortState {
     NONE = 'NONE',
@@ -142,8 +148,8 @@ export default class DataBrowser<T> extends Component<
                         rowNumber: index,
                         data: row,
                     };
-                })
-            })
+                }),
+            });
         }
     }
 
@@ -280,9 +286,12 @@ export default class DataBrowser<T> extends Component<
             }
         });
         return (
-            <div className={styles.header} style={{
-                height: `{this.props.heights.header}px`,
-            }}>
+            <div
+                className={styles.header}
+                style={{
+                    height: `{this.props.heights.header}px`,
+                }}
+            >
                 {header}
             </div>
         );
@@ -319,7 +328,9 @@ export default class DataBrowser<T> extends Component<
             const row = this.state.columns.map((column) => {
                 // TODO: format value
                 const { id, render, flex, style } = column.def;
-                const widthStyle: CSSProperties = { flex: `${flex || '1 1 0'}` };
+                const widthStyle: CSSProperties = {
+                    flex: `${flex || '1 1 0'}`,
+                };
                 const colStyle: CSSProperties = style || {};
                 const content = (() => {
                     try {
@@ -339,7 +350,7 @@ export default class DataBrowser<T> extends Component<
                     <div
                         key={id}
                         className={styles.col}
-                        style={{...colStyle, ...widthStyle}}
+                        style={{ ...colStyle, ...widthStyle }}
                         data-k-b-testhook-cell={id}
                         role="cell"
                     >

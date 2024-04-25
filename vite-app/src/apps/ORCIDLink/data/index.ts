@@ -1,4 +1,3 @@
-
 import workIdentifiersRaw from './workIdentifiers.json';
 import workRelationshipIdentfiersRaw from './workRelationships.json';
 
@@ -13,7 +12,8 @@ export interface WorkExternalIdentifierType {
 
 export type WorkExternalIdentifierTypes = Array<WorkExternalIdentifierType>;
 
-export const workExternalIdentifierTypes = workIdentifiersRaw as WorkExternalIdentifierTypes;
+export const workExternalIdentifierTypes =
+    workIdentifiersRaw as WorkExternalIdentifierTypes;
 
 // Work Relationships
 
@@ -25,4 +25,5 @@ export interface WorkRelationshipIdentifier {
 
 export type WorkRelationshipIdentifiers = Array<WorkRelationshipIdentifier>;
 
-export const workRelationshipIdentifiers = workRelationshipIdentfiersRaw as WorkRelationshipIdentifiers;
+export const workRelationshipIdentifiers =
+    workRelationshipIdentfiersRaw as WorkRelationshipIdentifiers;

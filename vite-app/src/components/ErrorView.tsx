@@ -1,7 +1,7 @@
 import { JSONValue } from '@kbase/ui-lib/lib/json';
 import { Component, PropsWithChildren } from 'react';
 import { Card } from 'react-bootstrap';
-import styles from './ErrorView.styles';
+import styles from './ErrorView.module.css';
 import PresentableJSON from './PresentableJSON';
 
 export interface ErrorInfo {
@@ -27,12 +27,15 @@ export type ErrorViewProps = PropsWithChildren<{
 
 export default class ErrorView extends Component<ErrorViewProps> {
     renderInfo() {
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.info) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.info
+        ) {
             return;
         }
         return (
             <>
-                <div style={styles.Title}>Additional Info</div>
+                <div className={styles.title}>Additional Info</div>
                 <PresentableJSON
                     data={this.props.errorInfo.info}
                     tableStyle=""
@@ -40,14 +43,18 @@ export default class ErrorView extends Component<ErrorViewProps> {
             </>
         );
     }
+
     renderRemedies() {
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.remedies) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.remedies
+        ) {
             return;
         }
-        const remedies = this.props.errorInfo.remedies.map((remedy) => {
+        const remedies = this.props.errorInfo.remedies.map((remedy, index) => {
             if ('url' in remedy) {
                 return (
-                    <li>
+                    <li key={index}>
                         <a
                             href={remedy.url}
                             target="_blank"
@@ -60,7 +67,7 @@ export default class ErrorView extends Component<ErrorViewProps> {
                 );
             } else {
                 return (
-                    <li>
+                    <li key={index}>
                         <span title={remedy.tooltip}>{remedy.title}</span>
                     </li>
                 );
@@ -68,40 +75,51 @@ export default class ErrorView extends Component<ErrorViewProps> {
         });
         return (
             <>
-                <div style={styles.Title}>Remedies</div>
+                <div className={styles.title}>Remedies</div>
                 <ul>{remedies}</ul>
             </>
         );
     }
+
     renderDescription(description: Array<string>) {
         return description.map((paragraph, index) => {
             return <div key={index}>{paragraph}</div>;
         });
     }
+
     renderCode() {
         if (this.props.errorInfo && this.props.errorInfo.code) {
-            return <div style={styles.Code}>{this.props.errorInfo.code}</div>
+            return (
+                <div className={styles.code}>{this.props.errorInfo.code}</div>
+            );
         }
     }
+
     renderBody() {
         if (this.props.render) {
             return this.props.render();
         }
-        if (typeof this.props.errorInfo === 'undefined' || !this.props.errorInfo.message) {
+        if (
+            typeof this.props.errorInfo === 'undefined' ||
+            !this.props.errorInfo.message
+        ) {
             return this.props.children;
         }
         return (
             <div>
                 {this.renderCode()}
-                <div style={styles.Description}>
+                <div className={styles.description}>
                     {this.renderDescription(this.props.errorInfo.description)}
                 </div>
-                <div style={styles.Message}>{this.props.errorInfo.message}</div>
+                <div className={styles.message}>
+                    {this.props.errorInfo.message}
+                </div>
                 {this.renderRemedies()}
                 {this.renderInfo()}
             </div>
         );
     }
+
     render() {
         return (
             <Card title={this.props.title} bg="danger" text="white">

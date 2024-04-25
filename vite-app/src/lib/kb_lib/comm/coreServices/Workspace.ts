@@ -2,9 +2,14 @@ import {
     JSONObject,
     JSONObjectOf,
     JSONValue,
-    objectToJSONObject
+    objectToJSONObject,
 } from 'lib/json';
-import { JSONLikeArrayOf, JSONLikeObject, toJSON } from '../../../jsonLike';
+import {
+    JSONLikeArrayOf,
+    JSONLikeObject,
+    toJSON,
+    toJSONObject,
+} from '../../../jsonLike';
 import { ServiceClient } from '../JSONRPC11/ServiceClient';
 import { EpochTimeMS, Mapping, SDKBoolean } from '../types';
 
@@ -20,12 +25,24 @@ export interface ObjectIdentity extends JSONLikeObject {
     ref?: string;
 }
 
+export interface SubObjectIdentity extends JSONLikeObject {
+    workspace?: string;
+    wsid?: WorkspaceId;
+    name?: string;
+    objid?: ObjectId;
+    ver?: number;
+    ref?: string;
+    included: Array<string>;
+    strict_maps?: boolean;
+    strict_arrays?: boolean;
+}
+
 export interface WorkspaceIdentity extends JSONLikeObject {
     workspace?: string;
     id?: WorkspaceId;
 }
 
-// TODO: either improve or get rid of JSONLikeObject usage ... it allows any key through! 
+// TODO: either improve or get rid of JSONLikeObject usage ... it allows any key through!
 // That sort of messes up strict typing in the IDE and compiler ...
 export interface ObjectSpecification extends JSONLikeObject {
     workspace?: string;
@@ -61,10 +78,10 @@ export type ObjectInfoRaw = [
     string, // workspace name
     string, // md5 checksum
     number, // size in bytes
-    Metadata // metadata
+    Metadata, // metadata
 ];
 
-export interface ObjectInfo {
+export interface ObjectInfo extends JSONObject {
     id: number;
     name: string;
     type: string;
@@ -75,7 +92,7 @@ export interface ObjectInfo {
     ws: string;
     checksum: string;
     size: number;
-    metadata: Metadata,
+    metadata: Metadata;
     ref: string;
     obj_id: string;
     typeModule: string;
@@ -95,14 +112,14 @@ export type WorkspaceInfoRaw = [
     string, // user permission (one char)
     string, // global permission (one char)
     string, // lock status
-    Metadata // metadata
+    Metadata, // metadata
 ];
 
 export interface WorkspaceInfo {
     id: number;
     name: string;
-    owner: string
-    moddate: string,
+    owner: string;
+    moddate: string;
     object_count: number;
     user_permission: string;
     globalread: string;
@@ -119,9 +136,9 @@ export interface GetObjectInfo3Result extends JSONObject {
     paths: Array<Array<string>>;
 }
 
-export interface GetWorkspaceInfoParams extends WorkspaceIdentity { }
+export interface GetWorkspaceInfoParams extends WorkspaceIdentity {}
 
-export interface GetWorkspaceInfoResult { }
+export type GetWorkspaceInfoResult = WorkspaceInfoRaw;
 
 export interface ListWorkspaceInfoParams {
     perm?: string;
@@ -136,7 +153,7 @@ export interface ListWorkspaceInfoParams {
     showOnlyDeleted?: SDKBoolean;
 }
 
-export type ListWorkspaceInfoResult = Array<WorkspaceInfo>;
+export type ListWorkspaceInfoResult = Array<WorkspaceInfoRaw>;
 
 export type ObjectRef = string;
 export type Username = string;
@@ -216,7 +233,7 @@ export function workspaceInfoToObject(wsInfo: WorkspaceInfoRaw): WorkspaceInfo {
         lockstat: wsInfo[7],
         metadata: wsInfo[8],
         modDate: new Date(wsInfo[3]).toISOString(),
-        modifiedAt: new Date(wsInfo[3]).getTime()
+        modifiedAt: new Date(wsInfo[3]).getTime(),
     };
 }
 
@@ -242,7 +259,7 @@ export function objectInfoToObject(objInfo: ObjectInfoRaw): ObjectInfo {
         typeMajorVersion: type[2],
         typeMinorVersion: type[3],
         saveDate: new Date(objInfo[3]).toISOString(),
-        savedAt: new Date(objInfo[3]).getTime()
+        savedAt: new Date(objInfo[3]).getTime(),
     };
 }
 
@@ -264,26 +281,29 @@ export interface GetPermissionsMassParams extends JSONLikeObject {
     workspaces: Array<WorkspaceIdentity>;
 }
 
-// This almost works, but is more copmlicated and gets weird in the assertion 
+// This almost works, but is more copmlicated and gets weird in the assertion
 // function...
 // export const userPermissionValues = ['a', 'w', 'r', 'n'] as const;
 // // export type UserPermission = 'a' | 'w' | 'r' | 'n';
 // type UserPermissionTuple = typeof userPermissionValues;
 // export type UserPermission = UserPermissionTuple[number];
 
-
 export const userPermissionValues = ['a', 'w', 'r', 'n'];
 export type UserPermission = 'a' | 'w' | 'r' | 'n';
-export function assertUserPermission(value: string): asserts value is UserPermission {
+export function assertUserPermission(
+    value: string,
+): asserts value is UserPermission {
     if (!userPermissionValues.includes(value)) {
-        throw new TypeError(`"${value}" is not an expected user permission value (${userPermissionValues.join(', ')})`)
+        throw new TypeError(
+            `"${value}" is not an expected user permission value (${userPermissionValues.join(', ')})`,
+        );
     }
 }
 
-export type GlobalPermission = 'n' | 'r'
+export type GlobalPermission = 'n' | 'r';
 
 export interface UserPerm {
-    [x: string]: UserPermission
+    [x: string]: UserPermission;
 }
 
 export interface GetPermissionsMassResult extends JSONLikeObject {
@@ -299,18 +319,77 @@ export interface AlterWorkspaceMetadataParams extends JSONLikeObject {
 export type DeleteWorkspaceParams = WorkspaceIdentity;
 
 export interface SetGlobalPermissionParams extends JSONLikeObject {
-    id?: WorkspaceId
+    id?: WorkspaceId;
     workspace?: string;
-    new_permission: GlobalPermission
+    new_permission: GlobalPermission;
 }
 
 export interface SetPermissionsParams extends JSONLikeObject {
-    id?: WorkspaceId
+    id?: WorkspaceId;
     workspace?: string;
     new_permission: UserPermission;
-    users: Array<string>
+    users: Array<string>;
 }
 
+export interface GetTypeInfoResult extends JSONObject {
+    type_def: string;
+    description: string;
+    spec_def: string;
+    json_schema: string;
+    parsing_structure: string;
+    module_vers: Array<number>;
+    released_module_vers: Array<number>;
+    type_vers: Array<string>;
+    using_func_defs: Array<string>;
+    using_type_defs: Array<string>;
+    used_type_defs: Array<string>;
+}
+
+export interface GetModuleInfoParams extends JSONLikeObject {
+    mod: string;
+    ver?: number;
+}
+
+export interface GetModuleInfoResult extends JSONObject {
+    owners: Array<string>;
+    ver: number;
+    spec: string;
+    description: string;
+    types: Record<string, string>;
+    included_spec_version: Record<string, number>;
+    chsum: string;
+    functions: Array<string>;
+    is_released: boolean;
+}
+
+export interface ListModuleVersionsParams extends JSONLikeObject {
+    mod?: string;
+    type?: string;
+}
+
+export interface ListModuleVersionsResult extends JSONObject {
+    mod: string;
+    vers: Array<number>;
+    released_vers: Array<number>;
+}
+
+export type GetObjectHistoryParams = ObjectIdentity;
+
+export type GetObjectHistoryResult = Array<ObjectInfoRaw>;
+
+export type ListReferencingObjectCountsParams = Array<ObjectIdentity>;
+
+export type ListReferencingObjectCountsResult = Array<number>;
+
+export type ListReferencingObjectsParams = Array<ObjectIdentity>;
+
+export type ListReferencingObjectsResult = Array<Array<ObjectInfoRaw>>;
+
+export type GetObjectSubsetParams = Array<SubObjectIdentity>;
+
+export interface GetObjectSubsetResult {
+    data: JSONLikeArrayOf<ObjectData>;
+}
 
 export default class WorkspaceClient extends ServiceClient {
     module = 'Workspace';
@@ -322,105 +401,199 @@ export default class WorkspaceClient extends ServiceClient {
     }
 
     async get_object_info3(
-        params: GetObjectInfo3Params
-    ) {
+        params: GetObjectInfo3Params,
+    ): Promise<GetObjectInfo3Result> {
         const [result] = await this.callFunc<
             [JSONObject],
             [GetObjectInfo3Result]
         >('get_object_info3', [objectToJSONObject(params)]);
 
-        return {
-            infos: result.infos.map((info) => {
-                return objectInfoToObject(info);
-            }),
-            paths: result.paths
-        };
+        return result as unknown as GetObjectInfo3Result;
+        // return {
+        //     infos: result.infos.map((info) => {
+        //         return objectInfoToObject(info);
+        //     }),
+        //     paths: result.paths
+        // };
     }
 
     async get_workspace_info(
-        params: GetWorkspaceInfoParams
-    ): Promise<WorkspaceInfo> {
+        params: GetWorkspaceInfoParams,
+    ): Promise<GetWorkspaceInfoResult> {
         const [result] = await this.callFunc<[JSONObject], [WorkspaceInfoRaw]>(
             'get_workspace_info',
-            [objectToJSONObject(params)]
+            [objectToJSONObject(params)],
         );
-        return workspaceInfoToObject(result as unknown as WorkspaceInfoRaw);
+        return result as unknown as GetWorkspaceInfoResult;
+        // return workspaceInfoToObject(result as unknown as WorkspaceInfoRaw);
     }
 
     async list_workspace_info(
-        params: ListWorkspaceInfoParams
+        params: ListWorkspaceInfoParams,
     ): Promise<ListWorkspaceInfoResult> {
         const [result] = await this.callFunc<
             [JSONObject],
             [Array<WorkspaceInfoRaw>]
         >('list_workspace_info', [objectToJSONObject(params)]);
-        return result.map((item) => {
-            return workspaceInfoToObject(item);
-        })
+
+        return result as unknown as ListWorkspaceInfoResult;
     }
 
     async get_objects2(params: GetObjects2Param): Promise<GetObjects2Result> {
         const [object] = await this.callFunc<[JSONValue], [JSONValue]>(
             'get_objects2',
-            [toJSON(params)]
+            [toJSON(params)],
         );
         return object as GetObjects2Result;
     }
 
-    async get_permissions_mass(params: GetPermissionsMassParams): Promise<GetPermissionsMassResult> {
+    async get_permissions_mass(
+        params: GetPermissionsMassParams,
+    ): Promise<GetPermissionsMassResult> {
         const [object] = await this.callFunc<[JSONValue], [JSONValue]>(
             'get_permissions_mass',
-            [toJSON(params)]
+            [toJSON(params)],
         );
         return object as GetPermissionsMassResult;
     }
 
-    async alter_workspace_metadata(params: AlterWorkspaceMetadataParams): Promise<void> {
+    async alter_workspace_metadata(
+        params: AlterWorkspaceMetadataParams,
+    ): Promise<void> {
         await this.callFuncEmptyResult<[JSONValue]>(
             'alter_workspace_metadata',
-            [toJSON(params)]
+            [toJSON(params)],
         );
     }
 
-    async alter_workspace_metadata2(params: AlterWorkspaceMetadataParams): Promise<void> {
+    async alter_workspace_metadata2(
+        params: AlterWorkspaceMetadataParams,
+    ): Promise<void> {
         await this.callFuncEmptyResult<[JSONValue]>(
             'alter_workspace_metadata',
-            [toJSON(params)]
+            [toJSON(params)],
         );
     }
 
     async delete_workspace(params: DeleteWorkspaceParams): Promise<void> {
-        await this.callFuncEmptyResult<[JSONValue]>(
-            'delete_workspace',
-            [toJSON(params)]
-        );
+        await this.callFuncEmptyResult<[JSONValue]>('delete_workspace', [
+            toJSON(params),
+        ]);
     }
 
-    async set_global_permission(params: SetGlobalPermissionParams): Promise<void> {
+    async set_global_permission(
+        params: SetGlobalPermissionParams,
+    ): Promise<void> {
         // Hmm, should we be defensive here, or just let the workspace provide the error?
-        if (typeof params.id === 'undefined' && typeof params.workspace === 'undefined') {
-            throw new TypeError('One of "id" or "workspace" must be provided; neither were');
+        if (
+            typeof params.id === 'undefined' &&
+            typeof params.workspace === 'undefined'
+        ) {
+            throw new TypeError(
+                'One of "id" or "workspace" must be provided; neither were',
+            );
         }
-        if (typeof params.id === 'number' && typeof params.workspace === 'string') {
-            throw new TypeError('One of "id" or "workspace" must be provided; both were');
+        if (
+            typeof params.id === 'number' &&
+            typeof params.workspace === 'string'
+        ) {
+            throw new TypeError(
+                'One of "id" or "workspace" must be provided; both were',
+            );
         }
-        await this.callFuncEmptyResult<[JSONValue]>(
-            'set_global_permission',
-            [toJSON(params)]
-        );
+        await this.callFuncEmptyResult<[JSONValue]>('set_global_permission', [
+            toJSON(params),
+        ]);
     }
 
     async set_permissions(params: SetPermissionsParams): Promise<void> {
         // Hmm, should we be defensive here, or just let the workspace provide the error?
-        if (typeof params.id === 'undefined' && typeof params.workspace === 'undefined') {
-            throw new TypeError('One of "id" or "workspace" must be provided; neither were');
+        if (
+            typeof params.id === 'undefined' &&
+            typeof params.workspace === 'undefined'
+        ) {
+            throw new TypeError(
+                'One of "id" or "workspace" must be provided; neither were',
+            );
         }
-        if (typeof params.id === 'number' && typeof params.workspace === 'string') {
-            throw new TypeError('One of "id" or "workspace" must be provided; both were');
+        if (
+            typeof params.id === 'number' &&
+            typeof params.workspace === 'string'
+        ) {
+            throw new TypeError(
+                'One of "id" or "workspace" must be provided; both were',
+            );
         }
-        await this.callFuncEmptyResult<[JSONValue]>(
-            'set_permissions',
-            [toJSON(params)]
+        await this.callFuncEmptyResult<[JSONValue]>('set_permissions', [
+            toJSON(params),
+        ]);
+    }
+
+    async get_type_info(typeId: string): Promise<GetTypeInfoResult> {
+        const [result] = await this.callFunc<[string], [GetTypeInfoResult]>(
+            'get_type_info',
+            [typeId],
         );
+        return result;
+    }
+
+    async get_module_info(
+        params: GetModuleInfoParams,
+    ): Promise<GetModuleInfoResult> {
+        const [result] = await this.callFunc<
+            [JSONObject],
+            [GetModuleInfoResult]
+        >('get_module_info', [toJSONObject(params)]);
+        return result;
+    }
+
+    async list_module_versions(
+        params: ListModuleVersionsParams,
+    ): Promise<ListModuleVersionsResult> {
+        const [result] = await this.callFunc<
+            [JSONObject],
+            [ListModuleVersionsResult]
+        >('list_module_versions', [toJSONObject(params)]);
+        return result;
+    }
+
+    async get_object_history(
+        params: GetObjectHistoryParams,
+    ): Promise<GetObjectHistoryResult> {
+        const [result] = await this.callFunc<
+            [JSONObject],
+            [GetObjectHistoryResult]
+        >('get_object_history', [toJSONObject(params)]);
+        return result;
+    }
+
+    async list_referencing_object_counts(
+        params: ListReferencingObjectCountsParams,
+    ): Promise<ListReferencingObjectCountsResult> {
+        const [result] = await this.callFunc<
+            [JSONObject],
+            [ListReferencingObjectCountsResult]
+        >('get_object_history', [toJSONObject(params)]);
+        return result;
+    }
+
+    async list_referencing_objects(
+        params: ListReferencingObjectsParams,
+    ): Promise<ListReferencingObjectsResult> {
+        const [result] = await this.callFunc<
+            [JSONObject],
+            [ListReferencingObjectsResult]
+        >('list_referencing_object_counts', [toJSONObject(params)]);
+        return result;
+    }
+
+    async get_object_subset(
+        params: GetObjectSubsetParams,
+    ): Promise<GetObjectSubsetResult> {
+        const [result] = await this.callFunc<[JSONObject], [JSONObject]>(
+            'get_object_subset',
+            [toJSONObject(params)],
+        );
+        return result as unknown as GetObjectSubsetResult;
     }
 }

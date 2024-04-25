@@ -1,4 +1,4 @@
-import { ServiceClient } from "./ServiceClient";
+import { ServiceClient } from './ServiceClient';
 
 const LINKING_SESSIONS_PATH = 'linking-sessions';
 
@@ -42,11 +42,11 @@ const LINKING_SESSIONS_PATH = 'linking-sessions';
 // Errors
 
 export enum ErrorCode {
-    unknown = 0,       // unknown or unclassified error
+    unknown = 0, // unknown or unclassified error
     already_linked = 1000,
     authorization_required = 1010,
     not_authorized = 1011,
-    not_found = 1020,  // something was not found
+    not_found = 1020, // something was not found
     // internal_server_error = 1030,
     json_decode_error = 1040,
     content_type_error = 1041,
@@ -60,8 +60,9 @@ export enum ErrorCode {
     // linking_session_already_linked_orcid = 1082,
     // impossible_error = 10099
     orcid_profile_name_private = 1100,
-    orcid_unauthorized_client = 1101
-
+    orcid_unauthorized_client = 1101,
+    orcid_not_found = 1102,
+    orcid_not_authorized = 1103,
 }
 
 // ORCID User Profile (our version)
@@ -88,7 +89,7 @@ export enum ErrorCode {
 //     employments: Array<Affiliation>
 // }
 
-// 
+//
 
 // export interface CreateLinkingSessionResult {
 //     session_id: string
@@ -162,7 +163,6 @@ export interface ContributorWrapper {
     contributor: Array<Contributor>
 }
 */
-
 
 /*
 
@@ -241,27 +241,22 @@ class Work(PersistedWorkBase):
 //     putCode: string;
 // }
 
-
 // export interface Work extends PersistedWork {
 //     createdAt: number;
 //     updatedAt: number;
 //     source: string;
 // }
 
-
-
 // export interface GetNameResult {
 //     firstName: string;
 //     lastName: string | null;
 // }
-
 
 // export interface ORCIDLinkResult {
 //     orcidLink: {
 //         orcidId: string | null
 //     }
 // }
-
 
 // export interface DeleteWorkResult {
 //     ok: true
@@ -276,28 +271,33 @@ class Work(PersistedWorkBase):
 //     citation: string;
 // }
 
-export type ReturnInstructionType = "link" | "window";
+// export type ReturnInstructionType = "link" | "window";
 
-export interface ReturnInstructionBase {
-    type: ReturnInstructionType
+// export interface ReturnInstructionBase {
+//     type: ReturnInstructionType
+// }
+
+// export interface ReturnInstructionLink extends ReturnInstructionBase {
+//     type: 'link'
+//     url: string
+//     label: string
+// }
+
+// export interface ReturnInstructionWindow extends ReturnInstructionBase {
+//     type: 'window'
+//     origin: string;
+//     id: string
+//     label: string
+// }
+
+// export type ReturnInstruction =
+//     ReturnInstructionLink |
+//     ReturnInstructionWindow;
+
+export interface ReturnInstruction {
+    url: string;
+    label: string;
 }
-
-export interface ReturnInstructionLink extends ReturnInstructionBase {
-    type: 'link'
-    url: string
-    label: string
-}
-
-export interface ReturnInstructionWindow extends ReturnInstructionBase {
-    type: 'window'
-    origin: string;
-    id: string
-    label: string
-}
-
-export type ReturnInstruction =
-    ReturnInstructionLink |
-    ReturnInstructionWindow;
 
 export interface StatusResponse {
     status: string;
@@ -430,9 +430,8 @@ export interface ErrorInfo {
 }
 
 export interface ErrorInfoResponse {
-    error_info: ErrorInfo
+    error_info: ErrorInfo;
 }
-
 
 export class ORCIDLinkServiceClient extends ServiceClient {
     module = 'ORCIDLink';
@@ -444,19 +443,26 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 
     // Linking Sessions
 
-    async startLinkingSession(sessionId: string,
+    async startLinkingSession(
+        sessionId: string,
         returnInstruction?: ReturnInstruction,
         skipPrompt?: boolean,
-        uiOptions?: string): Promise<void> {
+        uiOptions?: string,
+    ): Promise<void> {
         const baseURL = await this.getURL();
-        const startURL = new URL(`${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`);
+        const startURL = new URL(
+            `${baseURL}/${LINKING_SESSIONS_PATH}/${sessionId}/oauth/start`,
+        );
         // startURL.searchParams.set('session_id', sessionId);
 
         // Add return link if provided
         if (returnInstruction) {
             // TODO: change the url param name to "return_instruction" - but need to update
             // service for this as well.
-            startURL.searchParams.set('return_link', JSON.stringify(returnInstruction));
+            startURL.searchParams.set(
+                'return_link',
+                JSON.stringify(returnInstruction),
+            );
         }
 
         if (uiOptions) {
@@ -468,12 +474,10 @@ export class ORCIDLinkServiceClient extends ServiceClient {
         //     startURL.searchParams.set('return_from_window', JSON.stringify(returnFromWindow));
         // }
 
-        startURL.searchParams.set('skip_prompt', skipPrompt ? 'true' : 'false')
+        startURL.searchParams.set('skip_prompt', skipPrompt ? 'true' : 'false');
         window.open(startURL, '_parent');
     }
 }
-
-
 
 // export interface IsManagerResponse {
 //     is_manager: boolean
@@ -594,7 +598,6 @@ export class ORCIDLinkServiceClient extends ServiceClient {
 //     async getLink(username: string): Promise<LinkRecord> {
 //         return await this.get<LinkRecord>(`${MANAGE_PATH}/link/${username}`) as unknown as LinkRecord;
 //     }
-
 
 //     // async queryLinkingSessions(params: ManageLinkingSessionsQueryParams): Promise<ManageLinkingSessionsQueryResult> {
 //     //     return await this.post<void>(`${MANAGE_PATH}/linking_sessions`, toJSON(params)) as unknown as ManageLinkingSessionsQueryResult;

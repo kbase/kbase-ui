@@ -1,7 +1,11 @@
 import { Component, CSSProperties } from 'react';
 import styles from './PropTable.module.css';
 
-export type PropTableColumnValue = string | JSX.Element | (() => JSX.Element) | undefined;
+export type PropTableColumnValue =
+    | string
+    | JSX.Element
+    | (() => JSX.Element)
+    | undefined;
 
 export type PropTableRow = [string, PropTableColumnValue];
 
@@ -11,6 +15,7 @@ export interface PropTableProps {
     title?: string;
     footer?: PropTableRow;
     header?: PropTableRow;
+    bordered?: boolean;
     styles?: {
         col1?: CSSProperties;
         col2?: CSSProperties;
@@ -18,7 +23,7 @@ export interface PropTableProps {
     };
 }
 
-interface PropTableState { }
+interface PropTableState {}
 
 export default class PropTable extends Component<
     PropTableProps,
@@ -124,8 +129,15 @@ export default class PropTable extends Component<
     }
 
     render() {
+        const mainClass = (() => {
+            if (this.props.bordered) {
+                return styles['main-bordered'];
+            } else {
+                return styles.main;
+            }
+        })();
         return (
-            <div className={styles.PropTable}>
+            <div className={mainClass}>
                 {this.renderTitle()}
                 {this.renderHeader()}
                 {this.renderBody()}

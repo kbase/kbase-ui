@@ -1,0 +1,217 @@
+
+
+import AsyncQueue from './AsyncQueue';
+import { string } from 'prop-types';
+
+export interface SubscriptionDefinition {
+    channel: string | null;
+    message: string;
+}
+
+export interface Subscription {
+    id: string,
+    channelName: string,
+    messageName: string
+}
+
+export interface Channel {
+    messages: Map<string, MessageListener>
+}
+
+// export interface Listener {
+
+// }
+
+export interface PublishDefinition {
+    channel: string;
+    message: string;
+    
+}
+
+export interface MessageListener {
+    listeners: Array<Subscription>
+    byId: Map<string, Subscription>
+}
+
+    export class Messenger {
+        channels: Map<string, Channel>
+        listeners: Map<string, string>
+        subId: number;
+        queue: AsyncQueue
+        constructor() {
+            this.channels = new Map<string, Channel>()
+            this.listeners = new Map<string, string>()
+            this.subId = 0;
+            this.queue = new AsyncQueue({queuePauseTime: 0});
+        }
+
+        nextSubId() {
+            this.subId += 1;
+            return 'sub_' + this.subId;
+        }
+
+        static fail(msg: string) {
+            throw new Error(msg);
+        }
+
+        receive(subscriptionDefinition: SubscriptionDefinition) {
+            const channelName = subscriptionDefinition.channel || 'default';
+            const messageName = subscriptionDefinition.message;
+
+            // Get the channel, and create it if it doesn't exist.
+            let channel = this.channels.get(channelName)
+            if (!channel) {
+                channel = {
+                    messages: new Map<string, MessageListener>()
+                };
+                this.channels.set(channelName, channel);
+            }
+
+            // Get the message listeners for this message, create if doesn't exist
+            let messageListener = channel.messages.get(messageName);
+            if (!messageListener) {
+                messageListener = {
+                    listeners: [],
+                    byId: new Map<string, Listener>()
+                };
+                channel.messages.set(messageName, messageListener)
+            }
+
+            // Add our message definition
+            const id = this.nextSubId();
+            const subscription = {
+                id, channelName, messageName
+            }
+
+            messageListener.byId.set(id, subscription);
+            messageListener.listeners.push(subscription);
+            return {
+                chan: channelName,
+                msg: messageName,
+                id
+            };
+        }
+
+        drop(subscription: Subscription) {
+            return this.unreceive(subscription);
+        }
+
+        unreceive(subscription: Subscription) {
+            const channel = this.channels.get(subscription.channelName);
+            if (!channel) {
+                return false;
+            }
+            const messageListener = channel.messages.get(subscription.messageName)
+            if (!messageListener) {
+                return false;
+            }
+
+            const existingSubscription = messageListener.byId.get(subscription.id)
+            if (!existingSubscription) {
+                return false;
+            }
+            messageListener.byId.delete(subscription.id)
+            messageListener.listeners = messageListener.listeners.filter((sub) => {
+                if (sub.id === subscription.id) {
+                    return false;
+                }
+                return true;
+            });
+            return true;
+        }
+
+        send(publishDefinition: PublishDefinition) {
+            const channelName = publishDefinition.channel;
+            const messageName = publishDefinition.message;
+
+            const channel = this.channels.get(channelName);
+            if (!channel) {
+                return;
+            }
+            const messageListener = channel.messages.get(messageName);
+            if (!messageListener) {
+                return;
+            }
+
+            messageListener.listeners.forEach((sub) => {
+                this.queue.addItem({
+                    id: sub.id,
+                    onRun: () => {
+                        try {
+                            sub.handler(pubDef.data);
+                        } catch (ex) {
+                            console.error(ex);
+                            throw new lang.UIError({
+                                type: 'RuntimeError',
+                                reason: 'MessageHandlerError',
+                                message: 'Exception running message ' + messageName + ', sub ' + subDef.subId,
+                                data: ex,
+                                suggestion: 'This is an application error, not your fault'
+                            });
+                        }
+                    },
+                    onError: (err: Error) => {
+                        console.error('ERROR!', err);
+                    }
+                });
+            });
+        }
+
+        sendPromise(pubDef) {
+            const channelName = pubDef.chan || pubDef.channel;
+            const messageName = pubDef.msg || pubDef.message;
+
+            const channel = this.channels[channelName];
+            if (!channel) {
+                if (pubDef.propogate) {
+                    return [Promise.resolve()];
+                }
+            }
+            const messageListener = channel.messages[messageName];
+            if (!messageListener) {
+                if (pubDef.propogate) {
+                    return [Promise.resolve()];
+                }
+            }
+
+            const listeners = messageListener.listeners;
+            return Promise.all(
+                listeners
+                    .map((subDef) => {
+                        return new Promise((resolve, reject) => {
+                            this.queue.addItem({
+                                onRun: () => {
+                                    try {
+                                        resolve(subDef.handler(pubDef.data));
+                                    } catch (ex) {
+                                        console.error(ex);
+                                        reject(
+                                            new lang.UIError({
+                                                type: 'RuntimeError',
+                                                reason: 'MessageHandlerError',
+                                                message:
+                                                    'Exception running message ' +
+                                                    messageName +
+                                                    ', sub ' +
+                                                    pubDef.subId,
+                                                data: ex,
+                                                suggestion: 'This is an application error, not your fault'
+                                            })
+                                        );
+                                    }
+                                },
+                                onError: (err) => {
+                                    reject(err);
+                                }
+                            });
+                        });
+                    })
+                    .map((promise) => {
+                        return promise.reflect();
+                    })
+            );
+        }
+    }
+
+    return Messenger;
+});

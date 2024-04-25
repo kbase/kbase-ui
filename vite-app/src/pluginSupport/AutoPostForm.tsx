@@ -2,7 +2,7 @@ import { Component, createRef, RefObject } from 'react';
 import * as uuid from 'uuid';
 
 export interface AutoPostFormProps {
-    params: { [key: string]: string };
+    params: Record<string, string>;
     action: string;
 }
 
@@ -34,7 +34,7 @@ export default class AutoPostForm extends Component<
                 return (
                     <input type="hidden" key={name} name={name} value={value} />
                 );
-            }
+            },
         );
 
         return (
@@ -43,6 +43,7 @@ export default class AutoPostForm extends Component<
                 ref={this.ref}
                 id={formID}
                 action={action}
+                target="_top"
                 style={{ display: 'hidden' }}
             >
                 {paramInputs}

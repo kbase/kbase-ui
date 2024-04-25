@@ -5,46 +5,47 @@ const CLOCK_INTERVAL = 250;
 export type TimePart = 'day' | 'hour' | 'minute' | 'second';
 export type DisplaySize = 'normal' | 'compact' | 'small';
 
-export const timeParts: { [timePart: string]: { normal: string, compact: string, small: string } } = {
+export const timeParts: {
+    [timePart: string]: { normal: string; compact: string; small: string };
+} = {
     day: {
         normal: 'day',
         compact: 'day',
-        small: 'd'
+        small: 'd',
     },
     hour: {
         normal: 'hour',
         compact: 'hr',
-        small: 'h'
+        small: 'h',
     },
     minute: {
         normal: 'minute',
         compact: 'min',
-        small: 'm'
+        small: 'm',
     },
     second: {
         normal: 'second',
         compact: 'sec',
-        small: 's'
+        small: 's',
     },
-}
+};
 
 function niceRelativeTimeRange({
     at,
     now,
-    size
+    size,
 }: {
     at: number;
     now: number;
     size: DisplaySize;
 }) {
-
     let prefix;
     let suffix;
     if (at < now) {
         suffix = 'ago';
         prefix = '';
     } else {
-        prefix = 'in'
+        prefix = 'in';
         suffix = '';
     }
 
@@ -112,7 +113,7 @@ function niceRelativeTimeRange({
         prefix ? prefix + ' ' : '',
         measures
             .map(([measure, unit]) => {
-                let unitForSize = timeParts[unit][size]
+                let unitForSize = timeParts[unit][size];
                 if (measure !== 1) {
                     unitForSize += 's';
                 }
@@ -149,14 +150,14 @@ export default class RelativeTimeClock extends Component<
         this.timeOffset = props.now - Date.now();
 
         this.state = {
-            now: Date.now() + this.timeOffset
+            now: Date.now() + this.timeOffset,
         };
     }
 
     componentDidMount() {
         this.timer = window.setInterval(() => {
             this.setState({
-                now: Date.now() + this.timeOffset
+                now: Date.now() + this.timeOffset,
             });
         }, CLOCK_INTERVAL);
     }
@@ -172,8 +173,12 @@ export default class RelativeTimeClock extends Component<
         const { now } = this.state;
         let className = '';
         if (at < now) {
-            className += 'text-danger'
+            className += 'text-danger';
         }
-        return <span className={className}>{niceRelativeTimeRange({ at, now, size: this.size })}</span>;
+        return (
+            <span className={className}>
+                {niceRelativeTimeRange({ at, now, size: this.size })}
+            </span>
+        );
     }
 }

@@ -13,13 +13,22 @@
 .Profile-content-area {
     flex: 1 1 0;
     overflow-y: auto;
+    /* padding: 1rem; */
 }
+
+/* .Profile-content-area .antd-row:nth-child(1) {
+    margin-left: 0;
+}
+
+.Profile-content-area .antd-row:last-child {
+    margin-left: 0;
+} */
 
 .ProfileAvatar {
     flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    align-items: center
+    align-items: center;
 }
 
 .ProfileAvatar-Realname {
@@ -61,7 +70,7 @@
     flex: 1 1 0px;
 }
 
-.AffiliationsCol+.AffiliationsCol {
+.AffiliationsCol + .AffiliationsCol {
     margin-left: 10px;
 }
 
@@ -89,7 +98,7 @@
     margin: 0;
 }
 
-.compact-text p+p {
+.compact-text p + p {
     margin-top: 1rem;
 }
 
@@ -97,30 +106,35 @@
     margin-bottom: 0;
 }
 
-.Profile-field-force-inline .ant-form-item>.ant-row {
+.Profile-field-force-inline .ant-form-item > .ant-row {
     display: flex;
     flex-direction: row;
     align-items: baseline;
 }
 
-.Profile-field-force-inline .ant-form-item>.ant-row>.ant-col {
+.Profile-field-force-inline .ant-form-item > .ant-row > .ant-col {
     flex: 0 0 auto;
     width: fit-content;
 }
 
-.Profile-field-force-inline .ant-form-item>.ant-row>.ant-col.ant-form-item-label {
+.Profile-field-force-inline
+    .ant-form-item
+    > .ant-row
+    > .ant-col.ant-form-item-label {
     margin-right: 0.25rem;
 }
 
-.Profile-section {}
+.Profile-section {
+}
 
 .Profile-section-title {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.3);
 }
 
-.Profile-section-body {}
+.Profile-section-body {
+}
 
-.Profile-section+.Profile-section {
+.Profile-section + .Profile-section {
     margin-top: 1rem;
 }

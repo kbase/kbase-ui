@@ -1,7 +1,10 @@
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
 import { Component } from 'react';
-import { AuthenticationState } from '../../contexts/Auth';
-import { RuntimeContext } from '../../contexts/RuntimeContext';
-import Plugin, { Params } from '../../pluginSupport/Plugin';
+import {
+    AuthenticationState,
+    EuropaContext,
+} from '../../contexts/EuropaContext';
+import Plugin from '../../pluginSupport/Plugin';
 import { Config } from '../../types/config';
 import { RouteProps } from '../Router2';
 
@@ -14,7 +17,7 @@ export interface PluginWrapperProps extends RouteProps {
     authState: AuthenticationState;
 }
 
-interface PluginWrapperState { }
+interface PluginWrapperState {}
 
 export default class PluginWrapper extends Component<
     PluginWrapperProps,
@@ -25,22 +28,7 @@ export default class PluginWrapper extends Component<
 
         // route params
         // route params are the combination of url parameters and query parameters.
-        const queryParams = this.props.hashPath.query;
-        const params = Object.assign(
-            {},
-            Array.from(queryParams.entries()).reduce<Params>(
-                (params, [key, value]) => {
-                    params[key] = value;
-                    return params;
-                },
-                {}
-            ),
-            Object.fromEntries(this.props.params),
-            {
-                view: this.props.view,
-            }
-        );
-        // const params: Params = {};
+        const params = Object.fromEntries(this.props.match.params);
 
         // view
         // the abstract view id - e.g. #catalog or #/catalog are "catalog", #dataview/1/2/3 is "dataview",
@@ -51,17 +39,22 @@ export default class PluginWrapper extends Component<
         const originalHash = this.props.hashPath.hash;
 
         return (
-            <RuntimeContext.Consumer>
+            <EuropaContext.Consumer>
                 {(value) => {
-                    if (value === null) {
+                    if (
+                        value === null ||
+                        value.status !== AsyncProcessStatus.SUCCESS
+                    ) {
                         return null;
                     }
+                    const { setTitle, authState, config, messenger } =
+                        value.value;
                     return (
                         <Plugin
-                            setTitle={value.setTitle}
-                            authState={value.authState}
-                            config={value.config}
-                            messenger={value.messenger}
+                            setTitle={setTitle}
+                            authState={authState}
+                            config={config}
+                            messenger={messenger}
                             name={this.props.name}
                             syncHash={this.props.syncHash}
                             original={originalHash}
@@ -70,7 +63,7 @@ export default class PluginWrapper extends Component<
                         />
                     );
                 }}
-            </RuntimeContext.Consumer>
+            </EuropaContext.Consumer>
         );
     }
 }

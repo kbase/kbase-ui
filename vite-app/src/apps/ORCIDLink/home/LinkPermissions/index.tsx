@@ -1,19 +1,18 @@
-import { AsyncProcess } from "@kbase/ui-lib";
-import ErrorMessage from "components/ErrorMessage";
-import Loading from "components/Loading";
-import { SimpleError } from "components/MainWindow";
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import { AsyncProcessStatus } from "lib/AsyncProcess";
-import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
-import { hasOwnProperty } from "lib/utils";
-import { Component } from "react";
-import { Config } from "types/config";
-import View from "./View";
+import { AsyncProcess } from '@kbase/ui-lib';
+import ErrorMessage from 'components/ErrorMessage';
+import Loading from 'components/Loading';
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import { AsyncProcessStatus } from 'lib/AsyncProcess';
+import { SimpleError } from 'lib/SimpleError';
+import UserProfileClient from 'lib/kb_lib/comm/coreServices/UserProfile2';
+import { hasOwnProperty } from 'lib/utils';
+import { Component } from 'react';
+import { Config } from 'types/config';
+import View from './View';
 
 export interface ORCIDLinkPreferences {
-    showInProfile: boolean
+    showInProfile: boolean;
 }
-
 
 export interface PermissionsControllerProps {
     config: Config;
@@ -21,21 +20,24 @@ export interface PermissionsControllerProps {
 }
 
 interface PermissionsControllerState {
-    preferencesState: AsyncProcess<ORCIDLinkPreferences, SimpleError>
-    updatePreferencesState: AsyncProcess<true, SimpleError>
+    preferencesState: AsyncProcess<ORCIDLinkPreferences, SimpleError>;
+    updatePreferencesState: AsyncProcess<true, SimpleError>;
 }
 
-export default class PermissionsController extends Component<PermissionsControllerProps, PermissionsControllerState> {
+export default class PermissionsController extends Component<
+    PermissionsControllerProps,
+    PermissionsControllerState
+> {
     constructor(props: PermissionsControllerProps) {
         super(props);
         this.state = {
             preferencesState: {
-                status: AsyncProcessStatus.NONE
+                status: AsyncProcessStatus.NONE,
             },
             updatePreferencesState: {
-                status: AsyncProcessStatus.NONE
-            }
-        }
+                status: AsyncProcessStatus.NONE,
+            },
+        };
     }
     componentDidMount() {
         this.fetchPreferences();
@@ -45,84 +47,82 @@ export default class PermissionsController extends Component<PermissionsControll
         const {
             config: {
                 services: {
-                    UserProfile: {
-                        url
-                    }
+                    UserProfile: { url },
                 },
                 ui: {
-                    constants: {
-                        clientTimeout: timeout
-                    }
-                }
+                    constants: { clientTimeout: timeout },
+                },
             },
             auth: {
                 authInfo: {
                     token,
-                    tokenInfo: {
-                        user: username
-                    }
+                    tokenInfo: { user: username },
                 },
-
-            }
+            },
         } = this.props;
 
         this.setState({
             preferencesState: {
-                status: AsyncProcessStatus.NONE
-            }
-        })
+                status: AsyncProcessStatus.NONE,
+            },
+        });
 
         const client = new UserProfileClient({
-            url, token, timeout
+            url,
+            token,
+            timeout,
         });
         try {
             this.setState({
                 preferencesState: {
-                    status: AsyncProcessStatus.PENDING
-                }
-            })
+                    status: AsyncProcessStatus.PENDING,
+                },
+            });
             const [profile] = await client.get_user_profile([username]);
-            const { profile: { preferences } } = profile;
+            const {
+                profile: { preferences },
+            } = profile;
             if (!preferences) {
                 // TODO: what to do? probably return default preferences, or create prefs on the fl
                 this.setState({
                     preferencesState: {
                         status: AsyncProcessStatus.ERROR,
                         error: {
-                            message: 'No preferences in user profile'
-                        }
-                    }
-                })
+                            message: 'No preferences in user profile',
+                        },
+                    },
+                });
                 return;
             }
 
-            const showORCIDId = (preferences.showORCIDId?.value || false) as unknown as boolean;
+            const showORCIDId = (preferences.showORCIDId?.value ||
+                false) as unknown as boolean;
 
             // if (hasOwnProperty(preferences, 'showORCIDId')) {
 
             // }
 
-            // const orcidLinkPreferences = 
+            // const orcidLinkPreferences =
             const preferencesx: ORCIDLinkPreferences = {
-                showInProfile: showORCIDId
-            }
+                showInProfile: showORCIDId,
+            };
 
             this.setState({
                 preferencesState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: preferencesx
-                }
-            })
+                    value: preferencesx,
+                },
+            });
         } catch (ex) {
             const message = ex instanceof Error ? ex.message : 'Unknown Error';
             this.setState({
                 preferencesState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
-            })
+                        message,
+                    },
+                },
+            });
         }
     }
 
@@ -130,44 +130,44 @@ export default class PermissionsController extends Component<PermissionsControll
         const {
             config: {
                 services: {
-                    UserProfile: {
-                        url
-                    }
+                    UserProfile: { url },
                 },
                 ui: {
-                    constants: {
-                        clientTimeout: timeout
-                    }
-                }
+                    constants: { clientTimeout: timeout },
+                },
             },
             auth: {
                 authInfo: {
                     token,
-                    tokenInfo: {
-                        user: username
-                    }
+                    tokenInfo: { user: username },
                 },
-
-            }
+            },
         } = this.props;
 
         this.setState({
             updatePreferencesState: {
-                status: AsyncProcessStatus.NONE
-            }
-        })
+                status: AsyncProcessStatus.NONE,
+            },
+        });
 
         const client = new UserProfileClient({
-            url, token, timeout
+            url,
+            token,
+            timeout,
         });
         try {
             this.setState({
                 updatePreferencesState: {
-                    status: AsyncProcessStatus.PENDING
-                }
-            })
+                    status: AsyncProcessStatus.PENDING,
+                },
+            });
 
-            const [{ user, profile: { preferences: rawPreferences } }] = await client.get_user_profile([username]);
+            const [
+                {
+                    user,
+                    profile: { preferences: rawPreferences },
+                },
+            ] = await client.get_user_profile([username]);
 
             const preferences = rawPreferences || {};
 
@@ -175,22 +175,22 @@ export default class PermissionsController extends Component<PermissionsControll
                 preferences.showORCIDId = {
                     ...preferences.showORCIDId,
                     value: value.showInProfile,
-                    updatedAt: Date.now()
-                }
+                    updatedAt: Date.now(),
+                };
             } else {
                 preferences.showORCIDId = {
                     value: value.showInProfile,
                     createdAt: Date.now(),
-                    updatedAt: Date.now()
-                }
+                    updatedAt: Date.now(),
+                };
             }
 
             const profileUpdate = {
                 user,
                 profile: {
-                    preferences
-                }
-            }
+                    preferences,
+                },
+            };
 
             await client.update_user_profile({ profile: profileUpdate });
 
@@ -199,19 +199,19 @@ export default class PermissionsController extends Component<PermissionsControll
             this.setState({
                 updatePreferencesState: {
                     status: AsyncProcessStatus.SUCCESS,
-                    value: true
-                }
-            })
+                    value: true,
+                },
+            });
         } catch (ex) {
             const message = ex instanceof Error ? ex.message : 'Unknown Error';
             this.setState({
                 updatePreferencesState: {
                     status: AsyncProcessStatus.ERROR,
                     error: {
-                        message
-                    }
-                }
-            })
+                        message,
+                    },
+                },
+            });
         }
     }
 
@@ -219,11 +219,20 @@ export default class PermissionsController extends Component<PermissionsControll
         switch (this.state.preferencesState.status) {
             case AsyncProcessStatus.NONE:
             case AsyncProcessStatus.PENDING:
-                return <Loading message="Loading permissions..." />
+                return <Loading message="Loading permissions..." />;
             case AsyncProcessStatus.SUCCESS:
-                return <View preferences={this.state.preferencesState.value} setPreferences={this.setPreferences.bind(this)} />
+                return (
+                    <View
+                        preferences={this.state.preferencesState.value}
+                        setPreferences={this.setPreferences.bind(this)}
+                    />
+                );
             case AsyncProcessStatus.ERROR:
-                return <ErrorMessage message={this.state.preferencesState.error.message} />
+                return (
+                    <ErrorMessage
+                        message={this.state.preferencesState.error.message}
+                    />
+                );
         }
     }
 }

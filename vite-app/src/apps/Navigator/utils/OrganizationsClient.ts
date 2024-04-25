@@ -1,14 +1,14 @@
 export interface GroupInfo {
-  id: string;
-  owner: string; // user id
-  name: string;
-  role: string;
-  private: boolean;
+    id: string;
+    owner: string; // user id
+    name: string;
+    role: string;
+    private: boolean;
 }
 
 export interface GroupIdentity {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }
 
 /**
@@ -20,98 +20,96 @@ export interface GroupIdentity {
  * @param {string} orgId - the id of the org to link
  */
 interface AddResourceStatus {
-  complete: boolean;
+    complete: boolean;
 }
 
 interface GroupsRequest {
-  id: string;
-  groupid: string;
-  requester: string;
-  type: string;
-  resourcetype: string;
-  resource: string;
-  status: string;
-  createdate: number;
-  expiredate: number;
-  moddate: number;
+    id: string;
+    groupid: string;
+    requester: string;
+    type: string;
+    resourcetype: string;
+    resource: string;
+    status: string;
+    createdate: number;
+    expiredate: number;
+    moddate: number;
 }
 
 export default class OrganizationsClient {
-  url: string;
-  token: string;
-  constructor({groupsURL, token}: {groupsURL: string, token: string}) {
-      this.url = groupsURL;
-      this.token = token;
-  }
-
-  async linkNarrativeToOrg(
-      wsId: number,
-      orgId: string
-  ): Promise<GroupsRequest & AddResourceStatus> {
-    const call = `group/${orgId}/resource/workspace/${wsId}`;
-    return this.callEndpoint(call, 'POST');
-  }
-
-  /**
-   * Returns the list of all orgs to which the current user is a member.
-   */
-  async lookupUserOrgs(
-  ): Promise<Array<GroupIdentity>> {
-    const orgs = await this.callEndpoint('member', 'GET');
-    return orgs.sort((a: GroupIdentity, b: GroupIdentity) => {
-      return a.name.localeCompare(b.name);
-    });
-  }
-
-
-  /**
-   * Returns the group info for all groups that have the given workspace (i.e. Narrative)
-   * as one of its resources.
-   * Further, this only returns the set of groups for which the current user is a member / has
-   * view access.
-   * @param {number} wsId - a workspace id
-   */
-  async getLinkedOrgs(
-      wsId: number
-  ): Promise<Array<GroupInfo>> {
-    return this.callEndpoint(
-        `group?resourcetype=workspace&resource=${wsId}`,
-        'GET'
-    );
-  }
-
-  async callEndpoint(
-      call: string,
-      method: string
-  ): Promise<any> {
-    const groupsUrl = this.url;
-    const headers: { [key: string]: string } = {
-      'Content-Type': 'application/json',
-    };
-    const token = this.token;
-    if (token !== null) {
-      headers.Authorization = token;
+    url: string;
+    token: string;
+    constructor({ groupsURL, token }: { groupsURL: string; token: string }) {
+        this.url = groupsURL;
+        this.token = token;
     }
-    return fetch(groupsUrl + '/' + call, {
-      headers,
-      method: method,
-    })
-        .then((res) => {
-          if (!res.ok) {
-            throw new OrgAPIError(res.statusText, res);
-          }
-          return res;
+
+    async linkNarrativeToOrg(
+        wsId: number,
+        orgId: string,
+    ): Promise<GroupsRequest & AddResourceStatus> {
+        const call = `group/${orgId}/resource/workspace/${wsId}`;
+        return this.callEndpoint(call, 'POST') as Promise<
+            GroupsRequest & AddResourceStatus
+        >;
+    }
+
+    /**
+     * Returns the list of all orgs to which the current user is a member.
+     */
+    async lookupUserOrgs(): Promise<Array<GroupIdentity>> {
+        const orgs = (await this.callEndpoint(
+            'member',
+            'GET',
+        )) as Array<GroupIdentity>;
+        return orgs.sort((a: GroupIdentity, b: GroupIdentity) => {
+            return a.name.localeCompare(b.name);
+        }) as Array<GroupIdentity>;
+    }
+
+    /**
+     * Returns the group info for all groups that have the given workspace (i.e. Narrative)
+     * as one of its resources.
+     * Further, this only returns the set of groups for which the current user is a member / has
+     * view access.
+     * @param {number} wsId - a workspace id
+     */
+    async getLinkedOrgs(wsId: number): Promise<Array<GroupInfo>> {
+        return this.callEndpoint(
+            `group?resourcetype=workspace&resource=${wsId}`,
+            'GET',
+        ) as Promise<Array<GroupInfo>>;
+    }
+
+    async callEndpoint(call: string, method: string): Promise<unknown> {
+        const groupsUrl = this.url;
+        const headers: { [key: string]: string } = {
+            'Content-Type': 'application/json',
+        };
+        const token = this.token;
+        if (token !== null) {
+            headers.Authorization = token;
+        }
+        return fetch(groupsUrl + '/' + call, {
+            headers,
+            method: method,
         })
-        .then((res) => res.json());
-  }
+            .then((res) => {
+                if (!res.ok) {
+                    throw new OrgAPIError(res.statusText, res);
+                }
+                return res;
+            })
+            .then((res) => res.json());
+    }
 }
 
 export class OrgAPIError extends Error {
-  public response: any;
-  constructor(m: string, response: Response) {
-    super(m);
-    this.response = response;
-  }
+    public response: Response;
+    constructor(m: string, response: Response) {
+        super(m);
+        this.response = response;
+    }
 }
 
 /**
@@ -123,4 +121,3 @@ export class OrgAPIError extends Error {
  * @param {string} call - string, the command to send
  * @param {string} method - one of GET, POST, PUT, DELETE
  */
-

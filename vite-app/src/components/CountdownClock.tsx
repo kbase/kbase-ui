@@ -6,10 +6,12 @@ function niceRelativeTimeRange({
     now,
     startAt,
     endAt,
+    places,
 }: {
     now: number;
     startAt: number;
     endAt: number;
+    places: number;
 }) {
     let startDate;
     if (startAt === null || startAt === undefined) {
@@ -110,6 +112,7 @@ function niceRelativeTimeRange({
     return [
         // prefix ? prefix + ' ' : '',
         measures
+            .slice(0, places)
             .map(([measure, unit]) => {
                 if (measure !== 1) {
                     unit += 's';
@@ -144,12 +147,17 @@ export default class CountdownClock extends Component<
         const now = Date.now();
         this.state = {
             now,
-            expired: this.isExpired(now)
+            expired: this.isExpired(now),
         };
     }
 
     isExpired(now: number) {
         return now > this.props.endAt;
+    }
+
+    remaining(): number {
+        const now = Date.now();
+        return now - this.props.endAt;
     }
 
     componentDidMount() {
@@ -158,8 +166,8 @@ export default class CountdownClock extends Component<
             if (this.isExpired(now)) {
                 this.setState({
                     now,
-                    expired: true
-                })
+                    expired: true,
+                });
                 if (this.timer) {
                     window.clearInterval(this.timer);
                 }
@@ -167,9 +175,15 @@ export default class CountdownClock extends Component<
                 return;
             }
             this.setState({
-                now
+                now,
             });
         }, CLOCK_INTERVAL);
+    }
+
+    componentWillUnmount(): void {
+        if (this.timer) {
+            window.clearInterval(this.timer);
+        }
     }
 
     render() {
@@ -177,8 +191,12 @@ export default class CountdownClock extends Component<
         const { now } = this.state;
         let className = '';
         if (this.state.expired) {
-            className += 'text-danger'
+            className += 'text-danger';
         }
-        return <span className={className}>{niceRelativeTimeRange({ startAt, endAt, now })}</span>;
+        return (
+            <span className={className}>
+                {niceRelativeTimeRange({ startAt, endAt, now, places: 1 })}
+            </span>
+        );
     }
 }

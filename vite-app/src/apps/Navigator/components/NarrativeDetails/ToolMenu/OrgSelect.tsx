@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
-import Select, { StylesConfig } from 'react-select';
+import Select from 'react-select';
 import { GroupIdentity } from '../../../utils/OrganizationsClient';
 
 interface OrgListProps {
@@ -32,17 +32,17 @@ export default class OrgSelect extends Component<OrgListProps, OrgListState> {
         };
     }
 
-    handleOrgChange = (selected: any) => {
-        this.setState({ selectedOrgId: selected?.value || '' });
+    handleOrgChange = (selectedOrgId: string) => {
+        this.setState({ selectedOrgId });
     };
 
     render() {
         // const selectStyles: Partial<Styles<OrgOption, false>> = {
         //   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
         // };
-        const selectStyles: StylesConfig<OrgOption, false> = {
-            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        };
+        // const selectStyles: StylesConfig<OrgOption, false> = {
+        //     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+        // };
         return (
             <Container fluid className="g-0">
                 <Row className="g-0">
@@ -53,15 +53,17 @@ export default class OrgSelect extends Component<OrgListProps, OrgListState> {
                                 isClearable
                                 isSearchable
                                 placeholder="Select an Organization ..."
-                                styles={{
-                                    ...selectStyles,
-                                    container: (base) => ({ ...base, flex: 2 }),
-                                }}
+                                // styles={{
+                                //     ...selectStyles,
+                                //     container: (base) => ({ ...base, flex: 2 }),
+                                // }}
                                 menuPortalTarget={document.body}
                                 className="basic-single"
                                 classNamePrefix="select"
                                 options={this.orgOptions}
-                                onChange={this.handleOrgChange}
+                                onChange={(newValue) => {
+                                    this.handleOrgChange(newValue?.value || '');
+                                }}
                             />
                         </Col>
                         <Col md="auto">

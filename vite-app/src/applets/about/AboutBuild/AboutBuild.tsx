@@ -1,3 +1,4 @@
+import Well from 'components/Well';
 import { Component } from 'react';
 import { BuildInfo, GitInfo } from '../../../types/info';
 
@@ -6,13 +7,7 @@ export interface AboutBuildProps {
     buildInfo: BuildInfo;
 }
 
-interface AboutBuildState { }
-
-export default class AboutBuild extends Component<
-    AboutBuildProps,
-    AboutBuildState
-> {
-   
+export default class AboutBuild extends Component<AboutBuildProps> {
     renderCommit() {
         return (
             <table className="table">
@@ -37,7 +32,7 @@ export default class AboutBuild extends Component<
                         <th>date</th>
                         <td>
                             {new Date(
-                                this.props.gitInfo.committer.date
+                                this.props.gitInfo.committer.date,
                             ).toLocaleString()}
                         </td>
                     </tr>
@@ -58,7 +53,7 @@ export default class AboutBuild extends Component<
                         <th>authorDate</th>
                         <td>
                             {new Date(
-                                this.props.gitInfo.author.date
+                                this.props.gitInfo.author.date,
                             ).toLocaleString()}
                         </td>
                     </tr>
@@ -98,7 +93,11 @@ export default class AboutBuild extends Component<
                 <tbody>
                     <tr>
                         <th>builtAt</th>
-                        <td>{new Date(this.props.buildInfo.builtAt).toLocaleString()}</td>
+                        <td>
+                            {new Date(
+                                this.props.buildInfo.builtAt,
+                            ).toLocaleString()}
+                        </td>
                     </tr>
                     <tr>
                         <th>git</th>
@@ -111,17 +110,15 @@ export default class AboutBuild extends Component<
 
     render() {
         return (
-            <div className="AboutBuild">
-                <div data-k-b-testhook-panel="build">
-                    <h2>Build</h2>
-                    {this.renderBuildInfo()}
-                </div>
-
-                <div data-k-b-testhook-panel="dependencies">
-                    <h2>Dependencies</h2>
-                    ...not yet...
-                </div>
-            </div>
+            <Well variant="secondary" stretch>
+                <Well.Body>
+                    <div className="AboutBuild">
+                        <div data-k-b-testhook-panel="build">
+                            {this.renderBuildInfo()}
+                        </div>
+                    </div>
+                </Well.Body>
+            </Well>
         );
     }
 }

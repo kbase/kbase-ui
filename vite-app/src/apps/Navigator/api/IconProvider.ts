@@ -1,16 +1,30 @@
-import iconData from './icons.json';
 import NarrativeMethodStoreClient from 'lib/kb_lib/comm/coreServices/NarrativeMethodStore';
+import iconData from './icons.json';
 
 export interface IconInfo {
-    icon?: string;
+    icon?: Array<string>;
     color: string;
     url?: string;
     isImage: boolean;
 }
 
+// export interface IconInfoURL {
+//     icon?: Array<string>;
+//     color: string;
+//     url?: string;
+//     isImage: boolean;
+// }
+
+// export interface IconInfoClass {
+//     icon?: Array<string>;
+//     color: string;
+//     url?: string;
+//     isImage: boolean;
+// }
+
 interface LoadedIconData {
-    defaults: { [key: string]: string };
-    data: { [key: string]: string };
+    defaults: { [key: string]: Array<string> };
+    data: { [key: string]: Array<string> };
     colors: Array<string>;
     color_mapping: { [key: string]: string };
 }
@@ -35,19 +49,19 @@ export default class IconProvider {
     private appIconCache: AppIconCache;
     private nmsURL: string;
     private nmsImageURL: string;
-    private token: string;
+    // private token: string;
     constructor({
         nmsURL,
         nmsImageURL,
-        token,
+        // token,
     }: {
         nmsURL: string;
         nmsImageURL: string;
-        token: string;
+        // token: string;
     }) {
         this.nmsURL = nmsURL;
         this.nmsImageURL = nmsImageURL;
-        this.token = token;
+        // this.token = token;
         // fetch all icon info for types.
         // set up clients to get icons from NMS/Catalog
         this.typeIconInfos = {};
@@ -86,13 +100,13 @@ export default class IconProvider {
         if (!this.appIconCache[appTag][appId]) {
             const nms = new NarrativeMethodStoreClient({
                 url: this.nmsURL,
-                token: this.token,
-                timeout: 1000
+                // token: this.token,
+                timeout: 1000,
             });
             try {
                 const result = await nms.get_method_brief_info({
                     ids: [appId],
-                    tag: appTag
+                    tag: appTag,
                 });
 
                 const icon = result.icon.url;
@@ -129,7 +143,7 @@ export default class IconProvider {
         // anything else is nonsensical.
         if (!objectType) {
             console.warn(
-                `[typeIcon] Using default type icon for object type "${objectType}"`
+                `[typeIcon] Using default type icon for object type "${objectType}"`,
             );
             return this.defaultType;
         }

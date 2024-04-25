@@ -1,15 +1,11 @@
-version: '3.6'
 services:
     dockerize:
         working_dir: /app
         image: powerman/dockerize
         container_name: dockerize
         dns: 8.8.8.8
-        environment:
-          - DEFAULT_PATH
-          - HIDE_HEADER
-          - HIDE_NAVIGATION
-          - INTEGRATED_HAMBURGER_AND_LOGO
-          - deploy_name
+        env_file:
+          - $ENV_FILE
+          # - ../../dev/templates-context.env
         volumes:
             - $DIR:/app

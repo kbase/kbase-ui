@@ -1,11 +1,11 @@
 import { Component, PropsWithChildren } from 'react';
 import ErrorMessage from './ErrorMessage';
 
-export type ErrorBoundaryProps = PropsWithChildren<{}>;
+export type ErrorBoundaryProps = PropsWithChildren;
 
 interface ErrorBoundaryState {
     hasError: boolean;
-    error: any;
+    error: unknown;
 }
 
 export default class ErrorBoundary extends Component<
@@ -20,19 +20,19 @@ export default class ErrorBoundary extends Component<
         };
     }
 
-    static getDerivedStateFromError(error: any) {
+    static getDerivedStateFromError(error: unknown) {
         return {
             hasError: true,
-            error
+            error,
         };
     }
 
-    componentDidCatch(error: any, errorInfo: any) {
+    componentDidCatch(error: unknown, errorInfo: unknown) {
         console.error('ERROR', error, errorInfo);
         this.setState({
             hasError: true,
-            error
-        })
+            error,
+        });
     }
 
     render() {

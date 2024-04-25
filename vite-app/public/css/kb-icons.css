@@ -1,6 +1,7 @@
 /* ICONS FROM NARRATIVE kbaseIcons.css */
 
 @charset "UTF-8";
+
 @font-face {
     font-family: "kbase-icons";
     src: url("icons/kbase-icons.eot");
@@ -16,7 +17,6 @@
     font-weight: normal !important;
     font-variant: normal !important;
     text-transform: none !important;
-    speak: none;
     line-height: 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -30,7 +30,6 @@
     font-variant: normal !important;
     text-transform: none !important;
     vertical-align: top;
-    speak: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

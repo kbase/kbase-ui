@@ -1,3 +1,4 @@
+import UILink from 'components/UILink2';
 import { Component } from 'react';
 import { Config } from '../../../types/config';
 import { BuildInfo, GitInfo } from '../../../types/info';
@@ -6,14 +7,10 @@ export interface AboutKBaseUIProps {
     config: Config;
     gitInfo: GitInfo;
     buildInfo: BuildInfo;
+    uiURL: (path: string, params?: Record<string, string>) => URL;
 }
 
-interface AboutKBaseUIState { }
-
-export default class AboutKBaseUI extends Component<
-    AboutKBaseUIProps,
-    AboutKBaseUIState
-> {
+export default class AboutKBaseUI extends Component<AboutKBaseUIProps> {
     renderHub() {
         return (
             <span style={{ whiteSpace: 'nowrap' }}>
@@ -23,7 +20,6 @@ export default class AboutKBaseUI extends Component<
     }
 
     renderWelcome() {
-        // const docSiteUrl = this.props.config.ui.urls.
         return (
             <div>
                 <p>
@@ -37,13 +33,14 @@ export default class AboutKBaseUI extends Component<
                 <ul>
                     <li>
                         The{' '}
-                        <a
-                            href="/#narrativemanager/start"
-                            target="_blank"
-                            style={{ fontWeight: 'bold' }}
+                        <UILink
+                            path="narrativemanager/start"
+                            type="kbaseui"
+                            newWindow={true}
+                            className="fw-bold"
                         >
-                            Narrative Interface
-                        </a>
+                            NarrativeInterface
+                        </UILink>
                         , a tool for creating, editing, running and publishing
                         active scientific documents called Narratives. New to
                         the Narrative? Perhaps you would like to check out the{' '}
@@ -81,11 +78,15 @@ export default class AboutKBaseUI extends Component<
             </div>
         );
     }
-
-    renderGitInfo(): [JSX.Element, string, string] {
+    // [githubContent, githubUrl, relNotesUrl]
+    renderGitInfo(): {
+        githubContent: JSX.Element;
+        githubUrl: string;
+        relNotesUrl: string;
+    } {
         const gitInfo = this.props.gitInfo;
 
-        let repoUrl = gitInfo.originURL; // 'https://github.com/kbase/kbase-ui';
+        let repoUrl = gitInfo.originURL;
         const hash = gitInfo.hash.full;
         if (/^ssh:/.test(repoUrl)) {
             const m = /^ssh:\/\/git@(.*?)\/(.*?)$/.exec(repoUrl);
@@ -94,7 +95,7 @@ export default class AboutKBaseUI extends Component<
             }
         }
 
-        const commitHash = gitInfo.hash.full
+        const commitHash = gitInfo.hash.full;
 
         let relNotesUrl;
         let githubUrl;
@@ -108,22 +109,24 @@ export default class AboutKBaseUI extends Component<
             ].join('/');
             githubUrl = [repoUrl, 'tree', gitInfo.tag].join('/');
 
-            return [
-                <p>
-                    You are currently using version{' '}
-                    <a
-                        href={relNotesUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ fontWeight: 'bold' }}
-                    >
-                        {gitInfo.version}
-                    </a>{' '}
-                    of {this.renderHub()}.
-                </p>,
+            return {
+                githubContent: (
+                    <p>
+                        You are currently using version{' '}
+                        <a
+                            href={relNotesUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ fontWeight: 'bold' }}
+                        >
+                            {gitInfo.version}
+                        </a>{' '}
+                        of {this.renderHub()}.
+                    </p>
+                ),
                 githubUrl,
                 relNotesUrl,
-            ];
+            };
         } else {
             relNotesUrl = [
                 repoUrl,
@@ -133,25 +136,26 @@ export default class AboutKBaseUI extends Component<
                 'index.md',
             ].join('/');
             githubUrl = [repoUrl, 'tree', hash].join('/');
-            return [
-                <p>
-                    This build is not located at a tagged commit. The current
-                    commit is{' '}
-                    <a
-                        href={[repoUrl, 'commit', hash].join('/')}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        {commitHash}
-                    </a>
-                    .
-                </p>,
+            return {
+                githubContent: (
+                    <p>
+                        This build is not located at a tagged commit. The
+                        current commit is{' '}
+                        <a
+                            href={[repoUrl, 'commit', hash].join('/')}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            {commitHash}
+                        </a>
+                        .
+                    </p>
+                ),
                 githubUrl,
                 relNotesUrl,
-            ];
+            };
         }
     }
-
 
     renderVersionInfo() {
         const buildInfo = this.props.buildInfo;
@@ -179,7 +183,7 @@ export default class AboutKBaseUI extends Component<
             'http://kbaseincubator.github.io/kbase-ui-docs';
         const documentationURL = this.props.config.ui.urls.documentation.url;
 
-        const [githubContent, githubUrl,relNotesUrl]  = this.renderGitInfo();
+        const { githubContent, githubUrl, relNotesUrl } = this.renderGitInfo();
 
         const kbaseGithubOrgURL = 'https://github.com/kbase';
 

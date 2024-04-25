@@ -1,4 +1,4 @@
-FROM alpine:3.18.4
+FROM alpine:3.19.1
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx bash && \
@@ -50,4 +50,4 @@ ENTRYPOINT [ "dockerize" ]
 CMD [  \
     "-template", "/kb/deployment/templates/nginx.conf.tmpl:/etc/nginx/nginx.conf", \
     "-template", "/kb/deployment/templates/config.json.tmpl:/kb/deployment/app/deploy/config.json", \
-    "bash", "/kb/deployment/scripts/start-server.bash" ]
+    "bash", "-x", "/kb/deployment/scripts/start-server.bash" ]

@@ -7,7 +7,7 @@ const cases: Array<ErrorAlertProps> = [
     },
     {
         message: 'Howdy',
-        title: 'Greetings'
+        title: 'Greetings',
     },
     {
         message: 'Hola',
@@ -16,9 +16,7 @@ const cases: Array<ErrorAlertProps> = [
 
 test('renders simple, minimal ErrorAlert', () => {
     for (const { message } of cases) {
-        render(<ErrorAlert
-            message={message}
-        />);
+        render(<ErrorAlert message={message} />);
         expect(screen.getByText(message!)).toBeInTheDocument();
     }
 });
@@ -26,13 +24,11 @@ test('renders simple, minimal ErrorAlert', () => {
 test('renders ErrorAlert in all sizes', () => {
     for (const { message, title } of cases) {
         if (title) {
-            render(<ErrorAlert
-                message={message}
-                title={title}
-            />);
-            expect(screen.getByText(message)).toBeInTheDocument();
+            render(<ErrorAlert message={message} title={title} />);
+            if (message) {
+                expect(screen.getByText(message)).toBeInTheDocument();
+            }
             expect(screen.getByText(title)).toBeInTheDocument();
         }
     }
 });
-

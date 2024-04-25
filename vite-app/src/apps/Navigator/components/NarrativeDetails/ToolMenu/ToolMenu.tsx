@@ -1,7 +1,7 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { NarrativeSearchDoc } from 'lib/clients/NarrativeModel';
 import { Component } from 'react';
 import { Dropdown, Modal } from 'react-bootstrap';
-import { AuthInfo } from '../../../../../contexts/Auth';
 import { Config } from '../../../../../types/config';
 import CopyItem from './CopyItem';
 import DeleteNarrative from './DeleteNarrative';
@@ -131,7 +131,7 @@ export default class ToolMenu extends Component<ToolMenuProps, ToolMenuState> {
         );
     }
 
-    handleSelectMenuItem(eventKey: any) {
+    handleSelectMenuItem(eventKey: string) {
         const content = modalContent[eventKey];
         if (!content) {
             return;
@@ -146,7 +146,14 @@ export default class ToolMenu extends Component<ToolMenuProps, ToolMenuState> {
 
     renderMenu() {
         return (
-            <Dropdown onSelect={this.handleSelectMenuItem.bind(this)}>
+            <Dropdown
+                onSelect={(selection) => {
+                    if (!selection) {
+                        return;
+                    }
+                    this.handleSelectMenuItem.bind(this);
+                }}
+            >
                 <Dropdown.Toggle variant="default">
                     <span className="fa fa-cog fa-2x"></span>
                 </Dropdown.Toggle>
@@ -179,6 +186,7 @@ export default class ToolMenu extends Component<ToolMenuProps, ToolMenuState> {
                     <Dropdown.Item
                         eventKey="delete"
                         disabled={this.props.permission.permission !== 'a'}
+                        className="text-danger"
                     >
                         {this.renderIcon('trash')}
                         <span>Delete</span>

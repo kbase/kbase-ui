@@ -1,19 +1,16 @@
-import { AuthClient } from "./Auth2Client";
-import { AuthError, AuthErrorInfo } from "./Auth2Error";
-import { HTML } from "./HTML";
-import { HttpHeader, Response } from "./HttpClient";
-import { HttpQuery } from "./HttpUtils";
+import { AuthClient } from './Auth2Client';
+import { AuthError, AuthErrorInfo } from './Auth2Error';
+import { HttpHeader, Response } from './HttpClient';
+import { HttpQuery } from './HttpUtils';
 
 const TIMEOUT = 60000;
+
+const WITH_CREDENTIALS = true;
 
 interface AuthProvider {
     id: string;
     label: string;
     logoutUrl: string;
-}
-
-export interface AuthConfig {
-    baseUrl: string;
 }
 
 interface AuthEndpoints {
@@ -42,28 +39,28 @@ interface AuthEndpoints {
 }
 
 const endpoints: AuthEndpoints = {
-    root: "",
-    tokenInfo: "api/V2/token",
-    apiMe: "api/V2/me",
-    me: "me",
-    loginStart: "login/start",
-    logout: "logout",
-    loginChoice: "login/choice",
-    loginCreate: "login/create",
-    loginUsernameSuggest: "login/suggestname",
-    loginPick: "login/pick",
-    loginCancel: "login/cancel",
-    linkStart: "link/start",
-    linkCancel: "link/cancel",
-    linkChoice: "link/choice",
-    linkPick: "link/pick",
-    linkRemove: "me/unlink",
-    tokens: "tokens",
-    tokensRevoke: "tokens/revoke",
-    tokensRevokeAll: "tokens/revokeall",
-    userSearch: "api/V2/users/search",
-    adminUserSearch: "api/V2/admin/search",
-    adminUser: "api/V2/admin/user",
+    root: '',
+    tokenInfo: 'api/V2/token',
+    apiMe: 'api/V2/me',
+    me: 'me',
+    loginStart: 'login/start',
+    logout: 'logout',
+    loginChoice: 'login/choice',
+    loginCreate: 'login/create',
+    loginUsernameSuggest: 'login/suggestname',
+    loginPick: 'login/pick',
+    loginCancel: 'login/cancel',
+    linkStart: 'link/start',
+    linkCancel: 'link/cancel',
+    linkChoice: 'link/choice',
+    linkPick: 'link/pick',
+    linkRemove: 'me/unlink',
+    tokens: 'tokens',
+    tokensRevoke: 'tokens/revoke',
+    tokensRevokeAll: 'tokens/revokeall',
+    userSearch: 'api/V2/users/search',
+    adminUserSearch: 'api/V2/admin/search',
+    adminUser: 'api/V2/admin/user',
 };
 
 export interface LoginOptions {
@@ -83,7 +80,7 @@ export interface UnlinkOptions {
 
 export interface UserPolicy {
     id: string;
-    agreed_on: number;
+    agreedon: number;
 }
 
 export interface RootInfo {
@@ -97,24 +94,48 @@ export interface LoginCreateOptions {
     display: string;
     email: string;
     linkall: boolean;
-    policyids: Array<UserPolicy>;
+    policyids: Array<string>;
 }
 
+// The first one is definitely returned by /token, but don't know where the other comes
+// into play...
+
 export interface TokenInfo {
+    cachefor: number; // TODO: does not appear to always be present; e.g. in login pick result
     created: number;
+    custom: Record<string, string>;
     expires: number;
     id: string;
     name: string | null;
-    token: string;
-    type: string;
+    type: string; // TODO: type this: Login, Dev, Serv ?
     user: string;
-    cachefor: number;
 }
 
+export interface TokenInfoFull {
+    cachefor: number; // TODO: does not appear to always be present; e.g. in login pick result
+    created: number;
+    custom: Record<string, string>;
+    expires: number;
+    id: string;
+    name: string | null;
+    type: string; // TODO: type this: Login, Dev, Serv ?
+    user: string;
+
+    token: string;
+    device: string;
+    os: string;
+    osver: string;
+    agent: string;
+    agentver: string;
+    ip: string;
+}
+
+// TODO: inspect
 export interface Identity {
     id: string;
     provider: string;
     username: string;
+    provusername: string;
 }
 
 export interface Role {
@@ -125,13 +146,15 @@ export interface Role {
 export interface Account {
     created: number;
     customroles: Array<string>;
+    policyids: Array<UserPolicy>;
     display: string;
     email: string;
     idents: Array<Identity>;
-    lastLogin: number;
+    lastlogin: number;
     local: boolean;
     roles: Array<Role>;
     user: string;
+    anonid: string;
 }
 
 export interface LoginCreateResponse {
@@ -140,7 +163,8 @@ export interface LoginCreateResponse {
 }
 
 export interface Tokens {
-    tokens: Array<TokenInfo>;
+    tokens: Array<TokenInfoFull>;
+    current: TokenInfoFull;
     dev: boolean;
     serv: boolean;
 }
@@ -151,15 +175,18 @@ export interface CreateChoice {
     provusername: string;
     provfullname: string;
     provemail: string;
+    expires: number;
 }
 
-export interface LoginChoice {
+export interface LoginChoiceLogin {
     id: string;
     provusernames: Array<string>;
     user: string;
     loginallowed: boolean;
     disabled: boolean;
     adminonly: boolean;
+    // TODO: double check this
+    policyids: Array<UserPolicy>;
 }
 
 export interface LoginChoice {
@@ -170,11 +197,36 @@ export interface LoginChoice {
     state: string;
     creationallowed: string;
     create: Array<CreateChoice>;
-    login: Array<LoginChoice>;
+    login: Array<LoginChoiceLogin>;
     token?: string;
     logged_in: boolean;
     // TODO: this is in here twice, bug.
     redirect?: string;
+    expires: number;
+}
+
+// TODO: this may be the same as Identity
+export interface LinkChoiceIdentity {
+    id: string;
+    provider: string;
+    username: string;
+    provusername: string;
+    user: string;
+}
+
+export interface LinkChoiceResponse {
+    haslinks: boolean;
+    idents: Array<Identity>;
+    linked: Array<LinkChoiceIdentity>;
+    id: string;
+    expires: number;
+    cancelurl: string;
+    pickurl: string;
+    canlink: boolean;
+    provider: string;
+    provusername: string;
+    linkeduser?: string;
+    user: string;
 }
 
 export interface LinkChoice {
@@ -204,10 +256,36 @@ export interface PolicyAgreement {
     version: number;
 }
 
-export interface LoginPick {
+export interface LoginPickParams {
     identityId: string;
     linkAll: boolean;
     agreements: Array<PolicyAgreement>;
+}
+
+// TODO: check the actual result
+export interface LoginPickResult {
+    redirecturl: string;
+    token: TokenInfoFull;
+}
+
+export interface LoginCreateResult {
+    token: TokenInfoFull;
+    // {
+    //     agent: string,
+    //     agentver: string,
+    //     created: number,
+    //     custom: Record<string, string>,
+    //     device: string,
+    //     expires: number;
+    //     id: string,
+    //     ip: string,
+    //     name: string | null,
+    //     os: string,
+    //     osver: string,
+    //     user: string,
+    //     type: string,
+    //     token: string
+    // }
 }
 
 export interface CreateTokenInput {
@@ -237,7 +315,35 @@ export interface PutMeInput {
     email: string;
 }
 
+export interface LoginUsernameSuggestResult {
+    availablename: string;
+}
+
+export interface Auth2ErrorData {
+    code: number; /// TODO: not sure if this exists
+    appcode: number;
+    apperror: string;
+    callid: string;
+    httpcode: number;
+    httpstatus: string;
+    message: string;
+    time: number;
+}
+
+export interface Auth2ErrorResponse {
+    error: Auth2ErrorData;
+}
+
+export type UserSearchResult = Record<string, string>;
+
+// TODO: don't know about this typing - educated guess, but don't actually use this call
+export type AdminUserSearchResult = Record<string, Identity>;
+
 // Classes
+
+export interface AuthConfig {
+    baseUrl: string;
+}
 
 export class Auth2 {
     config: AuthConfig;
@@ -246,17 +352,18 @@ export class Auth2 {
         this.config = config;
     }
 
+    // TODO: use this whenever need provider assets...
     getProviders(): Array<AuthProvider> {
         return [
             {
-                id: "Globus",
-                label: "Globus",
-                logoutUrl: "https://www.globus.org/app/logout",
+                id: 'Globus',
+                label: 'Globus',
+                logoutUrl: 'https://www.globus.org/app/logout',
             },
             {
-                id: "Google",
-                label: "Google",
-                logoutUrl: "https://accounts.google.com/Logout",
+                id: 'Google',
+                label: 'Google',
+                logoutUrl: 'https://accounts.google.com/Logout',
             },
         ];
     }
@@ -271,16 +378,16 @@ export class Auth2 {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
-                    Accept: "application/json",
+                    Accept: 'application/json',
                 }),
                 url: this.makePath([endpoints.root]),
                 timeout: TIMEOUT,
             })
             .then((result: Response) => {
-                return this.processResult(result, 200);
+                return this.processResult(result, 200) as RootInfo;
             });
     }
 
@@ -290,111 +397,120 @@ export class Auth2 {
           There is no return value, nor any way of verifying that the server
           did the correct thing.
       */
-    loginStart(config: LoginOptions): void {
-        // Set the client state cookie.
-        // const state = JSON.stringify(config.state);
+    //   loginStart(config: LoginOptions): void {
+    //     // Set the client state cookie.
+    //     // const state = JSON.stringify(config.state);
 
-        // Punt over to the auth service
-        const html = new HTML();
-        const t = html.tagMaker();
-        const form = t("form");
-        const input = t("input");
-        // const button = t('button');
+    //     // Punt over to the auth service
+    //     const html = new HTML();
+    //     const t = html.tagMaker();
+    //     const form = t('form');
+    //     const input = t('input');
+    //     // const button = t('button');
 
-        const search = new HttpQuery({
-            state: JSON.stringify(config.state),
-        }).toString();
+    //     const search = new HttpQuery({
+    //       state: JSON.stringify(config.state),
+    //     }).toString();
 
-        const url = `${document.location.origin}?${search}`;
+    //     const url = `${document.location.origin}?${search}`;
 
-        const query = {
-            provider: config.provider,
-            redirecturl: url,
-            stayloggedin: config.stayLoggedIn ? "true" : "false",
-        };
+    //     const query = {
+    //       provider: config.provider,
+    //       redirecturl: url,
+    //       stayloggedin: config.stayLoggedIn ? 'true' : 'false',
+    //     };
 
-        const formId = html.genId();
+    //     const formId = html.genId();
 
-        const content = form(
-            {
-                method: "post",
-                id: formId,
-                action: this.makePath(endpoints.loginStart),
-                style: {
-                    display: "hidden",
-                },
-            },
-            [
-                input(
-                    {
-                        type: "hidden",
-                        name: "provider",
-                        value: query.provider,
-                    },
-                    [],
-                ),
-                input(
-                    {
-                        type: "hidden",
-                        name: "redirecturl",
-                        value: query.redirecturl,
-                    },
-                    [],
-                ),
-            ],
-        );
-        const donorNode = document.createElement("div");
+    //     const content = form(
+    //       {
+    //         method: 'post',
+    //         id: formId,
+    //         action: this.makePath(endpoints.loginStart),
+    //         style: {
+    //           display: 'hidden',
+    //         },
+    //       },
+    //       [
+    //         input(
+    //           {
+    //             type: 'hidden',
+    //             name: 'provider',
+    //             value: query.provider,
+    //           },
+    //           [],
+    //         ),
+    //         input(
+    //           {
+    //             type: 'hidden',
+    //             name: 'redirecturl',
+    //             value: query.redirecturl,
+    //           },
+    //           [],
+    //         ),
+    //         input(
+    //           {
+    //             type: 'hidden',
+    //             name: 'environment',
+    //             value: 'bar',
+    //           },
+    //           [],
+    //         ),
+    //       ],
+    //     );
 
-        // xss safe (all values internal)
-        donorNode.innerHTML = content;
-        document.body.appendChild(donorNode);
+    //     const donorNode = document.createElement('div');
 
-        (document.getElementById(formId) as HTMLFormElement).submit();
-    }
+    //     // xss safe (all values internal)
+    //     donorNode.innerHTML = content;
+    //     document.body.appendChild(donorNode);
 
-    linkStart(token: string, config: LinkOptions): void {
-        const html = new HTML();
-        const t = html.tagMaker();
-        const form = t("form");
-        const input = t("input");
+    //     (document.getElementById(formId) as HTMLFormElement).submit();
+    //   }
 
-        const query = {
-            provider: config.provider,
-        };
+    //   linkStart(token: string, config: LinkOptions): void {
+    //     const html = new HTML();
+    //     const t = html.tagMaker();
+    //     const form = t('form');
+    //     const input = t('input');
 
-        const formId = html.genId();
+    //     const query = {
+    //       provider: config.provider,
+    //     };
 
-        const content = form(
-            {
-                method: "POST",
-                id: formId,
-                action: [this.config.baseUrl, endpoints.linkStart].join("/"),
-                style: {
-                    display: "hidden",
-                },
-            },
-            [
-                input(
-                    {
-                        type: "hidden",
-                        name: "provider",
-                        value: query.provider,
-                    },
-                    [],
-                ),
-                input({
-                    type: "hidden",
-                    name: "token",
-                    value: token,
-                }),
-            ],
-        );
+    //     const formId = html.genId();
 
-        // xss safe (all values internal)
-        config.node.innerHTML = content;
+    //     const content = form(
+    //       {
+    //         method: 'POST',
+    //         id: formId,
+    //         action: [this.config.baseUrl, endpoints.linkStart].join('/'),
+    //         style: {
+    //           display: 'hidden',
+    //         },
+    //       },
+    //       [
+    //         input(
+    //           {
+    //             type: 'hidden',
+    //             name: 'provider',
+    //             value: query.provider,
+    //           },
+    //           [],
+    //         ),
+    //         input({
+    //           type: 'hidden',
+    //           name: 'token',
+    //           value: token,
+    //         }),
+    //       ],
+    //     );
 
-        (document.getElementById(formId) as HTMLFormElement).submit();
-    }
+    //     // xss safe (all values internal)
+    //     config.node.innerHTML = content;
+
+    //     (document.getElementById(formId) as HTMLFormElement).submit();
+    //   }
 
     /*
       POST /me/unlink/:id
@@ -412,11 +528,11 @@ export class Auth2 {
                 if (ex instanceof Error) {
                     return ex.message;
                 }
-                return "Unknown Error";
+                return 'Unknown Error';
             })();
             throw new AuthError({
-                code: "decode-error",
-                message: "Error decoding JSON error response",
+                code: 'decode-error',
+                message: 'Error decoding JSON error response',
                 detail: message,
             });
         }
@@ -427,76 +543,79 @@ export class Auth2 {
 
         return httpClient
             .request({
-                method: "POST",
-                withCredentials: true,
+                method: 'POST',
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
-                    "content-type": "application/json",
-                    accept: "application/json",
+                    'content-type': 'application/json',
+                    accept: 'application/json',
                 }),
                 url: this.makePath([endpoints.linkRemove, config.identityId]),
                 timeout: TIMEOUT,
             })
             .then((result: Response) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
-    logout(token: string): Promise<any> {
+    logout(token: string): Promise<void> {
         const httpClient = new AuthClient();
-
         return httpClient
             .request({
-                method: "POST",
-                withCredentials: true,
+                method: 'POST',
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
-                    "content-type": "application/json",
-                    accept: "application/json",
+                    'content-type': 'application/json',
+                    accept: 'application/json',
                 }),
                 url: this.makePath(endpoints.logout),
                 timeout: TIMEOUT,
             })
             .then((result: Response) => {
-                return this.processResult(result, 200);
+                this.processResult(result, 200);
+                return;
             });
     }
 
-    revokeToken(token: string, tokenid: string): Promise<any> {
+    revokeToken(token: string, tokenid: string): Promise<void> {
         const httpClient = new AuthClient();
 
         return httpClient
             .request({
-                method: "DELETE",
-                withCredentials: true,
+                method: 'DELETE',
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                 }),
                 url: this.makePath([endpoints.tokensRevoke, tokenid]),
                 timeout: TIMEOUT,
             })
             .then((result: Response) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
-    revokeAllTokens(token: string): Promise<any> {
+    revokeAllTokens(token: string): Promise<void> {
         const httpClient = new AuthClient();
 
         return httpClient
             .request({
-                method: "DELETE",
-                withCredentials: true,
+                method: 'DELETE',
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                 }),
                 url: this.makePath(endpoints.tokensRevokeAll),
                 timeout: TIMEOUT,
             })
             .then((result: Response) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
@@ -504,12 +623,12 @@ export class Auth2 {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
+                method: 'GET',
                 url: this.makePath([endpoints.tokenInfo]),
-                withCredentials: true,
+                withCredentials: WITH_CREDENTIALS,
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
@@ -522,12 +641,12 @@ export class Auth2 {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.apiMe),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
@@ -536,17 +655,17 @@ export class Auth2 {
             });
     }
 
-    putMe(token: string, data: PutMeInput): Promise<any> {
+    putMe(token: string, data: PutMeInput): Promise<void> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "PUT",
-                withCredentials: true,
+                method: 'PUT',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.me),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
-                    "content-type": "application/json",
+                    accept: 'application/json',
+                    'content-type': 'application/json',
                 }),
                 data: JSON.stringify(data),
                 timeout: TIMEOUT,
@@ -557,22 +676,22 @@ export class Auth2 {
     }
 
     makePath(path: Array<string> | string): string {
-        if (typeof path === "string") {
-            return [this.config.baseUrl].concat([path]).join("/");
+        if (typeof path === 'string') {
+            return [this.config.baseUrl].concat([path]).join('/');
         }
-        return [this.config.baseUrl].concat(path).join("/");
+        return [this.config.baseUrl].concat(path).join('/');
     }
 
     getTokens(token: string): Promise<Tokens> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.tokens]),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
@@ -584,23 +703,23 @@ export class Auth2 {
     createToken(
         token: string,
         create: CreateTokenInput,
-    ): Promise<NewTokenInfo> {
+    ): Promise<TokenInfoFull> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "POST",
-                withCredentials: true,
+                method: 'POST',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.tokens),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
-                    "content-type": "application/json",
+                    accept: 'application/json',
+                    'content-type': 'application/json',
                 }),
                 data: JSON.stringify(create),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200) as NewTokenInfo;
+                return this.processResult(result, 200) as TokenInfoFull;
             });
     }
 
@@ -610,11 +729,11 @@ export class Auth2 {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginChoice),
                 header: new HttpHeader({
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
@@ -623,99 +742,104 @@ export class Auth2 {
             });
     }
 
-    loginCancel(): Promise<null> {
+    loginCancel(): Promise<void> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "DELETE",
-                withCredentials: true,
+                method: 'DELETE',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginCancel),
                 header: new HttpHeader({
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
-    linkCancel(): Promise<null> {
+    linkCancel(): Promise<void> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "DELETE",
-                withCredentials: true,
+                method: 'DELETE',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkCancel),
                 header: new HttpHeader({
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
-    loginPick(arg: LoginPick): Promise<any> {
+    async loginPick(arg: LoginPickParams): Promise<LoginPickResult> {
         const data = {
             id: arg.identityId,
             linkall: arg.linkAll,
             policyids: arg.agreements.map((a) => {
-                return [a.id, a.version].join(".");
+                return [a.id, a.version].join('.');
             }),
         };
         const httpClient = new AuthClient();
-        return httpClient
-            .request({
-                method: "POST",
-                withCredentials: true,
-                url: this.makePath([endpoints.loginPick]),
-                data: JSON.stringify(data),
-                header: new HttpHeader({
-                    "content-type": "application/json",
-                    accept: "application/json",
-                }),
-                timeout: TIMEOUT,
-            })
-            .then((result) => {
-                return this.processResult(result, 200);
-            });
+        const result = await httpClient.request({
+            method: 'POST',
+            withCredentials: WITH_CREDENTIALS,
+            url: this.makePath([endpoints.loginPick]),
+            data: JSON.stringify(data),
+            header: new HttpHeader({
+                'content-type': 'application/json',
+                accept: 'application/json',
+            }),
+            timeout: TIMEOUT,
+        });
+
+        return this.processResult(result, 200) as LoginPickResult;
     }
 
-    loginCreate(data: LoginCreateOptions): Promise<any> {
+    async loginCreate(data: LoginCreateOptions): Promise<LoginCreateResult> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "POST",
-                withCredentials: true,
+                method: 'POST',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.loginCreate),
                 data: JSON.stringify(data),
                 header: new HttpHeader({
-                    "content-type": "application/json",
-                    accept: "application/json",
+                    'content-type': 'application/json',
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 201);
+                return this.processResult(result, 201) as LoginCreateResult;
             });
     }
 
-    loginUsernameSuggest(username: string): Promise<any> {
+    loginUsernameSuggest(
+        username: string,
+    ): Promise<LoginUsernameSuggestResult> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.loginUsernameSuggest, username]),
                 header: new HttpHeader({
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200);
+                return this.processResult(
+                    result,
+                    200,
+                ) as LoginUsernameSuggestResult;
             });
     }
 
@@ -724,17 +848,17 @@ export class Auth2 {
         // console.error('fetching with', token);
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkChoice),
                 header: new HttpHeader({
-                    accept: "application/json",
+                    accept: 'application/json',
                     authorization: token,
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200);
+                return this.processResult(result, 200) as LinkChoiceResponse;
             })
             .then((response) => {
                 // The link choice structure provided by the auth2 service has evolved
@@ -768,38 +892,36 @@ export class Auth2 {
             });
     }
 
-    linkPick(token: string, identityId: string): Promise<any> {
+    linkPick(token: string, identityId: string): Promise<void> {
         const data = {
             id: identityId,
         };
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "POST",
-                withCredentials: true,
+                method: 'POST',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath(endpoints.linkPick),
                 data: JSON.stringify(data),
                 header: new HttpHeader({
                     authorization: token,
-                    "content-type": "application/json",
-                    accept: "application/json",
+                    'content-type': 'application/json',
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 204);
+                this.processResult(result, 204);
+                return;
             });
     }
 
-    processResult(result: Response, expectedResponse: number): any {
+    processResult(result: Response, expectedResponse: number): unknown {
         if (result.status >= 200 && result.status < 300) {
             if (expectedResponse !== result.status) {
                 throw new AuthError({
-                    code: "unexpected-response-code",
-                    message: `Unexpected response code; expected ${String(
-                        expectedResponse,
-                    )
-                        }, received ${String(result.status)}`,
+                    code: 'unexpected-response-code',
+                    message: `Unexpected response code; expected ${String(expectedResponse)}, received ${String(result.status)}`,
                 });
             }
             if (result.status === 200 || result.status === 201) {
@@ -808,23 +930,20 @@ export class Auth2 {
                     if (contentType) {
                         return contentType.mediaType;
                     }
-                    return "text/plain";
+                    return 'text/plain';
                 })();
                 switch (mediaType) {
-                    case "application/json":
+                    case 'application/json':
                         return JSON.parse(result.response);
-                    case "text/plain":
+                    case 'text/plain':
                         return result.response;
                 }
             } else if (result.status === 204) {
                 return null;
             } else {
                 throw new AuthError({
-                    code: "unexpected-response-code",
-                    message: `Unexpected response code; expected ${String(
-                        expectedResponse,
-                    )
-                        }, received ${String(result.status)}`,
+                    code: 'unexpected-response-code',
+                    message: `Unexpected response code; expected ${String(expectedResponse)}, received ${String(result.status)}`,
                 });
             }
         } else {
@@ -833,7 +952,7 @@ export class Auth2 {
             // AuthorizationError - for 401s
             // ClientError - for 400s
             // ServerError - for 500s
-            let auth2ErrorData: any;
+            let auth2ErrorData: Auth2ErrorResponse | null = null;
             let errorResponse: AuthErrorInfo;
             const errorText = result.response;
             try {
@@ -842,20 +961,24 @@ export class Auth2 {
                     if (contentType) {
                         return contentType.mediaType;
                     }
-                    return "text/plain";
+                    return 'text/plain';
                 })();
                 switch (mediaType) {
-                    case "application/json":
+                    case 'application/json':
                         errorResponse = (() => {
-                            auth2ErrorData = JSON.parse(errorText);
-                            const code = auth2ErrorData.error.code ||
+                            auth2ErrorData = JSON.parse(
+                                errorText,
+                            ) as Auth2ErrorResponse;
+                            const code =
+                                auth2ErrorData.error.code ||
                                 auth2ErrorData.error.appcode ||
                                 auth2ErrorData.error.httpcode ||
                                 0;
                             return {
                                 code: String(code),
                                 status: result.status,
-                                message: auth2ErrorData.error.message ||
+                                message:
+                                    auth2ErrorData.error.message ||
                                     auth2ErrorData.error.apperror,
                                 data: auth2ErrorData,
                             };
@@ -866,22 +989,21 @@ export class Auth2 {
                         // A 502 proxy error will almost surely not have a json response
                         if (result.status === 502) {
                             errorResponse = {
-                                code: "proxy-error",
+                                code: 'proxy-error',
                                 status: result.status,
                                 message:
-                                    "The auth service could not be contacted due to a proxy error (502)",
-                                detail:
-                                    "An error returned by the proxy service indicates that the auth service is not operating corectly",
+                                    'The auth service could not be contacted due to a proxy error (502)',
+                                detail: 'An error returned by the proxy service indicates that the auth service is not operating corectly',
                                 data: {
                                     text: result.response,
                                 },
                             };
                         } else {
                             errorResponse = {
-                                code: "invalid-content-type",
+                                code: 'invalid-content-type',
                                 status: result.status,
-                                message: "An invalid content type was returned",
-                                detail: "An invalid content was returned",
+                                message: 'An invalid content type was returned',
+                                detail: 'An invalid content was returned',
                                 data: {
                                     text: result.response,
                                     contentType: mediaType,
@@ -897,9 +1019,9 @@ export class Auth2 {
                 }
             } catch (ex) {
                 throw new AuthError({
-                    code: "decoding-error",
+                    code: 'decoding-error',
                     status: result.status,
-                    message: "Error decoding error message",
+                    message: 'Error decoding error message',
                     detail: `Original error code: ${result.status}`,
                     data: {
                         text: errorText,
@@ -907,26 +1029,31 @@ export class Auth2 {
                 });
             }
             if (auth2ErrorData) {
-                const code = auth2ErrorData.error.code ||
+                const code =
+                    auth2ErrorData.error.code ||
                     auth2ErrorData.error.appcode ||
                     auth2ErrorData.error.httpcode ||
                     0;
                 throw new AuthError({
                     code: String(code),
                     status: result.status,
-                    message: auth2ErrorData.error.message ||
+                    message:
+                        auth2ErrorData.error.message ||
                         auth2ErrorData.error.apperror,
                     data: auth2ErrorData,
                 });
             }
             if (errorResponse === undefined) {
-                throw new Error("Impossible? Error response undefined");
+                throw new Error('Impossible? Error response undefined');
             }
             throw new AuthError(errorResponse);
         }
     }
 
-    userSearch(token: string, searchInput: UserSearchInput): Promise<any> {
+    userSearch(
+        token: string,
+        searchInput: UserSearchInput,
+    ): Promise<UserSearchResult> {
         const httpClient = new AuthClient();
 
         const path = this.makePath([endpoints.userSearch, searchInput.prefix]);
@@ -939,59 +1066,58 @@ export class Auth2 {
 
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url,
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200);
+                return this.processResult(result, 200) as UserSearchResult;
             });
     }
 
-    adminUserSearch(token: string, searchInput: UserSearchInput): Promise<any> {
+    adminUserSearch(
+        token: string,
+        searchInput: UserSearchInput,
+    ): Promise<AdminUserSearchResult> {
         const httpClient = new AuthClient();
 
         const search = new HttpQuery({
             fields: searchInput.fields,
         }).toString();
 
-        const url = `${this.makePath([
-            endpoints.adminUserSearch,
-            searchInput.prefix,
-        ])
-            }?${search}`;
+        const url = `${this.makePath([endpoints.adminUserSearch, searchInput.prefix])}?${search}`;
 
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url,
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })
             .then((result) => {
-                return this.processResult(result, 200);
+                return this.processResult(result, 200) as AdminUserSearchResult;
             });
     }
 
-    getAdminUser(token: string, username: string): Promise<any> {
+    getAdminUser(token: string, username: string): Promise<unknown> {
         const httpClient = new AuthClient();
         return httpClient
             .request({
-                method: "GET",
-                withCredentials: true,
+                method: 'GET',
+                withCredentials: WITH_CREDENTIALS,
                 url: this.makePath([endpoints.adminUser, username]),
                 header: new HttpHeader({
                     authorization: token,
-                    accept: "application/json",
+                    accept: 'application/json',
                 }),
                 timeout: TIMEOUT,
             })

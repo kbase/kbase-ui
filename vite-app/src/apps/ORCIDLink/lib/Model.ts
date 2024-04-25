@@ -1,24 +1,35 @@
-import { AuthenticationStateAuthenticated } from "contexts/Auth";
-import ORCIDLinkAPI, { InfoResult, StatusResult, Work } from "lib/kb_lib/comm/coreServices/ORCIDLInk";
-import ORCIDLinkManageAPI, { FindLinksParams, FindLinksResult, GetLinkingSessionsResult, GetStatsResult } from "lib/kb_lib/comm/coreServices/ORCIDLInkManage";
-import UserProfileClient from "lib/kb_lib/comm/coreServices/UserProfile2";
-import { LinkRecordPublic, LinkRecordPublicNonOwner, ORCIDProfile } from "lib/kb_lib/comm/coreServices/orcidLinkCommon";
-import { SDKBoolean } from "lib/kb_lib/comm/types";
-import { hasOwnProperty } from "lib/utils";
-import { Config } from "types/config";
+import { AuthenticationStateAuthenticated } from 'contexts/EuropaContext';
+import ORCIDLinkAPI, {
+    InfoResult,
+    StatusResult,
+    Work,
+} from 'lib/kb_lib/comm/coreServices/ORCIDLInk';
+import ORCIDLinkManageAPI, {
+    FindLinksParams,
+    FindLinksResult,
+    GetLinkingSessionsResult,
+    GetStatsResult,
+} from 'lib/kb_lib/comm/coreServices/ORCIDLInkManage';
+import UserProfileClient from 'lib/kb_lib/comm/coreServices/UserProfile2';
+import {
+    LinkRecordPublic,
+    LinkRecordPublicNonOwner,
+    ORCIDProfile,
+} from 'lib/kb_lib/comm/coreServices/orcidLinkCommon';
+import { SDKBoolean } from 'lib/kb_lib/comm/types';
+import { hasOwnProperty } from 'lib/utils';
+import { Config } from 'types/config';
 import {
     ErrorInfo,
     // GetNameResult,
     ORCIDLinkServiceClient,
     ReturnInstruction,
-} from "./ORCIDLinkClient";
-import { SCOPE } from "./constants";
+} from './ORCIDLinkClient';
+import { SCOPE } from './constants';
 
 // EXCEPTIONS
 
-export class PrivateFieldGroupError extends Error {
-
-}
+export class PrivateFieldGroupError extends Error {}
 
 // MODEL TYPES
 
@@ -42,43 +53,41 @@ export interface LinkInfo {
 const SCOPE_USER = 'KBase';
 
 export interface ScopeHelp {
-    label: string,
+    label: string;
     orcid: {
-        label: string,
-        tooltip: string
-    },
-    help: Array<string>
-    seeAlso: Array<{ url: string, label: string }>
+        label: string;
+        tooltip: string;
+    };
+    help: Array<string>;
+    seeAlso: Array<{ url: string; label: string }>;
 }
 
 export const SCOPE_HELP: { [K in SCOPE]: ScopeHelp } = {
-    'openid': {
+    openid: {
         label: 'Open ID',
         orcid: {
             label: `Allow ${SCOPE_USER} to get your ORCID® iD.`,
-            tooltip: `Allow ${SCOPE_USER} to get your 16-character ORCID® iD and read information on your ORCID® record you have marked as public.`
+            tooltip: `Allow ${SCOPE_USER} to get your 16-character ORCID® iD and read information on your ORCID® record you have marked as public.`,
         },
-        help: [
-            'KBase uses this when you sign in to KBase via ORCID®'
-        ],
-        seeAlso: []
+        help: ['KBase uses this when you sign in to KBase via ORCID®'],
+        seeAlso: [],
     },
     '/read-limited': {
         label: 'Read Limited',
         orcid: {
             label: `Allows ${SCOPE_USER} to read your information with visibility set to Trusted Organizations.`,
             tooltip: `Allows ${SCOPE_USER} to read any information from your record you have marked as available to \
-            "Everyone" (public) or "Trusted parties". ${SCOPE_USER} cannot read information you have marked as "Only me" (private).`
+            "Everyone" (public) or "Trusted parties". ${SCOPE_USER} cannot read information you have marked as "Only me" (private).`,
         },
         help: [
-            `${SCOPE_USER} accesses your ORCID® profile to show relevant information in the KBase ORCID® Link tool (available only to you), and to assist in filling out forms`
+            `${SCOPE_USER} accesses your ORCID® profile to show relevant information in the KBase ORCID® Link tool (available only to you), and to assist in filling out forms`,
         ],
         seeAlso: [
             {
                 url: 'https://support.orcid.org/hc/en-us/articles/360006973893-Trusted-organizations',
-                label: 'About ORCID® Trusted Parties'
-            }
-        ]
+                label: 'About ORCID® Trusted Parties',
+            },
+        ],
     },
     '/activities/update': {
         label: 'Update Activities',
@@ -88,69 +97,66 @@ export const SCOPE_HELP: { [K in SCOPE]: ScopeHelp } = {
             (for example, works, affiliations) that is stored in the ${SCOPE_USER} system(s) to your \
             ORCID® record. ${SCOPE_USER} will also be able to update research activites \
             ${SCOPE_USER} has added, but will not be able to edit information added by you or \
-            any other trusted organization.`
+            any other trusted organization.`,
         },
         help: [
-            'In the future, you may use this feature to automatically share published "FAIR Narratives" in your ORCID® account.'
+            'In the future, you may use this feature to automatically share published "FAIR Narratives" in your ORCID® account.',
         ],
         seeAlso: [
             {
                 url: 'https://support.orcid.org/hc/en-us/articles/360006973893-Trusted-organizations',
-                label: 'About ORCID® Trusted Organizations'
-            }
-        ]
-    }
-}
+                label: 'About ORCID® Trusted Organizations',
+            },
+        ],
+    },
+};
 
 // export type GetProfileResult = {
 //     result: ORCIDProfile
 // };
 
 export interface CellBase {
-    type: 'markdown' | 'app' | 'code'
+    type: 'markdown' | 'app' | 'code';
 }
 
 export interface CellMarkdown {
-    type: 'markdown',
-    content: string
+    type: 'markdown';
+    content: string;
 }
 
 export interface CellCode {
-    type: 'code',
-    content: string
+    type: 'code';
+    content: string;
 }
 
 export interface CellApp {
-    type: 'app',
-    id: string,
-    tag: string,
-    version: string,
-    gitCommitHash: string
+    type: 'app';
+    id: string;
+    tag: string;
+    version: string;
+    gitCommitHash: string;
 }
 
-export type Cell =
-    CellMarkdown |
-    CellApp |
-    CellCode;
+export type Cell = CellMarkdown | CellApp | CellCode;
 
 export interface AppPublications {
     id: string;
     title: string;
     publications: Array<{
-        text: string,
-        link: string,
-        doi: string | null
-    }>
+        text: string;
+        link: string;
+        doi: string | null;
+    }>;
 }
 
 export type CitationSource = 'app' | 'markdown' | 'manual';
 
 export type Citation = {
-    citation: string,
-    source: CitationSource,
-    url?: string,
-    doi?: string | null
-}
+    citation: string;
+    source: CitationSource;
+    url?: string;
+    doi?: string | null;
+};
 
 export interface AppCitations {
     id: string;
@@ -165,9 +171,9 @@ export interface NarrativeAppCitations {
 }
 
 export interface Citations {
-    narrativeAppCitations: NarrativeAppCitations
-    markdownCitations: Array<Citation>
-    manualCitations: Array<Citation>
+    narrativeAppCitations: NarrativeAppCitations;
+    markdownCitations: Array<Citation>;
+    manualCitations: Array<Citation>;
 }
 
 // This is why having canned clients, even if relatively simply wrappers around
@@ -178,7 +184,7 @@ export interface GetServiceStatusResult {
     status: string;
     version: string;
     hash: string;
-    release_tags: Array<AppTag>
+    release_tags: Array<AppTag>;
     url: string;
     module_name: string;
     health: string;
@@ -194,7 +200,7 @@ export interface ORCIDLinkInfo {
 }
 
 export interface JournalAbbreviationsMap {
-    [title: string]: Array<string>
+    [title: string]: Array<string>;
 }
 
 export interface GetNameResult {
@@ -208,27 +214,33 @@ export class Model {
     config: Config;
     auth: AuthenticationStateAuthenticated;
     orcidLinkClient: ORCIDLinkServiceClient;
-    orcidLinkAPI: ORCIDLinkAPI
-    orcidLinkManageAPI: ORCIDLinkManageAPI
+    orcidLinkAPI: ORCIDLinkAPI;
+    orcidLinkManageAPI: ORCIDLinkManageAPI;
 
-    constructor({ config, auth }: { config: Config, auth: AuthenticationStateAuthenticated }) {
+    constructor({
+        config,
+        auth,
+    }: {
+        config: Config;
+        auth: AuthenticationStateAuthenticated;
+    }) {
         this.config = config;
         this.auth = auth;
         this.orcidLinkClient = new ORCIDLinkServiceClient({
             url: this.config.services.ORCIDLink.url,
-            timeout: 1000,
-            token: auth.authInfo.token
+            timeout: this.config.ui.constants.clientTimeout,
+            token: auth.authInfo.token,
         });
         this.orcidLinkAPI = new ORCIDLinkAPI({
             url: `${this.config.services.ORCIDLink.url}/api/v1`,
-            timeout: 1000,
-            token: auth.authInfo.token
+            timeout: this.config.ui.constants.clientTimeout,
+            token: auth.authInfo.token,
         });
         this.orcidLinkManageAPI = new ORCIDLinkManageAPI({
             url: `${this.config.services.ORCIDLink.url}/api/v1`,
-            timeout: 1000,
-            token: auth.authInfo.token
-        })
+            timeout: this.config.ui.constants.clientTimeout,
+            token: auth.authInfo.token,
+        });
     }
 
     async getStatus(): Promise<StatusResult> {
@@ -245,11 +257,15 @@ export class Model {
     }
 
     async getProfile(): Promise<ORCIDProfile> {
-        return this.orcidLinkAPI.getProfile({ username: this.auth.authInfo.account.user });
+        return this.orcidLinkAPI.getProfile({
+            username: this.auth.authInfo.account.user,
+        });
     }
 
     async isLinked(): Promise<boolean> {
-        return this.orcidLinkAPI.isLinked({ username: this.auth.authInfo.account.user });
+        return this.orcidLinkAPI.isLinked({
+            username: this.auth.authInfo.account.user,
+        });
     }
 
     async getDocURL(): Promise<string> {
@@ -275,24 +291,38 @@ export class Model {
     }
 
     /**
-     * Begins the ORCID linking journey by redirecting to the ORCIDLink service "/start" 
+     * Begins the ORCID linking journey by redirecting to the ORCIDLink service "/start"
      * endpoint, optionally carrying a "return link" and/or "skip prompt" flag.
      * @param returnLink An object containing a link and label property
      * @param skipPrompt A boolean flag indicating whether to prompt to confirm linking afterwards
      */
-    async startLink({ returnInstruction, skipPrompt, uiOptions }: { returnInstruction?: ReturnInstruction, skipPrompt?: boolean, uiOptions?: string }) {
-        const { session_id: sessionId } = await this.orcidLinkAPI.createLinkingSession({
-            username: this.auth.authInfo.account.user
-        });
+    async startLink({
+        returnInstruction,
+        skipPrompt,
+        uiOptions,
+    }: {
+        returnInstruction?: ReturnInstruction;
+        skipPrompt?: boolean;
+        uiOptions?: string;
+    }) {
+        const { session_id: sessionId } =
+            await this.orcidLinkAPI.createLinkingSession({
+                username: this.auth.authInfo.account.user,
+            });
 
         // Then redirect the browser to start the oauth process
-        this.orcidLinkClient.startLinkingSession(sessionId, returnInstruction, skipPrompt, uiOptions)
+        this.orcidLinkClient.startLinkingSession(
+            sessionId,
+            returnInstruction,
+            skipPrompt,
+            uiOptions,
+        );
     }
 
     async getWork(putCode: string): Promise<Work> {
         const { work } = await this.orcidLinkAPI.getWork({
             username: this.auth.authInfo.account.user,
-            put_code: putCode
+            put_code: putCode,
         });
         return work;
     }
@@ -319,11 +349,19 @@ export class Model {
     // }
 
     private async getName(): Promise<GetNameResult> {
-        const profile = await this.orcidLinkAPI.getProfile({ username: this.auth.authInfo.account.user });
+        const profile = await this.orcidLinkAPI.getProfile({
+            username: this.auth.authInfo.account.user,
+        });
         if (profile.nameGroup.private) {
-            throw new PrivateFieldGroupError('The ORCID® profile name fields have been set private');
+            throw new PrivateFieldGroupError(
+                'The ORCID® profile name fields have been set private',
+            );
         }
-        const { nameGroup: { fields: { lastName, firstName } } } = profile;
+        const {
+            nameGroup: {
+                fields: { lastName, firstName },
+            },
+        } = profile;
         return { lastName, firstName };
     }
 
@@ -332,14 +370,14 @@ export class Model {
         try {
             const { firstName, lastName } = await this.getName();
             if (lastName) {
-                return `${firstName} ${lastName}`
+                return `${firstName} ${lastName}`;
             }
             return firstName;
         } catch (ex) {
             if (ex instanceof PrivateFieldGroupError) {
                 // TODO: no bueno; need to propagate permission-controllable field groups all the
                 // way to the view component.
-                return "<private>";
+                return '<private>';
             } else {
                 throw ex;
             }
@@ -360,9 +398,7 @@ export class Model {
 
         const {
             created_at,
-            orcid_auth: {
-                expires_in, orcid, scope
-            }
+            orcid_auth: { expires_in, orcid, scope },
         } = link;
 
         // Name is the one stored from the original linking, may have changed.
@@ -372,9 +408,11 @@ export class Model {
             if (profile.nameGroup.private) {
                 return '<private>';
             }
-            const { fields: { firstName, lastName } } = profile.nameGroup;
+            const {
+                fields: { firstName, lastName },
+            } = profile.nameGroup;
             if (lastName) {
-                return `${firstName} ${lastName}`
+                return `${firstName} ${lastName}`;
             }
             return firstName;
         })();
@@ -396,8 +434,8 @@ export class Model {
             realname,
             creditName,
             orcidID: orcid,
-            scope
-        }
+            scope,
+        };
     }
 
     async fetchLinkingSession(sessionId: string) {
@@ -405,22 +443,45 @@ export class Model {
     }
 
     async confirmLink(sessionId: string) {
-        return this.orcidLinkAPI.finishLinkingSession({ session_id: sessionId });
+        return this.orcidLinkAPI.finishLinkingSession({
+            session_id: sessionId,
+        });
     }
 
     async cancelLink(sessionId: string) {
-        return this.orcidLinkAPI.deleteLinkingSession({ session_id: sessionId });
+        return this.orcidLinkAPI.deleteLinkingSession({
+            session_id: sessionId,
+        });
     }
 
     async removeShowORCIDIdPreference() {
-        const { services: { UserProfile: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token, tokenInfo: { user: username } } } = this.auth;
+        const {
+            services: {
+                UserProfile: { url },
+            },
+            ui: {
+                constants: { clientTimeout: timeout },
+            },
+        } = this.config;
+        const {
+            authInfo: {
+                token,
+                tokenInfo: { user: username },
+            },
+        } = this.auth;
 
         const client = new UserProfileClient({
-            url, token, timeout
+            url,
+            token,
+            timeout,
         });
 
-        const [{ user, profile: { preferences } }] = await client.get_user_profile([username]);
+        const [
+            {
+                user,
+                profile: { preferences },
+            },
+        ] = await client.get_user_profile([username]);
 
         if (!preferences) {
             return;
@@ -435,22 +496,41 @@ export class Model {
         const profileUpdate = {
             user,
             profile: {
-                preferences
-            }
-        }
+                preferences,
+            },
+        };
 
         await client.update_user_profile({ profile: profileUpdate });
     }
 
     async setShowORCIDIdPreference(showInProfile: boolean) {
-        const { services: { UserProfile: { url } }, ui: { constants: { clientTimeout: timeout } } } = this.config;
-        const { authInfo: { token, tokenInfo: { user: username } } } = this.auth;
+        const {
+            services: {
+                UserProfile: { url },
+            },
+            ui: {
+                constants: { clientTimeout: timeout },
+            },
+        } = this.config;
+        const {
+            authInfo: {
+                token,
+                tokenInfo: { user: username },
+            },
+        } = this.auth;
 
         const client = new UserProfileClient({
-            url, token, timeout
+            url,
+            token,
+            timeout,
         });
 
-        const [{ user, profile: { preferences: rawPreferences } }] = await client.get_user_profile([username]);
+        const [
+            {
+                user,
+                profile: { preferences: rawPreferences },
+            },
+        ] = await client.get_user_profile([username]);
 
         const preferences = rawPreferences || {};
 
@@ -458,22 +538,22 @@ export class Model {
             preferences.showORCIDId = {
                 ...preferences.showORCIDId,
                 value: showInProfile,
-                updatedAt: Date.now()
-            }
+                updatedAt: Date.now(),
+            };
         } else {
             preferences.showORCIDId = {
                 value: showInProfile,
                 createdAt: Date.now(),
-                updatedAt: Date.now()
-            }
+                updatedAt: Date.now(),
+            };
         }
 
         const profileUpdate = {
             user,
             profile: {
-                preferences
-            }
-        }
+                preferences,
+            },
+        };
 
         await client.update_user_profile({ profile: profileUpdate });
     }
@@ -481,7 +561,9 @@ export class Model {
     // Management
 
     async isManager(): Promise<boolean> {
-        const { is_manager } = await this.orcidLinkManageAPI.isManager({ username: this.auth.authInfo.account.user });
+        const { is_manager } = await this.orcidLinkManageAPI.isManager({
+            username: this.auth.authInfo.account.user,
+        });
         return is_manager;
     }
 
@@ -515,22 +597,32 @@ export class Model {
     }
 
     async deleteExpiredSessions(): Promise<void> {
-        const result = await this.orcidLinkManageAPI.deleteExpiredLinkingSessions();
+        const result =
+            await this.orcidLinkManageAPI.deleteExpiredLinkingSessions();
         return result;
     }
 
     async deleteLinkingSessionInitial(sessionId: string): Promise<void> {
-        const result = await this.orcidLinkManageAPI.deleteLinkingSessionInitial({ session_id: sessionId });
+        const result =
+            await this.orcidLinkManageAPI.deleteLinkingSessionInitial({
+                session_id: sessionId,
+            });
         return result;
     }
 
     async deleteLinkingSessionStarted(sessionId: string): Promise<void> {
-        const result = await this.orcidLinkManageAPI.deleteLinkingSessionStarted({ session_id: sessionId });
+        const result =
+            await this.orcidLinkManageAPI.deleteLinkingSessionStarted({
+                session_id: sessionId,
+            });
         return result;
     }
 
     async deleteLinkingSessionCompleted(sessionId: string): Promise<void> {
-        const result = await await this.orcidLinkManageAPI.deleteLinkingSessionCompleted({ session_id: sessionId });
+        const result =
+            await await this.orcidLinkManageAPI.deleteLinkingSessionCompleted({
+                session_id: sessionId,
+            });
         return result;
     }
 

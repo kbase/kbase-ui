@@ -17,12 +17,11 @@
     margin-left: 0.5em;
 }
 
-
-
 .-col1 {
     flex: 0 0 11em;
     font-weight: bold;
     color: rgba(100, 100, 100);
 }
 
-.-col2 {}
+.-col2 {
+}

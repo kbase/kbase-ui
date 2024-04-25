@@ -19,7 +19,11 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
         return (
             <div
                 dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(marked.parse(this.props.cell.source))
+                    __html: DOMPurify.sanitize(
+                        marked.parse(this.props.cell.source, {
+                            async: false,
+                        }) as string,
+                    ),
                 }}
             />
         );
@@ -50,10 +54,10 @@ export default class MarkdownCellView extends Component<MarkdownCellProps> {
                                 <div className={cellStyles.header}>
                                     <div className={cellStyles.title}>
                                         {this.props.cell.metadata.kbase &&
-                                            this.props.cell.metadata.kbase
-                                                .attributes
+                                        this.props.cell.metadata.kbase
+                                            .attributes
                                             ? this.props.cell.metadata.kbase
-                                                .attributes.title
+                                                  .attributes.title
                                             : 'n/a'}
                                     </div>
                                 </div>

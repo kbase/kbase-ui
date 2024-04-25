@@ -1,4 +1,4 @@
-import { UserPermission } from "lib/kb_lib/comm/coreServices/Workspace";
+import { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 
 export const PERM_MAPPING: { [key: string]: string } = {
     a: 'can view, edit, and share',

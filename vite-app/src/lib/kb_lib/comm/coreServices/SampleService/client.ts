@@ -131,7 +131,7 @@ export interface GetFieldDefinitionsResult extends JSONLikeObject {
     fields: Array<ControlledField>;
 }
 
-export interface GetFieldGroupsParams { }
+export interface GetFieldGroupsParams {}
 
 export interface GetFieldGroupsResult extends JSONObject {
     groups: FieldGroups;
@@ -183,23 +183,23 @@ export default class SampleServiceClient extends ServiceClient {
         // TODO: revive the effort to provide result verification and type coercion.
         const [result] = (await this.callFunc<[JSONObject], [JSONObject]>(
             'get_sample',
-            [objectToJSONObject(params)]
+            [objectToJSONObject(params)],
         )) as unknown as Array<GetSampleResult>;
         return result;
     }
 
     async get_data_links_from_sample(
-        params: GetDataLinksFromSampleParams
+        params: GetDataLinksFromSampleParams,
     ): Promise<GetDataLinksFromSampleResult> {
         const [result] = await this.callFunc<[JSONObject], [JSONObject]>(
             'get_data_links_from_sample',
-            [objectToJSONObject(params)]
+            [objectToJSONObject(params)],
         );
         return result as unknown as GetDataLinksFromSampleResult;
     }
 
     async get_metadata_key_static_metadata(
-        params: GetMetadataKeyStaticMetadataParams
+        params: GetMetadataKeyStaticMetadataParams,
     ): Promise<GetMetadataKeyStaticMetadataResult> {
         const [result] = await this.callFunc<
             [GetMetadataKeyStaticMetadataParams],
@@ -209,7 +209,7 @@ export default class SampleServiceClient extends ServiceClient {
     }
 
     async get_sample_acls(
-        params: GetSampleACLsParams
+        params: GetSampleACLsParams,
     ): Promise<GetSampleACLsResult> {
         const [result] = await this.callFunc<
             [GetSampleACLsParams],
@@ -219,11 +219,11 @@ export default class SampleServiceClient extends ServiceClient {
     }
 
     async create_data_link(
-        params: CreateDataLinksParam
+        params: CreateDataLinksParam,
     ): Promise<CreateDataLinksResult> {
         const [result] = await this.callFunc<[JSONObject], [JSONObject]>(
             'create_data_link',
-            [objectToJSONObject(params)]
+            [objectToJSONObject(params)],
         );
         return result as unknown as CreateDataLinksResult;
     }
@@ -237,7 +237,7 @@ export default class SampleServiceClient extends ServiceClient {
     // These are not part of the sample service api, but should be:
 
     get_field_definitions(
-        params: GetFieldDefinitionsParams
+        params: GetFieldDefinitionsParams,
     ): Promise<GetFieldDefinitionsResult> {
         // TODO: pass through to back end.
         // const [result] = await this.callFunc<[JSONObject],

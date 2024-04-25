@@ -1,0 +1,7 @@
+.PublicAppStats {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-top: 1rem;
+}

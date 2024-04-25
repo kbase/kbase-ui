@@ -1,9 +1,9 @@
+import { AuthInfo } from 'contexts/EuropaContext';
 import { UserPermission } from 'lib/kb_lib/comm/coreServices/Workspace';
 import { Component } from 'react';
 import { Button, Col, Row } from 'react-bootstrap';
-import Select, { MultiValue } from 'react-select';
+import Select, { MultiValue, SingleValue } from 'react-select';
 import AsyncSelect from 'react-select/async';
-import { AuthInfo } from '../../../../../../contexts/Auth';
 import { Config } from '../../../../../../types/config';
 import { AuthService } from '../../../../utils/AuthService';
 import { PERM_MAPPING } from './Definitions';
@@ -40,13 +40,15 @@ export default class PermSearch extends Component<
         { value: 'a', label: PERM_MAPPING['a'] },
     ];
 
-    async searchUsers(term: string, _callback: any): Promise<Array<any>> {
+    async searchUsers(
+        term: string,
+    ): Promise<Array<{ value: string; label: string }>> {
         if (term.length < 2) {
             return Promise.resolve([]);
         }
         const auth = new AuthService(
             this.props.config.services.Auth2.url,
-            this.props.authInfo.token
+            this.props.authInfo.token,
         );
         const users = await auth.searchUsernames(term);
         return Object.entries(users)
@@ -65,7 +67,7 @@ export default class PermSearch extends Component<
     }
 
     handleUserChange(
-        selectedUsers: MultiValue<{ value: string; label: string }>
+        selectedUsers: MultiValue<{ value: string; label: string }>,
     ) {
         if (!selectedUsers) {
             this.setState({ selectedUsers: [] });
@@ -74,8 +76,8 @@ export default class PermSearch extends Component<
         }
     }
 
-    handlePermChange(selected: any) {
-        this.setState({ perm: selected.value });
+    handlePermChange(selected: { label: string; value: string }) {
+        this.setState({ perm: selected.value as UserPermission });
     }
 
     async updatePerms() {
@@ -101,13 +103,13 @@ export default class PermSearch extends Component<
                         placeholder={
                             'Select one or more users to share with...'
                         }
-                        styles={{
-                            menuPortal: (base) => ({
-                                ...base,
-                                zIndex: 9999,
-                            }),
-                            container: (base) => ({ ...base, flex: 2 }),
-                        }}
+                        // styles={{
+                        //     menuPortal: (base) => ({
+                        //         ...base,
+                        //         zIndex: 9999,
+                        //     }),
+                        //     container: (base) => ({ ...base, flex: 2 }),
+                        // }}
                         noOptionsMessage={({ inputValue }) => {
                             if (inputValue.length === 0) {
                                 return 'Search for a user by username or real name';
@@ -134,15 +136,19 @@ export default class PermSearch extends Component<
                         <Select
                             defaultValue={this.permOptions[0]}
                             options={this.permOptions}
-                            styles={{
-                                menuPortal: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                }),
-                                container: (base) => ({ ...base, flex: 1 }),
-                            }}
+                            // styles={{
+                            //     menuPortal: (base) => ({
+                            //         ...base,
+                            //         zIndex: 9999,
+                            //     }),
+                            //     container: (base) => ({ ...base, flex: 1 }),
+                            // }}
                             menuPortalTarget={document.body}
-                            onChange={this.handlePermChange.bind(this)}
+                            onChange={(value: SingleValue<PermOption>) => {
+                                if (value !== null) {
+                                    this.handlePermChange(value);
+                                }
+                            }}
                         />
                     </div>
                 </Col>

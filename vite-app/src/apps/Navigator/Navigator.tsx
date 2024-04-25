@@ -1,12 +1,12 @@
-import { SearchOptions } from 'lib/clients/NarrativeSearch';
-import { changeHash2 } from 'lib/navigation';
-import React from 'react';
-import ErrorBoundary from '../../components/ErrorBoundary';
 import {
     AuthenticationState,
     AuthenticationStatus,
-    AuthInfo
-} from '../../contexts/Auth';
+    AuthInfo,
+} from 'contexts/EuropaContext';
+import { SearchOptions } from 'lib/clients/NarrativeSearch';
+import { navigate } from 'lib/navigation';
+import React from 'react';
+import ErrorBoundary from '../../components/ErrorBoundary';
 import { Config } from '../../types/config';
 import Main from './components/Main';
 import { DetailOptions } from './context/DataModel';
@@ -25,7 +25,7 @@ export interface NavigatorProps extends RouteProps {
     setTitle: (title: string) => void;
 }
 
-interface NavigatorState { }
+interface NavigatorState {}
 
 export interface NavigatorRouteParams {
     category?: string;
@@ -64,7 +64,9 @@ export default class Navigator extends React.Component<
      * @returns The captured paramters
      */
     searchParamsFromSearch(props: RouteProps): NavigatorSearchParams {
-        const queryParams = props.hashPath.query;
+        const queryParams = new Map<string, string>(
+            Object.entries(props.hashPath.params || {}),
+        );
 
         const params: NavigatorSearchParams = {};
 
@@ -92,7 +94,9 @@ export default class Navigator extends React.Component<
     }
 
     detailParamsFromSearch(props: RouteProps): NarrativeDetailParams {
-        const queryParams = props.hashPath.query;
+        const queryParams = new Map<string, string>(
+            Object.entries(props.hashPath.params || {}),
+        );
 
         const params: NarrativeDetailParams = {};
 
@@ -119,9 +123,7 @@ export default class Navigator extends React.Component<
      * @param props
      * @returns Search options captured from the url.
      */
-    paramsToSearchOptions(
-        props: RouteProps
-    ): SearchOptions {
+    paramsToSearchOptions(props: RouteProps): SearchOptions {
         const searchParams = this.searchParamsFromSearch(props);
         return {
             category: searchParams.category || DEFAULT_CATEGORY,
@@ -131,20 +133,11 @@ export default class Navigator extends React.Component<
         };
     }
 
-    paramsToDetailOptions(
-        props: RouteProps
-    ): DetailOptions {
+    paramsToDetailOptions(props: RouteProps): DetailOptions {
         const detailParams = this.detailParamsFromSearch(props);
         return { ...detailParams };
     }
 
-    makePath(extraPath?: string) {
-        if (extraPath) {
-            return `${this.props.hashPath.path}/${extraPath}`;
-        } else {
-            return this.props.hashPath.path;
-        }
-    }
     // narrativeId;
     renderNav(authInfo: AuthInfo) {
         return (
@@ -154,12 +147,8 @@ export default class Navigator extends React.Component<
                         authInfo={authInfo}
                         config={this.props.config}
                         routeProps={this.props}
-                        searchOptions={this.paramsToSearchOptions(
-                            this.props
-                        )}
-                        detailOptions={this.paramsToDetailOptions(
-                            this.props
-                        )}
+                        searchOptions={this.paramsToSearchOptions(this.props)}
+                        detailOptions={this.paramsToDetailOptions(this.props)}
                     >
                         <Main authInfo={authInfo} />
                     </NavigatorContextWrapper>
@@ -174,7 +163,7 @@ export default class Navigator extends React.Component<
             case AuthenticationStatus.NONE:
             case AuthenticationStatus.UNAUTHENTICATED:
                 // TODO: add the next route to this navigation.
-                changeHash2('login');
+                navigate('login');
                 return null;
             case AuthenticationStatus.AUTHENTICATED:
                 return this.renderNav(authState.authInfo);

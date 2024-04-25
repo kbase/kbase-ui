@@ -1,24 +1,21 @@
 import { Component } from 'react';
-import { AuthenticationState } from '../contexts/Auth';
+import { AuthenticationState } from '../contexts/EuropaContext';
 import { JSONObject } from '../lib/json';
 import { Messenger } from '../lib/messenger';
 import { Config } from '../types/config';
 import IFrameController, { IFrameControllerProps } from './IFrameController';
-import './Plugin.css';
+import styles from './Plugin.module.css';
 
 /**
  * TODO:
  * let us try this:
  * treat this as an async component
- * first, it is NONE, then we check for existence of the plugin's index file by 
+ * first, it is NONE, then we check for existence of the plugin's index file by
  * attempting to load it. If that succeeds we will then proceed to load
  * the iframe controller.
- * z
  */
 
-export interface Params {
-    [key: string]: string;
-}
+export type Params = Record<string, string>;
 
 export interface PluginData extends JSONObject {
     view: string;
@@ -38,7 +35,6 @@ export interface PluginProps {
     messenger: Messenger;
 }
 
-
 export default class Plugin extends Component<PluginProps> {
     constructor(props: PluginProps) {
         super(props);
@@ -56,7 +52,7 @@ export default class Plugin extends Component<PluginProps> {
     componentDidUpdate(prevProps: PluginProps) {
         if (prevProps.name !== this.props.name) {
             // this.forceUpdate();
-            // If the plugin name changed, we want to check that it has 
+            // If the plugin name changed, we want to check that it has
         }
     }
 
@@ -64,8 +60,12 @@ export default class Plugin extends Component<PluginProps> {
         // TODO: document the location of runtime configurations,
         // which accessed in /deploy, which needs to be mounted into
         // the container.
-        const basePath = this.props.config.deploy.basePath.split('/').filter((pathElement) => { return pathElement.length > 0 });
-        const pluginPath = basePath.concat(['plugins', this.props.name]).join('/');
+        const basePath = window.location.pathname;
+        const pluginPath = basePath
+            .split('/')
+            .concat(['plugins', this.props.name])
+            .filter((pathSegment) => !!pathSegment)
+            .join('/');
 
         const props: IFrameControllerProps = {
             pluginPath,
@@ -82,7 +82,7 @@ export default class Plugin extends Component<PluginProps> {
         };
 
         return (
-            <div className="Plugin">
+            <div className={styles.main}>
                 <IFrameController {...props} />
             </div>
         );

@@ -6,7 +6,7 @@ import ErrorMessage from '../../../../../components/ErrorMessage';
 import Loading from '../../../../../components/Loading';
 import {
     AsyncProcess,
-    AsyncProcessStatus
+    AsyncProcessStatus,
 } from '../../../../../lib/AsyncProcess';
 import { NarrativeService } from '../../../../../lib/clients/NarrativeService';
 import RenameForm from './RenameForm';
@@ -52,10 +52,11 @@ export default class RenameItem extends Component<
             const client = new NarrativeModel({
                 token: this.props.authInfo.token,
                 workspaceURL: this.props.config.services.Workspace.url,
+                timeout: this.props.config.ui.constants.clientTimeout,
             });
             const userPerm = await client.getUserPermission(
                 this.props.narrative.access_group,
-                this.props.authInfo.account.user
+                this.props.authInfo.account.user,
             );
             if (userPerm === 'a') {
                 this.setState({
@@ -70,7 +71,7 @@ export default class RenameItem extends Component<
                 });
             } else {
                 throw new Error(
-                    'You do not have permission to rename this Narrative'
+                    'You do not have permission to rename this Narrative',
                 );
             }
         } catch (ex) {
@@ -96,7 +97,7 @@ export default class RenameItem extends Component<
         const narrativeService = new NarrativeService({
             url: this.props.config.services.ServiceWizard.url,
             token: this.props.authInfo.token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
             await narrativeService.rename_narrative({
@@ -149,7 +150,7 @@ export default class RenameItem extends Component<
                     Refresh the search results to see the new Narrative; it may
                     take a few seconds for the change to propagate.
                 </p>
-            </AlertMessage>
+            </AlertMessage>,
         );
     }
 
@@ -222,11 +223,11 @@ export default class RenameItem extends Component<
                         return this.renderRenamePending();
                     case AsyncProcessStatus.ERROR:
                         return this.renderRenameError(
-                            this.state.renameState.error
+                            this.state.renameState.error,
                         );
                     case AsyncProcessStatus.SUCCESS:
                         return this.renderRenameSuccess(
-                            this.state.renameState.value
+                            this.state.renameState.value,
                         );
                 }
         }

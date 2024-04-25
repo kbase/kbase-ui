@@ -1,14 +1,17 @@
-
 import { JSONObject } from 'lib/json';
-import { ServiceClient2 } from '../JSONRPC20/ServiceClient2';
-import { LinkRecordPublic, LinkRecordPublicNonOwner, ORCIDAuthPublic, ORCIDProfile } from './orcidLinkCommon';
+import { ServiceClient } from '../JSONRPC20/ServiceClient';
+import {
+    LinkRecordPublic,
+    LinkRecordPublicNonOwner,
+    ORCIDAuthPublic,
+    ORCIDProfile,
+} from './orcidLinkCommon';
 
 export interface StatusResult {
     status: string;
     current_time: number;
     start_time: number;
 }
-
 
 export interface ServiceDescription {
     name: string;
@@ -32,26 +35,26 @@ export interface Config {
     services: {
         Auth2: Auth2Config;
         ORCIDLink: ServiceConfig;
-    }
+    };
     ui: {
         origin: string;
-    }
+    };
     orcid: {
         oauthBaseURL: string;
         apiBaseURL: string;
         clientId: string;
         clientSecret: string;
-    }
+    };
     mongo: {
         host: string;
         port: number;
         database: string;
         username: string;
         password: string;
-    }
+    };
     module: {
-        serviceRequestTimeout: number
-    }
+        serviceRequestTimeout: number;
+    };
 }
 
 export interface GitInfo {
@@ -74,8 +77,8 @@ export interface RuntimeInfo {
 
 export interface InfoResult {
     'service-description': ServiceDescription;
-    'git-info': GitInfo
-    runtime_info: RuntimeInfo
+    'git-info': GitInfo;
+    runtime_info: RuntimeInfo;
 }
 
 export interface ErrorInfo {
@@ -86,9 +89,8 @@ export interface ErrorInfo {
 }
 
 export interface ErrorInfoResult {
-    error_info: ErrorInfo
+    error_info: ErrorInfo;
 }
-
 
 export interface LinkingSessionBase extends JSONObject {
     session_id: string;
@@ -97,10 +99,8 @@ export interface LinkingSessionBase extends JSONObject {
     expires_at: number;
 }
 
-
 // TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
-export interface LinkingSessionInitial extends LinkingSessionBase {
-}
+export interface LinkingSessionInitial extends LinkingSessionBase {}
 
 // TODO: this is not correct - there are three types of linking session info, with "kind" for discrimination
 export interface LinkingSessionStarted extends LinkingSessionBase {
@@ -121,7 +121,6 @@ export interface LinkingSessionPublicComplete extends LinkingSessionBase {
     skip_prompt: boolean;
     orcid_auth: ORCIDAuthPublic;
 }
-
 
 export interface LinkParams extends JSONObject {
     username: string;
@@ -201,13 +200,13 @@ export interface ContributorRole extends JSONObject {
 export interface Contributor extends JSONObject {
     orcidId: string | null;
     name: string;
-    roles: Array<ContributorRole>
+    roles: Array<ContributorRole>;
 }
 
 export interface SelfContributor extends JSONObject {
     orcidId: string;
     name: string;
-    roles: Array<ContributorRole>
+    roles: Array<ContributorRole>;
 }
 export interface WorkBase extends JSONObject {
     title: string;
@@ -216,25 +215,21 @@ export interface WorkBase extends JSONObject {
     workType: string;
     url: string;
     doi: string;
-    externalIds: Array<ExternalId>
+    externalIds: Array<ExternalId>;
     citation: Citation | null;
     shortDescription: string;
     selfContributor: SelfContributor;
     otherContributors: Array<Contributor> | null;
 }
 
-
-
-export interface NewWork extends WorkBase {
-}
+export interface NewWork extends WorkBase {}
 
 export interface PersistedWork extends WorkBase {
     putCode: string;
 }
 
-export interface WorkUpdate extends PersistedWork {
+export interface WorkUpdate extends PersistedWork {}
 
-}
 export interface Work extends PersistedWork {
     createdAt: number;
     updatedAt: number;
@@ -245,7 +240,7 @@ export type GetWorksResult = Array<{
     externalIds: Array<ExternalId>;
     updatedAt: number;
     works: Array<Work>;
-}>
+}>;
 
 export interface GetWorksParams extends JSONObject {
     username: string;
@@ -257,7 +252,7 @@ export interface GetWorkParams extends JSONObject {
 }
 
 export interface GetWorkResult extends JSONObject {
-    work: Work
+    work: Work;
 }
 
 export interface SaveWorkParams extends JSONObject {
@@ -266,7 +261,7 @@ export interface SaveWorkParams extends JSONObject {
 }
 
 export interface SaveWorkResult extends JSONObject {
-    work: Work
+    work: Work;
 }
 
 export interface DeleteWorkParams extends JSONObject {
@@ -278,91 +273,101 @@ export interface DeleteWorkParams extends JSONObject {
 
 // }
 
-export default class ORCIDLinkAPI extends ServiceClient2 {
+export default class ORCIDLinkAPI extends ServiceClient {
+    module = 'ORCIDLink';
+    prefix = false;
     async status(): Promise<StatusResult> {
-        const result = await this.callMethod('status');
-        return result as unknown as StatusResult
+        const result = await this.callFunc('status');
+        return result as unknown as StatusResult;
     }
 
     async info(): Promise<InfoResult> {
-        const result = await this.callMethod('info');
-        return result as unknown as InfoResult
+        const result = await this.callFunc('info');
+        return result as unknown as InfoResult;
     }
 
     async errorInfo(errorCode: number): Promise<ErrorInfoResult> {
-        const result = await this.callMethod('error-info', {
-            error_code: errorCode
+        const result = await this.callFunc('error-info', {
+            error_code: errorCode,
         });
-        return result as unknown as ErrorInfoResult
+        return result as unknown as ErrorInfoResult;
     }
 
     async isLinked(params: IsLinkedParams): Promise<boolean> {
-        const result = await this.callMethod('is-linked', params);
+        const result = await this.callFunc('is-linked', params);
         return result as unknown as boolean;
     }
 
     async getOwnerLink(params: LinkParams): Promise<LinkRecordPublic> {
-        const result = await this.callMethod('owner-link', params);
+        const result = await this.callFunc('owner-link', params);
         return result as unknown as LinkRecordPublic;
     }
 
-    async getOtherLink(params: LinkForOtherParams): Promise<LinkRecordPublicNonOwner> {
-        const result = await this.callMethod('other-link', params);
+    async getOtherLink(
+        params: LinkForOtherParams,
+    ): Promise<LinkRecordPublicNonOwner> {
+        const result = await this.callFunc('other-link', params);
         return result as unknown as LinkRecordPublicNonOwner;
     }
 
     async deleteOwnLink(params: DeleteLinkParams): Promise<void> {
-        await this.callMethod('delete-own-link', params);
+        await this.callFunc('delete-own-link', params);
     }
 
-    async createLinkingSession(params: CreateLinkingSessionParams): Promise<CreateLinkingSessionResult> {
-        const result = await this.callMethod('create-linking-session', params);
+    async createLinkingSession(
+        params: CreateLinkingSessionParams,
+    ): Promise<CreateLinkingSessionResult> {
+        const result = await this.callFunc('create-linking-session', params);
         return result as unknown as CreateLinkingSessionResult;
     }
 
-    async getLinkingSession(params: GetLinkingSessionParams): Promise<LinkingSessionPublicComplete> {
-        const result = await this.callMethod('get-linking-session', params);
+    async getLinkingSession(
+        params: GetLinkingSessionParams,
+    ): Promise<LinkingSessionPublicComplete> {
+        const result = await this.callFunc('get-linking-session', params);
         return result as unknown as LinkingSessionPublicComplete;
     }
 
-    async deleteLinkingSession(params: DeleteLinkingSessionParams): Promise<void> {
-        await this.callMethod('delete-linking-session', params);
+    async deleteLinkingSession(
+        params: DeleteLinkingSessionParams,
+    ): Promise<void> {
+        await this.callFunc('delete-linking-session', params);
     }
 
-    async finishLinkingSession(params: FinishLinkingSessionParams): Promise<void> {
-        await this.callMethod('finish-linking-session', params);
+    async finishLinkingSession(
+        params: FinishLinkingSessionParams,
+    ): Promise<void> {
+        await this.callFunc('finish-linking-session', params);
     }
 
     async getProfile(params: GetProfileParams): Promise<ORCIDProfile> {
-        const result = await this.callMethod('get-orcid-profile', params);
+        const result = await this.callFunc('get-orcid-profile', params);
         return result as unknown as ORCIDProfile;
     }
 
     // Work Activity
 
     async getWorks(params: GetWorksParams): Promise<GetWorksResult> {
-        const result = await this.callMethod('get-works', params);
+        const result = await this.callFunc('get-works', params);
         return result as unknown as GetWorksResult;
     }
 
-
     async getWork(params: GetWorkParams): Promise<GetWorkResult> {
-        const result = await this.callMethod('get-work', params);
+        const result = await this.callFunc('get-work', params);
         return result as unknown as GetWorkResult;
     }
 
-
     async createWork(params: SaveWorkParams): Promise<SaveWorkResult> {
-        const result = await this.callMethod('crate-work', params);
+        const result = await this.callFunc('crate-work', params);
         return result as unknown as GetWorkResult;
     }
 
     async saveWork(params: SaveWorkParams): Promise<SaveWorkResult> {
-        const result = await this.callMethod('save-work', params);
+        const result = await this.callFunc('save-work', params);
         return result as unknown as GetWorkResult;
     }
 
     async deleteWork(params: DeleteWorkParams): Promise<void> {
-        await this.callMethod('delete-work', params);
+        await this.callFunc('delete-work', params);
     }
 }

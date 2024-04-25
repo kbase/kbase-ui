@@ -5,7 +5,9 @@ export type ImageName = 'orcidIcon' | 'nouserpic';
 
 export function image(name: ImageName): string {
     switch (name) {
-        case 'orcidIcon': return orcidIcon;
-        case 'nouserpic': return nouserpic;
+        case 'orcidIcon':
+            return orcidIcon;
+        case 'nouserpic':
+            return nouserpic;
     }
 }

@@ -1,0 +1,31 @@
+[
+    {
+        "id": "kbase-user",
+        "title": "KBase Use Agreement",
+        "versions": [
+            {
+                "version": 1,
+                "begin": "2015-01-01T08:00:00Z",
+                "end": "2024-01-01T00:00:00Z",
+                "document": "# Terms and Conditions\n\n## Prohibited Behavior\n\nAs a condition of your use of KBase (the DOE Systems Biology Knowledgebase) you agree not to upload any type of human data or personally identifiable information.\n\n> Improper use of KBase, including uploading human data, may result in the termination of KBase access privileges.\n\n## Data Sharing\n\nKBase conforms to the <a href=\"http://genomicscience.energy.gov/datasharing\" target=\"_blank\" rel=\"noopener noreferrer\">Information and Data Sharing Policy</a> of the Genomic Science Program of the Office of Biological and Environmental Research within the Office of Science. Please see the <a href=\"https://www.kbase.us/data-policy-and-sources\" target=\"_blank\" rel=\"noopener noreferrer\">KBase Data Policy page</a> for more information.\n\n## Responsibility for Data\n\nAs a condition of your use of KBase you accept sole responsibility for all files you upload or transfer through use of KBase. You recognize and accept that <strong>KBase does not guarantee long-term retention of user uploaded data</strong>, and will not be responsible for any failure to store or transfer, or deletion, corruption or loss for any data, information or content contained in your files. It is strongly recommended that you back up all files prior to using KBase.</p>\n\n## Use Agreement\n\nBy using KBase, including its websites and services or via published APIs, you are agreeing to the terms stated in our <a href=\"https://www.kbase.us/use-agreement\" target=\"_blank\" rel=\"noopener noreferrer\">Use Agreement</a>. Please read them carefully. They include limitations on what is acceptable user behavior, accountability, availability, data retention, and conditions for account termination. If you do not agree, do not access or use KBase.\n\n## Privacy Policy\n\nKBase is provided as a public service. KBase reserves the right to monitor any and all use of kbase.us. KBase never collects information for commercial marketing or any purpose unrelated to KBase functions. The <a href=\"https://www.kbase.us/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Privacy Policy</a> describes the ways KBase collects, stores, uses, discloses and protects the personal information about users and how they use KBase.\n\n## Open Source License\n\nAll software developed by the KBase project team, and any contributed by you to KBase, is stored and maintained in the public <a href=\"https://github.com/kbase\" target=\"_blank\" rel=\"noopener noreferrer\">KBase GitHub code repository</a> under <a href=\"https://github.com/kbase/project_guides/blob/master/LICENSE\" target=\"_blank\" rel=\"noopener noreferrer\">the MIT Open Source License</a> (“License”). By contributing to or using KBase, you acknowledge having read and understood the License and agree to abide by it.\n"
+            },
+            {
+                "version": 2,
+                "url": "https://www.kbase.us/about/terms-and-conditions-v2",
+                "begin": "2024-01-01T00:00:00Z"
+            }
+        ]
+    },
+    {
+        "id": "data-policy",
+        "title": "KBase Data Policy",
+        "versions": [
+            {
+                "version": 1,
+                "begin": "2015-01-01T08:00:00Z",
+                "end": "2024-01-01T00:00:00Z",
+                "document": "# Data Policy\n\n## Data Policies\n\nKBase conforms to the <a href=\"http://genomicscience.energy.gov/datasharing\" target=\"_blank\" rel=\"noopener noreferrer\">Information and Data Sharing Policy</a> of the Genomic Science Program of the Office of Biological and Environmental Research within the Office of Science. This requires that all publishable data, metadata, and software resulting from research funded by the Genomic Science program must conform to community-recognized standard formats when they exist; be clearly attributable; and be deposited within a community-recognized public database(s) appropriate for the research.\n\n<a href=\"https://www.kbase.us/data-policy-and-sources/\" target=\"_blank\" rel=\"noopener noreferrer\">Data publicly available in KBase</a> comes from the sources listed on this page. Additionally, users can upload their own data to KBase to analyze it, and can choose how widely their data should be shared. (All data uploaded by users is private to them unless they choose to share it.)\n\n> NOTICE: KBase does not guarantee long-term retention of user-uploaded data. Please take appropriate precautions in storing and backing up your data locally.\n\n> WARNING: Improper use of KBase, including uploading human data, may result in the termination of KBase access privileges. Please see the <a title=\"Terms and Conditions\" href=\"https://www.kbase.us/terms-and-conditions\" target=\"_blank\" rel=\"noopener noreferrer\">Terms and Conditions</a> page for more information.\n"
+            }
+        ]
+    }
+]

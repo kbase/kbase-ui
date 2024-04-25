@@ -1,8 +1,10 @@
-.PropTable {
-    /* display: flex;
-    flex-direction: column; */
-    border: 2px solid rgb(200, 200, 200, 0.5);
-    border-radius: 4px;
+.main {
+    /* no default style for container */
+}
+
+.main-bordered {
+    border: 1px solid rgb(100 100 100);
+    border-radius: 0.25rem;
 }
 
 .header {
@@ -11,27 +13,25 @@
 }
 
 .body {
-    /* flex: 1 1 0; */
-    /* overflow-y: auto; */
-    /* text-overflow: ellipsis; */
     display: flex;
     flex-direction: column;
+    padding: 0.5rem;
 }
 
 .header {
     flex: 0 0 auto;
     border-top: 1px solid rgb(100 100 100);
+    padding: 0.5rem;
+    background-color: rgb(100 100 100);
+    color: white;
 }
 
 .header .col1 {
     color: white;
-    background-color: rgb(100 100 100);
 }
 
 .header .col2 {
-    color: white;
     font-weight: bold;
-    background-color: rgb(100 100 100);
 }
 
 .footer {
@@ -86,7 +86,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .noRowsMessage {

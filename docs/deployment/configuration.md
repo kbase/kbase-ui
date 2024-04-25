@@ -36,7 +36,7 @@ Here is a laundry list:
 - constants for various kbase-ui features, such as the polling intervals for feeds, auth
   cookie changes, auth token validation checks, service call timeout.
 
-- urls to common documentation and other endpoints 
+- urls to common documentation and other endpoints
 
 - feature switches to enable or disable specific features, usually under development but
   not necessarily
@@ -192,7 +192,7 @@ dynamicServices_TaxonomyAPI_version=auto
 ui_services_menu_hamburger_disabled=
 ui_services_menu_sidebar_disabled=
 
-ui_featureSwitches_enabled=search_features,system_alert_notification,new_provenance_widget,similar_genomes,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
+ui_featureSwitches_enabled=search_features,re-lineage,linked-samples,sampleset-data-links,object-link-to-term
 ui_featureSwitches_disabled=
 
 dynamic_service_proxies=
@@ -215,14 +215,11 @@ The environment variables listed below are supported.
 | Name | Default | Description |
 |------|---------|-------------|
 |`DEFAULT_PATH`| `"/narratives"` | A url path or "hash path" to serve as the target internal path if kbase-ui is invoked without a path (root) or the old `#dashboard` path is requested |
-| `HIDE_HEADER` | `"false"` | A boolean-like string; setting to `"true"` will cause the page header to be omitted |
-| `HIDE_NAVIGATION` | "false"` | A boolean-like string; setting to `"true"` will cause the sidebar navigation to be omitted |
-| `INTEGRATED_HAMBURGER_AND_LOGO` | "false"` | A boolean-like string; setting to `"true"` causes the hamburger menu icon to be the KBase logo, and the Kbase logo to be omitted |
 
 ### `DEFAULT_PATH`
 
 `kbase-ui` traditionally shows the `#dashbaord` by default - that is, if no other path
-was provided in the url. This was hard coded. 
+was provided in the url. This was hard coded.
 
 Several years ago the dashboard was replaced by the "Narratives Navigator", or
 "Navigator". This is an external url, as the Navigator is a standalone web app. This was
@@ -235,11 +232,11 @@ change it. But it never changed, so that was fine.
 However, in the near future kbase-ui will be run inside an iframe of yet another Kbase
 UI. In this case, the current behavior of redirecting to the Navigator is not desired,
 as the outer UI will handle that. This environment variable allows us to set that path,
-either internal or external. 
+either internal or external.
 
 The internal path is in the form `#path` where the path
 must be prefixed with the `#` url fragment symbol. Any internal path configured within
-the app may be used. 
+the app may be used.
 
 The external path is in the form `/path`, where the path should be prefixed with a `/`
 forward slash. This will cause kbase-ui to navigate to the given path on the same
@@ -248,39 +245,3 @@ forward slash. This will cause kbase-ui to navigate to the given path on the sam
 be redirected to `httpos://ci.kbase.us/narratives`.
 
 The configuration defaults to the current behavior, `/narratives`.
-
-### `HIDE_HEADER`
-
-This and the following environment variable have been supported in a different form
-previously (TODO: documenet that!), but it was not exposed for configuration.
-
-The value of `HIDE_HEADER` is a "string boolean". Well, since environment variables are
-by definition strings, it must be a string representation of a boolean. Since this is a
-TypeScript/Javascript application, the Javascript form for boolean is used. In this
-case, the value `"true"` indicates that the configuration should be considered `true`,
-and any other value should be considered `false`.
-
-Setting `HIDE_HEADER` to `"true"` causes the entire header area of the site to not be
-rendered. It defaults to `"false"` which resolves to `false`.
-
-This setting, along with the partner "HIDE_NAVIGATION", can be used to make a
-"frameless" version of kbase-ui.
-
-The motivation for this is the same as for "DEFAULT_PATH" - to allow kbase-ui to run
-inside a hosted environment which provides the equivalent services (menus, title,
-notification, login indicator with avatar).
-
-### `HIDE_NAVIGATION`
-
-The value of `HIDE_NAVIGATION` is a string boolean. Setting it to `"true"`causes the
-entire sidebar navigation to not be rendered. It defaults to `"false"` and thus resolves
-to `false`.
-
-### `INTEGRATED_HAMBURGER_AND_LOGO`
-
-The value of `INTEGRATED_HAMBURGER_AND_LOGO` is a string boolean. A `true` value causes
-the KBase logo to be integrated into the hamburger menu, replacing the triple-line
-hamburger icon. The impact is that the header area is more compact. However, as there
-are two other KBase user interfaces (Narrative and Navigator) which share the same
-header design, it is not appropriate to default to this unless they are also similarly
-updated. Thus this setting defaults to `false`.

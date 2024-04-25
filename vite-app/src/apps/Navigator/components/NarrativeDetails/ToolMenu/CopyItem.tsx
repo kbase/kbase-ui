@@ -6,7 +6,7 @@ import {
     Container,
     Form,
     Modal,
-    Row
+    Row,
 } from 'react-bootstrap';
 import AlertMessage from '../../../../../components/AlertMessage';
 import ErrorMessage from '../../../../../components/ErrorMessage';
@@ -85,7 +85,7 @@ export default class CopyItem extends Component<
         const narrativeService = new NarrativeService({
             url: this.props.config.services.ServiceWizard.url,
             token: this.props.authInfo.token,
-            timeout: 1000,
+            timeout: this.props.config.ui.constants.clientTimeout,
         });
         try {
             await narrativeService.copy_narrative({
@@ -152,13 +152,13 @@ export default class CopyItem extends Component<
                     Refresh the search results to see the new Narrative; it may
                     take a few seconds for the change to propagate.
                 </p>
-            </AlertMessage>
+            </AlertMessage>,
         );
     }
 
     renderNameError(state: CopyStateNameError) {
         return this.renderModal(
-            <Alert variant="danger">{state.message}</Alert>
+            <Alert variant="danger">{state.message}</Alert>,
         );
     }
 
@@ -193,7 +193,7 @@ export default class CopyItem extends Component<
                 <Button onClick={this.props.cancelFn} variant="danger">
                     Cancel
                 </Button>
-            </React.Fragment>
+            </React.Fragment>,
         );
     }
 

@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { AuthenticationState } from '../../contexts/Auth';
+import { AuthenticationState } from '../../contexts/EuropaContext';
 import { Config } from '../../types/config';
 import NarrativeManagerNew from './New';
 import NarrativeManagerStart from './Start';

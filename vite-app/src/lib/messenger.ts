@@ -1,4 +1,4 @@
-import AsyncQueue from './kb_lib/asyncQueue';
+import AsyncQueue from './AsyncQueue';
 import { tryPromise, UIError } from './kb_lib/Utils';
 
 interface Channel {
@@ -10,23 +10,19 @@ interface MessageHandler {
     subscriptionMap: Map<string, Subscription>;
 }
 
-// interface Listener {
-//     id: string;
-// }
+export type Payload = unknown;
 
-// type Message = Record<string, unknown>;
-
-interface SubscriptionDef {
+export interface SubscriptionDef {
     channel?: string;
     message: string;
-    handler: (payload: any) => void;
+    handler: (payload: Payload) => void;
 }
 
 interface Subscription {
     id: string;
     channelName: string;
     message: string;
-    handler: (payload: any) => void;
+    handler: (payload: Payload) => void;
 }
 
 export interface SubscriptionRef {
@@ -38,17 +34,15 @@ export interface SubscriptionRef {
 interface PublishDefinition {
     channel: string;
     message: string;
-    payload: any;
+    payload: Payload;
 }
 
 export class Messenger {
     channels: Map<string, Channel>;
-    // listeners: Map<string, Listener>;
     subId: number;
     queue: AsyncQueue;
     constructor() {
         this.channels = new Map();
-        // this.listeners = new Map();
         this.subId = 0;
         this.queue = new AsyncQueue();
     }
@@ -58,11 +52,19 @@ export class Messenger {
         return 'sub_' + this.subId;
     }
 
+    on(channel: string, message: string, handler: (payload: Payload) => void) {
+        return this.receive({
+            channel,
+            message,
+            handler,
+        });
+    }
+
     receive(subscriptionDef: SubscriptionDef): SubscriptionRef {
         const channelName = subscriptionDef.channel || 'default';
         const message = subscriptionDef.message;
 
-        // Get the channel, and create it if it doesn't exist.
+        // Get the channel; create it if it doesn't exist.
         let channel = this.channels.get(channelName);
         if (!channel) {
             channel = {
@@ -71,7 +73,7 @@ export class Messenger {
             this.channels.set(channelName, channel);
         }
 
-        // Get the message definitions for this message, create if doesn't exist
+        // Get the message definitions for this message; create if doesn't exist
         let messageHandler = channel.messageHandlers.get(message);
         if (!messageHandler) {
             messageHandler = {
@@ -109,14 +111,14 @@ export class Messenger {
             return false;
         }
         const messageListener = channel.messageHandlers.get(
-            subscriptionRef.message
+            subscriptionRef.message,
         );
         if (!messageListener) {
             return false;
         }
 
         const subscription = messageListener.subscriptionMap.get(
-            subscriptionRef.id
+            subscriptionRef.id,
         );
         if (!subscription) {
             return false;
@@ -126,15 +128,20 @@ export class Messenger {
         messageListener.subscriptions = messageListener.subscriptions.filter(
             (listener) => {
                 return listener.id !== subscriptionRef.id;
-            }
+            },
         );
         return true;
     }
 
-    send(publishDef: PublishDefinition) {
-        const channelName = publishDef.channel;
-        const message = publishDef.message;
+    send(channel: string, message: string, payload: unknown) {
+        this.publish({
+            channel,
+            message,
+            payload,
+        });
+    }
 
+    publish({ channel: channelName, message, payload }: PublishDefinition) {
         const channel = this.channels.get(channelName);
         if (!channel) {
             return;
@@ -147,7 +154,7 @@ export class Messenger {
         messageHandler.subscriptions.forEach((subscription) => {
             this.queue.addItem(async () => {
                 try {
-                    return subscription.handler(publishDef.payload);
+                    return subscription.handler(payload);
                 } catch (ex) {
                     console.error(ex);
                     throw new UIError({
@@ -168,10 +175,7 @@ export class Messenger {
         });
     }
 
-    sendPromise(publishDef: PublishDefinition) {
-        const channelName = publishDef.channel;
-        const message = publishDef.message;
-
+    sendPromise({ channel: channelName, message, payload }: PublishDefinition) {
         const channel = this.channels.get(channelName);
         if (!channel) {
             return;
@@ -181,7 +185,7 @@ export class Messenger {
             return;
         }
 
-        return tryPromise<any>(() => {
+        return tryPromise<unknown>(() => {
             const channel = this.channels.get(channelName);
             if (!channel) {
                 throw new Error('Channel not found : ' + channelName);
@@ -199,9 +203,7 @@ export class Messenger {
                         this.queue.addItem(
                             async () => {
                                 try {
-                                    resolve(
-                                        subscription.handler(publishDef.payload)
-                                    );
+                                    resolve(subscription.handler(payload));
                                 } catch (ex) {
                                     console.error(ex);
                                     reject(
@@ -217,16 +219,16 @@ export class Messenger {
                                             code: 'message-handler-handler-error',
                                             suggestion:
                                                 'This is an application error, not your fault',
-                                        })
+                                        }),
                                     );
                                 }
                             },
                             async (err) => {
                                 reject(err);
-                            }
+                            },
                         );
                     });
-                })
+                }),
             );
         });
     }

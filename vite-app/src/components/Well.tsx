@@ -1,16 +1,26 @@
+/**
+ * Well is a re-implementation of the classic Well bootstrap component, with some
+ * extensions, I believe.
+ *
+ * It is essentially a container for bounded content, with an optional title.
+ * It is rendered inside of a rounded-corner container, the title is displayed in a
+ * header area with reversed colors.
+ *
+ * It utilizes bootstrap classes, where possible, and emulates the bootstrap Variant
+ * type, which, as far as I can tell at least at some point in recent history, is not
+ * exported as such, although specific instances of a Variant type are.
+ */
 import React, { Component, CSSProperties, PropsWithChildren } from 'react';
-import styles from './Well.module.css';
+import styles from './Well.module.scss';
 
-export type Variant = 'primary' | 'secondary' | 'info' | 'warning' | 'danger' | 'success' | 'light';
-
-// export type WellProps = PropsWithChildren<{
-//     style?: React.CSSProperties
-// }>
-
-// React Support
-// function getType(C) {
-//     return React.createElement(C).type;
-// }
+export type Variant =
+    | 'primary'
+    | 'secondary'
+    | 'info'
+    | 'warning'
+    | 'danger'
+    | 'success'
+    | 'light';
 
 // HEADER
 
@@ -35,7 +45,10 @@ function getHeaderVariantClasses(variant: Variant): Array<string> {
     }
 }
 
-function getVariantClasses(variant: Variant, border: BorderThickness = '4'): Array<string> {
+function getVariantClasses(
+    variant: Variant,
+    border: BorderThickness = '4',
+): Array<string> {
     const baseClasses = ['border', `border-${border}`];
     switch (variant) {
         case 'primary':
@@ -55,8 +68,14 @@ function getVariantClasses(variant: Variant, border: BorderThickness = '4'): Arr
     }
 }
 
-function getFooterVariantClasses(variant: Variant, orientation: Orientation): Array<string> {
-    const baseClasses = [`border-${orientation === 'vertical' ? 'top' : 'start'}`, 'border-1'];
+function getFooterVariantClasses(
+    variant: Variant,
+    orientation: Orientation,
+): Array<string> {
+    const baseClasses = [
+        `border-${orientation === 'vertical' ? 'top' : 'start'}`,
+        'border-1',
+    ];
     switch (variant) {
         case 'primary':
             return [...baseClasses, 'border-primary'];
@@ -78,7 +97,7 @@ function getFooterVariantClasses(variant: Variant, orientation: Orientation): Ar
 export interface HeaderProps {
     style?: React.CSSProperties;
     className?: string;
-    icon?: string;
+    icon?: string | JSX.Element;
 }
 
 export class Header extends Component<PropsWithChildren<HeaderProps>> {
@@ -90,15 +109,25 @@ export class Header extends Component<PropsWithChildren<HeaderProps>> {
 export interface InternalHeaderProps {
     style?: React.CSSProperties;
     variant: Variant;
+    className?: string;
 }
 
-export class InternalHeader extends Component<PropsWithChildren<InternalHeaderProps>> {
+export class InternalHeader extends Component<
+    PropsWithChildren<InternalHeaderProps>
+> {
     render() {
         const classes = getHeaderVariantClasses(this.props.variant);
         classes.push(styles.header);
+        if (this.props.className) {
+            classes.push(this.props.className);
+        }
 
         return (
-            <div className={classes.join(' ')} style={this.props.style}>
+            <div
+                className={classes.join(' ')}
+                style={this.props.style}
+                role="heading"
+            >
                 {this.props.children}
             </div>
         );
@@ -119,13 +148,17 @@ export class Body extends Component<PropsWithChildren<BodyProps>> {
 
 export interface InternalBodyProps {
     style?: React.CSSProperties;
+    className?: string;
     variant: Variant;
 }
 
-export class InternalBody extends Component<PropsWithChildren<InternalBodyProps>> {
+export class InternalBody extends Component<
+    PropsWithChildren<InternalBodyProps>
+> {
     render() {
+        const className = [styles.body, this.props.className].join(' ');
         return (
-            <div className={styles.body} style={this.props.style}>
+            <div className={className} style={this.props.style} role="region">
                 {this.props.children}
             </div>
         );
@@ -150,9 +183,14 @@ export interface InternalFooterProps {
     variant: Variant;
 }
 
-export class InternalFooter extends Component<PropsWithChildren<InternalFooterProps>> {
+export class InternalFooter extends Component<
+    PropsWithChildren<InternalFooterProps>
+> {
     render() {
-        const classes = getFooterVariantClasses(this.props.variant, this.props.orientation || 'vertical');
+        const classes = getFooterVariantClasses(
+            this.props.variant,
+            this.props.orientation || 'vertical',
+        );
         classes.push(styles[`footer-${this.props.orientation || 'vertical'}`]);
         return (
             <div className={classes.join(' ')} style={this.props.style}>
@@ -161,6 +199,7 @@ export class InternalFooter extends Component<PropsWithChildren<InternalFooterPr
         );
     }
 }
+
 // Main Component
 
 export type Orientation = 'vertical' | 'horizontal';
@@ -173,9 +212,14 @@ export type WellProps = {
     border?: BorderThickness;
     padding?: string;
     orientation?: Orientation;
+    disabled?: boolean;
+    // implementing...
+    stretch?: boolean;
+    // not yet implemented
+    autoScroll?: boolean;
 };
 
-interface WellState { }
+interface WellState {}
 
 export default class Well extends Component<WellProps, WellState> {
     static Header = Header;
@@ -185,15 +229,17 @@ export default class Well extends Component<WellProps, WellState> {
     renderHeader(style: CSSProperties) {
         const { children } = this.props;
 
-        const headerComponent = React.Children.toArray(children).filter((child) => {
-            if (typeof child === 'object') {
-                // This is a bit yucky, is for TS.
-                if ('type' in child) {
-                    return child.type === React.createElement(Header).type;
+        const headerComponent = React.Children.toArray(children).filter(
+            (child) => {
+                if (typeof child === 'object') {
+                    // This is a bit yucky, is for TS.
+                    if ('type' in child) {
+                        return child.type === React.createElement(Header).type;
+                    }
                 }
-            }
-            return false;
-        })[0];
+                return false;
+            },
+        )[0];
 
         if (!headerComponent) {
             return headerComponent;
@@ -203,13 +249,31 @@ export default class Well extends Component<WellProps, WellState> {
 
         const icon = (() => {
             if (hc.props.icon) {
-                return <span className={`fa fa-lg fa-${hc.props.icon}`} style={{ verticalAlign: '0', lineHeight: 'normal', marginRight: '0.25rem' }} />
+                if (typeof hc.props.icon === 'string') {
+                    return (
+                        <span
+                            className={`fa fa-lg fa-${hc.props.icon}`}
+                            style={{
+                                verticalAlign: '0',
+                                lineHeight: 'normal',
+                                marginRight: '0.25rem',
+                            }}
+                        />
+                    );
+                } else {
+                    return hc.props.icon;
+                }
             }
         })();
 
         return (
-            <InternalHeader style={{ ...style, ...hc.props.style }} variant={this.props.variant}>
-                {icon}{hc.props.children}
+            <InternalHeader
+                style={{ ...style, ...hc.props.style }}
+                className={hc.props.className}
+                variant={this.props.variant}
+            >
+                {icon}
+                {hc.props.children}
             </InternalHeader>
         );
     }
@@ -231,10 +295,20 @@ export default class Well extends Component<WellProps, WellState> {
             return component;
         }
 
-        const hc = component as unknown as Header;
+        // TODO: improve this to use the stretch class
+        const classNames: Array<string> = [];
+        if (this.props.stretch) {
+            classNames.push(styles.stretch);
+        }
+
+        const hc = component as unknown as Body;
 
         return (
-            <InternalBody style={{ ...style, ...hc.props.style }} variant={this.props.variant}>
+            <InternalBody
+                style={{ ...style, ...hc.props.style }}
+                variant={this.props.variant}
+                className={classNames.join(' ')}
+            >
                 {hc.props.children}
             </InternalBody>
         );
@@ -263,25 +337,44 @@ export default class Well extends Component<WellProps, WellState> {
             <InternalFooter
                 style={{ ...style, ...hc.props.style }}
                 orientation={this.props.orientation}
-                variant={this.props.variant}>
+                variant={this.props.variant}
+            >
                 {hc.props.children}
             </InternalFooter>
         );
+    }
+
+    renderDisabledOverlay() {
+        if (!this.props.disabled) {
+            return;
+        }
+
+        return <div className={styles.DisabledOverlay} />;
     }
 
     render() {
         const style: CSSProperties = {
             padding: this.props.padding || '1em',
         };
+        const classNames = [
+            styles[`well-${this.props.orientation || 'vertical'}`],
+            ...getVariantClasses(this.props.variant, this.props.border),
+
+            this.props.className || '',
+        ];
+        if (this.props.className) {
+            classNames.push(this.props.className);
+        }
+        if (this.props.stretch) {
+            classNames.push(styles.stretch);
+        }
         return (
             <div
-                className={[
-                    styles[`well-${this.props.orientation || 'vertical'}`],
-                    ...getVariantClasses(this.props.variant, this.props.border),
-                    this.props.className || ''
-                ].join(' ')}
+                className={classNames.join(' ')}
                 style={this.props.style}
+                role="article"
             >
+                {this.renderDisabledOverlay()}
                 {this.renderHeader(style)}
                 {this.renderBody(style)}
                 {this.renderFooter(style)}

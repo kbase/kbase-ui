@@ -1,5 +1,4 @@
-
-export function arraysEqual(a: any, b: any): boolean {
+export function arraysEqual(a: unknown, b: unknown): boolean {
     if (!Array.isArray(a)) {
         return false;
     }
@@ -19,18 +18,18 @@ export function arraysEqual(a: any, b: any): boolean {
 }
 
 export function noScriptTag(value: string) {
-    if (/<script[^>]*>/ig.test(value)) {
-        throw Error('the "script" tag (<script>) is not allowed')
+    if (/<script[^>]*>/gi.test(value)) {
+        throw Error('the "script" tag (<script>) is not allowed');
     }
 }
 
 export function containsScriptTag(value: string) {
-    return /<script[^>]*>/ig.test(value)
+    return /<script[^>]*>/gi.test(value);
 }
 
 export function hasOwnProperty(value: unknown, property: string): boolean {
     if (typeof value !== 'object') {
         return false;
     }
-    return (Object.prototype.hasOwnProperty.call(value, property))
+    return Object.prototype.hasOwnProperty.call(value, property);
 }

@@ -1,12 +1,12 @@
+import { navigationPathToURL } from 'contexts/RouterContext';
 import { Component } from 'react';
-import { AuthenticationState } from '../../contexts/Auth';
-import { Config } from '../../types/config';
-// import { RouteComponentProps } from 'react-router';
 import { Alert, ProgressBar } from 'react-bootstrap';
 import AlertMessage from '../../components/AlertMessage';
 import ErrorMessage from '../../components/ErrorMessage';
 import Loading from '../../components/Loading';
 import { RouteProps } from '../../components/Router2';
+import { AuthenticationState } from '../../contexts/EuropaContext';
+import { Config } from '../../types/config';
 
 const MAX_TRIES = 20;
 const TIMEOUT = 60000;
@@ -39,9 +39,9 @@ export class LoadingHttpError extends Error {
     }
 }
 
-export class UnauthenticatedError extends Error { }
+export class UnauthenticatedError extends Error {}
 
-export class UIError extends Error { }
+export class UIError extends Error {}
 
 export class TimeoutError extends Error {
     elapsed: number;
@@ -57,7 +57,8 @@ export enum LoadStatus {
     NONE = 'NONE',
     POKING = 'POKING',
     OK = 'OK',
-    ERROR = 'ERROR',
+    INIT_ERROR = 'INIT_ERROR',
+    CHECK_ERROR = 'CHECK_ERROR',
     TIMED_OUT = 'TIMED_OUT',
     STRUCK_OUT = 'STRUCK_OUT',
 }
@@ -72,21 +73,30 @@ export interface LoadStateNone extends LoadStateBase {
 
 export interface LoadStatePoking extends LoadStateBase {
     status: LoadStatus.POKING;
-    url: string;
+    narrativeId: number;
+    url: URL;
     tries: number;
 }
 
 export interface LoadStateOk extends LoadStateBase {
     status: LoadStatus.OK;
-    url: string;
     narrativeId: number;
+    url: URL;
 }
 
-export interface LoadStateError extends LoadStateBase {
-    status: LoadStatus.ERROR;
+export interface LoadStateInitError extends LoadStateBase {
+    status: LoadStatus.INIT_ERROR;
     // url: string;
     title: string;
     message: string;
+}
+
+export interface LoadStateCheckError extends LoadStateBase {
+    status: LoadStatus.CHECK_ERROR;
+    title: string;
+    message: string;
+    narrativeId: number;
+    url: URL;
 }
 
 export interface LoadStateTimedOut extends LoadStateBase {
@@ -94,21 +104,24 @@ export interface LoadStateTimedOut extends LoadStateBase {
     tries: number;
     timeout: number;
     elapsed: number;
-    url: string;
+    narrativeId: number;
+    url: URL;
 }
 
 export interface LoadStateStruckOut extends LoadStateBase {
     status: LoadStatus.STRUCK_OUT;
     tries: number;
     elapsed: number;
-    url: string;
+    narrativeId: number;
+    url: URL;
 }
 
 export type LoadState =
     | LoadStateNone
     | LoadStatePoking
     | LoadStateOk
-    | LoadStateError
+    | LoadStateInitError
+    | LoadStateCheckError
     | LoadStateStruckOut
     | LoadStateTimedOut;
 
@@ -133,18 +146,28 @@ export default class NarrativeLoader extends Component<
     };
 
     urlToCheck() {
-        return `${document.location.origin}/narrative/static/kbase/config/config.json?check=true`;
+        return navigationPathToURL({
+            path: `narrative/static/kbase/config/config.json`,
+            type: 'europaui',
+        });
+    }
+
+    narrativeURL(narrativeId: number) {
+        return navigationPathToURL({
+            path: `/narrative/${narrativeId}`,
+            type: 'europaui',
+        });
     }
 
     componentDidMount() {
         this.props.setTitle('Narrative Loader');
-        const searchParams = this.props.hashPath.query;
-        const narrativeIdRaw = searchParams.get('n');
+        const searchParams = this.props.hashPath.params || {};
+        const narrativeIdRaw = searchParams['n'];
         if (!narrativeIdRaw) {
             this.setState({
                 loadState: {
-                    status: LoadStatus.ERROR,
-                    title: "Missing Parameter",
+                    status: LoadStatus.INIT_ERROR,
+                    title: 'Missing Parameter',
                     message:
                         "The Narrative Loader requires the 'n' search parameter, which was not provided in the URL.",
                 },
@@ -155,8 +178,8 @@ export default class NarrativeLoader extends Component<
         if (!/^[1-9][0-9]*$/.test(narrativeIdRaw)) {
             this.setState({
                 loadState: {
-                    status: LoadStatus.ERROR,
-                    title: "Invalid Parameter",
+                    status: LoadStatus.INIT_ERROR,
+                    title: 'Invalid Parameter',
                     message: `The "n" search parameter in the URL is not an integer > 0: It is "${narrativeIdRaw}".`,
                 },
             });
@@ -170,12 +193,13 @@ export default class NarrativeLoader extends Component<
                 loadState: {
                     status: LoadStatus.POKING,
                     tries: 0,
-                    url: this.urlToCheck()
+                    narrativeId,
+                    url: this.urlToCheck(),
                 },
             },
             () => {
                 this.tryLoading(narrativeId);
-            }
+            },
         );
     }
 
@@ -183,12 +207,9 @@ export default class NarrativeLoader extends Component<
     //     return Promise.resolve(true);
     // }
 
-    renderProgress() { }
+    renderProgress() {}
 
     async tryLoading(narrativeId: number) {
-        const narrativeURL =
-            document.location.origin + '/narrative/' + narrativeId;
-
         if (this.state.loadState.status !== LoadStatus.POKING) {
             return;
         }
@@ -196,23 +217,25 @@ export default class NarrativeLoader extends Component<
             const start = Date.now();
             for (let tries = 1; tries <= MAX_TRIES; tries += 1) {
                 const retry = await this.checkNarrative(
-                    this.state.loadState.url
+                    this.state.loadState.url,
                 );
                 if (retry) {
-                    await waitFor(RETRY_PAUSE);
                     this.setState({
                         loadState: {
                             status: LoadStatus.POKING,
                             tries,
+                            narrativeId,
                             url: this.urlToCheck(),
                         },
                     });
+
+                    await waitFor(RETRY_PAUSE);
                 } else {
                     this.setState({
                         loadState: {
                             status: LoadStatus.OK,
-                            url: narrativeURL,
-                            narrativeId
+                            narrativeId,
+                            url: this.urlToCheck(),
                         },
                     });
 
@@ -226,50 +249,62 @@ export default class NarrativeLoader extends Component<
                             status: LoadStatus.STRUCK_OUT,
                             tries: MAX_TRIES,
                             elapsed: Date.now() - start,
-                            url: narrativeURL
-                        }
-                    })
+                            narrativeId,
+                            url: this.urlToCheck(),
+                        },
+                    });
                     resolve();
                 }, RETRY_PAUSE);
             });
         } catch (ex) {
+            console.error('ERROR', ex);
             if (ex)
                 if (ex instanceof LoadingError) {
                     this.setState({
                         loadState: {
-                            status: LoadStatus.ERROR,
-                            title: "Error waiting for Narrative to start",
-                            message: ex.message
-                        }
+                            status: LoadStatus.CHECK_ERROR,
+                            title: 'Error waiting for Narrative to start',
+                            message: ex.message,
+                            narrativeId,
+                            url: this.urlToCheck(),
+                        },
                     });
                 } else if (ex instanceof TimeoutError) {
                     this.setState({
                         loadState: {
-                            status: LoadStatus.ERROR,
-                            title: "Error waiting for Narrative to start",
-                            message: ex.message
-                        }
+                            status: LoadStatus.CHECK_ERROR,
+                            title: 'Error waiting for Narrative to start',
+                            message: ex.message,
+                            narrativeId,
+                            url: this.urlToCheck(),
+                        },
                     });
                 } else if (ex instanceof Error) {
                     this.setState({
                         loadState: {
-                            status: LoadStatus.ERROR,
-                            title: "Error waiting for Narrative to start",
-                            message: ex.message
-                        }
+                            status: LoadStatus.CHECK_ERROR,
+                            title: 'Error waiting for Narrative to start',
+                            message: ex.message,
+                            narrativeId,
+                            url: this.urlToCheck(),
+                        },
                     });
                 } else {
                     this.setState({
                         loadState: {
-                            status: LoadStatus.ERROR,
+                            status: LoadStatus.CHECK_ERROR,
                             title: 'Unknown Error',
-                            message: 'An unknown error occurred waiting for the Narrative to start'
+                            message:
+                                'An unknown error occurred waiting for the Narrative to start',
+                            narrativeId,
+                            url: this.urlToCheck(),
                         },
                     });
                 }
         }
     }
-    checkNarrative(url: string) {
+
+    checkNarrative(url: URL) {
         const startTime = new Date().getTime();
         return new Promise<boolean>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
@@ -291,15 +326,15 @@ export default class NarrativeLoader extends Component<
                         // properties.
 
                         try {
-                            var config = JSON.parse(xhr.responseText);
+                            const config = JSON.parse(xhr.responseText);
                             if (config && config.version) {
                                 resolve(false);
                             } else {
                                 reject(
                                     new LoadingError(
                                         'Error in Narrative check response',
-                                        'check'
-                                    )
+                                        'check',
+                                    ),
                                 );
                             }
                         } catch (ex) {
@@ -324,8 +359,8 @@ export default class NarrativeLoader extends Component<
                             new LoadingHttpError(
                                 xhr.status,
                                 xhr.statusText,
-                                xhr.responseText
-                            )
+                                xhr.responseText,
+                            ),
                         );
                 }
             };
@@ -349,60 +384,101 @@ export default class NarrativeLoader extends Component<
             }
 
             try {
-                xhr.withCredentials = false;
+                xhr.withCredentials = true;
                 xhr.send();
             } catch (ex) {
                 reject(
-                    new LoadingError('Error sending data in request', 'sending')
+                    new LoadingError(
+                        'Error sending data in request',
+                        'sending',
+                    ),
                 );
             }
         });
     }
 
     renderOK(loadingState: LoadStateOk) {
-        const url: URL = new URL(window.location.href);
-        // Nuke the hash and search
-        for (const key of Array.from(url.searchParams.keys())) {
-            url.searchParams.delete(key);
-        }
-        url.hash = '';
-        url.pathname = `/narrative/${loadingState.narrativeId}`;
-        window.setTimeout(() => {
-            document.location.href = url.toString();
-        }, SLIGHT_DELAY_BEFORE_REDIRECT)
+        // const url: URL = new URL(window.location.href);
+        // // Nuke the hash and search
+        // for (const key of Array.from(url.searchParams.keys())) {
+        //     url.searchParams.delete(key);
+        // }
+        // url.hash = '';
+        const url = navigationPathToURL({
+            path: `narrative/${loadingState.narrativeId}`,
+            type: 'europaui',
+        });
 
-        return <AlertMessage
-            variant="success"
-            style={{ width: "50%", margin: "0 auto" }} >
-            Your Narrative service instance has been detected, redirecting to Narrative {loadingState.narrativeId}...
-        </AlertMessage>
+        window.setTimeout(() => {
+            window.open(url, '_top');
+        }, SLIGHT_DELAY_BEFORE_REDIRECT);
+
+        return (
+            <AlertMessage
+                variant="success"
+                style={{ width: '50%', margin: '0 auto' }}
+            >
+                Your Narrative service instance has been detected, redirecting
+                to Narrative {loadingState.narrativeId}...
+            </AlertMessage>
+        );
     }
 
-
-    renderState() {
+    render() {
         switch (this.state.loadState.status) {
             case LoadStatus.NONE:
                 return <Loading message="Loading..." />;
             case LoadStatus.POKING:
                 return (
-                    <Alert itemType="info" style={{ width: "50%", margin: "0 auto" }}>
+                    <Alert
+                        itemType="info"
+                        style={{ width: '50%', margin: '0 auto' }}
+                    >
                         <p>Starting a new Narrative session for you.</p>
                         <p>Please wait.</p>
-                        <p>{this.state.loadState.tries} {this.state.loadState.tries === 1 ? "try" : "tries"} out of {MAX_TRIES}</p>
-                        <ProgressBar now={100 * this.state.loadState.tries / MAX_TRIES} label="Waiting for Narrative session..." />
+                        <p>
+                            {this.state.loadState.tries}{' '}
+                            {this.state.loadState.tries === 1 ? 'try' : 'tries'}{' '}
+                            out of {MAX_TRIES}
+                        </p>
+                        <ProgressBar
+                            now={(100 * this.state.loadState.tries) / MAX_TRIES}
+                            label="Waiting for Narrative session..."
+                        />
                     </Alert>
                 );
             case LoadStatus.OK:
                 return this.renderOK(this.state.loadState);
-            case LoadStatus.ERROR:
-                return <ErrorMessage title={this.state.loadState.title} message={this.state.loadState.message} style={{ width: "50%", margin: "0 auto" }} />;
+            case LoadStatus.INIT_ERROR:
+                return (
+                    <ErrorMessage
+                        title={this.state.loadState.title}
+                        message={this.state.loadState.message}
+                        style={{ width: '50%', margin: '0 auto' }}
+                    />
+                );
+            case LoadStatus.CHECK_ERROR:
+                return (
+                    <ErrorMessage
+                        title={this.state.loadState.title}
+                        message={this.state.loadState.message}
+                        style={{ width: '50%', margin: '0 auto' }}
+                    />
+                );
             case LoadStatus.STRUCK_OUT:
-                return <ErrorMessage message={'Struck Out :('} style={{ width: "50%", margin: "0 auto" }} />;
+                return (
+                    <ErrorMessage
+                        message={'Struck Out :('}
+                        style={{ width: '50%', margin: '0 auto' }}
+                    />
+                );
             case LoadStatus.TIMED_OUT:
-                return <ErrorMessage message={'Timed Out :('} style={{ width: "50%", margin: "0 auto" }} />;
+                return (
+                    <ErrorMessage
+                        message={'Timed Out :('}
+                        style={{ width: '50%', margin: '0 auto' }}
+                    />
+                );
         }
-    }
-    render() {
-        return this.renderState();
     }
 }

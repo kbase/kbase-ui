@@ -2,6 +2,7 @@ import Well, { Variant } from 'components/Well';
 import { Component } from 'react';
 import Spinner from 'react-bootstrap/esm/Spinner';
 import { Config } from 'types/config';
+import styles from './NarrativeLoading.module.css';
 
 export interface NarrativeLoadingProps {
     detectSlow?: boolean;
@@ -68,48 +69,63 @@ export default class NarrativeLoading extends Component<
 
     renderLoadingMessage() {
         return (
-            <div className="-message">
-                <Spinner /> {this.props.message}
+            <div className={styles.message}>
+                <Spinner style={{ marginRight: '1rem' }} /> {this.props.message}
             </div>
         );
     }
 
     render() {
-        const [message, variant] = ((): [JSX.Element, Variant] => {
+        const { message, variant } = ((): {
+            message: JSX.Element;
+            variant: Variant;
+        } => {
             switch (this.state.status) {
                 case NarrativeLoadingStatus.NONE:
-                    return [this.renderLoadingMessage(), "info"];
+                    return {
+                        message: this.renderLoadingMessage(),
+                        variant: 'info',
+                    };
                 case NarrativeLoadingStatus.SLOW:
-                    return [
-                        <div>
-                            {this.renderLoadingMessage()}
-                            <p className="text text-warning" style={{ marginTop: '1em' }}>
-                                <span className="fa fa-exclamation-triangle"></span>
-                                This process is taking longer than expected. Still trying...
-                            </p>
-                        </div>,
-                        "warning"
-                    ];
+                    return {
+                        message: (
+                            <div>
+                                {this.renderLoadingMessage()}
+                                <p
+                                    className="text text-warning"
+                                    style={{ marginTop: '1em' }}
+                                >
+                                    <span className="fa fa-exclamation-triangle"></span>
+                                    This process is taking longer than expected.
+                                    Still trying...
+                                </p>
+                            </div>
+                        ),
+                        variant: 'warning',
+                    };
                 case NarrativeLoadingStatus.VERY_SLOW:
-                    return [
-                        <div>
-                            {this.renderLoadingMessage()}
-                            <p className="text text-danger" style={{ marginTop: '1em' }}>
-                                <span className="fa fa-exclamation-triangle"></span>
-                                This process is taking <b>much</b> longer than expected. Still
-                                trying...
-                            </p>
-                        </div>,
-                        "warning"
-                    ];
+                    return {
+                        message: (
+                            <div>
+                                {this.renderLoadingMessage()}
+                                <p
+                                    className="text text-danger"
+                                    style={{ marginTop: '1em' }}
+                                >
+                                    <span className="fa fa-exclamation-triangle"></span>
+                                    This process is taking <b>much</b> longer
+                                    than expected. Still trying...
+                                </p>
+                            </div>
+                        ),
+                        variant: 'warning',
+                    };
             }
         })();
 
         return (
             <Well variant={variant} style={{ width: '50%', margin: '0 auto' }}>
-                <Well.Body>
-                    {message}
-                </Well.Body>
+                <Well.Body>{message}</Well.Body>
             </Well>
         );
     }
