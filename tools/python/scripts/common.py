@@ -35,7 +35,7 @@ def utc_in_iso8601(timestamp):
     )
 
 
-def git_info(git_repo_directory):
+def git_info(git_repo_directory=None):
     current_directory = os.getcwd()
     if git_repo_directory:
         os.chdir(git_repo_directory)
