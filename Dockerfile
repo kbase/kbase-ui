@@ -1,7 +1,7 @@
 # ------------------------------
 # The build image
 # ------------------------------
-FROM alpine:3.17 as builder
+FROM alpine:3.22 as builder
 
 # add deps for building kbase-ui
 RUN apk upgrade --update-cache --available && \
