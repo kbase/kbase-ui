@@ -70,12 +70,6 @@ plugins:
       source:
           github:
               account: kbase
-    - name: dashboard4
-      globalName: kbase-ui-plugin-dashboard4
-      version: 0.4.3
-      source:
-          github:
-              account: eapearson
     - name: samples
       globalName: kbase-ui-plugin-samples
       version: 1.1.3
