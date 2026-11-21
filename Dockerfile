@@ -26,7 +26,8 @@ LABEL stage=intermediate
 # ------------------------------
 # The product image
 # ------------------------------
-FROM alpine:3.17
+# Alpine 3.24 packages nginx 1.30.7, the release that fixes CVE-2026-123007.
+FROM alpine:3.24
 
 RUN apk upgrade --update-cache --available && \
     apk add --update --no-cache bash ca-certificates nginx && \
